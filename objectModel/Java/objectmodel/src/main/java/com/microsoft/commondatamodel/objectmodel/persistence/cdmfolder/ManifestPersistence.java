@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -8,7 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DataType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.DocumentContent;

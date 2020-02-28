@@ -1,4 +1,7 @@
-﻿namespace read_local_save_adls
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace read_local_save_adls
 {
     using System;
     using System.Collections.Generic;

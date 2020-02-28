@@ -1,0 +1,41 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Address",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "entityId",
+                    "name": "addId"
+                },
+                {
+                    "dataType": "city",
+                    "name": "cityName"
+                },
+                {
+                    "dataType": "postalCode",
+                    "name": "postalCodeName"
+                }
+            ]
+        },
+        {
+            "entityName": "addressInLine",
+            "extendsEntity": "Address",
+            "extendsEntityResolutionGuidance": {
+                "selectsSubAttribute": {
+                    "selects": "some",
+                    "selectsSomeAvoidNames": [
+                        "addId"
+                    ]
+                }
+            }
+        }
+    ]
+}

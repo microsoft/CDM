@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
@@ -65,10 +68,20 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
     this.name = name;
   }
 
+  /**
+   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public String getFolderPath() {
     return folderPath;
   }
 
+  /**
+   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public void setFolderPath(final String folderPath) {
     this.folderPath = folderPath;
   }
@@ -84,7 +97,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    *
    * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
@@ -95,7 +108,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    *
    * @param namespace
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
@@ -107,6 +120,13 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
           final String path,
           final StorageAdapter adapter) {
     return this.fetchDocumentFromFolderPathAsync(path, adapter, false);
+  }
+
+  CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
+          final String path,
+          final StorageAdapter adapter,
+          final boolean forceReload) {
+    return this.fetchDocumentFromFolderPathAsync(path, adapter, forceReload, null);
   }
 
   /**
@@ -121,7 +141,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   CompletableFuture<CdmDocumentDefinition> fetchDocumentFromFolderPathAsync(
       final String objectPath,
       final StorageAdapter adapter,
-      final boolean forceReload) {
+      final boolean forceReload,
+      final ResolveOptions resOpt) {
     final String docName;
     final int first = objectPath.indexOf("/");
     if (first < 0) {
@@ -143,19 +164,31 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
     }
 
     return CompletableFuture.supplyAsync(() -> {
-      final CdmDocumentDefinition documentDefinition = this.corpus.getPersistence().loadDocumentFromPathAsync(this, docName, doc).join();
+      final CdmDocumentDefinition documentDefinition = this.corpus.getPersistence().loadDocumentFromPathAsync(this, docName, doc, resOpt).join();
       return documentDefinition;
     });
   }
 
   @Override
-  public <T extends CdmObjectDefinition> T fetchObjectDefinition(final ResolveOptions resOpt) {
+  public <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return null;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
-    // Intended to return null;
+  @Deprecated
+  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return null;
   }
 
@@ -163,6 +196,11 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
     return fetchChildFolderFromPathAsync(path, false);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public CompletableFuture<CdmFolderDefinition> fetchChildFolderFromPathAsync(
       final String path,
       final boolean makeFolder) {
@@ -236,7 +274,11 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return false;
   }
 
@@ -271,8 +313,11 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt, final CdmObject host) {
-    // Intended to return null;
+  public CdmObject copy(ResolveOptions resOpt, final CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return null;
   }
 }

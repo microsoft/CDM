@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmObjectDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -26,10 +23,5 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// All object definitions have some kind of name, this method returns the name independent of the name property.
         /// </summary>
         string GetName();
-
-        /// <summary>
-        /// Returns true if the object (or the referenced object) is an extension from the specified symbol name in some way.
-        /// </summary>
-        bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null);
     }
 }

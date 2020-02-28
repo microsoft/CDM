@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmCorpusContext } from '../Cdm/CdmCorpusContext';
 import {
     CdmCorpusDefinition,
@@ -11,13 +14,25 @@ import {
 } from '../internal';
 
 export class resolveContext implements CdmCorpusContext {
+    /**
+     * @internal
+     */
     public scopeStack: resolveContextScope[];
+    /**
+     * @internal
+     */
     public currentScope: resolveContextScope;
     public reportAtLevel: cdmStatusLevel;
     public statusEvent: EventCallback;
     public currentDoc?: CdmDocumentDefinition;
+    /**
+     * @internal
+     */
     public relativePath?: string;
     public corpusPathRoot?: string;
+    /**
+     * @internal
+     */
     public cache: Map<string, any>;
     public corpus: CdmCorpusDefinition;
     constructor(corpus: CdmCorpusDefinition, statusRpt?: EventCallback, reportAtLevel?: cdmStatusLevel) {

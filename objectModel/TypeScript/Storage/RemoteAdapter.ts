@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
 import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
@@ -92,14 +95,14 @@ export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        throw new Error('Method not implemented.');
+        return new Date();
     }
 
     public async fetchAllFilesAsync(currFullPath: string): Promise<string[]> {
         return undefined;
     }
 
-    public getGuid(): string {
+    private getGuid(): string {
         let guid: string;
         // make sure that there is no collision of keys.
         do {

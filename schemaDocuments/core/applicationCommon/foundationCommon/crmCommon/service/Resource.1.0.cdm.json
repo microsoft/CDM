@@ -1,0 +1,999 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.1.0.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Resource",
+            "extendsEntity": "CdmEntity",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Resource"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "User or facility/equipment that can be scheduled for a service."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        {
+                            "name": "versionNumber",
+                            "value": "1.0"
+                        }
+                    ]
+                }
+            ],
+            "sourceName": "Resource",
+            "displayName": "Resource",
+            "description": "User or facility/equipment that can be scheduled for a service.",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/service/Resource.1.0.cdm.json/Resource/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "name": "resource",
+                                "entity": {
+                                    "entityReference": {
+                                        "entityName": "Regarding",
+                                        "hasAttributes": [
+                                            {
+                                                "name": "facilityEquipmentOption",
+                                                "entity": {
+                                                    "entityReference": "FacilityEquipment",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "FacilityEquipment/(resolvedAttributes)/equipmentId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "name": "resourceSpecificationOption",
+                                                "entity": {
+                                                    "entityReference": "ResourceSpecification",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "ResourceSpecification/(resolvedAttributes)/resourceSpecId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "name": "userOption",
+                                                "entity": {
+                                                    "entityReference": "User",
+                                                    "appliedTraits": [
+                                                        {
+                                                            "traitReference": "is.identifiedBy",
+                                                            "arguments": [
+                                                                "User/(resolvedAttributes)/systemUserId"
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "resolutionGuidance": {
+                                    "imposedDirectives": [
+                                        "selectOne"
+                                    ],
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "identifiedBy",
+                                            "dataType": "entityId",
+                                            "name": "resourceId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Resource"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the resource."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "resourceid",
+                                            "sourceOrdering": 10000,
+                                            "displayName": "Resource",
+                                            "description": "Unique identifier of the resource."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "name": "businessUnit",
+                                "entity": {
+                                    "entityReference": "BusinessUnit",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "BusinessUnit/(resolvedAttributes)/businessUnitId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Business Unit Id"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Business Unit Id"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "businessunitid",
+                                            "sourceOrdering": 10001,
+                                            "displayName": "Business Unit Id",
+                                            "description": "Business Unit Id"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "bigInteger",
+                                "name": "versionNumber",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Version Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "versionnumber",
+                                "sourceOrdering": 10003,
+                                "displayName": "Version Number",
+                                "description": "Version Number"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "name": "importSequenceNumber",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Import Sequence Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Sequence number of the import that created this record."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "importsequencenumber",
+                                "sourceOrdering": 10004,
+                                "displayName": "Import Sequence Number",
+                                "description": "Sequence number of the import that created this record.",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-2147483648"
+                            },
+                            {
+                                "purpose": "createdOn",
+                                "dataType": "dateTime",
+                                "name": "overriddenCreatedOn",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Record Created On"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Date and time that the record was migrated."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "overriddencreatedon",
+                                "sourceOrdering": 10005,
+                                "displayName": "Record Created On",
+                                "description": "Date and time that the record was migrated."
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "name": "timeZoneRuleVersionNumber",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Time Zone Rule Version Number"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "timezoneruleversionnumber",
+                                "sourceOrdering": 10006,
+                                "displayName": "Time Zone Rule Version Number",
+                                "description": "For internal use only.",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "name": "UTCConversionTimeZoneCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "UTC Conversion Time Zone Code"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Time zone code that was in use when the record was created."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "utcconversiontimezonecode",
+                                "sourceOrdering": 10007,
+                                "displayName": "UTC Conversion Time Zone Code",
+                                "description": "Time zone code that was in use when the record was created.",
+                                "maximumValue": "2147483647",
+                                "minimumValue": "-1"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "name",
+                                "name": "name",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name of the resource."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "name",
+                                "sourceOrdering": 10008,
+                                "displayName": "Name",
+                                "description": "Name of the resource.",
+                                "maximumLength": 160
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "guid",
+                                "name": "calendarId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Calendar"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier of the calendar for the resource."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "calendarid",
+                                "sourceOrdering": 10009,
+                                "displayName": "Calendar",
+                                "description": "Unique identifier of the calendar for the resource."
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "boolean",
+                                "name": "displayInServiceViews",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Display in Service Views"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "For internal use only."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "displayinserviceviews",
+                                "sourceOrdering": 10010,
+                                "displayName": "Display in Service Views",
+                                "description": "For internal use only."
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "boolean",
+                                "name": "isDisabled",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Is Disabled"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Information about whether the resource is enabled."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "isdisabled",
+                                "sourceOrdering": 10012,
+                                "displayName": "Is Disabled",
+                                "description": "Information about whether the resource is enabled."
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "entityName",
+                                "name": "objectTypeCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Object Type "
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Type of entity with which the resource is associated."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "objecttypecode",
+                                "sourceOrdering": 10014,
+                                "displayName": "Object Type ",
+                                "description": "Type of entity with which the resource is associated."
+                            },
+                            {
+                                "name": "organization",
+                                "entity": {
+                                    "entityReference": "Organization",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Organization/(resolvedAttributes)/organizationId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Organization"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the organization with which the resource is associated."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "organizationid",
+                                            "sourceOrdering": 10016,
+                                            "displayName": "Organization",
+                                            "description": "Unique identifier of the organization with which the resource is associated."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "name": "site",
+                                "entity": {
+                                    "entityReference": "Site",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Site/(resolvedAttributes)/siteId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Site"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the site at which the resource is located."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "isNullable": true,
+                                            "sourceName": "siteid",
+                                            "sourceOrdering": 10017,
+                                            "displayName": "Site",
+                                            "description": "Unique identifier of the site at which the resource is located."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "guid",
+                                "name": "entityImageId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "entityimageid",
+                                "sourceOrdering": 10018
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

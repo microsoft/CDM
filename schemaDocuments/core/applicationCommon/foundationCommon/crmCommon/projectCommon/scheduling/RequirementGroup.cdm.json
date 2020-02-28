@@ -1,608 +1,616 @@
 {
-    "schemaVersion": "0.7.0",
-    "imports": [
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RequirementGroup",
+      "extendsEntity": "CdsStandard",
+      "exhibitsTraits": [
         {
-            "corpusPath": "_allImports.cdm.json"
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Requirement Group"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Service which has resource requirement offering periods"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
         }
-    ],
-    "definitions": [
+      ],
+      "hasAttributes": [
         {
-            "entityName": "RequirementGroup",
-            "extendsEntity": "CdsStandard",
-            "exhibitsTraits": [
-                {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "requirementgroupId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
-                        {
-                            "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                    [
-                                        "en",
-                                        "Requirement Group"
-                                    ]
-                                ]
-                            }
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Requirement Group"
+                            ]
+                          ]
                         }
+                      }
                     ]
-                },
-                {
+                  },
+                  {
                     "traitReference": "is.localized.describedAs",
                     "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msdyn_requirementgroupid",
+                "sourceOrdering": 1,
+                "displayName": "Requirement Group",
+                "description": "Unique identifier for entity instances"
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
                         {
-                            "entityReference": {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Requirement Group"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "sourceOrdering": 24,
+                "displayName": "Status",
+                "description": "Status of the Requirement Group",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'RequirementGroup' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Requirement Group"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "sourceOrdering": 26,
+                "displayName": "Status Reason",
+                "description": "Reason for the status of the Requirement Group",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'RequirementGroup' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "name",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_name",
+                "sourceOrdering": 33,
+                "displayName": "Name",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
+              },
+              {
+                "name": "isTemplate",
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Is Template"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Whether this offering is a template or not."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_istemplate",
+                "sourceOrdering": 34,
+                "displayName": "Is Template",
+                "description": "Whether this offering is a template or not."
+              },
+              {
+                "entity": {
+                  "entityReference": "RequirementGroup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "RequirementGroup/(resolvedAttributes)/requirementgroupId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "msdyn_requirementgroup_requirementgroup_requirementgrouptemplateid",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "requirementGroupTemplate",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
                                 "entityShape": "localizedTable",
                                 "constantValues": [
-                                    [
-                                        "en",
-                                        "Service which has resource requirement offering periods"
-                                    ]
+                                  [
+                                    "en",
+                                    "Requirement Group Template"
+                                  ]
                                 ]
+                              }
                             }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Requirement Group Template Reference"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
                         }
-                    ]
-                }
-            ],
-            "displayName": "Requirement Group",
-            "description": "Service which has resource requirement offering periods",
-            "sourceName": "msdyn_requirementgroup",
-            "hasAttributes": [
-                {
-                    "attributeGroupReference": {
-                        "attributeGroupName": "attributesAddedAtThisScope",
-                        "exhibitsTraits": [
-                            {
-                                "traitReference": "is.CDM.attributeGroup",
-                                "arguments": [
-                                    {
-                                        "entityReference": {
-                                            "entityShape": "attributeGroupSet",
-                                            "constantValues": [
-                                                [
-                                                    "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/scheduling/RequirementGroup.cdm.json/RequirementGroup/hasAttributes/attributesAddedAtThisScope"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        ],
-                        "members": [
-                            {
-                                "purpose": "identifiedBy",
-                                "dataType": "entityId",
-                                "name": "requirementgroupId",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Requirement Group"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Unique identifier for entity instances"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_requirementgroupid",
-                                "sourceOrdering": 1,
-                                "displayName": "Requirement Group",
-                                "description": "Unique identifier for entity instances"
-                            },
-                            {
-                                "purpose": "representsStateWith",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Active",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Inactive",
-                                                                "1",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "stateCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status of the Requirement Group"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
-                                "displayName": "Status",
-                                "description": "Status of the Requirement Group",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'stateCode_display' is added to the 'RequirementGroup' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "stateCode_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": {
-                                    "purposeReference": "representsCorrelatedStatusWith",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.correlatedWith",
-                                            "arguments": [
-                                                "stateCode"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                                                        "entityShape": "listLookupCorrelatedValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Active",
-                                                                "1",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Inactive",
-                                                                "2",
-                                                                "1",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "statusCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status Reason"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Reason for the status of the Requirement Group"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
-                                "displayName": "Status Reason",
-                                "description": "Reason for the status of the Requirement Group",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'statusCode_display' is added to the 'RequirementGroup' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "statusCode_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "name",
-                                "name": "name",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "required"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Name"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "The name of the custom entity."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
-                                "displayName": "Name",
-                                "description": "The name of the custom entity."
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "boolean",
-                                "name": "isTemplate",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "required"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Is Template"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Whether this offering is a template or not."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_istemplate",
-                                "sourceOrdering": 34,
-                                "isNullable": true,
-                                "displayName": "Is Template",
-                                "description": "Whether this offering is a template or not."
-                            },
-                            {
-                                "name": "msdyn_requirementgroup_requirementgroup_requirementgrouptemplateid",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "requirementGroupTemplate",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Requirement Group Template"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Requirement Group Template Reference"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_requirementgrouptemplateid",
-                                            "sourceOrdering": 36,
-                                            "isNullable": true,
-                                            "displayName": "Requirement Group Template",
-                                            "description": "Requirement Group Template Reference"
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "RequirementGroup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "RequirementGroup/(resolvedAttributes)/requirementgroupId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "None",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Crew",
-                                                                "1",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "autoGroupType",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "required"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Auto Group Type"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Auto Group Type"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_autogrouptype",
-                                "sourceOrdering": 37,
-                                "isNullable": true,
-                                "displayName": "Auto Group Type",
-                                "description": "Auto Group Type",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'autoGroupType_display' is added to the 'RequirementGroup' entity to provide the localized display text for the value of the listLookup attribute 'autoGroupType'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "autoGroupType_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            }
-                        ]
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_requirementgrouptemplateid",
+                      "sourceOrdering": 36,
+                      "displayName": "Requirement Group Template",
+                      "description": "Requirement Group Template Reference"
                     }
+                  }
                 }
+              },
+              {
+                "name": "autoGroupType",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "None",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Crew",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Auto Group Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Auto Group Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_autogrouptype",
+                "sourceOrdering": 37,
+                "displayName": "Auto Group Type",
+                "description": "Auto Group Type",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'autoGroupType_display' is added to the 'RequirementGroup' entity to provide the localized display text for the value of the listLookup attribute 'autoGroupType'",
+                    "name": "autoGroupType_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/scheduling/RequirementGroup.cdm.json/RequirementGroup/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
             ]
+          }
         }
-    ],
-    "jsonSchemaSemanticVersion": "0.9.0"
+      ],
+      "sourceName": "msdyn_requirementgroup",
+      "displayName": "Requirement Group",
+      "description": "Service which has resource requirement offering periods"
+    }
+  ]
 }

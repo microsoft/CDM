@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -90,9 +93,6 @@ public class LocalAdapter implements StorageAdapter {
   }
 
   public CompletableFuture<Void> writeAsync(final String corpusPath, final String data) {
-    if (!corpusPath.startsWith("/")) {
-      throw new StorageAdapterException("CdmCorpusDefinition path should start with /");
-    }
     return CompletableFuture.runAsync(() -> {
       // ensure that the path exists before trying to write the file
       final String path = createAdapterPath(corpusPath);
@@ -122,10 +122,10 @@ public class LocalAdapter implements StorageAdapter {
     }
 
     if (Paths.get(this.fullRoot).isAbsolute()) {
-      return convertPathToAbsolutePath(this.fullRoot + corpusPath);
+      return convertPathToAbsolutePath(Paths.get(this.fullRoot, corpusPath).toString());
     }
 
-      return convertPathToAbsolutePath(Paths.get(System.getProperty("user.dir"), this.fullRoot) + corpusPath);
+    return convertPathToAbsolutePath(Paths.get(Paths.get(System.getProperty("user.dir"), this.fullRoot).toString(), corpusPath).toString());
   }
 
   public void clearCache() {
@@ -159,12 +159,12 @@ public class LocalAdapter implements StorageAdapter {
 
   public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
-      final Path path = Paths.get(this.createAdapterPath(corpusPath));
+      final Path adapterPath = Paths.get(this.createAdapterPath(corpusPath));
 
-      if (Files.exists(path)) {
+      if (Files.exists(adapterPath)) {
         try {
           return OffsetDateTime
-                  .ofInstant(Files.getLastModifiedTime(path).toInstant(), ZoneOffset.UTC);
+                  .ofInstant(Files.getLastModifiedTime(adapterPath).toInstant(), ZoneOffset.UTC);
         } catch (final IOException e) {
           throw new StorageAdapterException(
                   "Failed to get last modified time of file at adapter path " + corpusPath, e);
@@ -206,7 +206,7 @@ public class LocalAdapter implements StorageAdapter {
   }
 
   /**
-   * Returns true if the directory exists from the given path, false otherwise.s
+   * Returns true if the directory exists from the given path, false otherwise.
    */
   private CompletableFuture<Boolean> dirExistsAsync(final String folderPath) {
     return CompletableFuture
@@ -268,6 +268,11 @@ public class LocalAdapter implements StorageAdapter {
     this.locationHint = locationHint;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public String getFullRoot() {
     return fullRoot;
   }

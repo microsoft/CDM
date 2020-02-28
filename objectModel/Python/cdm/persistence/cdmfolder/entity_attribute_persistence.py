@@ -1,6 +1,9 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from cdm.objectmodel import CdmCorpusContext, CdmEntityAttributeDefinition
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, CopyOptions
+from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
 
 from . import utils
 from .attribute_resolution_guidance_persistence import AttributeResolutionGuidancePersistence
@@ -34,7 +37,7 @@ class EntityAttributePersistence:
         entity_attribute.name = instance.name
         entity_attribute.purpose = PurposeReferencePersistence.to_data(instance.purpose, res_opt, options) if instance.purpose else None
         entity_attribute.entity = entity
-        entity_attribute.appliedTraits = utils.array_copy_data(res_opt, instance.applied_traits, options)
+        entity_attribute.appliedTraits = copy_data_utils._array_copy_data(res_opt, instance.applied_traits, options)
         entity_attribute.resolutionGuidance = AttributeResolutionGuidancePersistence.to_data(
             instance.resolution_guidance, res_opt, options) if instance.resolution_guidance else None
 

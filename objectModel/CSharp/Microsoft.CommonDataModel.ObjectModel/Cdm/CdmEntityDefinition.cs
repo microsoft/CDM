@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmEntityDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -181,7 +178,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmEntityDefinition copy;
@@ -224,7 +221,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal ResolvedAttributeSet FetchAttributesWithTraits(ResolveOptions resOpt, dynamic queryFor)
         {
-            return this.FetchResolvedAttributes(resOpt).FetchAttributesWithTraits(resOpt, queryFor);
+            ResolvedAttributeSet resolvedAttributeSet = this.FetchResolvedAttributes(resOpt);
+            if (resolvedAttributeSet != null)
+                return resolvedAttributeSet.FetchAttributesWithTraits(resOpt, queryFor);
+            return null;
         }
 
         [Obsolete]
@@ -239,7 +239,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.isCurrentlyResolving = true;
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, null); // use null to get the old default directives, although in a few clock ticks we will change this explicitly anyway.
             }
 
             // this whole resolved entity ref goo will go away when resolved documents are done.
@@ -305,7 +305,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return this.IsDerivedFromDef(resOpt, this.ExtendsEntityRef, this.GetName(), baseDef);
@@ -409,11 +409,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         IncludeTraits = false
                     };
                     extendsRefUnder = this.Rasb.ResolvedAttributeSet.CreateAttributeContext(resOpt, acpExt);
+                    // usually the extended entity is a reference to a name.
+                    // it is allowed however to just define the entity inline.
+                    string extName = extRef.NamedReference;
+                    if (extName == null)
+                    {
+                        extName = extRef.ExplicitReference.GetName();
+                    }
                     acpExtEnt = new AttributeContextParameters
                     {
                         under = extendsRefUnder,
                         type = CdmAttributeContextType.Entity,
-                        Name = extRef.NamedReference,
+                        Name = extName,
                         Regarding = extRef,
                         IncludeTraits = false
                     };
@@ -423,6 +430,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 string oldMoniker = resOpt.FromMoniker;
 
                 this.Rasb.MergeAttributes((this.ExtendsEntityRef as CdmObjectReferenceBase).FetchResolvedAttributes(resOpt, acpExtEnt));
+
+                if (!resOpt.CheckAttributeCount(this.Rasb.ResolvedAttributeSet.ResolvedAttributeCount))
+                {
+                    Logger.Error(nameof(CdmEntityDefinition), this.Ctx, $"Maximum number of resolved attributes reached for the entity: {this.EntityName}.");
+                    return null;
+                }
 
                 if (this.ExtendsEntityResolutionGuidance != null)
                 {
@@ -466,6 +479,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         };
                     }
                     this.Rasb.MergeAttributes(att.FetchResolvedAttributes(resOpt, acpAtt));
+
+                    if (!resOpt.CheckAttributeCount(this.Rasb.ResolvedAttributeSet.ResolvedAttributeCount))
+                    {
+                        Logger.Error(nameof(CdmEntityDefinition), this.Ctx, $"Maximum number of resolved attributes reached for the entity: {this.EntityName}.");
+                        return null;
+                    }
                 }
             }
             this.Rasb.MarkOrder();
@@ -484,7 +503,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             if (resOpt.WrtDoc == null)
@@ -557,6 +576,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // points to the level of the context where it was created
             var ras = this.FetchResolvedAttributes(resOptCopy, acpEnt);
 
+            if (ras == null)
+            {
+                this.resolvingAttributes = false;
+                return null;
+            }
+
             // create a new copy of the attribute context for this entity
             HashSet<CdmAttributeContext> allAttCtx = new HashSet<CdmAttributeContext>();
             CdmAttributeContext newNode = attCtxEnt.CopyNode(resOpt) as CdmAttributeContext;
@@ -594,7 +619,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
                 (entResolved as CdmObjectDefinition).ExhibitsTraits.Add(traitRef);
             });
-            
 
             // the attributes have been named, shaped, etc for this entity so now it is safe to go and 
             // make each attribute context level point at these final versions of attributes
@@ -608,9 +632,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     HashSet<CdmAttributeContext> raCtxSet = null;
                     rasSub.Ra2attCtxSet.TryGetValue(ra, out raCtxSet);
 
-                    // find the correct attCtx for this copy, intersect these two sets
-                    // (interate over the shortest list)                    
-                    if (allAttCtx.Count < raCtxSet.Count)
+                        // find the correct attCtx for this copy, intersect these two sets
+                        // (iterate over the shortest list)                    
+                        if (allAttCtx.Count < raCtxSet.Count)
                     {
                         foreach (CdmAttributeContext currAttCtx in allAttCtx)
                         {
@@ -634,17 +658,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         var refs = raCtx.Contents;
 
-                        // there might be more than one explanation for where and attribute came from when things get merges as they do
+                            // there might be more than one explanation for where and attribute came from when things get merges as they do
 
-                        // this won't work when I add the structured attributes to avoid name collisions
-                        string attRefPath = path + ra.ResolvedName;
+                            // this won't work when I add the structured attributes to avoid name collisions
+                            string attRefPath = path + ra.ResolvedName;
                         if ((ra.Target as CdmAttribute)?.GetType().GetMethod("GetObjectType") != null)
                         {
                             var attRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmObjectType.AttributeRef, attRefPath, true);
                             if (!attPath2Order.ContainsKey(attRef.NamedReference))
                             {
-                                // only need one explanation for this path to the insert order
-                                attPath2Order.Add(attRef.NamedReference, ra.InsertOrder);
+                                    // only need one explanation for this path to the insert order
+                                    attPath2Order.Add(attRef.NamedReference, ra.InsertOrder);
                             }
                             refs.Add(attRef);
                         }
@@ -666,7 +690,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (subItem.ObjectType == CdmObjectType.AttributeRef)
                 {
                     return true; // not empty
-                }
+                    }
                 CdmAttributeContext ac = subItem as CdmAttributeContext;
 
                 if (ac.Type == CdmAttributeContextType.GeneratedSet)
@@ -676,9 +700,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (ac.Contents == null || ac.Contents.Count == 0)
                 {
                     return false; // empty
-                }
-                // look at all children, make a set to remove
-                List<CdmAttributeContext> toRemove = new List<CdmAttributeContext>();
+                    }
+                    // look at all children, make a set to remove
+                    List<CdmAttributeContext> toRemove = new List<CdmAttributeContext>();
                 foreach (var subSub in ac.Contents)
                 {
                     if (CleanSubGroup(subSub, underGenerated) == false)
@@ -686,9 +710,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         bool potentialTarget = underGenerated;
                         if (potentialTarget == false)
                         {
-                            // cast is safe because we returned false meaning empty and not a attribute ref
-                            // so is this the set holder itself?
-                            potentialTarget = (subSub as CdmAttributeContext).Type == CdmAttributeContextType.GeneratedSet;
+                                // cast is safe because we returned false meaning empty and not a attribute ref
+                                // so is this the set holder itself?
+                                potentialTarget = (subSub as CdmAttributeContext).Type == CdmAttributeContextType.GeneratedSet;
                         }
                         if (potentialTarget)
                             toRemove.Add(subSub as CdmAttributeContext);
@@ -722,7 +746,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 else
                 {
                     return -1; // put the mystery item on top.
-                }
+                    }
             };
 
             orderContents = (CdmAttributeContext under) =>
@@ -730,7 +754,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (under.LowestOrder == null)
                 {
                     under.LowestOrder = -1; // used for group with nothing but traits
-                    if (under.Contents.Count == 1)
+                        if (under.Contents.Count == 1)
                     {
                         under.LowestOrder = getOrderNum(under.Contents[0]);
                     }
@@ -773,7 +797,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // resolved attributes can gain traits that are applied to an entity when referenced
             // since these traits are described in the context, it is redundant and messy to list them in the attribute
             // so, remove them. create and cache a set of names to look for per context 
-            // there is actuall a hierarchy to  all attributes from the base entity should have all traits applied independed of the 
+            // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the 
             // sub-context they come from. Same is true of attribute entities. so do this recursively top down
             var ctx2traitNames = new Dictionary<CdmAttributeContext, HashSet<string>>();
             Action<CdmAttributeContext, HashSet<string>> collectContextTraits = null;
@@ -789,8 +813,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (cr.ObjectType == CdmObjectType.AttributeContextDef)
                     {
-                        // do this for all types?
-                        collectContextTraits(cr as CdmAttributeContext, traitNamesHere);
+                            // do this for all types?
+                            collectContextTraits(cr as CdmAttributeContext, traitNamesHere);
                     }
                 });
 
@@ -805,12 +829,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 rasSub.Set.ForEach(ra =>
                 {
                     string attPath = path + ra.ResolvedName;
-                    // use the path of the context associated with this attribute to find the new context that matches on path
-                    HashSet<CdmAttributeContext> raCtxSet = null;
+                        // use the path of the context associated with this attribute to find the new context that matches on path
+                        HashSet<CdmAttributeContext> raCtxSet = null;
                     rasSub.Ra2attCtxSet.TryGetValue(ra, out raCtxSet);
                     CdmAttributeContext raCtx = null;
-                    // find the correct attCtx for this copy
-                    if (raCtxSet != null)
+                        // find the correct attCtx for this copy
+                        // (interate over the shortest list)                    
+                        if (allAttCtx.Count < raCtxSet.Count)
                     {
                         foreach (CdmAttributeContext currAttCtx in allAttCtx)
                         {
@@ -821,34 +846,45 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             }
                         }
                     }
+                    else
+                    {
+                        foreach (CdmAttributeContext currAttCtx in raCtxSet)
+                        {
+                            if (allAttCtx.Contains(currAttCtx))
+                            {
+                                raCtx = currAttCtx;
+                                break;
+                            }
+                        }
+                    }
 
                     if (ra.Target is ResolvedAttributeSet)
                     {
-                        // this is a set of attributes.
-                        // make an attribute group to hold them
-                        CdmAttributeGroupDefinition attGrp = this.Ctx.Corpus.MakeObject<CdmAttributeGroupDefinition>(CdmObjectType.AttributeGroupDef, ra.ResolvedName, false);
+                            // this is a set of attributes.
+                            // make an attribute group to hold them
+                            CdmAttributeGroupDefinition attGrp = this.Ctx.Corpus.MakeObject<CdmAttributeGroupDefinition>(CdmObjectType.AttributeGroupDef, ra.ResolvedName, false);
                         attGrp.AttributeContext = this.Ctx.Corpus.MakeObject<CdmAttributeContextReference>(CdmObjectType.AttributeContextRef, raCtx.AtCorpusPath, true);
-                        // take any traits from the set and make them look like traits exhibited by the group
-                        HashSet<string> avoidSet = ctx2traitNames[raCtx];
+                            // take any traits from the set and make them look like traits exhibited by the group
+                            HashSet<string> avoidSet = ctx2traitNames[raCtx];
                         ResolvedTraitSet rtsAtt = ra.ResolvedTraits;
                         rtsAtt.Set.ForEach(rt =>
                         {
                             if (rt.Trait.Ugly != true)
                             { // don't mention your ugly traits
-                            if (avoidSet?.Contains(rt.TraitName) != true)
-                            { // avoid the ones from the context
-                                var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
+                                    if (avoidSet?.Contains(rt.TraitName) != true)
+                                { // avoid the ones from the context
+                                        var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
                                     (attGrp as CdmObjectDefinitionBase).ExhibitsTraits.Add(traitRef);
                                 }
                             }
                         });
 
-                        // wrap it in a reference and then recurse with this as the new container
-                        CdmAttributeGroupReference attGrpRef = this.Ctx.Corpus.MakeObject<CdmAttributeGroupReference>(CdmObjectType.AttributeGroupRef, null, false);
+                            // wrap it in a reference and then recurse with this as the new container
+                            CdmAttributeGroupReference attGrpRef = this.Ctx.Corpus.MakeObject<CdmAttributeGroupReference>(CdmObjectType.AttributeGroupRef, null, false);
                         attGrpRef.ExplicitReference = attGrp;
                         container.AddAttributeDef(attGrpRef);
-                        // isn't this where ...
-                        addAttributes(ra.Target as ResolvedAttributeSet, attGrp, attPath + "/members/");
+                            // isn't this where ...
+                            addAttributes(ra.Target as ResolvedAttributeSet, attGrp, attPath + "/members/");
                     }
                     else
                     {
@@ -860,18 +896,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             if (rt.Trait.Ugly != true)
                             { // don't mention your ugly traits
-                                if (avoidSet?.Contains(rt.TraitName) != true)
+                                    if (avoidSet?.Contains(rt.TraitName) != true)
                                 { // avoid the ones from the context
-                                    var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
+                                        var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
                                     ((CdmTypeAttributeDefinition)att).AppliedTraits.Add(traitRef);
                                 }
                             }
                         });
 
-                        // none of the dataformat traits have the bit set that will make them turn into a property
-                        // this is intentional so that the format traits make it into the resolved object
-                        // but, we still want a guess as the data format, so get it and set it.
-                        var impliedDataFormat = att.DataFormat;
+                            // none of the dataformat traits have the bit set that will make them turn into a property
+                            // this is intentional so that the format traits make it into the resolved object
+                            // but, we still want a guess as the data format, so get it and set it.
+                            var impliedDataFormat = att.DataFormat;
                         if (impliedDataFormat != CdmDataFormat.Unknown)
                             att.DataFormat = impliedDataFormat;
 
@@ -891,18 +927,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     foreach (CdmArgumentDefinition arg in tr.Arguments.AllItems)
                     {
                         dynamic v = arg.UnResolvedValue != null ? arg.UnResolvedValue : arg.Value;
-                        // is this an attribute reference?
-                        if (v != null && (v as CdmObject)?.ObjectType == CdmObjectType.AttributeRef)
+                            // is this an attribute reference?
+                            if (v != null && (v as CdmObject)?.ObjectType == CdmObjectType.AttributeRef)
                         {
-                            // only try this if the reference has no path to it (only happens with intra-entity att refs)
-                            var attRef = v as CdmAttributeReference;
+                                // only try this if the reference has no path to it (only happens with intra-entity att refs)
+                                var attRef = v as CdmAttributeReference;
                             if (!string.IsNullOrEmpty(attRef.NamedReference) && attRef.NamedReference.IndexOf('/') == -1)
                             {
                                 if (arg.UnResolvedValue == null)
                                     arg.UnResolvedValue = arg.Value;
 
-                                // give a promise that can be worked out later. assumption is that the attribute must come from this entity.
-                                arg.Value = this.Ctx.Corpus.MakeRef<CdmAttributeReference>(CdmObjectType.AttributeRef, entityHint + "/(resolvedAttributes)/" + attRef.NamedReference, true);
+                                    // give a promise that can be worked out later. assumption is that the attribute must come from this entity.
+                                    var newAttRef = this.Ctx.Corpus.MakeRef<CdmAttributeReference>(CdmObjectType.AttributeRef, entityHint + "/(resolvedAttributes)/" + attRef.NamedReference, true);
+                                    // inDocument is not propagated during resolution, so set it here
+                                    newAttRef.InDocument = arg.InDocument;
+                                arg.Value = newAttRef;
                             }
                         }
                     }
@@ -932,15 +971,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             {
                                 if (cr.ObjectType == CdmObjectType.AttributeContextDef)
                                 {
-                                    // if this is a new entity context, get the name to pass along
-                                    CdmAttributeContext subSubAttCtx = (CdmAttributeContext)cr;
+                                        // if this is a new entity context, get the name to pass along
+                                        CdmAttributeContext subSubAttCtx = (CdmAttributeContext)cr;
                                     string subEntityHint = entityHint;
                                     if (subSubAttCtx.Type == CdmAttributeContextType.Entity)
                                     {
                                         subEntityHint = subSubAttCtx.Definition.NamedReference;
                                     }
-                                    // do this for all types
-                                    fixContextTraits(subSubAttCtx, subEntityHint);
+                                        // do this for all types
+                                        fixContextTraits(subSubAttCtx, subEntityHint);
                                 }
                             });
 

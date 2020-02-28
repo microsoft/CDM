@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     ArgumentValue,
     CdmArgumentDefinition,
@@ -12,6 +15,7 @@ import {
     cdmObjectType,
     CdmTraitCollection,
     CdmTraitReference,
+    CdmTypeAttributeDefinition,
     Logger,
     ResolvedTrait
 } from '../internal';
@@ -32,12 +36,12 @@ const traitToListOfProperties: Map<string, string[]> =
 
 /**
  * @internal
- * attribute and entity traits that are represented as properties 
+ * attribute and entity traits that are represented as properties
  * this entire class is gross. it is a different abstraction level than all of the rest of this om. 
  * however, it does make it easier to work with the consumption object model so ... i will hold my nose. 
  */
 export class traitToPropertyMap {
-    public host: CdmObject;
+    private host: CdmObject;
 
     private get ctx(): CdmCorpusContext {
         return this.host.ctx;
@@ -64,7 +68,7 @@ export class traitToPropertyMap {
         const listOfProps: string[] = traitToListOfProperties.get(traitName);
         const multipleProperties: boolean = listOfProps && listOfProps.length > 1;
 
-        if (!newValue && !multipleProperties) {
+        if (newValue === undefined && !multipleProperties) {
             this.removeTrait(traitName);
         } else {
             switch (propertyName) {
@@ -86,6 +90,9 @@ export class traitToPropertyMap {
                 case 'sourceOrdering':
                     this.updateTraitArgument('is.CDS.ordered', 'ordinal', newValue.toString());
                     break;
+                case 'isPrimaryKey':
+                    this.updateTraitArgument('is.identifiedBy', '', newValue);
+                    break;
                 case 'isReadOnly':
                     this.mapBooleanTrait('is.readOnly', newValue as boolean);
                     break;
@@ -102,7 +109,7 @@ export class traitToPropertyMap {
                     this.updateTraitArgument('is.constrained', 'minimumValue', newValue as ArgumentValue);
                     break;
                 case 'maximumLength':
-                    this.updateTraitArgument('is.constrained', 'maximumLength', newValue ? newValue.toString() : undefined);
+                    this.updateTraitArgument('is.constrained', 'maximumLength', newValue !== undefined ? newValue.toString() : undefined);
                     break;
                 case 'dataFormat':
                     this.dataFormatToTraits(newValue);
@@ -133,6 +140,13 @@ export class traitToPropertyMap {
             case 'sourceOrdering':
                 return parseInt(this.fetchTraitReferenceArgumentValue(this.fetchTraitReference('is.CDS.ordered', fromProperty), 'ordinal') as string, 10);
             case 'isPrimaryKey':
+                if (this.host instanceof CdmTypeAttributeDefinition) {
+                    const typeAttribute: CdmTypeAttributeDefinition = this.host as CdmTypeAttributeDefinition;
+                    if (!fromProperty && typeAttribute.purpose && typeAttribute.purpose.namedReference === 'identifiedBy') {
+                        return true;
+                    }
+                }
+
                 return this.fetchTraitReference('is.identifiedBy', fromProperty) !== undefined;
             case 'isNullable':
                 return this.fetchTraitReference('is.nullable', fromProperty) !== undefined;
@@ -421,7 +435,7 @@ export class traitToPropertyMap {
 
                 return;
             } else {
-                this.removeTrait(argName);
+                this.removeTrait(traitName);
             }
         } else {
             for (const arg of args) {
@@ -572,25 +586,27 @@ export class traitToPropertyMap {
                         if (esName === 'localizedTable' || lookup || corr) {
                             const result: (object)[] = [];
                             const rawValues: string[][] = cEnt.getConstantValues();
-                            const l: number = rawValues.length;
-                            for (let i: number = 0; i < l; i++) {
-                                const row: any = {};
-                                const rawRow: string[] = rawValues[i];
-                                if (rawRow.length === 2 || (lookup && rawRow.length === 4) || (corr && rawRow.length === 5)) {
-                                    row.languageTag = rawRow[0];
-                                    row.displayText = rawRow[1];
-                                    if (lookup || corr) {
-                                        row.attributeValue = rawRow[2];
-                                        row.displayOrder = rawRow[3];
-                                        if (corr) {
-                                            row.correlatedValue = rawRow[4];
+                            if (rawValues) {
+                                const l: number = rawValues.length;
+                                for (let i: number = 0; i < l; i++) {
+                                    const row: any = {};
+                                    const rawRow: string[] = rawValues[i];
+                                    if (rawRow.length === 2 || (lookup && rawRow.length === 4) || (corr && rawRow.length === 5)) {
+                                        row.languageTag = rawRow[0];
+                                        row.displayText = rawRow[1];
+                                        if (lookup || corr) {
+                                            row.attributeValue = rawRow[2];
+                                            row.displayOrder = rawRow[3];
+                                            if (corr) {
+                                                row.correlatedValue = rawRow[4];
+                                            }
                                         }
                                     }
+                                    result.push(row);
                                 }
-                                result.push(row);
-                            }
 
-                            return result;
+                                return result;
+                            }
                         } else {
                             // an unknown entity shape. only thing to do is serialize the object
                             defVal = defVal.copyData(undefined, undefined);

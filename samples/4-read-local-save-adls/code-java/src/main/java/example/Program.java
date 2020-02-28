@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package example;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
@@ -101,7 +104,7 @@ public class Program {
         CdmObjectType.TypeAttributeDef,
         "NewAttribute",
         false);
-    newAttribute.updateDataFormat(CdmDataFormat.String.toString());
+    newAttribute.updateDataFormat(CdmDataFormat.String);
     newEntity.getAttributes().add(newAttribute);
 
     // Call will create EntityDeclarationDefinition

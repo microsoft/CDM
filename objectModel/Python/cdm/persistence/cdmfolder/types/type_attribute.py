@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Union, List
 
 from .purpose_reference import PurposeReference
@@ -11,22 +14,22 @@ class TypeAttribute(JObject):
     def __init__(self):
         super().__init__()
 
-        self.explanation = ''  # type: str
-        self.name = ''  # type: str
+        self.explanation = None  # type: str
+        self.name = None  # type: str
         self.purpose = None  # type: Union[str, PurposeReference]
         self.dataType = None  # type: Union[str, DataTypeReference]
         self.appliedTraits = []  # type: List[Union[str, TraitReference]]
-        self.attributeContext = ''  # type: str
+        self.attributeContext = None  # type: str
         self.isPrimaryKey = None  # type: bool
         self.isReadOnly = None  # type: bool
         self.isNullable = None  # type: bool
-        self.dataFormat = ''  # type: str
-        self.sourceName = ''  # type: str
+        self.dataFormat = None  # type: str
+        self.sourceName = None  # type: str
         self.sourceOrdering = None  # type: int
-        self.displayName = ''  # type: str
-        self.description = ''  # type: str
-        self.maximumValue = ''  # type: str
-        self.minimumValue = ''  # type: str
+        self.displayName = None  # type: str
+        self.description = None  # type: str
+        self.maximumValue = None  # type: str
+        self.minimumValue = None  # type: str
         self.maximumLength = None  # type: int
         self.valueConstrainedToList = None  # type: bool
         self.defaultValue = None  # type: object

@@ -1,4 +1,7 @@
-﻿from typing import Optional, List, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import Optional, List, TYPE_CHECKING
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
@@ -79,10 +82,10 @@ class DataPartitionPersistence:
 
         t2pm = TraitToPropertyMap(instance)
 
-        is_hidden_trait = t2pm.fetch_trait_reference('is.hidden')
+        is_hidden_trait = t2pm._fetch_trait_reference('is.hidden')
         result.isHidden = bool(is_hidden_trait) or None
 
-        csv_trait = t2pm.fetch_trait_reference('is.partition.format.CSV')
+        csv_trait = t2pm._fetch_trait_reference('is.partition.format.CSV')
         if csv_trait:
             csv_format_settings = utils.create_csv_format_settings(csv_trait)
 

@@ -1,8 +1,12 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.microsoft.commondatamodel.objectmodel.enums.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
+import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
@@ -120,25 +124,11 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     return this.relationships;
   }
 
-  /**
-   *
-   * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
   @Override
-  @Deprecated
   public CdmTraitCollection getExhibitsTraits() {
     return this.exhibitsTraits;
   }
 
-  /**
-   *
-   * @param exhibitsTraits
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
   public void setExhibitsTraits(
       final CdmTraitCollection exhibitsTraits) {
     this.exhibitsTraits = exhibitsTraits;
@@ -367,12 +357,16 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     return CompletableFuture.completedFuture(null);
   }
 
-  public CompletableFuture<List<?>> queryOnTraitsAsync(final Object querySpec) {
+  private CompletableFuture<List<?>> queryOnTraitsAsync(final Object querySpec) {
     return CompletableFuture.completedFuture(null);
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return false;
   }
 
@@ -437,9 +431,32 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     return copy;
   }
 
+  /**
+   * Creates a resolved copy of the manifest.
+   * newEntityDocumentNameFormat specifies a pattern to use when creating documents for resolved entites.
+   * The default is "{f}resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as the manifest. 
+   * Every instance of the string {n} is replaced with the entity name from the source manifest.
+   * Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
+   * (if there is one that is possible as a relative location, else nothing).
+   */
+  public CompletableFuture<CdmManifestDefinition> createResolvedManifestAsync(
+    String newManifestName,
+    String newEntityDocumentNameFormat) {
+      return createResolvedManifestAsync(newManifestName, newEntityDocumentNameFormat, null);
+  }
+
+  /**
+   * Creates a resolved copy of the manifest.
+   * newEntityDocumentNameFormat specifies a pattern to use when creating documents for resolved entites.
+   * The default is "{f}resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as the manifest. 
+   * Every instance of the string {n} is replaced with the entity name from the source manifest.
+   * Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
+   * (if there is one that is possible as a relative location, else nothing).
+   */
   public CompletableFuture<CdmManifestDefinition> createResolvedManifestAsync(
       String newManifestName,
-      String newEntityDocumentNameFormat) {
+      String newEntityDocumentNameFormat,
+      AttributeResolutionDirectiveSet directives) {
     if (null == this.getEntities()) {
       return CompletableFuture.completedFuture(null);
     }
@@ -490,9 +507,6 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       return CompletableFuture.completedFuture(null);
     }
 
-    // Mapping from entity path to resolved entity path for translating relationship paths
-    final Map<String, String> resEntMap = new LinkedHashMap<>();
-
     final String finalNewEntityDocumentNameFormat = newEntityDocumentNameFormat;
     return CompletableFuture.supplyAsync(() -> {
       for (final CdmEntityDeclarationDefinition entity : this.getEntities()) {
@@ -532,7 +546,9 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         }
 
         // Next create the resolved entity.
-        final ResolveOptions resOpt = new ResolveOptions(entDef);
+        AttributeResolutionDirectiveSet withDirectives = 
+          directives != null ? directives : this.getCtx().getCorpus().getDefaultResolutionDirectives();
+        final ResolveOptions resOpt = new ResolveOptions(entDef.getInDocument(), withDirectives != null ? withDirectives.copy() : null);
         LOGGER.debug("    resolving entity {} to document {}", sourceEntityFullPath, newDocumentFullPath);
 
         final CdmEntityDefinition resolvedEntity = entDef
@@ -558,13 +574,13 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
         // Absolute path is needed for generating relationships.
         final String absoluteEntPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(result.getEntityPath(), resolvedManifest);
-        resEntMap.put(this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument()), absoluteEntPath);
+        this.getCtx().getCorpus().resEntMap.put(this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument()), absoluteEntPath);
       }
 
       LOGGER.debug("    calculating relationships");
 
       // Calculate the entity graph for just this folio and any subManifests.
-      this.getCtx().getCorpus().calculateEntityGraphAsync(resolvedManifest, resEntMap).join();
+      this.getCtx().getCorpus().calculateEntityGraphAsync(resolvedManifest).join();
       // Stick results into the relationships list for the manifest.
       // Only put in relationships that are between the entities that are used in the manifest.
       resolvedManifest.populateManifestRelationshipsAsync(
@@ -597,6 +613,11 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     });
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public CompletableFuture<String> createEntityPathFromDeclarationAsync(
       final CdmEntityDeclarationDefinition entityDec) {
     return createEntityPathFromDeclarationAsync(entityDec, null);

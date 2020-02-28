@@ -1,0 +1,891 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.1.0.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "DeviceObservation",
+            "extendsEntity": "CdsStandard",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Device Observation"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Important observation on the state of a given vehicle or device, typically resulting from an inspection."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        {
+                            "name": "versionNumber",
+                            "value": "1.0"
+                        }
+                    ]
+                }
+            ],
+            "sourceName": "msauto_deviceobservation",
+            "displayName": "Device Observation",
+            "description": "Important observation on the state of a given vehicle or device, typically resulting from an inspection.",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/accelerators/automotive/DeviceObservation.1.0.cdm.json/DeviceObservation/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "name": "device",
+                                "entity": {
+                                    "entityReference": "Device",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Device/(resolvedAttributes)/deviceId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'Device'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "deviceId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Device"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Vehicle or device for which the observation applies."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msauto_deviceid",
+                                            "displayName": "Device",
+                                            "description": "Vehicle or device for which the observation applies."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "name": "deviceInspection",
+                                "entity": {
+                                    "entityReference": "DeviceInspection",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceInspection/(resolvedAttributes)/deviceInspectionId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'DeviceInspection'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "deviceInspectionId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Device Inspection"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Parent inspection record for the observation."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msauto_deviceinspectionid",
+                                            "displayName": "Device Inspection",
+                                            "description": "Parent inspection record for the observation."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "identifiedBy",
+                                "dataType": "entityId",
+                                "name": "deviceObservationId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_deviceobservationId"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Device Observation"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier for entity instances"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_deviceobservationid",
+                                "displayName": "Device Observation",
+                                "description": "Unique identifier for entity instances"
+                            },
+                            {
+                                "name": "deviceObservationType",
+                                "entity": {
+                                    "entityReference": "DeviceObservationType",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "DeviceObservationType/(resolvedAttributes)/deviceObservationTypeId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'DeviceObservationType'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "deviceObservationTypeId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Device Observation Type"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "The observation documented for this vehicle or device."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msauto_deviceobservationtypeid",
+                                            "displayName": "Device Observation Type",
+                                            "description": "The observation documented for this vehicle or device."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "name",
+                                "name": "name",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_name"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name of the observation."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msauto_name",
+                                "displayName": "Name",
+                                "description": "Name of the observation.",
+                                "maximumLength": 100
+                            },
+                            {
+                                "name": "serviceAppointment",
+                                "entity": {
+                                    "entityReference": "ServiceAppointment",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "ServiceAppointment/(resolvedAttributes)/serviceAppointmentId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'ServiceAppointment'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "serviceAppointmentId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Service Appointment"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Parent service appointment booked when this observation was documented."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msauto_serviceappointmentid",
+                                            "displayName": "Service Appointment",
+                                            "description": "Parent service appointment booked when this observation was documented."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "name": "serviceOrder",
+                                "entity": {
+                                    "entityReference": "ServiceOrder",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "ServiceOrder/(resolvedAttributes)/serviceOrderId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'ServiceOrder'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "serviceOrderId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Service Order"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Parent service order being worked when this observation was documented."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msauto_serviceorderid",
+                                            "displayName": "Service Order",
+                                            "description": "Parent service order being worked when this observation was documented."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Observation",
+                                                                "972230000"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Warning",
+                                                                "972230001"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Failure",
+                                                                "972230002"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "severity",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msauto_Severity"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Severity"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Severity level (observation, warning of failure)."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'severity_display' is added to the 'DeviceObservation' entity to provide the localized display text for the value of the listLookup attribute 'severity'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "severity_display",
+                                        "isReadOnly": true
+                                    }
+                                },
+                                "sourceName": "msauto_severity",
+                                "displayName": "Severity",
+                                "description": "Severity level (observation, warning of failure)."
+                            },
+                            {
+                                "purpose": "representsStateWith",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Active",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Inactive",
+                                                                "1",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "stateCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "statecode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status of the Device Observation"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'DeviceObservation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
+                                "sourceName": "statecode",
+                                "displayName": "Status",
+                                "description": "Status of the Device Observation"
+                            },
+                            {
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.correlatedWith",
+                                            "arguments": [
+                                                "stateCode"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                                                        "entityShape": "listLookupCorrelatedValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "New",
+                                                                "1",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Open",
+                                                                "972230000",
+                                                                "1",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Closed",
+                                                                "2",
+                                                                "2",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "statusCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "statuscode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status Reason"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Reason for the status of the Device Observation"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'DeviceObservation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
+                                "sourceName": "statuscode",
+                                "displayName": "Status Reason",
+                                "description": "Reason for the status of the Device Observation"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

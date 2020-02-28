@@ -1,0 +1,1209 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.1.0.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Limit",
+            "extendsEntity": "CdsStandard",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Limit"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Limit entity represents corporate client's limits set up in the limit management system or the bank's backend systems such as core banking, treasury, or trade finance systems."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        {
+                            "name": "versionNumber",
+                            "value": "1.0"
+                        }
+                    ]
+                }
+            ],
+            "sourceName": "msfsi_limit",
+            "displayName": "Limit",
+            "description": "Limit entity represents corporate client's limits set up in the limit management system or the bank's backend systems such as core banking, treasury, or trade finance systems.",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/accelerators/financialServices/banking/Limit.1.0.cdm.json/Limit/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "purpose": "hasA",
+                                "dataType": "decimal",
+                                "name": "exchangeRate",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "ExchangeRate"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "1E-10"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "100000000000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange Rate"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Exchange rate for the currency associated with the entity with respect to the base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "exchangerate",
+                                "displayName": "Exchange Rate",
+                                "description": "Exchange rate for the currency associated with the entity with respect to the base currency.",
+                                "maximumValue": "100000000000",
+                                "minimumValue": "1E-10"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "currency",
+                                "name": "availableLimit",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_availablelimit"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-922337203685477"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "922337203685477"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Available Limit"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            ""
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_availablelimit",
+                                "displayName": "Available Limit",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "currency",
+                                "name": "availableLimitBase",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_availablelimit_Base"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-922337203685477"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "922337203685477"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Available Limit (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the Available Limit in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_availablelimit_base",
+                                "displayName": "Available Limit (Base)",
+                                "description": "Value of the Available Limit in base currency.",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477"
+                            },
+                            {
+                                "name": "company",
+                                "entity": {
+                                    "entityReference": "Account",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Account/(resolvedAttributes)/accountId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'Account'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "companyId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "required"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Company"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Reference to the corporate client for which the limit is implemented."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msfsi_companyid",
+                                            "displayName": "Company",
+                                            "description": "Reference to the corporate client for which the limit is implemented."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "currency",
+                                "name": "implementedLimit",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_implementedamount"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "0"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "1000000000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Implemented Limit"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Total amount implemented in the limit management/core banking/treasury/ trade finance system."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_implementedamount",
+                                "displayName": "Implemented Limit",
+                                "description": "Total amount implemented in the limit management/core banking/treasury/ trade finance system.",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "currency",
+                                "name": "implementedLimitBase",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_implementedamount_Base"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-922337203685477"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "922337203685477"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Implemented Amount (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the Implemented Amount in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_implementedamount_base",
+                                "displayName": "Implemented Amount (Base)",
+                                "description": "Value of the Implemented Amount in base currency.",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "dateTime",
+                                "name": "limitExpiry",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_limitexpiry"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Limit Expiry"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The date on which the limit will expiry and will require review/renewal by the bank."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_limitexpiry",
+                                "displayName": "Limit Expiry",
+                                "description": "The date on which the limit will expiry and will require review/renewal by the bank."
+                            },
+                            {
+                                "purpose": "identifiedBy",
+                                "dataType": "entityId",
+                                "name": "limitId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_limitId"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Limit"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier for entity instances"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_limitid",
+                                "displayName": "Limit",
+                                "description": "Unique identifier for entity instances"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "name",
+                                "name": "limitName",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_limitname"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "maximumLength",
+                                                "value": "100"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Limit Name"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Name of the limit implemented for the client."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_limitname",
+                                "displayName": "Limit Name",
+                                "description": "Name of the limit implemented for the client.",
+                                "maximumLength": 100
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Funded",
+                                                                "104800000"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Non-Funded",
+                                                                "104800001"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "limitType",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_limittype"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Limit Type"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "The type of limit implemented for the client."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'limitType_display' is added to the 'Limit' entity to provide the localized display text for the value of the listLookup attribute 'limitType'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "limitType_display",
+                                        "isReadOnly": true
+                                    }
+                                },
+                                "sourceName": "msfsi_limittype",
+                                "displayName": "Limit Type",
+                                "description": "The type of limit implemented for the client."
+                            },
+                            {
+                                "name": "product",
+                                "entity": {
+                                    "entityReference": "Product",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Product/(resolvedAttributes)/productId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'Product'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "productId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Product"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "The specific product that the limit is implemented for (applicable only if the bank ties limits to products such term loan, Import LC, or FX rather than a high-level funded/non-funded classification)."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "msfsi_productid",
+                                            "displayName": "Product",
+                                            "description": "The specific product that the limit is implemented for (applicable only if the bank ties limits to products such term loan, Import LC, or FX rather than a high-level funded/non-funded classification)."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "currency",
+                                "name": "utilizedLimit",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_utilizedamount"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "0"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "1000000000"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Utilized Limit"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Total amount utilized by the client so far through different products of the bank such as loans and guarantees."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_utilizedamount",
+                                "displayName": "Utilized Limit",
+                                "description": "Total amount utilized by the client so far through different products of the bank such as loans and guarantees.",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "currency",
+                                "name": "utilizedLimitBase",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "msfsi_utilizedamount_Base"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.constrained",
+                                        "arguments": [
+                                            {
+                                                "name": "minimumValue",
+                                                "value": "-922337203685477"
+                                            },
+                                            {
+                                                "name": "maximumValue",
+                                                "value": "922337203685477"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Utilized Amount (Base)"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Value of the Utilized Amount in base currency."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "msfsi_utilizedamount_base",
+                                "displayName": "Utilized Amount (Base)",
+                                "description": "Value of the Utilized Amount in base currency.",
+                                "maximumValue": "922337203685477",
+                                "minimumValue": "-922337203685477"
+                            },
+                            {
+                                "purpose": "representsStateWith",
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                                                        "entityShape": "listLookupValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Active",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Inactive",
+                                                                "1",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "stateCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "statecode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status of the Limit"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'stateCode_display' is added to the 'Limit' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "stateCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
+                                "sourceName": "statecode",
+                                "displayName": "Status",
+                                "description": "Status of the Limit"
+                            },
+                            {
+                                "purpose": {
+                                    "purposeReference": "representsCorrelatedStatusWith",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.correlatedWith",
+                                            "arguments": [
+                                                "stateCode"
+                                            ]
+                                        },
+                                        {
+                                            "traitReference": "is.correlatedWith",
+                                            "arguments": [
+                                                "stateCode"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "dataType": {
+                                    "dataTypeReference": "listLookup",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "does.haveDefault",
+                                            "arguments": [
+                                                {
+                                                    "entityReference": {
+                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                                                        "entityShape": "listLookupCorrelatedValues",
+                                                        "constantValues": [
+                                                            [
+                                                                "en",
+                                                                "Active",
+                                                                "1",
+                                                                "0",
+                                                                "0"
+                                                            ],
+                                                            [
+                                                                "en",
+                                                                "Inactive",
+                                                                "2",
+                                                                "1",
+                                                                "1"
+                                                            ]
+                                                        ]
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "name": "statusCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.sourceNamed",
+                                        "arguments": [
+                                            "statuscode"
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status Reason"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Reason for the status of the Limit"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "resolutionGuidance": {
+                                    "addSupportingAttribute": {
+                                        "explanation": "This attribute 'statusCode_display' is added to the 'Limit' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                                        "purpose": "hasA",
+                                        "dataType": "localizedDisplayText",
+                                        "name": "statusCode_display",
+                                        "isReadOnly": true
+                                    }
+                                },
+                                "sourceName": "statuscode",
+                                "displayName": "Status Reason",
+                                "description": "Reason for the status of the Limit"
+                            },
+                            {
+                                "name": "transactionCurrency",
+                                "entity": {
+                                    "entityReference": "Currency",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Currency/(resolvedAttributes)/transactionCurrencyId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "renameFormat": "{m}",
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "explanation": "Unique identifier of 'Currency'.",
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "transactionCurrencyId",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "none"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Currency"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Unique identifier of the currency associated with the entity."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "transactioncurrencyid",
+                                            "displayName": "Currency",
+                                            "description": "Unique identifier of the currency associated with the entity."
+                                        }
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

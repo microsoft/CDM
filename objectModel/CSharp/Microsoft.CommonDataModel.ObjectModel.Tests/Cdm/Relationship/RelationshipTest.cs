@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -29,7 +32,7 @@
         [TestMethod]
         public async Task TestCalculateRelationshipsAndPopulateManifests()
         {
-            var corpus = this.GetCorpus();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCalculateRelationshipsAndPopulateManifests");
 
             var rootManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
             var subManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>(rootManifest.SubManifests[0].Definition);
@@ -37,34 +40,12 @@
             await corpus.CalculateEntityGraphAsync(rootManifest);
             await rootManifest.PopulateManifestRelationshipsAsync();
 
-            Assert.AreEqual(5, rootManifest.Relationships.Count);
-            Assert.AreEqual(7, subManifest.Relationships.Count);
-
             var expectedAllManifestRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsAndPopulateManifests", "expectedAllManifestRels.json")).ToObject<List<E2ERelationship>>();
             var expectedAllSubManifestRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsAndPopulateManifests", "expectedAllSubManifestRels.json")).ToObject<List<E2ERelationship>>();
 
             // check that each relationship has been created correctly
-            foreach (E2ERelationship expectedRel in expectedAllManifestRels)
-            {
-                List<CdmE2ERelationship> found = rootManifest.Relationships.AllItems.Where(x =>
-                x.FromEntity == expectedRel.FromEntity
-                && x.FromEntityAttribute == expectedRel.FromEntityAttribute
-                && x.ToEntity == expectedRel.ToEntity
-                && x.ToEntityAttribute == expectedRel.ToEntityAttribute
-                ).ToList();
-                Assert.AreEqual(1, found.Count);
-            }
-
-            foreach (E2ERelationship expectedSubRel in expectedAllSubManifestRels)
-            {
-                List<CdmE2ERelationship> found = subManifest.Relationships.AllItems.Where(x =>
-                x.FromEntity == expectedSubRel.FromEntity
-                && x.FromEntityAttribute == expectedSubRel.FromEntityAttribute
-                && x.ToEntity == expectedSubRel.ToEntity
-                && x.ToEntityAttribute == expectedSubRel.ToEntityAttribute
-                ).ToList();
-                Assert.AreEqual(1, found.Count);
-            }
+            VerifyRelationships(rootManifest, expectedAllManifestRels);
+            VerifyRelationships(subManifest, expectedAllSubManifestRels);
         }
 
         /// <summary>
@@ -74,7 +55,7 @@
         [TestMethod]
         public async Task TestCalculateRelationshipsAndPopulateManifestsWithExclusiveFlag()
         {
-            var corpus = this.GetCorpus();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCalculateRelationshipsAndPopulateManifests");
 
             var rootManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
             var subManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>(rootManifest.SubManifests[0].Definition);
@@ -83,34 +64,12 @@
             // make sure only relationships where to and from entities are in the manifest are found with the "exclusive" option is passed in
             await rootManifest.PopulateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive);
 
-            Assert.AreEqual(3, rootManifest.Relationships.Count);
-            Assert.AreEqual(3, subManifest.Relationships.Count);
-
             var expectedExclusiveManifestRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsAndPopulateManifests", "expectedExclusiveManifestRels.json")).ToObject<List<E2ERelationship>>();
             var expectedExclusiveSubManifestRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsAndPopulateManifests", "expectedExclusiveSubManifestRels.json")).ToObject<List<E2ERelationship>>();
 
             // check that each relationship has been created correctly
-            foreach (E2ERelationship expectedRel in expectedExclusiveManifestRels)
-            {
-                List<CdmE2ERelationship> found = rootManifest.Relationships.AllItems.Where(x =>
-                x.FromEntity == expectedRel.FromEntity
-                && x.FromEntityAttribute == expectedRel.FromEntityAttribute
-                && x.ToEntity == expectedRel.ToEntity
-                && x.ToEntityAttribute == expectedRel.ToEntityAttribute
-                ).ToList();
-                Assert.AreEqual(1, found.Count);
-            }
-
-            foreach (E2ERelationship expectedSubRel in expectedExclusiveSubManifestRels)
-            {
-                List<CdmE2ERelationship> found = subManifest.Relationships.AllItems.Where(x =>
-                x.FromEntity == expectedSubRel.FromEntity
-                && x.FromEntityAttribute == expectedSubRel.FromEntityAttribute
-                && x.ToEntity == expectedSubRel.ToEntity
-                && x.ToEntityAttribute == expectedSubRel.ToEntityAttribute
-                ).ToList();
-                Assert.AreEqual(1, found.Count);
-            }
+            VerifyRelationships(rootManifest, expectedExclusiveManifestRels);
+            VerifyRelationships(subManifest, expectedExclusiveSubManifestRels);
         }
 
         /// <summary>
@@ -120,7 +79,7 @@
         [TestMethod]
         public async Task TestCalculateRelationshipsAndPopulateManifestsWithNoneFlag()
         {
-            var corpus = this.GetCorpus();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCalculateRelationshipsAndPopulateManifests", null);
 
             var rootManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
             var subManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>(rootManifest.SubManifests[0].Definition);
@@ -142,6 +101,8 @@
         {
             var expectedResolvedManifestRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsOnResolvedEntities", "expectedResolvedManifestRels.json")).ToObject<List<E2ERelationship>>();
             var expectedResolvedSubManifestRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsOnResolvedEntities", "expectedResolvedSubManifestRels.json")).ToObject<List<E2ERelationship>>();
+            var expectedResolvedExcManifestRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsOnResolvedEntities", "expectedResolvedExcManifestRels.json")).ToObject<List<E2ERelationship>>();
+            var expectedResolvedExcSubManifestRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsOnResolvedEntities", "expectedResolvedExcSubManifestRels.json")).ToObject<List<E2ERelationship>>();
 
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCalculateRelationshipsOnResolvedEntities");
 
@@ -152,31 +113,14 @@
             CdmManifestDefinition subManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>(subManifestPath) as CdmManifestDefinition;
 
             // using createResolvedManifest will only populate exclusive relationships
-            Assert.AreEqual(expectedResolvedManifestRels.Count, resolvedManifest.Relationships.Count);
-            Assert.AreEqual(expectedResolvedSubManifestRels.Count, subManifest.Relationships.Count);
+            VerifyRelationships(resolvedManifest, expectedResolvedExcManifestRels);
+            VerifyRelationships(subManifest, expectedResolvedExcSubManifestRels);
 
-            // check that each relationship has been created correctly
-            foreach (E2ERelationship expectedRel in expectedResolvedManifestRels)
-            {
-                List<CdmE2ERelationship> found = resolvedManifest.Relationships.Where(x =>
-                x.FromEntity == expectedRel.FromEntity
-                && x.FromEntityAttribute == expectedRel.FromEntityAttribute
-                && x.ToEntity == expectedRel.ToEntity
-                && x.ToEntityAttribute == expectedRel.ToEntityAttribute
-                ).ToList();
-                Assert.AreEqual(1, found.Count);
-            }
-
-            foreach (E2ERelationship expectedSubRel in expectedResolvedSubManifestRels)
-            {
-                List<CdmE2ERelationship> found = subManifest.Relationships.Where(x =>
-                x.FromEntity == expectedSubRel.FromEntity
-                && x.FromEntityAttribute == expectedSubRel.FromEntityAttribute
-                && x.ToEntity == expectedSubRel.ToEntity
-                && x.ToEntityAttribute == expectedSubRel.ToEntityAttribute
-                ).ToList();
-                Assert.AreEqual(1, found.Count);
-            }
+            // check that each relationship has been created correctly with the all flag
+            await resolvedManifest.PopulateManifestRelationshipsAsync();
+            await subManifest.PopulateManifestRelationshipsAsync();
+            VerifyRelationships(resolvedManifest, expectedResolvedManifestRels);
+            VerifyRelationships(subManifest, expectedResolvedSubManifestRels);
 
             // it is not enough to check if the relationships are correct.
             // We need to check if the incoming and outgoing relationships are
@@ -195,9 +139,11 @@
             var bEnt = await corpus.FetchObjectAsync<CdmEntityDefinition>(resolvedManifest.Entities[1].EntityPath, resolvedManifest);
             var bInRels = corpus.FetchIncomingRelationships(bEnt);
             var bOutRels = corpus.FetchOutgoingRelationships(bEnt);
-            Assert.AreEqual(1, bInRels.Count);
+            Assert.AreEqual(2, bInRels.Count);
             Assert.AreEqual("local:/A-resolved.cdm.json/A", bInRels[0].FromEntity);
             Assert.AreEqual("local:/B-resolved.cdm.json/B", bInRels[0].ToEntity);
+            Assert.AreEqual("local:/sub/C-resolved.cdm.json/C", bInRels[1].FromEntity);
+            Assert.AreEqual("local:/B-resolved.cdm.json/B", bInRels[1].ToEntity);
             Assert.AreEqual(0, bOutRels.Count);
 
             // C
@@ -207,8 +153,7 @@
             Assert.AreEqual(0, cInRels.Count);
             Assert.AreEqual(2, cOutRels.Count);
             Assert.AreEqual("local:/sub/C-resolved.cdm.json/C", cOutRels[0].FromEntity);
-            // TODO: this should point to the resolved entity, currently an open bug
-            Assert.AreEqual("local:/B.cdm.json/B", cOutRels[0].ToEntity);
+            Assert.AreEqual("local:/B-resolved.cdm.json/B", cOutRels[0].ToEntity);
             Assert.AreEqual("local:/sub/C-resolved.cdm.json/C", cOutRels[1].FromEntity);
             Assert.AreEqual("local:/sub/D-resolved.cdm.json/D", cOutRels[1].ToEntity);
 
@@ -220,20 +165,59 @@
             Assert.AreEqual("local:/sub/C-resolved.cdm.json/C", dInRels[0].FromEntity);
             Assert.AreEqual("local:/sub/D-resolved.cdm.json/D", dInRels[0].ToEntity);
             Assert.AreEqual(0, dOutRels.Count);
+
+            // E
+            var eEnt = await corpus.FetchObjectAsync<CdmEntityDefinition>(resolvedManifest.Entities[2].EntityPath, resolvedManifest);
+            var eInRels = corpus.FetchIncomingRelationships(eEnt);
+            var eOutRels = corpus.FetchOutgoingRelationships(eEnt);
+            Assert.AreEqual(1, eInRels.Count);
+            Assert.AreEqual(0, eOutRels.Count);
+            Assert.AreEqual("local:/sub/F-resolved.cdm.json/F", eInRels[0].FromEntity);
+            Assert.AreEqual("local:/E-resolved.cdm.json/E", eInRels[0].ToEntity);
+
+            // F
+            var fEnt = await corpus.FetchObjectAsync<CdmEntityDefinition>(subManifest.Entities[2].EntityPath, subManifest);
+            var fInRels = corpus.FetchIncomingRelationships(fEnt);
+            var fOutRels = corpus.FetchOutgoingRelationships(fEnt);
+            Assert.AreEqual(0, fInRels.Count);
+            Assert.AreEqual(1, fOutRels.Count);
+            Assert.AreEqual("local:/sub/F-resolved.cdm.json/F", fOutRels[0].FromEntity);
+            Assert.AreEqual("local:/E-resolved.cdm.json/E", fOutRels[0].ToEntity);
         }
 
-        private CdmCorpusDefinition GetCorpus()
+        /// <summary>
+        /// Testing calculating relationships for the special kind of attribute that uses the "select one" directive
+        /// </summary>
+        [TestMethod]
+        public async Task TestCalculateRelationshipsForSelectsOneAttribute()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestCalculateRelationshipsAndPopulateManifests");
-
-            CdmCorpusDefinition corpus = new CdmCorpusDefinition();
-            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-            corpus.Storage.Mount("local", new LocalAdapter(testInputPath));
+            var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestCalculateRelationshipsForSelectsOneAttribute", "expectedRels.json")).ToObject<List<E2ERelationship>>();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestCalculateRelationshipsForSelectsOneAttribute");
             corpus.Storage.Mount("cdm", new LocalAdapter(TestHelper.SchemaDocumentsPath));
 
-            corpus.Storage.DefaultNamespace = "local";
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/selectsOne.manifest.cdm.json");
 
-            return corpus;
+            await corpus.CalculateEntityGraphAsync(manifest);
+            await manifest.PopulateManifestRelationshipsAsync();
+
+            // check that each relationship has been created correctly
+            VerifyRelationships(manifest, expectedRels);
+        }
+
+        private static void VerifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships)
+        {
+            Assert.AreEqual(manifest.Relationships.Count, expectedRelationships.Count);
+
+            foreach (E2ERelationship expectedRel in expectedRelationships)
+            {
+                List<CdmE2ERelationship> found = manifest.Relationships.Where(x =>
+                x.FromEntity == expectedRel.FromEntity
+                && x.FromEntityAttribute == expectedRel.FromEntityAttribute
+                && x.ToEntity == expectedRel.ToEntity
+                && x.ToEntityAttribute == expectedRel.ToEntityAttribute
+                ).ToList();
+                Assert.AreEqual(1, found.Count);
+            }
         }
 
         private async static Task<CdmManifestDefinition> LoadAndResolveManifest(CdmCorpusDefinition corpus, CdmManifestDefinition manifest, string renameSuffix)

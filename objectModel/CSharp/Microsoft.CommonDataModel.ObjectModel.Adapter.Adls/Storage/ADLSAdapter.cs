@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ADLSAdapter.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
@@ -48,7 +45,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The hostname of ADLS.
         /// </summary>
-        public string Hostname { get; private set; }
+        public string Hostname
+        {
+            get
+            {
+                return this._hostname;
+            }
+            private set
+            {
+                this._hostname = value;
+                this.formattedHostname = this.FormatHostname(this._hostname);
+            }
+        }
+
+        private string _hostname;
 
         /// <summary>
         /// The tenant.
@@ -74,9 +84,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public string LocationHint { get; set; }
 
         /// <summary>
+        /// The map from corpus path to adapter path.
+        /// </summary>
+        private readonly IDictionary<string, string> adapterPaths = new Dictionary<string, string>();
+
+        /// <summary>
         /// The file-system name.
         /// </summary>
         private string fileSystem = "";
+
+        /// <summary>
+        /// The formatted hostname for validation in CreateCorpusPath.
+        /// </summary>
+        private string formattedHostname = "";
 
         /// <summary>
         /// The sub-path.
@@ -103,6 +123,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         private const string HttpXmsVersion = "x-ms-version";
 
+        /// <summary>
+        /// The user-defined token provider.
+        /// </summary>
+        private TokenProvider tokenProvider;
+
         internal const string Type = "adls";
 
         /// <summary>
@@ -110,13 +135,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret)
         {
-            this.Root = root;
             this.Hostname = hostname;
+            this.Root = root;
             this.Tenant = tenant;
             this.ClientId = clientId;
             this.Secret = secret;
             this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
-
             this.httpClient = new CdmHttpClient();
         }
 
@@ -136,8 +160,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             this.Hostname = hostname;
             this.Root = root;
             this.SharedKey = sharedKey;
-
             this.httpClient = new CdmHttpClient();
+        }
+
+        /// <summary>
+        /// The ADLS constructor for user-defined token provider.
+        /// </summary>
+        public ADLSAdapter(string hostname, string root, TokenProvider tokenProvider)
+        {
+            this.Hostname = hostname;
+            this.Root = root;
+            this.tokenProvider = tokenProvider;
         }
 
         /// <inheritdoc />
@@ -189,16 +222,43 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public string CreateAdapterPath(string corpusPath)
         {
-            return $"https://{this.Hostname}{this.Root}{this.FormatCorpusPath(corpusPath)}";
+            var formattedCorpusPath = this.FormatCorpusPath(corpusPath);
+
+            if(adapterPaths.ContainsKey(formattedCorpusPath))
+            {
+                return adapterPaths[formattedCorpusPath];
+            } 
+            else
+            {
+                return $"https://{this.Hostname}{this.Root}{formattedCorpusPath}";
+            }
         }
 
         /// <inheritdoc />
         public string CreateCorpusPath(string adapterPath)
         {
-            var prefix = $"https://{this.Hostname}{this.Root}";
-            if (!string.IsNullOrEmpty(adapterPath) && adapterPath.StartsWith(prefix))
+            if (!string.IsNullOrEmpty(adapterPath))
             {
-                return adapterPath.Substring(prefix.Length);
+                var startIndex = "https://".Length;
+                var endIndex = adapterPath.IndexOf("/", startIndex + 1);
+
+                if (endIndex < startIndex)
+                {
+                    throw new Exception($"Unexpected adapter path: {adapterPath}");
+                }
+
+                var hostname = this.FormatHostname(adapterPath.Substring(startIndex, endIndex - startIndex));
+
+                if (hostname.Equals(this.formattedHostname) && adapterPath.Substring(endIndex).StartsWith(this.Root))
+                {
+                    var corpusPath = adapterPath.Substring(endIndex + this.Root.Length);
+                    if (!adapterPaths.ContainsKey(corpusPath))
+                    {
+                        adapterPaths.Add(corpusPath, adapterPath);
+                    }
+
+                    return corpusPath;
+                }
             }
 
             return null;
@@ -213,9 +273,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
         {
-            var url = this.CreateAdapterPath(corpusPath);
+            var adapterPath = this.CreateAdapterPath(corpusPath);
 
-            var request = await this.BuildRequest(url, HttpMethod.Head);
+            var request = await this.BuildRequest(adapterPath, HttpMethod.Head);
 
             try
             {
@@ -239,7 +299,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public async Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
         {
             var url = $"https://{this.Hostname}/{this.fileSystem}";
-            
+
             var directory = $"{this.subPath}{FormatCorpusPath(folderCorpusPath)}";
             if (directory.StartsWith("/"))
             {
@@ -264,9 +324,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                     {
                         jObject.TryGetValue("name", StringComparison.OrdinalIgnoreCase, out JToken name);
 
-                        string nameWithoutSubPath = this.subPath.Length > 0 && name.ToString().StartsWith(this.subPath) ? 
+                        string nameWithoutSubPath = this.subPath.Length > 0 && name.ToString().StartsWith(this.subPath) ?
                             name.ToString().Substring(this.subPath.Length + 1) : name.ToString();
-                        
+
                         result.Add(this.FormatCorpusPath(nameWithoutSubPath));
                     }
                 }
@@ -399,13 +459,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             if (corpusPath.StartsWith("adls:"))
             {
                 corpusPath = corpusPath.Substring(5);
-            } 
+            }
             else if (corpusPath.Length > 0 && corpusPath[0] != '/')
             {
                 corpusPath = $"/{corpusPath}";
             }
 
             return corpusPath;
+        }
+
+        /// <summary>
+        /// Normalizes the hostname to point to a DFS endpoint, with default port removed.
+        /// </summary>
+        /// <param name="corpusPath">The hostname.</param>
+        /// <returns>The formatted hostname.</returns>
+        private string FormatHostname(string hostname)
+        {
+            hostname = hostname.Replace(".blob.", ".dfs.");
+
+            var port = ":443";
+
+            if (hostname.Contains(port))
+            {
+                hostname = hostname.Substring(0, hostname.Length - port.Length);
+            }
+
+            return hostname;
         }
 
         /// <summary>
@@ -430,6 +509,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         private Task<AuthenticationResult> GenerateBearerToken()
         {
+            // In-memory token caching is handled by AuthenticationContext by default.
             var clientCredentials = new ClientCredential(this.ClientId, this.Secret);
             return this.Context.AcquireTokenAsync(Resource, clientCredentials);
         }
@@ -451,11 +531,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 request = this.SetUpCdmRequest(url, ApplySharedKey(this.SharedKey, url, method, content, contentType), method);
             }
-            else
+            else if (this.Context != null)
             {
                 var token = await this.GenerateBearerToken();
 
                 request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{token.AccessTokenType} {token.AccessToken}" } }, method);
+            }
+            else if (this.tokenProvider != null)
+            {
+                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{this.tokenProvider.GetToken()}" } }, method);
+            }
+            else
+            {
+                throw new Exception($"Adls adapter is not configured with any auth method");
             }
 
             if (content != null)

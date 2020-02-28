@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusDefinition,
     CdmDataPartitionDefinition,
@@ -20,7 +23,7 @@ describe('Persistence.CdmFolder.DataPartition', () => {
     /// </summary>
     const testsSubpath: string = 'Persistence/CdmFolder/DataPartition';
 
-    const doesWriteTestDebuggingFiles: boolean = testHelper.doesWriteTestDebuggingFiles;
+    const doesWriteTestDebuggingFiles: boolean = false;
 
     /**
      * Testing for Manifest instance with local entity declaration having data partitions.

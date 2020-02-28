@@ -1,3 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+/**
+ * @internal
+ */
 export class SymbolSet {
     private symbolSetCollection: Set<string>;
 
@@ -5,6 +11,9 @@ export class SymbolSet {
         this.symbolSetCollection = new Set<string>();
     }
 
+    /**
+     * @internal
+     */
     public add(newSymbol: string): void {
         this.symbolSetCollection.add(newSymbol);
     }

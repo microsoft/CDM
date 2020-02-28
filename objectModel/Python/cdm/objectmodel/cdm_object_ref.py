@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from abc import abstractmethod
 
 from typing import cast, Optional, Union, TYPE_CHECKING
@@ -42,7 +45,7 @@ class CdmObjectReference(CdmObject):
         return self._applied_traits
 
     @staticmethod
-    def offset_attribute_promise(ref: Optional[str] = None) -> int:
+    def _offset_attribute_promise(ref: Optional[str] = None) -> int:
         return ref.find(RES_ATT_TOKEN) if ref else -1
 
     def _copy_to_host(self, ctx: 'CdmCorpusContext', ref_to: Union[str, 'CdmObjectDefinition'], simple_reference: bool) -> 'CdmObjectReference':
@@ -75,7 +78,7 @@ class CdmObjectReference(CdmObject):
                 # ask for a 'pass through' context, that is, no new context at this level
                 acp_ref = AttributeContextParameters(under=under, type=CdmAttributeContextType.PASS_THROUGH)
             res_atts = definition._fetch_resolved_attributes(res_opt, acp_ref)
-            if res_atts and res_atts.set:
+            if res_atts and res_atts._set:
                 res_atts = res_atts.copy()
                 rasb.merge_attributes(res_atts)
                 rasb.remove_requested_atts()
@@ -109,7 +112,7 @@ class CdmObjectReference(CdmObject):
         res = None
 
         # if this is a special request for a resolved attribute, look that up now
-        seek_res_att = CdmObjectReference.offset_attribute_promise(self.named_reference)
+        seek_res_att = CdmObjectReference._offset_attribute_promise(self.named_reference)
         if seek_res_att >= 0:
             ent_name = self.named_reference[:seek_res_att]
             att_name = self.named_reference[seek_res_att + len(RES_ATT_TOKEN):]
@@ -121,7 +124,10 @@ class CdmObjectReference(CdmObject):
                 return None
 
             # get the resolved attribute
-            ra = ent._fetch_resolved_attributes(res_opt).get(att_name)
+            ras = ent._fetch_resolved_attributes(res_opt)
+            ra = None
+            if ras is not None:
+                ra = ras.get(att_name)
             if ra:
                 res = ra.target
             else:
@@ -176,10 +182,10 @@ class CdmObjectReference(CdmObject):
         return self._fetch_resolved_reference(res_opt)
 
     def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
-        was_previously_resolving = self.ctx.corpus.is_currently_resolving
-        self.ctx.corpus.is_currently_resolving = True
+        was_previously_resolving = self.ctx.corpus._is_currently_resolving
+        self.ctx.corpus._is_currently_resolving = True
         ret = self._fetch_resolved_traits_internal(res_opt)
-        self.ctx.corpus.is_currently_resolving = was_previously_resolving
+        self.ctx.corpus._is_currently_resolving = was_previously_resolving
         return ret
 
     def _fetch_resolved_traits_internal(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
@@ -195,8 +201,8 @@ class CdmObjectReference(CdmObject):
 
             # store the previous reference symbol set, we will need to add it with
             # children found from the _construct_resolved_traits call
-            curr_sym_ref_set = res_opt.symbol_ref_set or SymbolSet()
-            res_opt.symbol_ref_set = SymbolSet()
+            curr_sym_ref_set = res_opt._symbol_ref_set or SymbolSet()
+            res_opt._symbol_ref_set = SymbolSet()
 
             if rts_result is None:
                 obj_def = self.fetch_object_definition(res_opt)
@@ -206,7 +212,7 @@ class CdmObjectReference(CdmObject):
                         rts_result = rts_result.deep_copy()
 
                     # register set of possible docs
-                    ctx.corpus._register_definition_reference_symbols(obj_def, kind, res_opt.symbol_ref_set)
+                    ctx.corpus._register_definition_reference_symbols(obj_def, kind, res_opt._symbol_ref_set)
 
                     # get the new cache tag now that we have the list of docs
                     cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True)
@@ -216,11 +222,11 @@ class CdmObjectReference(CdmObject):
                 # cache was found
                 # get the SymbolSet for this cached object
                 key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
-                res_opt.symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
+                res_opt._symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
 
             # merge child symbol references set with current
-            curr_sym_ref_set.merge(res_opt.symbol_ref_set)
-            res_opt.symbol_ref_set = curr_sym_ref_set
+            curr_sym_ref_set._merge(res_opt._symbol_ref_set)
+            res_opt._symbol_ref_set = curr_sym_ref_set
 
             return rts_result
 
@@ -237,7 +243,7 @@ class CdmObjectReference(CdmObject):
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if self.named_reference:
                 path = path_from + self.named_reference

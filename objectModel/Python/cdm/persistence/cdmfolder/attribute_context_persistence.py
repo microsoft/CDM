@@ -1,9 +1,12 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional
 
 from cdm.enums import CdmObjectType, CdmAttributeContextType
 from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext
 from cdm.persistence import PersistenceLayer
-from cdm.utilities import CopyOptions, ResolveOptions
+from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
 
 from . import utils
 from .attribute_context_reference_persistence import AttributeContextReferencePersistence
@@ -93,9 +96,9 @@ class AttributeContextPersistence:
         result.name = instance.name
         result.type = map_enum_to_type_name[instance.type]
         result.parent = AttributeContextReferencePersistence.to_data(instance.parent, res_opt, options) if instance.parent is not None else None
-        result.definition = PersistenceLayer.to_data(instance.definition, res_opt, 'CdmFolder', options) if instance.definition is not None else None
+        result.definition = PersistenceLayer.to_data(instance.definition, res_opt, options, PersistenceLayer.CDM_FOLDER) if instance.definition is not None else None
         # I know the trait collection names look wrong. but I wanted to use the def baseclass
-        result.appliedTraits = utils.array_copy_data(res_opt, exhibits_traits, options)
-        result.contents = utils.array_copy_data(res_opt, instance.contents, options)
+        result.appliedTraits = copy_data_utils._array_copy_data(res_opt, exhibits_traits, options)
+        result.contents = copy_data_utils._array_copy_data(res_opt, instance.contents, options)
 
         return result

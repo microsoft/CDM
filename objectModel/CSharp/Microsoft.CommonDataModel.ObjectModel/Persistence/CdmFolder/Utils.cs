@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
@@ -41,7 +44,7 @@
         /// <summary>
         /// Converts a JSON object to an Attribute object
         /// </summary>
-        public static CdmAttributeItem CreateAttribute(CdmCorpusContext ctx, dynamic obj)
+        public static CdmAttributeItem CreateAttribute(CdmCorpusContext ctx, dynamic obj, string entityName = null)
         {
             if (obj == null)
                 return null;
@@ -51,11 +54,11 @@
             else
             {
                 if (obj["attributeGroupReference"] != null)
-                    return AttributeGroupReferencePersistence.FromData(ctx, obj);
+                    return AttributeGroupReferencePersistence.FromData(ctx, obj, entityName);
                 else if (obj["entity"] != null)
                     return EntityAttributePersistence.FromData(ctx, obj);
                 else if (obj["name"] != null)
-                    return TypeAttributePersistence.FromData(ctx, obj);
+                    return TypeAttributePersistence.FromData(ctx, obj, entityName);
             }
             return null;
         }
@@ -63,7 +66,7 @@
         /// <summary>
         /// Converts a JSON object to a CdmCollection of attributes
         /// </summary>
-        public static List<CdmAttributeItem> CreateAttributeList(CdmCorpusContext ctx, dynamic obj)
+        public static List<CdmAttributeItem> CreateAttributeList(CdmCorpusContext ctx, dynamic obj, string entityName = null)
         {
             if (obj == null)
                 return null;
@@ -73,7 +76,7 @@
             for (int i = 0; i < obj.Count; i++)
             {
                 dynamic ea = obj[i];
-                result.Add(CreateAttribute(ctx, ea));
+                result.Add(CreateAttribute(ctx, ea, entityName));
             }
             return result;
         }
@@ -181,23 +184,5 @@
                 return null;
             return casted;
         }
-
-        /// <summary>
-        /// Creates a list of JSON objects that is a copy of the input IEnumerable object
-        /// </summary>
-        public static List<JToken> ListCopyData(ResolveOptions resOpt, IEnumerable<dynamic> source, CopyOptions options)
-        {
-            if (source == null)
-                return null;
-            List<JToken> casted = new List<JToken>();
-            foreach (var element in source)
-            {
-                casted.Add(JToken.FromObject(element?.CopyData(resOpt, options), JsonSerializationUtil.JsonSerializer));
-            }
-            if (casted.Count == 0)
-                return null;
-            return casted;
-        }
-
     }
 }

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     ArgumentValue,
     AttributeContextParameters,
@@ -86,12 +89,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
     public extendsEntity?: CdmEntityReference;
     public attributes: CdmCollection<CdmAttributeItem>;
     public attributeContext?: CdmAttributeContext;
-    public rasb: ResolvedAttributeSetBuilder;
 
     /**
      * The resolution guidance for attributes taken from the entity extended by this entity.
      */
-    public extendsEntityResolutionGuidance: CdmAttributeResolutionGuidance
+    public extendsEntityResolutionGuidance: CdmAttributeResolutionGuidance;
+    private rasb: ResolvedAttributeSetBuilder;
     private traitToPropertyMap: traitToPropertyMap;
     private resolvingEntityReferences: boolean = false;
 
@@ -112,6 +115,9 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public getProperty(propertyName: string): any {
         return this.traitToPropertyMap.fetchPropertyValue(propertyName, true);
     }
@@ -183,6 +189,9 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public setExtendsEntityRef(ref: CdmObjectReference): CdmObjectReference {
         // let bodyCode = () =>
         {
@@ -337,6 +346,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                 this.rasb.mergeAttributes(this.getExtendsEntityRef()
                     .fetchResolvedAttributes(resOpt, acpExtEnt));
 
+                if (!resOpt.checkAttributeCount(this.rasb.ras.resolvedAttributeCount)) {
+                    Logger.error(CdmEntityDefinition.name, this.ctx, `Maximum number of resolved attributes reached for the entity:${this.entityName}`);
+
+                    return undefined;
+                }
+
                 if (this.extendsEntityResolutionGuidance) {
                     /**
                      * some guidance was given on how to integrate the base attributes into the set. Apply that guidance
@@ -376,6 +391,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                         };
                     }
                     this.rasb.mergeAttributes(att.fetchResolvedAttributes(resOpt, acpAtt));
+
+                    if (!resOpt.checkAttributeCount(this.rasb.ras.resolvedAttributeCount)) {
+                        Logger.error(CdmEntityDefinition.name, this.ctx, `Maximum number of resolved attributes reached for the entity:${this.entityName}`);
+
+                        return undefined;
+                    }
                 }
             }
 
@@ -480,8 +501,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
     public fetchAttributesWithTraits(resOpt: resolveOptions, queryFor: TraitSpec | TraitSpec[]): ResolvedAttributeSet {
         // let bodyCode = () =>
         {
-            return this.fetchResolvedAttributes(resOpt)
-                .fetchAttributesWithTraits(resOpt, queryFor);
+            const ras: ResolvedAttributeSet = this.fetchResolvedAttributes(resOpt);
+            if (ras !== undefined) {
+                return ras.fetchAttributesWithTraits(resOpt, queryFor);
+            }
+
+            return undefined;
         }
         // return p.measure(bodyCode);
     }
@@ -503,7 +528,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             // if the wrtDoc needs to be indexed (like it was just modified) then do that first
             if (!resOpt.wrtDoc) {
                 Logger.error(
-                    'CdmEntityDefinition',
+                    CdmEntityDefinition.name,
                     this.ctx,
                     'No WRT document was supplied',
                     this.createResolvedEntityAsync.name
@@ -514,7 +539,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
 
             if (!newEntName || newEntName === '') {
                 Logger.error(
-                    'CdmEntityDefinition',
+                    CdmEntityDefinition.name,
                     this.ctx,
                     'No Entity Name provided',
                     this.createResolvedEntityAsync.name
@@ -537,7 +562,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                 Logger.error(
                     CdmEntityDefinition.name,
                     this.ctx as resolveContext,
-                    `attempting to replace source entity's document '${targetAtCorpusPath}`,
+                    `attempting to replace source entity's document '${targetAtCorpusPath}'`,
                     this.createResolvedEntityAsync.name
                 );
 
@@ -589,6 +614,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             // resolve attributes with this context. the end result is that each resolved attribute
             // points to the level of the context where it was created
             const ras: ResolvedAttributeSet = this.fetchResolvedAttributes(resOptCopy, acpEnt);
+
+            if (ras === undefined) {
+                this.resolvingAttributes = false;
+
+                return undefined;
+            }
 
             // create a new copy of the attribute context for this entity
             const allAttCtx: Set<CdmAttributeContext> = new Set<CdmAttributeContext>();
@@ -704,7 +735,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                     for (const toDie of toRemove) {
                         ac.contents.remove(toDie);
                     }
-                    return ac.contents.length != 0;
+
+                    return ac.contents.length !== 0;
                 };
             cleanSubGroup(attCtx, false);
 
@@ -742,7 +774,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                 if (item.getObjectType() === cdmObjectType.attributeContextDef) {
                     return orderContents(item as CdmAttributeContext);
                 } else if (isAttributeReference(item)) {
-                    return attPath2Order.get((item).namedReference);
+                    return attPath2Order.get(item.namedReference);
                 } else {
                     return -1; // put the mystery item on top.
                 }
@@ -752,7 +784,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             // resolved attributes can gain traits that are applied to an entity when referenced
             // since these traits are described in the context, it is redundant and messy to list them in the attribute
             // so, remove them. create and cache a set of names to look for per context
-            // there is actuall a hierarchy to this. all attributes from the base entity should have all traits applied independed of the
+            // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the
             // sub-context they come from. Same is true of attribute entities. so do this recursively top down
             const ctx2traitNames: Map<CdmAttributeContext, Set<string>> = new Map<CdmAttributeContext, Set<string>>();
             const collectContextTraits: (subAttCtx: CdmAttributeContext, inheritedTraitNames: Set<string>) => void
@@ -814,7 +846,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                             attGrpRef.explicitReference = attGrp;
                             container.addAttributeDef(attGrpRef);
                             // isn't this where ...
-                            addAttributes(ra.target as ResolvedAttributeSet, attGrp, `${attPath}/members/`);
+                            addAttributes(ra.target, attGrp, `${attPath}/members/`);
                         } else {
                             const att: CdmTypeAttributeDefinition =
                                 this.ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, ra.resolvedName);
@@ -865,10 +897,13 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                                     }
                                     // give a promise that can be worked out later.
                                     // assumption is that the attribute must come from this entity.
-                                    arg.setValue(this.ctx.corpus.MakeObject(
+                                    const newAttRef: CdmAttributeReference = this.ctx.corpus.MakeObject(
                                         cdmObjectType.attributeRef,
                                         `${entityHint}/(resolvedAttributes)/${attRef.namedReference}`,
-                                        true));
+                                        true);
+                                    // inDocument is not propagated during resolution, so set it here
+                                    newAttRef.inDocument = arg.inDocument;
+                                    arg.setValue(newAttRef);
                                 }
                             }
 
@@ -952,11 +987,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
      * {"traitName": queried trait name or base trait name, (optional) "arguments":[{"argumentName": queried argument, "value": queried value}]}
      * null for 0 results or an array of json objects, each matching the shape of the input query, with attribute names filled in
      */
-    /**
-     * @internal
-     */
-    public async queryOnTraits(querySpec: (string | object)): Promise<object[]> {
+    private async queryOnTraits(querySpec: (string | object)): Promise<object[]> {
         return undefined;
     }
-
 }

@@ -1,765 +1,775 @@
 {
-    "schemaVersion": "0.7.0",
-    "imports": [
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Order",
+      "extendsEntity": "base_Order/Order",
+      "exhibitsTraits": [
         {
-            "corpusPath": "_allImports.cdm.json"
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
         }
-    ],
-    "definitions": [
+      ],
+      "hasAttributes": [
         {
-            "entityName": "Order",
-            "extendsEntity": "base_Order/Order",
-            "hasAttributes": [
-                {
-                    "attributeGroupReference": {
-                        "attributeGroupName": "attributesAddedAtThisScope",
-                        "exhibitsTraits": [
-                            {
-                                "traitReference": "is.CDM.attributeGroup",
-                                "arguments": [
-                                    {
-                                        "entityReference": {
-                                            "entityShape": "attributeGroupSet",
-                                            "constantValues": [
-                                                [
-                                                    "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectServiceAutomation/Order.cdm.json/Order/hasAttributes/attributesAddedAtThisScope"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        ],
-                        "members": [
-                            {
-                                "name": "msdyn_accountmanager_salesorder",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "accountManagerId",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "recommended"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Account Manager"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "User responsible for managing the account referenced by this contract."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_accountmanagerid",
-                                            "sourceOrdering": 10154,
-                                            "isNullable": true,
-                                            "displayName": "Account Manager",
-                                            "description": "User responsible for managing the account referenced by this contract."
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "msdyn_organizationalunit_salesorder",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "contractOrganizationalUnitId",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "recommended"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Contracting Unit"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Organizational unit responsible for this contract."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_contractorganizationalunitid",
-                                            "sourceOrdering": 10155,
-                                            "isNullable": true,
-                                            "displayName": "Contracting Unit",
-                                            "description": "Organizational unit responsible for this contract."
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "OrganizationalUnit",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "OrganizationalUnit/(resolvedAttributes)/organizationalUnitId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Item based",
-                                                                "192350000",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Work based",
-                                                                "192350001",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "orderType",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "recommended"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Order Type"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Whether it is for an Item- based or a Work-based sale"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_ordertype",
-                                "sourceOrdering": 10156,
-                                "isNullable": true,
-                                "displayName": "Order Type",
-                                "description": "Whether it is for an Item- based or a Work-based sale",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'orderType_display' is added to the 'Order' entity to provide the localized display text for the value of the listLookup attribute 'orderType'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "orderType_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Draft",
-                                                                "192350000",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "On hold",
-                                                                "192350001",
-                                                                "1"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Active",
-                                                                "192350002",
-                                                                "2"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Closed",
-                                                                "192350003",
-                                                                "3"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "PSAState",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "required"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Contract Status"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the current state of the project contract."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_psastate",
-                                "sourceOrdering": 10158,
-                                "isNullable": true,
-                                "displayName": "Contract Status",
-                                "description": "Shows the current state of the project contract.",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'PSAState_display' is added to the 'Order' entity to provide the localized display text for the value of the listLookup attribute 'PSAState'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "PSAState_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Draft",
-                                                                "192350000",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "In review",
-                                                                "192350001",
-                                                                "1"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "On hold",
-                                                                "192350002",
-                                                                "2"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Confirmed",
-                                                                "192350003",
-                                                                "3"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Completed",
-                                                                "192350004",
-                                                                "4"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Lost",
-                                                                "192350005",
-                                                                "5"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Abandoned",
-                                                                "192350006",
-                                                                "6"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "PSAStatusReason",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "required"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Contract Status Reason"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the reason for the project contract status."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_psastatusreason",
-                                "sourceOrdering": 10160,
-                                "isNullable": true,
-                                "displayName": "Contract Status Reason",
-                                "description": "Shows the reason for the project contract status.",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'PSAStatusReason_display' is added to the 'Order' entity to provide the localized display text for the value of the listLookup attribute 'PSAStatusReason'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "PSAStatusReason_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "currency",
-                                "name": "totalChargeableCostRollup",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Total Chargeable Cost"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Value of the estimated chargeable cost."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_totalchargeablecostrollup",
-                                "maximumValue": "922337203685477",
-                                "minimumValue": "-922337203685477",
-                                "sourceOrdering": 10162,
-                                "isNullable": true,
-                                "displayName": "Total Chargeable Cost",
-                                "description": "Value of the estimated chargeable cost."
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "baseCurrency",
-                                "name": "totalChargeableCostRollupBase",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.calculationOf",
-                                        "arguments": [
-                                            {
-                                                "name": "sourceAttribute",
-                                                "value": "totalChargeableCostRollup"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Total Chargeable Cost (Base)"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Value of the Total Chargeable Cost in base currency."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_totalchargeablecostrollup_base",
-                                "maximumValue": "922337203685477",
-                                "minimumValue": "-922337203685477",
-                                "sourceOrdering": 10163,
-                                "isNullable": true,
-                                "displayName": "Total Chargeable Cost (Base)",
-                                "description": "Value of the Total Chargeable Cost in base currency."
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "currency",
-                                "name": "totalNonchargeableCostRollup",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Total Non-chargeable Cost"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Total estimated cost that will not be charged to the customer."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_totalnonchargeablecostrollup",
-                                "maximumValue": "922337203685477",
-                                "minimumValue": "-922337203685477",
-                                "sourceOrdering": 10166,
-                                "isNullable": true,
-                                "displayName": "Total Non-chargeable Cost",
-                                "description": "Total estimated cost that will not be charged to the customer."
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "baseCurrency",
-                                "name": "totalNonchargeableCostRollupBase",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.calculationOf",
-                                        "arguments": [
-                                            {
-                                                "name": "sourceAttribute",
-                                                "value": "totalNonchargeableCostRollup"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Total Non-chargeable Cost (Base)"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Value of the Total Non-chargeable Cost in base currency."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_totalnonchargeablecostrollup_base",
-                                "maximumValue": "922337203685477",
-                                "minimumValue": "-922337203685477",
-                                "sourceOrdering": 10167,
-                                "isNullable": true,
-                                "displayName": "Total Non-chargeable Cost (Base)",
-                                "description": "Value of the Total Non-chargeable Cost in base currency."
-                            }
-                        ]
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
                     }
+                  ]
+                },
+                "name": "msdyn_accountmanager_salesorder",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "accountManagerId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "recommended"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Account Manager"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "User responsible for managing the account referenced by this contract."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_accountmanagerid",
+                      "sourceOrdering": 10154,
+                      "displayName": "Account Manager",
+                      "description": "User responsible for managing the account referenced by this contract."
+                    }
+                  }
                 }
+              },
+              {
+                "entity": {
+                  "entityReference": "OrganizationalUnit",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "OrganizationalUnit/(resolvedAttributes)/organizationalUnitId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "msdyn_organizationalunit_salesorder",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "contractOrganizationalUnitId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "recommended"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Contracting Unit"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Organizational unit responsible for this contract."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_contractorganizationalunitid",
+                      "sourceOrdering": 10155,
+                      "displayName": "Contracting Unit",
+                      "description": "Organizational unit responsible for this contract."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "orderType",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Item based",
+                                "192350000",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Work based",
+                                "192350001",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "recommended"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Order Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Whether it is for an Item- based or a Work-based sale"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_ordertype",
+                "sourceOrdering": 10156,
+                "displayName": "Order Type",
+                "description": "Whether it is for an Item- based or a Work-based sale",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'orderType_display' is added to the 'Order' entity to provide the localized display text for the value of the listLookup attribute 'orderType'",
+                    "name": "orderType_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "PSAState",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Draft",
+                                "192350000",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "On hold",
+                                "192350001",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Active",
+                                "192350002",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Closed",
+                                "192350003",
+                                "3"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Contract Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the current state of the project contract."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_psastate",
+                "sourceOrdering": 10158,
+                "displayName": "Contract Status",
+                "description": "Shows the current state of the project contract.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'PSAState_display' is added to the 'Order' entity to provide the localized display text for the value of the listLookup attribute 'PSAState'",
+                    "name": "PSAState_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "PSAStatusReason",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Draft",
+                                "192350000",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "In review",
+                                "192350001",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "On hold",
+                                "192350002",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Confirmed",
+                                "192350003",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Completed",
+                                "192350004",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Lost",
+                                "192350005",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "Abandoned",
+                                "192350006",
+                                "6"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Contract Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the reason for the project contract status."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_psastatusreason",
+                "sourceOrdering": 10160,
+                "displayName": "Contract Status Reason",
+                "description": "Shows the reason for the project contract status.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'PSAStatusReason_display' is added to the 'Order' entity to provide the localized display text for the value of the listLookup attribute 'PSAStatusReason'",
+                    "name": "PSAStatusReason_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "totalChargeableCostRollup",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Total Chargeable Cost"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the estimated chargeable cost."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_totalchargeablecostrollup",
+                "sourceOrdering": 10162,
+                "displayName": "Total Chargeable Cost",
+                "description": "Value of the estimated chargeable cost.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "totalChargeableCostRollupBase",
+                "purpose": "hasA",
+                "dataType": "baseCurrency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.calculationOf",
+                    "arguments": [
+                      {
+                        "name": "sourceAttribute",
+                        "value": "totalChargeableCostRollup"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Total Chargeable Cost (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Total Chargeable Cost in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_totalchargeablecostrollup_base",
+                "sourceOrdering": 10163,
+                "displayName": "Total Chargeable Cost (Base)",
+                "description": "Value of the Total Chargeable Cost in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "totalNonchargeableCostRollup",
+                "purpose": "hasA",
+                "dataType": "currency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Total Non-chargeable Cost"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Total estimated cost that will not be charged to the customer."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_totalnonchargeablecostrollup",
+                "sourceOrdering": 10166,
+                "displayName": "Total Non-chargeable Cost",
+                "description": "Total estimated cost that will not be charged to the customer.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              },
+              {
+                "name": "totalNonchargeableCostRollupBase",
+                "purpose": "hasA",
+                "dataType": "baseCurrency",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.calculationOf",
+                    "arguments": [
+                      {
+                        "name": "sourceAttribute",
+                        "value": "totalNonchargeableCostRollup"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Total Non-chargeable Cost (Base)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Value of the Total Non-chargeable Cost in base currency."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_totalnonchargeablecostrollup_base",
+                "sourceOrdering": 10167,
+                "displayName": "Total Non-chargeable Cost (Base)",
+                "description": "Value of the Total Non-chargeable Cost in base currency.",
+                "maximumValue": "922337203685477",
+                "minimumValue": "-922337203685477"
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectServiceAutomation/Order.cdm.json/Order/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
             ]
+          }
         }
-    ],
-    "jsonSchemaSemanticVersion": "0.9.0"
+      ]
+    }
+  ]
 }

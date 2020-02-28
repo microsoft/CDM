@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmAttributeGroupDefinition,
     CdmAttributeGroupReference,
@@ -9,7 +12,7 @@ import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import { AttributeGroupReference } from './types';
 
 export class AttributeGroupReferencePersistence extends cdmObjectRefPersistence {
-    public static fromData(ctx: CdmCorpusContext, object: string | AttributeGroupReference): CdmAttributeGroupReference {
+    public static fromData(ctx: CdmCorpusContext, object: string | AttributeGroupReference, entityName?: string): CdmAttributeGroupReference {
         if (!object) { return; }
         let simpleReference: boolean = true;
         let attributeGroup: string | CdmAttributeGroupDefinition;
@@ -20,7 +23,7 @@ export class AttributeGroupReferencePersistence extends cdmObjectRefPersistence 
             if (typeof (object.attributeGroupReference) === 'string') {
                 attributeGroup = object.attributeGroupReference;
             } else {
-                attributeGroup = CdmFolder.AttributeGroupPersistence.fromData(ctx, object.attributeGroupReference);
+                attributeGroup = CdmFolder.AttributeGroupPersistence.fromData(ctx, object.attributeGroupReference, entityName);
             }
         }
 

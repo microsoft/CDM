@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     applierContext,
     AttributeContextParameters,
@@ -14,15 +17,53 @@ import {
     resolveOptions
 } from '../internal';
 
+/**
+ * @internal
+ */
 export interface ResolutionAppliers {
+    /**
+     * @internal
+     */
     isRemoved: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesReferenceEntity: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesAddSupportingAttribute: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesImposeDirectives: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesRemoveDirectives: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesSelectAttributes: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesDisambiguateNames: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesReferenceEntityVia: AttributeResolutionApplier;
+
+    /**
+     * @internal
+     */
     doesExplainArray: AttributeResolutionApplier;
 }
 
@@ -43,16 +84,16 @@ const PrimitiveAppliers: ResolutionAppliers = {
         priority: 4,
         overridesBase: true,
         willRemove: (appCtx: applierContext): boolean => {
-            let visible: boolean = true;
-            if (appCtx.resAttSource) {
-                // all others go away
-                visible = false;
-                if (appCtx.resAttSource.target === appCtx.resGuide.entityByReference.foreignKeyAttribute) {
-                    visible = true;
-                }
-            }
-
-            return false; // find this bug
+            // Return always false for the time being.
+            // let visible: boolean = true;
+            // if (appCtx.resAttSource) {
+            //     // all others go away
+            //     visible = false;
+            //     if (appCtx.resAttSource.target === appCtx.resGuide.entityByReference.foreignKeyAttribute) {
+            //         visible = true;
+            //     }
+            // }
+            return false;
         },
         willRoundAdd: (appCtx: applierContext): boolean => {
             return true;

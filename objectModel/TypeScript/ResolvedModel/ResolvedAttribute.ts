@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeResolutionContext,
     CdmAttribute,
@@ -78,13 +81,20 @@ export class ResolvedAttribute {
 
         return this.t2pm;
     }
-    public target: ResolutionTarget;
     public previousResolvedName: string;
+    /**
+     * @internal
+     */
     public resolvedTraits: ResolvedTraitSet;
+    /**
+     * @internal
+     */
+    public resolvedAttributeCount: number;
     public insertOrder: number;
     public attCtx: CdmAttributeContext;
     public applierState?: any;
     public arc: AttributeResolutionContext;
+    private _target: ResolutionTarget;
     private _resolvedName: string;
     private t2pm: traitToPropertyMap;
 
@@ -93,7 +103,7 @@ export class ResolvedAttribute {
         {
             this.target = target;
             this.resolvedTraits = new ResolvedTraitSet(resOpt);
-            this._resolvedName = defaultName;
+            this.resolvedName = defaultName;
             this.previousResolvedName = defaultName;
             this.attCtx = attCtx;
         }
@@ -101,12 +111,26 @@ export class ResolvedAttribute {
     }
     public set resolvedName(newVal: string) {
         this._resolvedName = newVal;
-        if (this.previousResolvedName === undefined)
+        if (this.previousResolvedName === undefined) {
             this.previousResolvedName = newVal;
+        }
     }
-    public get resolvedName() : string {
+    public get resolvedName(): string {
         return this._resolvedName;
-    }    
+    }
+    public set target(newVal: ResolutionTarget) {
+        if (newVal !== undefined) {
+            if (newVal instanceof CdmAttribute) {
+                this.resolvedAttributeCount = newVal.attributeCount;
+            } else if (newVal instanceof ResolvedAttributeSet) {
+                this.resolvedAttributeCount = newVal.resolvedAttributeCount;
+            }
+        }
+        this._target = newVal;
+    }
+    public get target(): ResolutionTarget {
+        return this._target;
+    }
     public copy(): ResolvedAttribute {
         // let bodyCode = () =>
         {

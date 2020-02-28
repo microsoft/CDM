@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -22,7 +23,11 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return false;
   }
 
@@ -121,14 +126,14 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
    */
   @Override
   @Deprecated
-  public Object copyData(final ResolveOptions resOpt, final CopyOptions options) {
+  public Object copyData(ResolveOptions resOpt, final CopyOptions options) {
     return CdmObjectBase.copyData(this, resOpt, options, CdmParameterDefinition.class);
   }
 
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmParameterDefinition copy;

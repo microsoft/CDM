@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -44,11 +47,6 @@ public class TestHelper {
   public static final String SCHEMA_DOCS_ROOT = "../../../schemaDocuments";
 
   private static Logger LOGGER = LoggerFactory.getLogger(TestHelper.class);
-
-  /**
-   * Whether tests should write debugging files or not.
-   */
-  public static final boolean doesWriteTestDebuggingFiles = true;
 
   /**
    * Gets the input folder path associated with specified test.

@@ -1,651 +1,659 @@
 {
-    "schemaVersion": "0.7.0",
-    "imports": [
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "OpportunityLineTransactionCategory",
+      "extendsEntity": "CdsStandard",
+      "exhibitsTraits": [
         {
-            "corpusPath": "_allImports.cdm.json"
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Opportunity Line Transaction Category (Deprecated)"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "List of transaction categories that will be considered as costs when computing the profit of an opportunity line (Deprecated in v3.0)"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
         }
-    ],
-    "definitions": [
+      ],
+      "hasAttributes": [
         {
-            "entityName": "OpportunityLineTransactionCategory",
-            "extendsEntity": "CdsStandard",
-            "exhibitsTraits": [
-                {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "opportunityLineTransactionCategoryId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
-                        {
-                            "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                    [
-                                        "en",
-                                        "Opportunity Line Transaction Category (Deprecated)"
-                                    ]
-                                ]
-                            }
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Opportunity Line Transaction Category"
+                            ]
+                          ]
                         }
+                      }
                     ]
-                },
-                {
+                  },
+                  {
                     "traitReference": "is.localized.describedAs",
                     "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msdyn_opportunitylinetransactioncategoryid",
+                "sourceOrdering": 1,
+                "displayName": "Opportunity Line Transaction Category",
+                "description": "Unique identifier for entity instances"
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
                         {
-                            "entityReference": {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Opportunity Line Transaction Category"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "sourceOrdering": 24,
+                "displayName": "Status",
+                "description": "Status of the Opportunity Line Transaction Category",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'OpportunityLineTransactionCategory' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Opportunity Line Transaction Category"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "sourceOrdering": 26,
+                "displayName": "Status Reason",
+                "description": "Reason for the status of the Opportunity Line Transaction Category",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'OpportunityLineTransactionCategory' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "description",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_description",
+                "sourceOrdering": 33,
+                "displayName": "Description",
+                "description": "Type the name of the custom entity.",
+                "maximumLength": 100
+              },
+              {
+                "name": "billingType",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Non Chargeable",
+                                "192350000",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Chargeable",
+                                "192350001",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "Complimentary",
+                                "192350002",
+                                "6"
+                              ],
+                              [
+                                "en",
+                                "Not Available",
+                                "192350003",
+                                "7"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Billing Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select where the transaction category's costs are charged to the customer. Valid values can Chargeable, Non-chargeable and Complimentary. Only chargeable transaction will add to the total of any invoice"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_billingtype",
+                "sourceOrdering": 34,
+                "displayName": "Billing Type",
+                "description": "Select where the transaction category's costs are charged to the customer. Valid values can Chargeable, Non-chargeable and Complimentary. Only chargeable transaction will add to the total of any invoice",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'billingType_display' is added to the 'OpportunityLineTransactionCategory' entity to provide the localized display text for the value of the listLookup attribute 'billingType'",
+                    "name": "billingType_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "OpportunityLineTransactionClassification",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "OpportunityLineTransactionClassification/(resolvedAttributes)/opportunityLineTransactionClassificatioId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "msdyn_opportunitylinetransactionclassificatio_opportunitylinetransactioncategory_OppLineTransClass",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "opportunityLineTransactionClassification",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "required"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
                                 "entityShape": "localizedTable",
                                 "constantValues": [
-                                    [
-                                        "en",
-                                        "List of transaction categories that will be considered as costs when computing the profit of an opportunity line (Deprecated in v3.0)"
-                                    ]
+                                  [
+                                    "en",
+                                    "Opportunity Line Transaction Classification"
+                                  ]
                                 ]
+                              }
                             }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Select the transaction classification of the opportunity line. Select the transaction classifications are broadly of 4 types: Select the time, Expense, Material and Fee"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
                         }
-                    ]
-                }
-            ],
-            "displayName": "Opportunity Line Transaction Category (Deprecated)",
-            "description": "List of transaction categories that will be considered as costs when computing the profit of an opportunity line (Deprecated in v3.0)",
-            "sourceName": "msdyn_opportunitylinetransactioncategory",
-            "hasAttributes": [
-                {
-                    "attributeGroupReference": {
-                        "attributeGroupName": "attributesAddedAtThisScope",
-                        "exhibitsTraits": [
-                            {
-                                "traitReference": "is.CDM.attributeGroup",
-                                "arguments": [
-                                    {
-                                        "entityReference": {
-                                            "entityShape": "attributeGroupSet",
-                                            "constantValues": [
-                                                [
-                                                    "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectServiceAutomation/OpportunityLineTransactionCategory.cdm.json/OpportunityLineTransactionCategory/hasAttributes/attributesAddedAtThisScope"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        ],
-                        "members": [
-                            {
-                                "purpose": "identifiedBy",
-                                "dataType": "entityId",
-                                "name": "opportunityLineTransactionCategoryId",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Opportunity Line Transaction Category"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Unique identifier for entity instances"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_opportunitylinetransactioncategoryid",
-                                "sourceOrdering": 1,
-                                "displayName": "Opportunity Line Transaction Category",
-                                "description": "Unique identifier for entity instances"
-                            },
-                            {
-                                "purpose": "representsStateWith",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Active",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Inactive",
-                                                                "1",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "stateCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status of the Opportunity Line Transaction Category"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
-                                "displayName": "Status",
-                                "description": "Status of the Opportunity Line Transaction Category",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'stateCode_display' is added to the 'OpportunityLineTransactionCategory' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "stateCode_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": {
-                                    "purposeReference": "representsCorrelatedStatusWith",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.correlatedWith",
-                                            "arguments": [
-                                                "stateCode"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                                                        "entityShape": "listLookupCorrelatedValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Active",
-                                                                "1",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Inactive",
-                                                                "2",
-                                                                "1",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "statusCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status Reason"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Reason for the status of the Opportunity Line Transaction Category"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
-                                "displayName": "Status Reason",
-                                "description": "Reason for the status of the Opportunity Line Transaction Category",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'statusCode_display' is added to the 'OpportunityLineTransactionCategory' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "statusCode_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "string",
-                                "name": "description",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Description"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Type the name of the custom entity."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_description",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
-                                "displayName": "Description",
-                                "description": "Type the name of the custom entity."
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Non Chargeable",
-                                                                "192350000",
-                                                                "4"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Chargeable",
-                                                                "192350001",
-                                                                "5"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Complimentary",
-                                                                "192350002",
-                                                                "6"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Not Available",
-                                                                "192350003",
-                                                                "7"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "billingType",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Billing Type"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Select where the transaction category's costs are charged to the customer. Valid values can Chargeable, Non-chargeable and Complimentary. Only chargeable transaction will add to the total of any invoice"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_billingtype",
-                                "sourceOrdering": 34,
-                                "isNullable": true,
-                                "displayName": "Billing Type",
-                                "description": "Select where the transaction category's costs are charged to the customer. Valid values can Chargeable, Non-chargeable and Complimentary. Only chargeable transaction will add to the total of any invoice",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'billingType_display' is added to the 'OpportunityLineTransactionCategory' entity to provide the localized display text for the value of the listLookup attribute 'billingType'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "billingType_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "name": "msdyn_opportunitylinetransactionclassificatio_opportunitylinetransactioncategory_OppLineTransClass",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "opportunityLineTransactionClassification",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "required"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Opportunity Line Transaction Classification"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Select the transaction classification of the opportunity line. Select the transaction classifications are broadly of 4 types: Select the time, Expense, Material and Fee"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_opportunitylinetransactionclassification",
-                                            "sourceOrdering": 36,
-                                            "isNullable": true,
-                                            "displayName": "Opportunity Line Transaction Classification",
-                                            "description": "Select the transaction classification of the opportunity line. Select the transaction classifications are broadly of 4 types: Select the time, Expense, Material and Fee"
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "OpportunityLineTransactionClassification",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "OpportunityLineTransactionClassification/(resolvedAttributes)/opportunityLineTransactionClassificatioId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "msdyn_msdyn_transactioncategory_msdyn_opportunitylinetransactioncategory_TransactionCategory",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "transactionCategory",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "required"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Transaction Category"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Transaction category for the opportunity line."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_transactioncategory",
-                                            "sourceOrdering": 37,
-                                            "isNullable": true,
-                                            "displayName": "Transaction Category",
-                                            "description": "Transaction category for the opportunity line."
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "TransactionCategory",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "TransactionCategory/(resolvedAttributes)/transactionCategoryId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_opportunitylinetransactionclassification",
+                      "sourceOrdering": 36,
+                      "displayName": "Opportunity Line Transaction Classification",
+                      "description": "Select the transaction classification of the opportunity line. Select the transaction classifications are broadly of 4 types: Select the time, Expense, Material and Fee"
                     }
+                  }
                 }
+              },
+              {
+                "entity": {
+                  "entityReference": "TransactionCategory",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "TransactionCategory/(resolvedAttributes)/transactionCategoryId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "msdyn_msdyn_transactioncategory_msdyn_opportunitylinetransactioncategory_TransactionCategory",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "transactionCategory",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "required"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Transaction Category"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Transaction category for the opportunity line."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_transactioncategory",
+                      "sourceOrdering": 37,
+                      "displayName": "Transaction Category",
+                      "description": "Transaction category for the opportunity line."
+                    }
+                  }
+                }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectServiceAutomation/OpportunityLineTransactionCategory.cdm.json/OpportunityLineTransactionCategory/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
             ]
+          }
         }
-    ],
-    "jsonSchemaSemanticVersion": "0.9.0"
+      ],
+      "sourceName": "msdyn_opportunitylinetransactioncategory",
+      "displayName": "Opportunity Line Transaction Category (Deprecated)",
+      "description": "List of transaction categories that will be considered as costs when computing the profit of an opportunity line (Deprecated in v3.0)"
+    }
+  ]
 }

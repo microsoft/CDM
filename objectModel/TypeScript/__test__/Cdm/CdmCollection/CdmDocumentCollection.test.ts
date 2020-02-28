@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmDocumentDefinition,
     CdmFolderDefinition,
@@ -72,10 +75,8 @@ describe('Cdm/CdmCollection/CdmDocumentCollection', () => {
             .toEqual(folder);
         expect(folder.documentLookup.has(document.name))
             .toBeTruthy();
-        expect(manifest.ctx.corpus.allDocuments[2][0])
-            .toEqual(folder);
-        expect(manifest.ctx.corpus.allDocuments[2][1])
-            .toEqual(document);
+        expect(manifest.ctx.corpus.documentLibrary.contains([folder, document]))
+            .toBeTruthy();
     });
 
     it ('TestDocumentColectionAddWithDocumentName', () => {
@@ -217,20 +218,14 @@ describe('Cdm/CdmCollection/CdmDocumentCollection', () => {
         const document2: CdmDocumentDefinition = folder.documents.push('documentName2');
         const document3: CdmDocumentDefinition = folder.documents.push('documentName3');
 
-        expect(manifest.ctx.corpus.allDocuments.length)
+        expect(manifest.ctx.corpus.documentLibrary.listAllDocuments().size)
             .toEqual(3);
-        expect(manifest.ctx.corpus.allDocuments[0][0])
-            .toEqual(folder);
-        expect(manifest.ctx.corpus.allDocuments[0][1])
-            .toEqual(document);
-        expect(manifest.ctx.corpus.allDocuments[1][0])
-            .toEqual(folder);
-        expect(manifest.ctx.corpus.allDocuments[1][1])
-            .toEqual(document2);
-        expect(manifest.ctx.corpus.allDocuments[2][0])
-            .toEqual(folder);
-        expect(manifest.ctx.corpus.allDocuments[2][1])
-            .toEqual(document3);
+        expect(manifest.ctx.corpus.documentLibrary.contains([folder, document]))
+            .toBeTruthy();
+        expect(manifest.ctx.corpus.documentLibrary.contains([folder, document2]))
+            .toBeTruthy();
+        expect(manifest.ctx.corpus.documentLibrary.contains([folder, document3]))
+            .toBeTruthy();
 
         expect(folder.documentLookup.size)
             .toEqual(3);
@@ -245,7 +240,7 @@ describe('Cdm/CdmCollection/CdmDocumentCollection', () => {
         folder.documents.remove('documentName');
         folder.documents.remove(document3);
 
-        expect(manifest.ctx.corpus.allDocuments.length)
+        expect(manifest.ctx.corpus.documentLibrary.listAllDocuments().size)
             .toEqual(0);
 
         expect(folder.documentLookup.keys.length)
@@ -269,7 +264,7 @@ describe('Cdm/CdmCollection/CdmDocumentCollection', () => {
 
         expect(folder.documentLookup.size)
             .toEqual(0);
-        expect(manifest.ctx.corpus.allDocuments.length)
+        expect(manifest.ctx.corpus.documentLibrary.listAllDocuments().size)
             .toEqual(0);
         expect(folder.documents.length)
             .toEqual(0);

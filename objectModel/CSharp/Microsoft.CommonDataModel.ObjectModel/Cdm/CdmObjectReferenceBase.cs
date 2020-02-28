@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmObjectReferenceBase.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -10,11 +7,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using System;
 
     public abstract class CdmObjectReferenceBase : CdmObjectBase, CdmObjectReference
     {
         internal static string resAttToken = "/(resolvedAttributes)/";
-        
+
         /// <inheritdoc />
         public string NamedReference { get; set; }
 
@@ -42,7 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     // NamedReference is a string or JValue
                     this.NamedReference = referenceTo;
-                }    
+                }
             }
             if (simpleReference)
                 this.SimpleNamedReference = true;
@@ -65,7 +63,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     // NamedReference is a string or JValue
                     this.NamedReference = refTo;
-                }    
+                }
             }
             this.SimpleNamedReference = simpleReference;
 
@@ -82,11 +80,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return reff.IndexOf(resAttToken);
         }
 
-        public CdmObjectDefinition GetResolvedReference(ResolveOptions resOpt = null)
+        [Obsolete("Only for internal use.")]
+        public CdmObjectDefinition FetchResolvedReference(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             if (this.ExplicitReference != null)
@@ -113,7 +112,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
 
                 // get the resolved attribute
-                ResolvedAttribute ra = (ent as CdmObjectDefinitionBase).FetchResolvedAttributes(resOpt).Get(attName);
+                ResolvedAttributeSet ras = (ent as CdmObjectDefinitionBase).FetchResolvedAttributes(resOpt);
+                ResolvedAttribute ra = null;
+                if (ras != null)
+                    ra = ras.Get(attName);
                 if (ra != null)
                     res = ra.Target as dynamic;
                 else
@@ -135,7 +137,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             if (!string.IsNullOrEmpty(this.NamedReference))
@@ -148,7 +150,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             dynamic copy;
@@ -194,14 +196,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
             }
 
-          if (this.ExplicitReference != null)
+            if (this.ExplicitReference != null)
                 return this.ExplicitReference.GetName();
             return null;
         }
 
         /// <inheritdoc />
-        public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt)
+        public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
+            if (resOpt == null)
+            {
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+
             var def = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
             if (def != null)
             {
@@ -216,10 +223,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            dynamic def = this.GetResolvedReference(resOpt) as dynamic;
+            dynamic def = this.FetchResolvedReference(resOpt) as dynamic;
             if (def != null)
                 return def;
             return default(T);
@@ -311,7 +318,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             if (this.NamedReference != null && this.AppliedTraits == null)

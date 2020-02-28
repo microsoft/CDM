@@ -1,4 +1,6 @@
-// CdmFolder
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { ArgumentPersistence as CdmFolderArgumentPersistence } from './CdmFolder/ArgumentPersistence';
 import { AttributeContextPersistence as CdmFolderAttributeContextPersistence } from './CdmFolder/AttributeContextPersistence';
 import { AttributeContextReferencePersistence as CdmFolderAttributeContextReferencePersistence } from './CdmFolder/AttributeContextReferencePersistence';

@@ -1,790 +1,798 @@
 {
-    "schemaVersion": "0.7.0",
-    "imports": [
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ResourceRequest",
+      "extendsEntity": "CdsStandard",
+      "exhibitsTraits": [
         {
-            "corpusPath": "_allImports.cdm.json"
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Resource Request"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Entity that wraps the resource requirement to capture the type of resources, skills, and location required."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
         }
-    ],
-    "definitions": [
+      ],
+      "hasAttributes": [
         {
-            "entityName": "ResourceRequest",
-            "extendsEntity": "CdsStandard",
-            "exhibitsTraits": [
-                {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "resourceRequestId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
-                        {
-                            "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                    [
-                                        "en",
-                                        "Resource Request"
-                                    ]
-                                ]
-                            }
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Resource Request"
+                            ]
+                          ]
                         }
+                      }
                     ]
-                },
-                {
+                  },
+                  {
                     "traitReference": "is.localized.describedAs",
                     "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msdyn_resourcerequestid",
+                "sourceOrdering": 1,
+                "displayName": "Resource Request",
+                "description": "Unique identifier for entity instances"
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
                         {
-                            "entityReference": {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "State"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Resource Request"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "sourceOrdering": 24,
+                "displayName": "State",
+                "description": "Status of the Resource Request",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'ResourceRequest' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Submitted",
+                                "192350000",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "In Progress",
+                                "192350009",
+                                "1",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Needs Review",
+                                "192350003",
+                                "2",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Fulfilled",
+                                "192350008",
+                                "3",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "192350011",
+                                "4",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Resource Request"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "sourceOrdering": 26,
+                "displayName": "Status",
+                "description": "Reason for the status of the Resource Request",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'ResourceRequest' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  },
+                  "renameFormat": "{m}"
+                }
+              },
+              {
+                "name": "entityName",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Entity Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type the name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_name",
+                "sourceOrdering": 33,
+                "displayName": "Entity Name",
+                "description": "Type the name of the custom entity.",
+                "maximumLength": 100
+              },
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "msdyn_systemuser_msdyn_resourcerequest_claimedby",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "claimedBy",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
                                 "entityShape": "localizedTable",
                                 "constantValues": [
-                                    [
-                                        "en",
-                                        "Entity that wraps the resource requirement to capture the type of resources, skills, and location required."
-                                    ]
+                                  [
+                                    "en",
+                                    "Claimed By"
+                                  ]
                                 ]
+                              }
                             }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Select the user who claimed the request."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
                         }
-                    ]
-                }
-            ],
-            "displayName": "Resource Request",
-            "description": "Entity that wraps the resource requirement to capture the type of resources, skills, and location required.",
-            "sourceName": "msdyn_resourcerequest",
-            "hasAttributes": [
-                {
-                    "attributeGroupReference": {
-                        "attributeGroupName": "attributesAddedAtThisScope",
-                        "exhibitsTraits": [
-                            {
-                                "traitReference": "is.CDM.attributeGroup",
-                                "arguments": [
-                                    {
-                                        "entityReference": {
-                                            "entityShape": "attributeGroupSet",
-                                            "constantValues": [
-                                                [
-                                                    "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectServiceAutomation/ResourceRequest.cdm.json/ResourceRequest/hasAttributes/attributesAddedAtThisScope"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        ],
-                        "members": [
-                            {
-                                "purpose": "identifiedBy",
-                                "dataType": "entityId",
-                                "name": "resourceRequestId",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Resource Request"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Unique identifier for entity instances"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_resourcerequestid",
-                                "sourceOrdering": 1,
-                                "displayName": "Resource Request",
-                                "description": "Unique identifier for entity instances"
-                            },
-                            {
-                                "purpose": "representsStateWith",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Active",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Inactive",
-                                                                "1",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "stateCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "State"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status of the Resource Request"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "statecode",
-                                "sourceOrdering": 24,
-                                "displayName": "State",
-                                "description": "Status of the Resource Request",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'stateCode_display' is added to the 'ResourceRequest' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "stateCode_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": {
-                                    "purposeReference": "representsCorrelatedStatusWith",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.correlatedWith",
-                                            "arguments": [
-                                                "stateCode"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                                                        "entityShape": "listLookupCorrelatedValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Submitted",
-                                                                "192350000",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "In Progress",
-                                                                "192350009",
-                                                                "1",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Needs Review",
-                                                                "192350003",
-                                                                "2",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Fulfilled",
-                                                                "192350008",
-                                                                "3",
-                                                                "1"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Inactive",
-                                                                "192350011",
-                                                                "4",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "statusCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Reason for the status of the Resource Request"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 26,
-                                "isNullable": true,
-                                "displayName": "Status",
-                                "description": "Reason for the status of the Resource Request",
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'statusCode_display' is added to the 'ResourceRequest' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "statusCode_display",
-                                        "isReadOnly": true
-                                    },
-                                    "renameFormat": "{m}"
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "name",
-                                "name": "entityName",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Entity Name"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Type the name of the custom entity."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_name",
-                                "maximumLength": 100,
-                                "sourceOrdering": 33,
-                                "isNullable": true,
-                                "displayName": "Entity Name",
-                                "description": "Type the name of the custom entity."
-                            },
-                            {
-                                "name": "msdyn_systemuser_msdyn_resourcerequest_claimedby",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "claimedBy",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Claimed By"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Select the user who claimed the request."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_claimedby",
-                                            "sourceOrdering": 34,
-                                            "isNullable": true,
-                                            "displayName": "Claimed By",
-                                            "description": "Select the user who claimed the request."
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "string",
-                                "name": "positionDescription",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Position Description"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the position description of the related project team member position."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "sourceName": "msdyn_positiondescription",
-                                "maximumLength": 2000,
-                                "sourceOrdering": 35,
-                                "isNullable": true,
-                                "displayName": "Position Description",
-                                "description": "Shows the position description of the related project team member position."
-                            },
-                            {
-                                "name": "msdyn_systemuser_msdyn_resourcerequest_requestedby",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "requestedBy",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "required"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Requested By"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Select the user submitting the request."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_requestedby",
-                                            "sourceOrdering": 36,
-                                            "isNullable": true,
-                                            "displayName": "Requested By",
-                                            "description": "Select the user submitting the request."
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "msdyn_resourcerequirement_request",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "resourceRequirementId",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "required"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Resource Requirement"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Unique identifier of the resource requirement for the resource request."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_resourcerequirementid",
-                                            "sourceOrdering": 37,
-                                            "isNullable": true,
-                                            "displayName": "Resource Requirement",
-                                            "description": "Unique identifier of the resource requirement for the resource request."
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "ResourceRequirement",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "ResourceRequirement/(resolvedAttributes)/resourceRequirementId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            },
-                            {
-                                "name": "msdyn_bookableresourcecategory_msdyn_resourcerequest_roleid",
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "alwaysIncludeForeignKey": false,
-                                        "referenceOnlyAfterDepth": 2,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "roleid",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Role"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Primary role id in resource requirement"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                }
-                                            ],
-                                            "sourceName": "msdyn_roleid",
-                                            "sourceOrdering": 38,
-                                            "isNullable": true,
-                                            "displayName": "Role",
-                                            "description": "Primary role id in resource requirement"
-                                        }
-                                    },
-                                    "renameFormat": "{m}"
-                                },
-                                "entity": {
-                                    "entityReference": "BookableResourceCategory",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "BookableResourceCategory/(resolvedAttributes)/bookableResourceCategoryId"
-                                            ]
-                                        }
-                                    ]
-                                }
-                            }
-                        ]
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_claimedby",
+                      "sourceOrdering": 34,
+                      "displayName": "Claimed By",
+                      "description": "Select the user who claimed the request."
                     }
+                  }
                 }
+              },
+              {
+                "name": "positionDescription",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Position Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the position description of the related project team member position."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msdyn_positiondescription",
+                "sourceOrdering": 35,
+                "displayName": "Position Description",
+                "description": "Shows the position description of the related project team member position.",
+                "maximumLength": 2000
+              },
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "msdyn_systemuser_msdyn_resourcerequest_requestedby",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "requestedBy",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "required"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Requested By"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Select the user submitting the request."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_requestedby",
+                      "sourceOrdering": 36,
+                      "displayName": "Requested By",
+                      "description": "Select the user submitting the request."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "ResourceRequirement",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "ResourceRequirement/(resolvedAttributes)/resourceRequirementId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "msdyn_resourcerequirement_request",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "resourceRequirementId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "required"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Resource Requirement"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier of the resource requirement for the resource request."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_resourcerequirementid",
+                      "sourceOrdering": 37,
+                      "displayName": "Resource Requirement",
+                      "description": "Unique identifier of the resource requirement for the resource request."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "BookableResourceCategory",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "BookableResourceCategory/(resolvedAttributes)/bookableResourceCategoryId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "msdyn_bookableresourcecategory_msdyn_resourcerequest_roleid",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "alwaysIncludeForeignKey": false,
+                    "referenceOnlyAfterDepth": 2,
+                    "foreignKeyAttribute": {
+                      "name": "roleid",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Role"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Primary role id in resource requirement"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        }
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msdyn_roleid",
+                      "sourceOrdering": 38,
+                      "displayName": "Role",
+                      "description": "Primary role id in resource requirement"
+                    }
+                  }
+                }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectServiceAutomation/ResourceRequest.cdm.json/ResourceRequest/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
             ]
+          }
         }
-    ],
-    "jsonSchemaSemanticVersion": "0.9.0"
+      ],
+      "sourceName": "msdyn_resourcerequest",
+      "displayName": "Resource Request",
+      "description": "Entity that wraps the resource requirement to capture the type of resources, skills, and location required."
+    }
+  ]
 }

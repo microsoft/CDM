@@ -1,3 +1,5 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import json
 import os
@@ -84,6 +86,7 @@ class ResolutionGuidanceTest(unittest.TestCase):
         corpus.storage.mount('localInput', LocalAdapter(test_input_path))
         corpus.storage.mount('localExpectedOutput', LocalAdapter(test_expected_output_path))
         corpus.storage.mount('localActualOutput', LocalAdapter(test_actual_output_path))
+        corpus.storage.mount('cdm', LocalAdapter(TestHelper.get_schema_docs_root()))
         corpus.storage.default_namespace = 'localInput'
 
         src_entity_def = await corpus.fetch_object_async('localInput:/{0}.cdm.json/{0}'.format(source_entity_name))  # type: CdmEntityDefinition
@@ -153,7 +156,9 @@ class ResolutionGuidanceTest(unittest.TestCase):
             self.validate_output(output_entity_file_name, test_expected_output_path, test_actual_output_path)
 
     def validate_output(self, output_entity_file_name: str, test_expected_output_path: str, test_actual_output_path: str) -> None:
-        expected_data = json.loads(open(os.path.join(test_expected_output_path, output_entity_file_name)).read())
-        output_data = json.loads(open(os.path.join(test_actual_output_path, output_entity_file_name)).read())
+        with open(os.path.join(test_expected_output_path, output_entity_file_name)) as expected_file:
+            expected_data = json.loads(expected_file.read())
+        with open(os.path.join(test_actual_output_path, output_entity_file_name)) as output_file:
+            output_data = json.loads(output_file.read())
         self.maxDiff = None
         self.assertDictEqual(expected_data, output_data)

@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmE2ERelationship.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
@@ -60,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return false;
@@ -71,7 +68,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmE2ERelationship copy;

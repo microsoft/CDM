@@ -1,1349 +1,1358 @@
 {
-    "jsonSchemaSemanticVersion": "0.9.0",
-    "imports": [
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BadgeType",
+      "extendsEntity": "CdmEntity",
+      "exhibitsTraits": [
         {
-            "corpusPath": "_allImports.cdm.json"
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Badge Type"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
         }
-    ],
-    "definitions": [
+      ],
+      "hasAttributes": [
         {
-            "entityName": "BadgeType",
-            "extendsEntity": "CdmEntity",
-            "exhibitsTraits": [
-                {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "badgeTypeId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Badge Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the entity instances."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "adx_badgetypeid",
+                "sourceOrdering": 1,
+                "displayName": "Badge Type",
+                "description": "Shows the entity instances."
+              },
+              {
+                "name": "createdOn",
+                "purpose": "createdOn",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Created On"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in the solution options. "
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "createdon",
+                "sourceOrdering": 2,
+                "displayName": "Created On",
+                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in the solution options. "
+              },
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "User_createdBy",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "createdBy",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
                         {
-                            "entityReference": {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
                                 "entityShape": "localizedTable",
                                 "constantValues": [
-                                    [
-                                        "en",
-                                        "Badge Type"
-                                    ]
+                                  [
+                                    "en",
+                                    "Created By"
+                                  ]
                                 ]
+                              }
                             }
-                        }
-                    ]
-                }
-            ],
-            "displayName": "Badge Type",
-            "sourceName": "adx_badgetype",
-            "hasAttributes": [
-                {
-                    "attributeGroupReference": {
-                        "attributeGroupName": "attributesAddedAtThisScope",
-                        "exhibitsTraits": [
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
                             {
-                                "traitReference": "is.CDM.attributeGroup",
-                                "arguments": [
-                                    {
-                                        "entityReference": {
-                                            "entityShape": "attributeGroupSet",
-                                            "constantValues": [
-                                                [
-                                                    "/core/applicationCommon/foundationCommon/crmCommon/solutions/portals/BadgeType.cdm.json/BadgeType/hasAttributes/attributesAddedAtThisScope"
-                                                ]
-                                            ]
-                                        }
-                                    }
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Shows who created the record."
+                                  ]
                                 ]
+                              }
                             }
-                        ],
-                        "members": [
-                            {
-                                "purpose": "identifiedBy",
-                                "dataType": "entityId",
-                                "name": "badgeTypeId",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Badge Type"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the entity instances."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Badge Type",
-                                "description": "Shows the entity instances.",
-                                "sourceName": "adx_badgetypeid",
-                                "sourceOrdering": 1
-                            },
-                            {
-                                "purpose": "createdOn",
-                                "dataType": "dateTime",
-                                "name": "createdOn",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in the solution options. "
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Created On",
-                                "description": "Shows the date and time when the record was created. The date and time are displayed in the time zone selected in the solution options. ",
-                                "isNullable": true,
-                                "sourceName": "createdon",
-                                "sourceOrdering": 2
-                            },
-                            {
-                                "name": "User_createdBy",
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "resolutionGuidance": {
-                                    "renameFormat": "{m}",
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "createdBy",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Created By"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Shows who created the record."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                "is.linkedEntity.identifier"
-                                            ],
-                                            "displayName": "Created By",
-                                            "description": "Shows who created the record.",
-                                            "isNullable": true,
-                                            "sourceName": "createdby",
-                                            "sourceOrdering": 3
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "purpose": "modifiedOn",
-                                "dataType": "dateTime",
-                                "name": "modifiedOn",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Modified On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was updated. The date and time are displayed in the time zone selected in the solution options. "
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Modified On",
-                                "description": "Shows the date and time when the record was updated. The date and time are displayed in the time zone selected in the solution options. ",
-                                "isNullable": true,
-                                "sourceName": "modifiedon",
-                                "sourceOrdering": 4
-                            },
-                            {
-                                "name": "User_modifiedBy",
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "resolutionGuidance": {
-                                    "renameFormat": "{m}",
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "modifiedBy",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Modified By"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Shows who updated the record."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                "is.linkedEntity.identifier"
-                                            ],
-                                            "displayName": "Modified By",
-                                            "description": "Shows who updated the record.",
-                                            "isNullable": true,
-                                            "sourceName": "modifiedby",
-                                            "sourceOrdering": 5
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "name": "User_createdOnBehalfBy",
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "resolutionGuidance": {
-                                    "renameFormat": "{m}",
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "createdOnBehalfBy",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Created By (Delegate)"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Shows who created the record on behalf of another user."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                "is.linkedEntity.identifier"
-                                            ],
-                                            "displayName": "Created By (Delegate)",
-                                            "description": "Shows who created the record on behalf of another user.",
-                                            "isNullable": true,
-                                            "sourceName": "createdonbehalfby",
-                                            "sourceOrdering": 6
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "name": "User_modifiedOnBehalfBy",
-                                "entity": {
-                                    "entityReference": "User",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "User/(resolvedAttributes)/systemUserId"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "resolutionGuidance": {
-                                    "renameFormat": "{m}",
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "modifiedOnBehalfBy",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Modified By (Delegate)"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Shows who updated the record on behalf of another user."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                "is.linkedEntity.identifier"
-                                            ],
-                                            "displayName": "Modified By (Delegate)",
-                                            "description": "Shows who updated the record on behalf of another user.",
-                                            "isNullable": true,
-                                            "sourceName": "modifiedonbehalfby",
-                                            "sourceOrdering": 7
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "name": "organization",
-                                "entity": {
-                                    "entityReference": "Organization",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "Organization/(resolvedAttributes)/organizationId"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "id",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Organization Id"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Shows the organization."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                "is.linkedEntity.identifier"
-                                            ],
-                                            "displayName": "Organization Id",
-                                            "description": "Shows the organization.",
-                                            "isNullable": true,
-                                            "sourceName": "organizationid",
-                                            "sourceOrdering": 16
-                                        }
-                                    }
-                                }
-                            },
-                            {
-                                "purpose": "representsStateWith",
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                                                        "entityShape": "listLookupValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Active",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Inactive",
-                                                                "1",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "stateCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "systemrequired"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status of the Badge Type"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'stateCode_display' is added to the 'BadgeType' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "stateCode_display",
-                                        "isReadOnly": true
-                                    }
-                                },
-                                "displayName": "Status",
-                                "description": "Status of the Badge Type",
-                                "sourceName": "statecode",
-                                "sourceOrdering": 18
-                            },
-                            {
-                                "purpose": {
-                                    "purposeReference": "representsCorrelatedStatusWith",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.correlatedWith",
-                                            "arguments": [
-                                                "stateCode"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "dataType": {
-                                    "dataTypeReference": "listLookup",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "does.haveDefault",
-                                            "arguments": [
-                                                {
-                                                    "entityReference": {
-                                                        "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                                                        "entityShape": "listLookupCorrelatedValues",
-                                                        "constantValues": [
-                                                            [
-                                                                "en",
-                                                                "Active",
-                                                                "1",
-                                                                "0",
-                                                                "0"
-                                                            ],
-                                                            [
-                                                                "en",
-                                                                "Inactive",
-                                                                "2",
-                                                                "1",
-                                                                "1"
-                                                            ]
-                                                        ]
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "name": "statusCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Status Reason"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the reason for the status of the badge type."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "resolutionGuidance": {
-                                    "addSupportingAttribute": {
-                                        "explanation": "This attribute 'statusCode_display' is added to the 'BadgeType' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                                        "purpose": "hasA",
-                                        "dataType": "localizedDisplayText",
-                                        "name": "statusCode_display",
-                                        "isReadOnly": true
-                                    }
-                                },
-                                "displayName": "Status Reason",
-                                "description": "Shows the reason for the status of the badge type.",
-                                "isNullable": true,
-                                "sourceName": "statuscode",
-                                "sourceOrdering": 20
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "bigInteger",
-                                "name": "versionNumber",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Version Number",
-                                "description": "Version Number",
-                                "isNullable": true,
-                                "sourceName": "versionnumber",
-                                "sourceOrdering": 22
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "integer",
-                                "name": "importSequenceNumber",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Import Sequence Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the sequence number of the import that created this record."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Import Sequence Number",
-                                "description": "Shows the sequence number of the import that created this record.",
-                                "isNullable": true,
-                                "sourceName": "importsequencenumber",
-                                "sourceOrdering": 23,
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-2147483648"
-                            },
-                            {
-                                "purpose": "createdOn",
-                                "dataType": "dateTime",
-                                "name": "overriddenCreatedOn",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Record Created On"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the date and time when the record was migrated. The date and time are displayed in the time zone selected in the solution options. "
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Record Created On",
-                                "description": "Shows the date and time when the record was migrated. The date and time are displayed in the time zone selected in the solution options. ",
-                                "isNullable": true,
-                                "sourceName": "overriddencreatedon",
-                                "sourceOrdering": 24
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "integer",
-                                "name": "timeZoneRuleVersionNumber",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Time Zone Rule Version Number"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "For internal use only."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Time Zone Rule Version Number",
-                                "description": "For internal use only.",
-                                "isNullable": true,
-                                "sourceName": "timezoneruleversionnumber",
-                                "sourceOrdering": 25,
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1"
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "integer",
-                                "name": "UTCConversionTimeZoneCode",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "UTC Conversion Time Zone Code"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the time zone code that was in use when the record was created."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "UTC Conversion Time Zone Code",
-                                "description": "Shows the time zone code that was in use when the record was created.",
-                                "isNullable": true,
-                                "sourceName": "utcconversiontimezonecode",
-                                "sourceOrdering": 26,
-                                "maximumValue": "2147483647",
-                                "minimumValue": "-1"
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "name",
-                                "name": "name",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "required"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Name"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Shows the name of the custom entity."
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Name",
-                                "description": "Shows the name of the custom entity.",
-                                "isNullable": true,
-                                "sourceName": "adx_name",
-                                "sourceOrdering": 27,
-                                "maximumLength": 100
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "colorName",
-                                "name": "backgroundColor",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Background Color"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Enter a hex value or RGB or RGBA\n\nex: #FFFFFF\nrgb(255,255,255)\nrgba(255,255,255,0.5)"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Background Color",
-                                "description": "Enter a hex value or RGB or RGBA\n\nex: #FFFFFF\nrgb(255,255,255)\nrgba(255,255,255,0.5)",
-                                "isNullable": true,
-                                "sourceName": "adx_backgroundcolor",
-                                "sourceOrdering": 28,
-                                "maximumLength": 25
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "string",
-                                "name": "description",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Description"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Description",
-                                "isNullable": true,
-                                "sourceName": "adx_description",
-                                "sourceOrdering": 29,
-                                "maximumLength": 2000
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "string",
-                                "name": "displayText",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "required"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Display Text"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Actual shown label for the badge"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Display Text",
-                                "description": "Actual shown label for the badge",
-                                "isNullable": true,
-                                "sourceName": "adx_displaytext",
-                                "sourceOrdering": 30,
-                                "maximumLength": 30
-                            },
-                            {
-                                "purpose": "hasA",
-                                "dataType": "name",
-                                "name": "iconName",
-                                "appliedTraits": [
-                                    {
-                                        "traitReference": "is.requiredAtLevel",
-                                        "arguments": [
-                                            {
-                                                "name": "level",
-                                                "value": "none"
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.displayedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Icon Name"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        "traitReference": "is.localized.describedAs",
-                                        "arguments": [
-                                            {
-                                                "entityReference": {
-                                                    "entityShape": "localizedTable",
-                                                    "constantValues": [
-                                                        [
-                                                            "en",
-                                                            "Add font awesome name such as fa-user"
-                                                        ]
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ],
-                                "displayName": "Icon Name",
-                                "description": "Add font awesome name such as fa-user",
-                                "isNullable": true,
-                                "sourceName": "adx_iconname",
-                                "sourceOrdering": 31,
-                                "maximumLength": 30
-                            }
-                        ]
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "createdby",
+                      "sourceOrdering": 3,
+                      "displayName": "Created By",
+                      "description": "Shows who created the record."
                     }
+                  }
                 }
+              },
+              {
+                "name": "modifiedOn",
+                "purpose": "modifiedOn",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Modified On"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the date and time when the record was updated. The date and time are displayed in the time zone selected in the solution options. "
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "modifiedon",
+                "sourceOrdering": 4,
+                "displayName": "Modified On",
+                "description": "Shows the date and time when the record was updated. The date and time are displayed in the time zone selected in the solution options. "
+              },
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "User_modifiedBy",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "modifiedBy",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Modified By"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Shows who updated the record."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "modifiedby",
+                      "sourceOrdering": 5,
+                      "displayName": "Modified By",
+                      "description": "Shows who updated the record."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "User_createdOnBehalfBy",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "createdOnBehalfBy",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Created By (Delegate)"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Shows who created the record on behalf of another user."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "createdonbehalfby",
+                      "sourceOrdering": 6,
+                      "displayName": "Created By (Delegate)",
+                      "description": "Shows who created the record on behalf of another user."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "User_modifiedOnBehalfBy",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "modifiedOnBehalfBy",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Modified By (Delegate)"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Shows who updated the record on behalf of another user."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "modifiedonbehalfby",
+                      "sourceOrdering": 7,
+                      "displayName": "Modified By (Delegate)",
+                      "description": "Shows who updated the record on behalf of another user."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Organization",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Organization/(resolvedAttributes)/organizationId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "organization",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Organization Id"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Shows the organization."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "organizationid",
+                      "sourceOrdering": 16,
+                      "displayName": "Organization Id",
+                      "description": "Shows the organization."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Badge Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "sourceOrdering": 18,
+                "displayName": "Status",
+                "description": "Status of the Badge Type",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'BadgeType' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the reason for the status of the badge type."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "sourceOrdering": 20,
+                "displayName": "Status Reason",
+                "description": "Shows the reason for the status of the badge type.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'BadgeType' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "versionNumber",
+                "purpose": "hasA",
+                "dataType": "bigInteger",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Version Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Version Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "versionnumber",
+                "sourceOrdering": 22,
+                "displayName": "Version Number",
+                "description": "Version Number"
+              },
+              {
+                "name": "importSequenceNumber",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Import Sequence Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the sequence number of the import that created this record."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "importsequencenumber",
+                "sourceOrdering": 23,
+                "displayName": "Import Sequence Number",
+                "description": "Shows the sequence number of the import that created this record.",
+                "maximumValue": "2147483647",
+                "minimumValue": "-2147483648"
+              },
+              {
+                "name": "overriddenCreatedOn",
+                "purpose": "createdOn",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Record Created On"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the date and time when the record was migrated. The date and time are displayed in the time zone selected in the solution options. "
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "overriddencreatedon",
+                "sourceOrdering": 24,
+                "displayName": "Record Created On",
+                "description": "Shows the date and time when the record was migrated. The date and time are displayed in the time zone selected in the solution options. "
+              },
+              {
+                "name": "timeZoneRuleVersionNumber",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Time Zone Rule Version Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "For internal use only."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "timezoneruleversionnumber",
+                "sourceOrdering": 25,
+                "displayName": "Time Zone Rule Version Number",
+                "description": "For internal use only.",
+                "maximumValue": "2147483647",
+                "minimumValue": "-1"
+              },
+              {
+                "name": "UTCConversionTimeZoneCode",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "UTC Conversion Time Zone Code"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the time zone code that was in use when the record was created."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "utcconversiontimezonecode",
+                "sourceOrdering": 26,
+                "displayName": "UTC Conversion Time Zone Code",
+                "description": "Shows the time zone code that was in use when the record was created.",
+                "maximumValue": "2147483647",
+                "minimumValue": "-1"
+              },
+              {
+                "name": "name",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Shows the name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "adx_name",
+                "sourceOrdering": 27,
+                "displayName": "Name",
+                "description": "Shows the name of the custom entity.",
+                "maximumLength": 100
+              },
+              {
+                "name": "backgroundColor",
+                "purpose": "hasA",
+                "dataType": "colorName",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Background Color"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Enter a hex value or RGB or RGBA\n\nex: #FFFFFF\nrgb(255,255,255)\nrgba(255,255,255,0.5)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "adx_backgroundcolor",
+                "sourceOrdering": 28,
+                "displayName": "Background Color",
+                "description": "Enter a hex value or RGB or RGBA\n\nex: #FFFFFF\nrgb(255,255,255)\nrgba(255,255,255,0.5)",
+                "maximumLength": 25
+              },
+              {
+                "name": "description",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "adx_description",
+                "sourceOrdering": 29,
+                "displayName": "Description",
+                "maximumLength": 2000
+              },
+              {
+                "name": "displayText",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Display Text"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Actual shown label for the badge"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "adx_displaytext",
+                "sourceOrdering": 30,
+                "displayName": "Display Text",
+                "description": "Actual shown label for the badge",
+                "maximumLength": 30
+              },
+              {
+                "name": "iconName",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Icon Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Add font awesome name such as fa-user"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "adx_iconname",
+                "sourceOrdering": 31,
+                "displayName": "Icon Name",
+                "description": "Add font awesome name such as fa-user",
+                "maximumLength": 30
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/solutions/portals/BadgeType.cdm.json/BadgeType/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
             ]
+          }
         }
-    ]
+      ],
+      "sourceName": "adx_badgetype",
+      "displayName": "Badge Type"
+    }
+  ]
 }

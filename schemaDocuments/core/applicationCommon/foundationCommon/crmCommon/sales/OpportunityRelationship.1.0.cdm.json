@@ -1,0 +1,445 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.1.0.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "OpportunityRelationship",
+            "extendsEntity": "CdsStandard",
+            "exhibitsTraits": [
+                {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Opportunity Relationship"
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                        {
+                            "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                    [
+                                        "en",
+                                        "Relationship between an account or contact and an opportunity."
+                                    ]
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "traitReference": "is.CDM.entityVersion",
+                    "arguments": [
+                        {
+                            "name": "versionNumber",
+                            "value": "1.0"
+                        }
+                    ]
+                }
+            ],
+            "sourceName": "CustomerOpportunityRole",
+            "displayName": "Opportunity Relationship",
+            "description": "Relationship between an account or contact and an opportunity.",
+            "hasAttributes": [
+                {
+                    "attributeGroupReference": {
+                        "attributeGroupName": "attributesAddedAtThisScope",
+                        "exhibitsTraits": [
+                            {
+                                "traitReference": "is.CDM.attributeGroup",
+                                "arguments": [
+                                    {
+                                        "entityReference": {
+                                            "entityShape": "attributeGroupSet",
+                                            "constantValues": [
+                                                [
+                                                    "/core/applicationCommon/foundationCommon/crmCommon/sales/OpportunityRelationship.1.0.cdm.json/OpportunityRelationship/hasAttributes/attributesAddedAtThisScope"
+                                                ]
+                                            ]
+                                        }
+                                    }
+                                ]
+                            }
+                        ],
+                        "members": [
+                            {
+                                "purpose": "identifiedBy",
+                                "dataType": "entityId",
+                                "name": "customerOpportunityRoleId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Opportunity Relationship"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Unique identifier of the opportunity relationship."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "customeropportunityroleid",
+                                "sourceOrdering": 10000,
+                                "displayName": "Opportunity Relationship",
+                                "description": "Unique identifier of the opportunity relationship."
+                            },
+                            "customerIdAttribute",
+                            {
+                                "purpose": "hasA",
+                                "dataType": "string",
+                                "name": "description",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Description"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Type additional information to describe the opportunity relationship, such as the length or quality of the relationship."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "description",
+                                "sourceOrdering": 10029,
+                                "displayName": "Description",
+                                "description": "Type additional information to describe the opportunity relationship, such as the length or quality of the relationship.",
+                                "maximumLength": 500
+                            },
+                            {
+                                "name": "opportunity",
+                                "entity": {
+                                    "entityReference": "Opportunity",
+                                    "appliedTraits": [
+                                        {
+                                            "traitReference": "is.identifiedBy",
+                                            "arguments": [
+                                                "Opportunity/(resolvedAttributes)/opportunityId"
+                                            ]
+                                        }
+                                    ]
+                                },
+                                "resolutionGuidance": {
+                                    "entityByReference": {
+                                        "allowReference": true,
+                                        "foreignKeyAttribute": {
+                                            "purpose": "hasA",
+                                            "dataType": "entityId",
+                                            "name": "id",
+                                            "appliedTraits": [
+                                                {
+                                                    "traitReference": "is.CDS.lookup",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "style",
+                                                            "value": "single"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.requiredAtLevel",
+                                                    "arguments": [
+                                                        {
+                                                            "name": "level",
+                                                            "value": "systemrequired"
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.displayedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Opportunity"
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                {
+                                                    "traitReference": "is.localized.describedAs",
+                                                    "arguments": [
+                                                        {
+                                                            "entityReference": {
+                                                                "entityShape": "localizedTable",
+                                                                "constantValues": [
+                                                                    [
+                                                                        "en",
+                                                                        "Choose the opportunity that the specified account or contact is related to. The opportunity relationship will be displayed in the Relationships view on the selected opportunity."
+                                                                    ]
+                                                                ]
+                                                            }
+                                                        }
+                                                    ]
+                                                },
+                                                "is.linkedEntity.identifier"
+                                            ],
+                                            "sourceName": "opportunityid",
+                                            "sourceOrdering": 10030,
+                                            "displayName": "Opportunity",
+                                            "description": "Choose the opportunity that the specified account or contact is related to. The opportunity relationship will be displayed in the Relationships view on the selected opportunity."
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "opportunityRoleId",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.CDS.lookup",
+                                        "arguments": [
+                                            {
+                                                "name": "style",
+                                                "value": "single"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "none"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Customer Role"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Choose the role or nature of the relationship that the customer has with the opportunity. The field is read-only until a customer has been selected. Administrators can configure role values under Business Management in the Settings area."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "opportunityroleid",
+                                "sourceOrdering": 10031,
+                                "displayName": "Customer Role",
+                                "description": "Choose the role or nature of the relationship that the customer has with the opportunity. The field is read-only until a customer has been selected. Administrators can configure role values under Business Management in the Settings area."
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "name": "opportunityStateCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "systemrequired"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Opportunity Status"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Status of the opportunity."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "sourceName": "opportunitystatecode",
+                                "sourceOrdering": 10032,
+                                "displayName": "Opportunity Status",
+                                "description": "Status of the opportunity.",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
+                            },
+                            {
+                                "purpose": "hasA",
+                                "dataType": "integer",
+                                "name": "opportunityStatusCode",
+                                "appliedTraits": [
+                                    {
+                                        "traitReference": "is.requiredAtLevel",
+                                        "arguments": [
+                                            {
+                                                "name": "level",
+                                                "value": "required"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.displayedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Opportunity Status Reason"
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "traitReference": "is.localized.describedAs",
+                                        "arguments": [
+                                            {
+                                                "entityReference": {
+                                                    "entityShape": "localizedTable",
+                                                    "constantValues": [
+                                                        [
+                                                            "en",
+                                                            "Reason for the status of the opportunity."
+                                                        ]
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                ],
+                                "isNullable": true,
+                                "sourceName": "opportunitystatuscode",
+                                "sourceOrdering": 10033,
+                                "displayName": "Opportunity Status Reason",
+                                "description": "Reason for the status of the opportunity.",
+                                "maximumValue": "1000000000",
+                                "minimumValue": "0"
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    ]
+}

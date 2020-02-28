@@ -1,6 +1,10 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 {
     using System.Collections.Generic;
+    using System.Linq;
     using System.Threading.Tasks;
 
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -41,7 +45,8 @@
             {
                 Name = instance.Name,
                 DataType = DataTypeToData(instance.DataFormat),
-                Description = instance.Description
+                Description = instance.GetProperty("description"),
+                Traits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options),
             };
 
             await Utils.ProcessAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);

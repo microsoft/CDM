@@ -1,8 +1,11 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmReferencedEntityDeclarationDefinition
-from cdm.utilities import CopyOptions, logger, ResolveOptions, time_utils
+from cdm.utilities import CopyOptions, logger, ResolveOptions, time_utils, copy_data_utils
 
 from . import utils
 from .types import ReferencedEntityDeclaration
@@ -44,9 +47,9 @@ class ReferencedEntityDeclarationPersistence:
 
         data.entityName = instance.entity_name
         data.explanation = instance.explanation
-        data.lastFileStatusCheckTime = time_utils.get_formatted_date_string(instance.last_file_status_check_time)
-        data.lastFileModifiedTime = time_utils.get_formatted_date_string(instance.last_file_modified_time)
+        data.lastFileStatusCheckTime = time_utils._get_formatted_date_string(instance.last_file_status_check_time)
+        data.lastFileModifiedTime = time_utils._get_formatted_date_string(instance.last_file_modified_time)
         data.entityPath = instance.entity_path
-        data.exhibitsTraits = utils.array_copy_data(res_opt, instance.exhibits_traits, options)
+        data.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
 
         return data

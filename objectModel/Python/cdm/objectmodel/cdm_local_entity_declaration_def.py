@@ -1,4 +1,7 @@
-﻿from datetime import datetime, timezone
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from datetime import datetime, timezone
 from typing import cast, Dict, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
@@ -72,7 +75,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             await pattern.file_status_check_async()
 
         self.last_file_status_check_time = datetime.now(timezone.utc)
-        self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
+        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
 
         await self.report_most_recent_time_async(self.last_file_modified_time)
 
@@ -112,7 +115,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
     async def report_most_recent_time_async(self, child_time: datetime) -> None:
         """Report most recent modified time (of current or children objects) to the parent object."""
         self.last_child_file_modified_time = child_time
-        most_recent_at_this_level = time_utils.max_time(child_time, self.last_file_modified_time)
+        most_recent_at_this_level = time_utils._max_time(child_time, self.last_file_modified_time)
 
         if isinstance(self.owner, CdmFileStatus) and most_recent_at_this_level:
             await cast('CdmFileStatus', self.owner).report_most_recent_time_async(most_recent_at_this_level)
@@ -122,7 +125,7 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = '{}{}'.format(path_from, self.entity_name)

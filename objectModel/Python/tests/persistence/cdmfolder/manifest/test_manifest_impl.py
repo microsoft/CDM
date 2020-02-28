@@ -1,3 +1,5 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from datetime import datetime, timezone
 import os
@@ -30,9 +32,9 @@ class ManifestImplTest(unittest.TestCase):
         cdm_manifest = ManifestPersistence.from_object(corpus.ctx, 'cdmTest', 'someNamespace', '/', ManifestContent().decode(content))
         self.assertEqual(cdm_manifest.schema, 'CdmManifestDefinition.cdm.json')
         self.assertEqual(cdm_manifest.manifest_name, 'cdmTest')
-        self.assertEqual(cdm_manifest.json_schema_semantic_version, '0.9.0')
-        self.assertEqual(time_utils.get_formatted_date_string(cdm_manifest.last_file_modified_time), '2008-09-15T23:53:23.000Z')
-        self.assertEqual(cdm_manifest.explanation, 'test cdm folder for cdm version 0.9+')
+        self.assertEqual(cdm_manifest.json_schema_semantic_version, '1.0.0')
+        self.assertEqual(time_utils._get_formatted_date_string(cdm_manifest.last_file_modified_time), '2008-09-15T23:53:23.000Z')
+        self.assertEqual(cdm_manifest.explanation, 'test cdm folder for cdm version 1.0+')
         self.assertEqual(1, len(cdm_manifest.imports))
         self.assertEqual(cdm_manifest.imports[0].corpus_path, '/primitives.cdm.json')
         self.assertEqual(0, len(cdm_manifest.entities))
@@ -80,9 +82,9 @@ class ManifestImplTest(unittest.TestCase):
 
         manifest_object = ManifestPersistence.to_data(cdm_manifest, None, None)
         self.assertEqual(manifest_object.schema, 'CdmManifestDefinition.cdm.json')
-        self.assertEqual(manifest_object.jsonSchemaSemanticVersion, '0.9.0')
+        self.assertEqual(manifest_object.jsonSchemaSemanticVersion, '1.0.0')
         self.assertEqual(manifest_object.manifestName, 'cdmTest')
-        self.assertEqual(manifest_object.explanation, 'test cdm folder for cdm version 0.9+')
+        self.assertEqual(manifest_object.explanation, 'test cdm folder for cdm version 1.0+')
         self.assertEqual(1, len(manifest_object.imports))
         self.assertEqual(manifest_object.imports[0].corpusPath, '/primitives.cdm.json')
         self.assertEqual(1, len(manifest_object.exhibitsTraits))
@@ -107,7 +109,10 @@ class ManifestImplTest(unittest.TestCase):
         cdm_manifest = await cdm_corpus.fetch_object_async('someNamespace:/default.manifest.cdm.json')
         status_time_at_load = cdm_manifest.last_file_status_check_time
         # hard coded because the time comes from inside the file
-        self.assertEqual(time_utils.get_formatted_date_string(status_time_at_load), '2019-02-01T15:36:19.410Z')
+        self.assertEqual(time_utils._get_formatted_date_string(status_time_at_load), '2019-02-01T15:36:19.410Z')
+
+        self.assertIsNotNone(cdm_manifest._file_system_modified_time)
+        self.assertGreater(time_before_load, cdm_manifest._file_system_modified_time)
 
         time.sleep(1)
 
@@ -122,8 +127,8 @@ class ManifestImplTest(unittest.TestCase):
 
         entity = cdm_manifest.entities[0]
         sub_manifest = cdm_manifest.sub_manifests[0]
-        max_time = time_utils.max_time(entity.last_file_modified_time, sub_manifest.last_file_modified_time)
-        self.assertEqual(time_utils.get_formatted_date_string(cdm_manifest.last_child_file_modified_time), time_utils.get_formatted_date_string(max_time))
+        max_time = time_utils._max_time(entity.last_file_modified_time, sub_manifest.last_file_modified_time)
+        self.assertEqual(time_utils._get_formatted_date_string(cdm_manifest.last_child_file_modified_time), time_utils._get_formatted_date_string(max_time))
 
     @async_test
     async def test_refreshes_data_partition_patterns(self):

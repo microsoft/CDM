@@ -1,6 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.AttributeResolutionContext;
@@ -15,7 +19,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 
 public class CdmTypeAttributeDefinition extends CdmAttribute {
-
   private CdmDataTypeReference dataType;
   private CdmAttributeContextReference attributeContext;
   private TraitToPropertyMap t2pm;
@@ -23,6 +26,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   public CdmTypeAttributeDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx, name);
     this.setObjectType(CdmObjectType.TypeAttributeDef);
+    this.setAttributeCount(1);
   }
 
   public CdmAttributeContextReference getAttributeContext() {
@@ -33,12 +37,12 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     this.attributeContext = value;
   }
 
-  public String fetchDataFormat() {
+  public CdmDataFormat fetchDataFormat() {
     final Object dataFormat = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DATA_FORMAT);
-    return dataFormat != null ? (String) dataFormat : "Unknown";
+    return dataFormat != null ? CdmDataFormat.valueOf((String)dataFormat) : CdmDataFormat.Unknown;
   }
 
-  public void updateDataFormat(final String value) {
+  public void updateDataFormat(final CdmDataFormat value) {
     this.getTraitToPropertyMap().updatePropertyValue(CdmPropertyName.DATA_FORMAT, value);
   }
 
@@ -68,8 +72,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   public String fetchDisplayName() {
-    final Object displayName = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DISPLAY_NAME);
-    return displayName != null ? (String) displayName : "Unknown";
+    return (String) this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DISPLAY_NAME);
   }
 
   public void setDisplayName(final String value) {
@@ -130,8 +133,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   public String fetchSourceName() {
-    final Object sourceName = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.SOURCE_NAME);
-    return sourceName != null ? (String) sourceName : "Unknown";
+    return (String) this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.SOURCE_NAME);
   }
 
   public void updateSourceName(final String value) {
@@ -140,7 +142,11 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   public Integer fetchSourceOrdering() {
     final Object sourceOrdering = this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.SOURCE_ORDERING);
-    return sourceOrdering != null ? (Integer) sourceOrdering : null;
+    try {
+      return Integer.parseInt((String)sourceOrdering);
+    } catch (NumberFormatException ex) {
+      return null;
+    }
   }
 
   public void updateSourceOrderingToTrait(final Integer value) {
@@ -159,7 +165,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
    *
    * @param propertyName
    * @return
-   * @deprecated This class is extremely likely to be removed in the public interface, and not meant
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
    */
   @Deprecated
@@ -167,7 +173,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     return this.getTraitToPropertyMap().fetchPropertyValue(propertyName, true);
   }
 
-  public TraitToPropertyMap getTraitToPropertyMap() {
+  private TraitToPropertyMap getTraitToPropertyMap() {
     if (this.t2pm == null) {
       this.t2pm = new TraitToPropertyMap(this);
     }
@@ -297,7 +303,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmTypeAttributeDefinition copy;
@@ -329,7 +335,11 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+        resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+    
     return false;
   }
 }

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -6,10 +9,12 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpClient;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequest;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequestException;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
+import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
@@ -19,6 +24,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -39,9 +45,19 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
   private String locationHint;
 
   /**
+   * The map from corpus path to adapter path.
+   */
+  private  Map<String, String> adapterPaths = new LinkedHashMap<String, String>();
+
+  /**
    * The file-system name.
    */
   private String fileSystem = "";
+
+  /**
+   * The formated hostname for validation in CreateCorpusPath.
+   */
+  private String formatedHostname = "";
 
   /**
    * The sub-path.
@@ -52,16 +68,23 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
 
   public AdlsAdapter(final String hostname, final String root, final String tenant, final String clientId, final String secret) {
     this.updateRoot(root);
-    this.hostname = hostname;
+    this.updateHostname(hostname);
     this.httpClient = new CdmHttpClient();
     this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(tenant, clientId, secret);
   }
 
   public AdlsAdapter(final String hostname, final String root, final String sharedKey) {
     this.updateRoot(root);
-    this.hostname = hostname;
+    this.updateHostname(hostname);
     this.httpClient = new CdmHttpClient();
     this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(sharedKey);
+  }
+
+  public AdlsAdapter(final String hostname, final String root, final TokenProvider tokenProvider) {
+    this.updateRoot(root);
+    this.updateHostname(hostname);
+    this.httpClient = new CdmHttpClient();
+    this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(tokenProvider);
   }
 
   /**
@@ -116,13 +139,33 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
   }
 
   public String createAdapterPath(final String corpusPath) {
+    final String formattedCorpusPath = this.formatCorpusPath(corpusPath);
+    if(adapterPaths.containsKey(formattedCorpusPath)) {
+      return adapterPaths.get(formattedCorpusPath);
+    }
     return "https://" + hostname + root + this.formatCorpusPath(corpusPath);
   }
 
   public String createCorpusPath(final String adapterPath) {
-    final String prefix = "https://" + hostname + root;
-    if (!Strings.isNullOrEmpty(adapterPath) && adapterPath.startsWith(prefix)) {
-      return adapterPath.substring(prefix.length());
+    if (!StringUtils.isNullOrEmpty(adapterPath))
+    {
+      int startIndex = "https://".length();
+      int endIndex = adapterPath.indexOf('/', startIndex + 1);
+
+      String hostname = "";
+      try {
+        hostname = this.formatHostname(adapterPath.substring(startIndex, endIndex));
+      } catch(Exception ex){
+        throw new StorageAdapterException("Unexpected adapter path: " + adapterPath);
+      }
+
+      if (hostname.equals(this.formatedHostname) && adapterPath.substring(endIndex).startsWith(this.root))
+      {
+        String corpusPath = adapterPath.substring(endIndex + this.root.length());
+        adapterPaths.putIfAbsent(corpusPath, adapterPath);
+
+        return corpusPath;
+      }
     }
     return null;
   }
@@ -243,6 +286,22 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
   }
 
   /**
+   * Format hostname for the validation in CreateCorpusPath.
+   * @param hostname The hostname.
+   * @return The formatted hostname.
+   */
+  private String formatHostname(String hostname) {
+    hostname = hostname.replace(".blob.", ".dfs.");
+    String port=":443";
+    if (hostname.contains(port))
+    {
+      hostname = hostname.substring(0, hostname.length()- port.length());
+    }
+
+    return hostname;
+  }
+
+  /**
    * Generates an HTTP request with required headers to work with Azure Storage API.
    *
    * @param url         The URL of a resource.
@@ -359,7 +418,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     if (configsJson.has("sharedKey")) {
       // Then it is shared key auth.
       this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(configsJson.get("sharedKey").asText());
-    } else {
+    } else if (configsJson.has("tenant") && configsJson.has("clientId")) {
       // Check first for clientId/secret auth.
       this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(
           configsJson.get("tenant").asText(),
@@ -376,6 +435,11 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
 
   public String getRoot() {
     return root;
+  }
+
+  private void updateHostname(String value) {
+    this.hostname = value;
+    this.formatedHostname = this.formatHostname(this.hostname);
   }
 
   public String getHostname() {

@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
@@ -46,7 +47,7 @@ public class AttributeResolutionDirectiveSet {
       result.setSetRemoved(new LinkedHashSet<>(setRemoved));
     }
 
-    result.setSortedTag(sortedTag);
+    result.sortedTag = sortedTag;
 
     return result;
   }
@@ -120,7 +121,7 @@ public class AttributeResolutionDirectiveSet {
         set.addAll(directives.getSet());
       }
 
-      this.setSortedTag(null);
+      this.sortedTag = null;
     }
   }
 
@@ -164,13 +165,5 @@ public class AttributeResolutionDirectiveSet {
 
   public void setSetRemoved(final Set<String> setRemoved) {
     this.setRemoved = setRemoved;
-  }
-
-  public String getSortedTag() {
-    return this.sortedTag;
-  }
-
-  public void setSortedTag(final String sortedTag) {
-    this.sortedTag = sortedTag;
   }
 }

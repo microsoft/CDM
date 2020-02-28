@@ -1,122 +1,133 @@
 {
-    "jsonSchemaSemanticVersion": "0.9.0",
-    "imports": [
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ActivityParty",
+      "extendsEntity": "base_ActivityParty/ActivityParty",
+      "exhibitsTraits": [
         {
-            "corpusPath": "_allImports.cdm.json"
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
         }
-    ],
-    "definitions": [
+      ],
+      "hasAttributes": [
         {
-            "entityName": "ActivityParty",
-            "extendsEntity": "base_ActivityParty/ActivityParty",
-            "hasAttributes": [
-                {
-                    "attributeGroupReference": {
-                        "attributeGroupName": "attributesAddedAtThisScope",
-                        "exhibitsTraits": [
-                            {
-                                "traitReference": "is.CDM.attributeGroup",
-                                "arguments": [
-                                    {
-                                        "entityReference": {
-                                            "entityShape": "attributeGroupSet",
-                                            "constantValues": [
-                                                [
-                                                    "/core/applicationCommon/foundationCommon/crmCommon/service/ActivityParty.cdm.json/ActivityParty/hasAttributes/attributesAddedAtThisScope"
-                                                ]
-                                            ]
-                                        }
-                                    }
-                                ]
-                            }
-                        ],
-                        "members": [
-                            {
-                                "name": "resourceSpec",
-                                "entity": {
-                                    "entityReference": "ResourceSpecification",
-                                    "appliedTraits": [
-                                        {
-                                            "traitReference": "is.identifiedBy",
-                                            "arguments": [
-                                                "ResourceSpecification/(resolvedAttributes)/resourceSpecId"
-                                            ]
-                                        }
-                                    ]
-                                },
-                                "resolutionGuidance": {
-                                    "entityByReference": {
-                                        "allowReference": true,
-                                        "foreignKeyAttribute": {
-                                            "purpose": "hasA",
-                                            "dataType": "entityId",
-                                            "name": "id",
-                                            "appliedTraits": [
-                                                {
-                                                    "traitReference": "is.CDS.lookup",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "style",
-                                                            "value": "single"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.requiredAtLevel",
-                                                    "arguments": [
-                                                        {
-                                                            "name": "level",
-                                                            "value": "none"
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.displayedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Resource Specification"
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                {
-                                                    "traitReference": "is.localized.describedAs",
-                                                    "arguments": [
-                                                        {
-                                                            "entityReference": {
-                                                                "entityShape": "localizedTable",
-                                                                "constantValues": [
-                                                                    [
-                                                                        "en",
-                                                                        "Unique identifier of the resource specification for the activity party."
-                                                                    ]
-                                                                ]
-                                                            }
-                                                        }
-                                                    ]
-                                                },
-                                                "is.linkedEntity.identifier"
-                                            ],
-                                            "displayName": "Resource Specification",
-                                            "description": "Unique identifier of the resource specification for the activity party.",
-                                            "isNullable": true,
-                                            "sourceName": "resourcespecid",
-                                            "sourceOrdering": 10000
-                                        }
-                                    }
-                                }
-                            }
-                        ]
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "entity": {
+                  "entityReference": "ResourceSpecification",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "ResourceSpecification/(resolvedAttributes)/resourceSpecId"
+                      ]
                     }
+                  ]
+                },
+                "name": "resourceSpec",
+                "resolutionGuidance": {
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "name": "id",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Resource Specification"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier of the resource specification for the activity party."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "resourcespecid",
+                      "sourceOrdering": 10000,
+                      "displayName": "Resource Specification",
+                      "description": "Unique identifier of the resource specification for the activity party."
+                    }
+                  }
                 }
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/core/applicationCommon/foundationCommon/crmCommon/service/ActivityParty.cdm.json/ActivityParty/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
             ]
+          }
         }
-    ]
+      ]
+    }
+  ]
 }

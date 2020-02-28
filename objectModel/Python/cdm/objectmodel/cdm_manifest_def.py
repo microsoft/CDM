@@ -1,4 +1,7 @@
-﻿from datetime import datetime, timezone
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from datetime import datetime, timezone
 from typing import cast, Dict, Iterable, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmRelationshipDiscoveryStyle
@@ -145,9 +148,6 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             # when would this happen?
             return None
 
-        # mapping from entity path to resolved entity path for translating relationhsip paths
-        res_ent_map = {}  # type: Dict[str, str]
-
         for entity in self.entities:
             ent_def = await self._get_entity_from_reference(entity, self)
 
@@ -196,11 +196,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
             # absolute path is needed for generating relationships
             absolute_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(result.entity_path, resolved_manifest)
-            res_ent_map[self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)] = absolute_ent_path
+            self.ctx.corpus._res_ent_map[self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)] = absolute_ent_path
 
         logger.debug(self._TAG, self.ctx, '    calculating relationships', self.create_resolved_manifest_async.__name__)
         # Calculate the entity graph for just this manifest.
-        await self.ctx.corpus._calculate_entity_graph_async(resolved_manifest, res_ent_map)
+        await self.ctx.corpus.calculate_entity_graph_async(resolved_manifest)
         # Stick results into the relationships list for the manifest.
         await resolved_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
 
@@ -225,7 +225,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         # Reload the manifest if it has been updated in the file system.
         if modified_time and self._file_system_modified_time and modified_time != self._file_system_modified_time:
             await self._reload_async()
-            self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
+            self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
             self._file_system_modified_time = self.last_file_modified_time
 
     async def _get_entity_from_reference(self, entity: 'CdmEntityDeclarationDefinition', manifest: 'CdmManifestDefinition') -> 'CdmEntityDefinition':
@@ -249,7 +249,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         return False
 
-    def is_rel_allowed(self, rel: 'CdmE2ERelationship', option: 'CdmRelationshipDiscoveryStyle') -> bool:
+    def _is_rel_allowed(self, rel: 'CdmE2ERelationship', option: 'CdmRelationshipDiscoveryStyle') -> bool:
         if option == CdmRelationshipDiscoveryStyle.NONE:
             return False
         if option == CdmRelationshipDiscoveryStyle.EXCLUSIVE:
@@ -291,7 +291,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
             if outgoing_rels:
                 for rel in outgoing_rels:
                     cache_key = rel2_cache_key(rel)
-                    if cache_key not in rel_cache and self.is_rel_allowed(rel, option):
+                    if cache_key not in rel_cache and self._is_rel_allowed(rel, option):
                         self.relationships.append(self._localize_rel_to_manifest(rel))
                         rel_cache.add(cache_key)
 
@@ -316,7 +316,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
                     # add current incoming relationship
                     cache_key = rel2_cache_key(in_rel)
-                    if cache_key not in rel_cache and self.is_rel_allowed(in_rel, option):
+                    if cache_key not in rel_cache and self._is_rel_allowed(in_rel, option):
                         self.relationships.append(self._localize_rel_to_manifest(in_rel))
                         rel_cache.add(cache_key)
 
@@ -333,7 +333,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                                 new_rel.to_entity_attribute = in_rel.to_entity_attribute
 
                                 base_rel_cache_key = rel2_cache_key(new_rel)
-                                if base_rel_cache_key not in rel_cache and self.is_rel_allowed(new_rel, option):
+                                if base_rel_cache_key not in rel_cache and self._is_rel_allowed(new_rel, option):
                                     self.relationships.append(self._localize_rel_to_manifest(new_rel))
                                     rel_cache.add(base_rel_cache_key)
         if self.sub_manifests:
@@ -345,9 +345,9 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
     async def report_most_recent_time_async(self, child_time: datetime) -> None:
         """Report most recent modified time (of current or children objects) to the parent object."""
         if child_time:
-            self.last_child_file_modified_time = time_utils.max_time(child_time, self.last_child_file_modified_time)
+            self.last_child_file_modified_time = time_utils._max_time(child_time, self.last_child_file_modified_time)
 
-    async def query_on_traits_async(self, query_spec: Union[str, object]) -> Iterable[object]:
+    async def _query_on_traits_async(self, query_spec: Union[str, object]) -> Iterable[object]:
         """Query the manifest for a set of entities that match an input query
         query_spec = a JSON object (or a string that can be parsed into one) of the form
         {"entityName":"", "attributes":[{see QueryOnTraits for CdmEntityDefinition for details}]}

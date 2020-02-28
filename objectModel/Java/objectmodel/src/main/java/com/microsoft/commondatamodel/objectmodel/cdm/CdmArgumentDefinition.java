@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -120,7 +123,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmArgumentDefinition copy;

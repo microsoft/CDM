@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusDefinition,
     CdmDataPartitionPatternDefinition,
@@ -10,7 +13,7 @@ import { CdmFolder } from '../../../../Persistence';
 import { testHelper } from '../../../testHelper';
 import { cdmStatusLevel } from '../../../../Cdm/cdmStatusLevel';
 
-describe('Persistente.CdmFolder.DataPartitionPattern', () => {
+describe('Persistence.CdmFolder.DataPartitionPattern', () => {
     /// <summary>
     /// The path between TestDataPath and TestName.
     /// </summary>

@@ -1,6 +1,9 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmTraitDefinition
-from cdm.utilities import ResolveOptions, CopyOptions
+from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
 
 from . import utils
 from .types import Trait
@@ -41,7 +44,7 @@ class TraitPersistence:
         result = Trait()
         result.traitName = instance.trait_name
         result.extendsTrait = TraitReferencePersistence.to_data(instance.extends_trait, res_opt, options) if instance.extends_trait else None
-        result.hasParameters = utils.array_copy_data(res_opt, instance.parameters, options)
+        result.hasParameters = copy_data_utils._array_copy_data(res_opt, instance.parameters, options)
 
         if instance.associated_properties:
             result.associatedProperties = instance.associated_properties

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     ArgumentValue,
     CdmArgumentCollection,
@@ -129,6 +132,9 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public fetchResolvedTraits(resOpt?: resolveOptions): ResolvedTraitSet {
         // let bodyCode = () =>
         {

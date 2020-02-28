@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -18,7 +21,7 @@
         /// <summary>
         /// The file format/extension types this persistence class supports.
         /// </summary>
-        public static readonly string[] Formats = { ".cdm.json" };
+        public static readonly string[] Formats = { PersistenceLayer.CdmExtension };
 
         public static CdmDocumentDefinition FromObject(CdmCorpusContext ctx, string name, string nameSpace, string path, DocumentContent obj)
         {
@@ -30,6 +33,12 @@
                 doc.Schema = obj.Schema;
             if (DynamicObjectExtensions.HasProperty(obj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(obj.JsonSchemaSemanticVersion))
                 doc.JsonSchemaSemanticVersion = obj.JsonSchemaSemanticVersion;
+
+            if (doc.JsonSchemaSemanticVersion != "0.9.0" && doc.JsonSchemaSemanticVersion != "1.0.0")
+            {
+                // TODO: validate that this is a version we can understand with the OM
+            }
+
             if (obj.Imports != null)
             {
                 foreach (var importObj in obj.Imports)
@@ -74,7 +83,7 @@
                 Schema = instance.Schema,
                 JsonSchemaSemanticVersion = instance.JsonSchemaSemanticVersion,
                 Imports = Utils.ListCopyData<Import>(resOpt, instance.Imports, options),
-                Definitions = Utils.ListCopyData(resOpt, instance.Definitions, options)
+                Definitions = CopyDataUtils.ListCopyData(resOpt, instance.Definitions, options)
             };
         }
     }

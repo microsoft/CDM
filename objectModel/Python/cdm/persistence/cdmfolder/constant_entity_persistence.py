@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmConstantEntityDefinition, CdmCorpusContext
 from cdm.utilities import CopyOptions, ResolveOptions
