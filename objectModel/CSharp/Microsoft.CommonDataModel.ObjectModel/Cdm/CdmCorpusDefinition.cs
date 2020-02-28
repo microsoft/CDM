@@ -1,12 +1,16 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmCorpusDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
+#if INTERNAL_VSTS
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi" + Microsoft.CommonDataModel.AssemblyRef.ProductPublicKey)]
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
+#else
 [assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi")]
 [assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests")]
+#endif
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -22,6 +26,238 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System.Threading;
     using Microsoft.CommonDataModel.ObjectModel.Persistence;
+
+    /// <summary>
+    /// Synchronizes all dictionaries relating to the documents (and their statuses) in the corpus.
+    /// </summary>
+    internal class DocumentLibrary
+    {
+        internal IDictionary<string, byte> docsNotLoaded;
+        internal IDictionary<string, byte> docsCurrentlyLoading;
+        internal IDictionary<CdmDocumentDefinition, byte> docsNotIndexed;
+        internal IDictionary<string, byte> docsNotFound;
+        internal List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
+        internal IDictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
+
+        internal DocumentLibrary()
+        {
+            this.allDocuments = new List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
+            this.pathLookup = new Dictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
+            this.docsNotLoaded = new Dictionary<string, byte>();
+            this.docsCurrentlyLoading = new Dictionary<string, byte>();
+            this.docsNotFound = new Dictionary<string, byte>();
+            this.docsNotIndexed = new Dictionary<CdmDocumentDefinition, byte>();
+        }
+
+        /// <summary>
+        /// Adds a folder and document to the list of all documents in the corpus. Also adds the document path to the path lookup.
+        /// </summary>
+        /// <param name="path">The document path.</param>
+        /// <param name="folder">The folder.</param>
+        /// <param name="doc">The document.</param>
+        internal void AddDocumentPath(string path, CdmFolderDefinition folder, CdmDocumentDefinition doc)
+        {
+            lock (this.allDocuments)
+            {
+                if (!this.pathLookup.ContainsKey(path))
+                {
+                    this.allDocuments.Add(Tuple.Create(folder, doc));
+                    this.pathLookup.Add(path, Tuple.Create(folder, doc));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes a folder and document from the list of all documents in the corpus. Also removes the document path from the path lookup.
+        /// </summary>
+        /// <param name="path">The document path.</param>
+        /// <param name="folder">The folder.</param>
+        /// <param name="doc">The document.</param>
+        internal void RemoveDocumentPath(string path, CdmFolderDefinition folder, CdmDocumentDefinition doc)
+        {
+            lock (this.allDocuments)
+            {
+                if (this.pathLookup.ContainsKey(path))
+                {
+                    this.pathLookup.Remove(path);
+                    int index = this.allDocuments.IndexOf(Tuple.Create(folder, doc));
+                    this.allDocuments.RemoveAt(index);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns a list of all the documents that are not indexed.
+        /// </summary>
+        internal List<CdmDocumentDefinition> ListDocsNotIndexed()
+        {
+            lock (this.allDocuments)
+            {
+                return new List<CdmDocumentDefinition>(this.docsNotIndexed.Keys);
+            }
+        }
+
+        /// <summary>
+        /// Returns a list of all the documents that are not loaded.
+        /// </summary>
+        internal List<String> ListDocsNotLoaded()
+        {
+            lock (this.allDocuments)
+            {
+                return new List<String>(this.docsNotLoaded.Keys);
+            }
+        }
+
+        /// <summary>
+        /// Returns a list of all the documents in the corpus.
+        /// </summary>
+        internal List<CdmDocumentDefinition> ListAllDocuments()
+        {
+            lock (this.allDocuments)
+            {
+                List<CdmDocumentDefinition> allDocuments = new List<CdmDocumentDefinition>();
+                foreach (Tuple<CdmFolderDefinition, CdmDocumentDefinition> fd in this.allDocuments)
+                {
+                    allDocuments.Add(fd.Item2);
+                }
+                return allDocuments;
+            }
+        }
+
+        /// <summary>
+        /// Adds a document to the list of documents that are not loaded if its path does not exist in the path lookup.
+        /// </summary>
+        /// <param name="path">The document path.</param>
+        internal void AddToDocsNotLoaded(string path)
+        {
+            lock (this.allDocuments)
+            {
+                if (!this.docsNotFound.ContainsKey(path))
+                {
+                    this.pathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
+                    if (lookup == null)
+                    {
+                        this.docsNotLoaded[path] = 1;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Fetches a document from the path lookup and adds it to the list of documents that are not indexed.
+        /// </summary>
+        /// <param name="path">The document path.</param>
+        /// <returns>The document with the given path.</returns>
+        internal CdmDocumentDefinition FetchDocumentAndMarkForIndexing(string path)
+        {
+            lock (this.allDocuments)
+            {
+                if (!this.docsNotFound.ContainsKey(path))
+                {
+                    this.pathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
+                    if (lookup != null)
+                    {
+                        if (!lookup.Item2.ImportsIndexed && !lookup.Item2.CurrentlyIndexing)
+                        {
+                            // Mark for indexing.
+                            lookup.Item2.CurrentlyIndexing = true;
+                            this.docsNotIndexed[lookup.Item2] = 1;
+                        }
+                        return lookup.Item2;
+                    }
+                }
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Sets a document's status to loading if the document needs to be loaded.
+        /// </summary>
+        /// <param name="docName">The document name.</param>
+        /// <returns>Whether a document needs to be loaded.</returns>
+        internal bool NeedToLoadDocument(string docName)
+        {
+            lock (this.allDocuments)
+            {
+                if (!this.docsNotFound.ContainsKey(docName) && !this.docsCurrentlyLoading.ContainsKey(docName))
+                {
+                    // Set status to loading.
+                    this.docsNotLoaded.Remove(docName);
+                    this.docsCurrentlyLoading.Add(docName, 1);
+
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Marks a document for indexing if it has loaded successfully, or adds it to the list of documents not found if it failed to load.
+        /// </summary>
+        /// <param name="doc">The document that was loaded.</param>
+        /// <param name="docName">The document name.</param>
+        /// <param name="docsNowLoaded">The dictionary of documents that are now loaded.</param>
+        /// <returns>Returns true if the document has loaded, false if it failed to load.</returns>
+        internal bool MarkDocumentAsLoadedOrFailed(CdmDocumentDefinition doc, string docName, ConcurrentDictionary<CdmDocumentDefinition, byte> docsNowLoaded)
+        {
+            lock (this.allDocuments)
+            {
+                // Doc is no longer loading.
+                this.docsCurrentlyLoading.Remove(docName);
+
+                if (doc != null)
+                {
+                    // Doc is now loaded.
+                    docsNowLoaded.TryAdd(doc, 1);
+                    // Doc needs to be indexed.
+                    this.docsNotIndexed.Add(doc, 1);
+                    doc.CurrentlyIndexing = true;
+
+                    return true;
+                }
+                else
+                {
+                    // The doc failed to load, so set doc as not found.
+                    this.docsNotFound.Add(docName, 1);
+
+                    return false;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Removes a document from the list of documents that are not indexed to mark it as indexed.
+        /// </summary>
+        /// <param name="doc">The document.</param>
+        internal void MarkDocumentAsIndexed(CdmDocumentDefinition doc)
+        {
+            lock (this.allDocuments)
+            {
+                this.docsNotIndexed.Remove(doc);
+            }
+        }
+
+        /// <summary>
+        /// Adds a document to the list of documents that are not indexed to mark it for indexing.
+        /// </summary>
+        /// <param name="doc">The document.</param>
+        internal void MarkDocumentForIndexing(CdmDocumentDefinition doc)
+        {
+            lock (this.allDocuments)
+            {
+                this.docsNotIndexed[doc] = 1;
+            }
+        }
+
+        /// <summary>
+        /// Whether a specific pair of folder-document exists in the list of all documents in the corpus.
+        /// </summary>
+        /// <param name="fd">The folder-document pair.</param>
+        internal bool Contains(Tuple<CdmFolderDefinition, CdmDocumentDefinition> fd)
+        {
+            return this.allDocuments.Contains(fd);
+        }
+    }
 
     public class CdmCorpusDefinition
     {
@@ -56,17 +292,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Whether we are currently performing a resolution or not.
         /// Used to stop making documents dirty during CdmCollections operations.
         /// </summary>
-        public bool isCurrentlyResolving = false;
+        internal bool isCurrentlyResolving = false;
 
         /// <summary>
         /// Used by Visit functions of CdmObjects to skip calculating the declaredPath.
         /// </summary>
-        public bool blockDeclaredPathChanges = false;
+        internal bool blockDeclaredPathChanges = false;
+        
+        /// <summary>
+        /// The set of resolution directives that will be used by default by the object model when it is resolving
+        /// entities and when no per-call set of directives is provided.
+        /// </summary>
+        public AttributeResolutionDirectiveSet DefaultResolutionDirectives  { get; set; }
 
-        internal List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>> AllDocuments { get; set; }
-
-        internal IDictionary<CdmDocumentDefinition, CdmFolderDefinition> Directory { get; set; }
-        private IDictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>> PathLookup { get; set; }
         private IDictionary<string, List<CdmDocumentDefinition>> SymbolDefinitions { get; set; }
 
         internal IDictionary<string, SymbolSet> DefinitionReferenceSymbols { get; set; }
@@ -77,17 +315,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal CdmManifestDefinition rootManifest { get; set; }
         internal IDictionary<string, CdmObject> objectCache { get; set; }
 
-        internal ConcurrentDictionary<string, byte> docsNotLoaded;
-        internal ConcurrentDictionary<string, byte> docsCurrentlyLoading;
-        internal ConcurrentDictionary<CdmDocumentDefinition, byte> docsNotIndexed;
-        internal ConcurrentDictionary<string, byte> docsNotFound;
+        
+
+        internal DocumentLibrary documentLibrary;
 
         private IDictionary<CdmEntityDefinition, List<CdmE2ERelationship>> OutgoingRelationships;
         private IDictionary<CdmEntityDefinition, List<CdmE2ERelationship>> IncomingRelationships;
-        internal IDictionary<string, List<CdmEntityDefinition>> symbol2EntityDefList { get; set; }
-
-        private readonly string CdmExtension = "cdm.json";
-
+        internal IDictionary<string, string> resEntMap { get; set; }
         internal SpinLock spinLock;
 
         /// <summary>
@@ -95,8 +329,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public CdmCorpusDefinition()
         {
-            this.AllDocuments = new List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
-            this.PathLookup = new Dictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>>();
             this.SymbolDefinitions = new Dictionary<string, List<CdmDocumentDefinition>>();
             this.DefinitionReferenceSymbols = new Dictionary<string, SymbolSet>();
             this.DefinitionWrtTag = new Dictionary<string, string>();
@@ -104,19 +336,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.NamespaceFolders = new Dictionary<string, CdmFolderDefinition>();
             this.OutgoingRelationships = new Dictionary<CdmEntityDefinition, List<CdmE2ERelationship>>();
             this.IncomingRelationships = new Dictionary<CdmEntityDefinition, List<CdmE2ERelationship>>();
-            this.symbol2EntityDefList = new Dictionary<string, List<CdmEntityDefinition>>();
+            this.resEntMap = new Dictionary<string, string>();
             this.objectCache = new Dictionary<string, CdmObject>();
+
+            this.documentLibrary = new DocumentLibrary();
 
             this.Ctx = new ResolveContext(this, null);
             this.Storage = new StorageManager(this);
 
-            this.docsNotLoaded = new ConcurrentDictionary<string, byte>();
-            this.docsCurrentlyLoading = new ConcurrentDictionary<string, byte>();
-            this.docsNotFound = new ConcurrentDictionary<string, byte>();
-            this.docsNotIndexed = new ConcurrentDictionary<CdmDocumentDefinition, byte>();
             this.spinLock = new SpinLock(false);
 
             this.Persistence = new PersistenceLayer(this);
+            
+            // the default for the default is to make entity attributes into foreign key references when they point at one other instance and 
+            // to ignore the other entities when there are an array of them
+            this.DefaultResolutionDirectives = new AttributeResolutionDirectiveSet(new HashSet<string>(){ "normalized", "referenceOnly" });
         }
 
         internal static int NextId()
@@ -209,22 +443,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     result.NewSymbol = StringUtils.Slice(symbol, preEnd + 1);
                     this.SymbolDefinitions.TryGetValue(result.NewSymbol, out List<CdmDocumentDefinition> tempDocList);
                     result.DocList = tempDocList;
+
+                    CdmDocumentDefinition tempMonikerDoc = null;
+                    bool usingWrtDoc = false;
                     if (fromDoc?.ImportPriorities?.MonikerPriorityMap?.ContainsKey(prefix) == true)
                     {
-                        fromDoc.ImportPriorities.MonikerPriorityMap.TryGetValue(prefix, out CdmDocumentDefinition tempMonikerDoc);
-                        // if more monikers, keep looking
-                        if (result.NewSymbol.IndexOf("/") >= 0 && !this.SymbolDefinitions.ContainsKey(result.NewSymbol))
-                            return DocsForSymbol(resOpt, wrtDoc, tempMonikerDoc, result.NewSymbol);
-                        resOpt.FromMoniker = prefix;
-                        result.DocBest = tempMonikerDoc;
+                        fromDoc.ImportPriorities.MonikerPriorityMap.TryGetValue(prefix, out tempMonikerDoc);
                     }
                     else if (wrtDoc.ImportPriorities?.MonikerPriorityMap?.ContainsKey(prefix) == true)
                     {
                         // if that didn't work, then see if the wrtDoc can find the moniker
-                        wrtDoc.ImportPriorities.MonikerPriorityMap.TryGetValue(prefix, out CdmDocumentDefinition tempMonikerDoc);
+                        wrtDoc.ImportPriorities.MonikerPriorityMap.TryGetValue(prefix, out tempMonikerDoc);
+                        usingWrtDoc = true;
+                    }
+
+                    if (tempMonikerDoc != null)
+                    {
                         // if more monikers, keep looking
-                        if (result.NewSymbol.IndexOf("/") >= 0)
-                            return DocsForSymbol(resOpt, wrtDoc, tempMonikerDoc, result.NewSymbol);
+                        if (result.NewSymbol.IndexOf("/") >= 0 && (usingWrtDoc || !this.SymbolDefinitions.ContainsKey(result.NewSymbol)))
+                        {
+                            DocsResult currDocsResult = DocsForSymbol(resOpt, wrtDoc, tempMonikerDoc, result.NewSymbol);
+                            if (currDocsResult.DocList == null && fromDoc == wrtDoc)
+                            {
+                                // we are back at the top and we have not found the docs, move the wrtDoc down one level
+                                return this.DocsForSymbol(resOpt, tempMonikerDoc, tempMonikerDoc, result.NewSymbol);
+                            }
+                            else
+                            {
+                                return currDocsResult;
+                            }
+                        }
                         resOpt.FromMoniker = prefix;
                         result.DocBest = tempMonikerDoc;
                     }
@@ -642,11 +890,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             CdmDocumentDefinition doc = docDef as CdmDocumentDefinition;
             string path = this.Storage.CreateAbsoluteCorpusPath(doc.FolderPath + doc.Name, doc).ToLower();
-            if (!this.PathLookup.ContainsKey(path))
-            {
-                this.AllDocuments.Add(Tuple.Create(folder, doc));
-                this.PathLookup.Add(path, Tuple.Create(folder, doc));
-            }
+            this.documentLibrary.AddDocumentPath(path, folder, doc);
+
             return doc;
         }
 
@@ -661,65 +906,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // remove from path lookup, folder lookup and global list of documents
             string path = this.Storage.CreateAbsoluteCorpusPath(doc.FolderPath + doc.Name, doc).ToLower();
-            if (this.PathLookup.ContainsKey(path))
-            {
-                this.PathLookup.Remove(path);
-                int index = this.AllDocuments.IndexOf(Tuple.Create(folder, doc));
-                this.AllDocuments.RemoveAt(index);
-            }
-        }
-
-        internal void ResolveDocumentImports(CdmDocumentDefinition doc, ConcurrentDictionary<string, byte> missingSet, ConcurrentDictionary<CdmDocumentDefinition, byte> importsNotIndexed, ConcurrentDictionary<string, byte> docsNotFound)
-        {
-            if (doc.Imports != null)
-            {
-                foreach (CdmImport imp in doc.Imports)
-                {
-                    if (imp.Doc == null)
-                    {
-                        // no document set for this import, see if it is already loaded into the corpus
-                        string path = this.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, doc);
-                        if (!docsNotFound.ContainsKey(path))
-                        {
-                            if (this.PathLookup.ContainsKey(path.ToLower()))
-                            {
-                                this.PathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
-                                if (!lookup.Item2.ImportsIndexed && !lookup.Item2.CurrentlyIndexing)
-                                {
-                                    lookup.Item2.CurrentlyIndexing = true;
-                                    importsNotIndexed[lookup.Item2] = 1;
-                                }
-                                imp.Doc = lookup.Item2;
-                            }
-                            else if (missingSet != null)
-                            {
-                                missingSet[path] = 1;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        internal ConcurrentDictionary<string, byte> ListMissingImports()
-        {
-            for (int i = 0; i < this.AllDocuments.Count; i++)
-            {
-                var fs = this.AllDocuments[i];
-                this.FindMissingImportsFromDocument(fs.Item2);
-            }
-
-            if (this.docsNotLoaded.Count == 0)
-                return null;
-            return this.docsNotLoaded;
+            this.documentLibrary.RemoveDocumentPath(path, folder, doc);
         }
 
         internal bool IndexDocuments(ResolveOptions resOpt, CdmDocumentDefinition CurrentDoc)
         {
-            if (this.docsNotIndexed.Count > 0)
+            List<CdmDocumentDefinition> docsNotIndexed = this.documentLibrary.ListDocsNotIndexed();
+
+            if (docsNotIndexed.Count > 0)
             {
                 // index any imports
-                foreach (CdmDocumentDefinition doc in this.docsNotIndexed.Keys)
+                foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
                     if (doc.NeedsIndexing)
                     {
@@ -729,7 +926,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
                 // check basic integrity
-                foreach (CdmDocumentDefinition doc in this.docsNotIndexed.Keys)
+                foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
                     if (doc.NeedsIndexing)
                     {
@@ -740,7 +937,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
                 // declare definitions in objects in this doc
-                foreach (CdmDocumentDefinition doc in this.docsNotIndexed.Keys)
+                foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
                     if (doc.NeedsIndexing)
                     {
@@ -748,7 +945,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
                 // make sure we can find everything that is named by reference
-                foreach (CdmDocumentDefinition doc in this.docsNotIndexed.Keys)
+                foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
                     if (doc.NeedsIndexing)
                     {
@@ -758,7 +955,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
                 // now resolve any trait arguments that are type object
-                foreach (CdmDocumentDefinition doc in this.docsNotIndexed.Keys)
+                foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
                     if (doc.NeedsIndexing)
                     {
@@ -768,7 +965,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                 }
                 // finish up
-                foreach (CdmDocumentDefinition doc in this.docsNotIndexed.Keys)
+                foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
                     if (doc.NeedsIndexing)
                     {
@@ -780,13 +977,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             return true;
         }
-        
+
         internal bool Visit(string path, VisitCallback preChildren, VisitCallback postChildren)
         {
             return false;
         }
 
-        internal async Task<CdmContainerDefinition> LoadFolderOrDocument(string objectPath, bool forceReload = false)
+        internal async Task<CdmContainerDefinition> LoadFolderOrDocument(string objectPath, bool forceReload = false, ResolveOptions resOpt = null)
         {
             if (!string.IsNullOrWhiteSpace(objectPath))
             {
@@ -817,7 +1014,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         // remove path to folder and then look in the folder
                         objectPath = StringUtils.Slice(objectPath, lastPath.Length);
 
-                        return await lastFolder.FetchDocumentFromFolderPathAsync(objectPath, namespaceAdapter, forceReload);
+                        return await lastFolder.FetchDocumentFromFolderPathAsync(objectPath, namespaceAdapter, forceReload, resOpt);
                     }
                 }
             }
@@ -827,18 +1024,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Fetches an object by the path from the corpus.
         /// </summary>
-        internal async Task<CdmObject> _FetchObjectAsync(string objectPath, CdmObject obj = null, bool forceReload = false)
+        internal async Task<CdmObject> _FetchObjectAsync(string objectPath, CdmObject obj = null, bool forceReload = false, bool shallowValidation = false)
         {
             // Convert the object path to the absolute corpus path.
             objectPath = this.Storage.CreateAbsoluteCorpusPath(objectPath, obj);
 
             var documentPath = objectPath;
-            var documentNameIndex = objectPath.LastIndexOf(CdmExtension);
+            var documentNameIndex = objectPath.LastIndexOf(PersistenceLayer.CdmExtension);
 
             if (documentNameIndex != -1)
             {
                 // if there is something after the document path, split it into document path and object path.
-                documentNameIndex += CdmExtension.Count();
+                documentNameIndex += PersistenceLayer.CdmExtension.Count();
                 documentPath = objectPath.Slice(0, documentNameIndex);
             }
 
@@ -850,7 +1047,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // get imports and index each document that is loaded
                 if (newObj is CdmDocumentDefinition)
                 {
-                    ResolveOptions resOpt = new ResolveOptions { WrtDoc = (CdmDocumentDefinition)newObj, Directives = new AttributeResolutionDirectiveSet() };
+                    ResolveOptions resOpt = new ResolveOptions { WrtDoc = (CdmDocumentDefinition)newObj, Directives = new AttributeResolutionDirectiveSet(), ShallowValidation = shallowValidation };
                     if (!await ((CdmDocumentDefinition)newObj).IndexIfNeeded(resOpt))
                     {
                         return null;
@@ -887,10 +1084,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <typeparam name="T"> Type of the object to be fetched</typeparam>
         /// <param name="objectPath">Object path, absolute or relative.</param>
         /// <param name="obj">Optional parameter. When provided, it is used to obtain the FolderPath and the Namespace needed to create the absolute path from a relative path.</param>
+        /// <param name="shallowValidation">Optional parameter. When provided, shallow validation in ResolveOptions is enabled, which logs errors regarding resolving/loading references as warnings.</param>
         /// <returns>The object obtained from the provided path.</returns>
-        public async Task<T> FetchObjectAsync<T>(string objectPath, CdmObject obj = null)
+        public async Task<T> FetchObjectAsync<T>(string objectPath, CdmObject obj = null, bool shallowValidation = false)
         {
-            return (T)(await _FetchObjectAsync(objectPath, obj));
+            return (T)(await _FetchObjectAsync(objectPath, obj, false, shallowValidation));
         }
 
         /// <summary>
@@ -916,14 +1114,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         // no document set for this import, see if it is already loaded into the corpus
                         string path = this.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, doc);
-                        if (!this.docsNotFound.ContainsKey(path))
-                        {
-                            this.PathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
-                            if (lookup == null)
-                            {
-                                this.docsNotLoaded.TryAdd(path, 1);
-                            }
-                        }
+                        this.documentLibrary.AddToDocsNotLoaded(path);
+                        
                     }
                 }
             }
@@ -942,22 +1134,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         // no document set for this import, see if it is already loaded into the corpus
                         string path = this.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, doc);
-
-                        if (!this.docsNotFound.ContainsKey(path))
+                        CdmDocumentDefinition impDoc = this.documentLibrary.FetchDocumentAndMarkForIndexing(path);
+                        if (impDoc != null)
                         {
-                            this.PathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
-                            if (lookup != null)
-                            {
-                                if (!lookup.Item2.ImportsIndexed && !lookup.Item2.CurrentlyIndexing)
-                                {
-                                    lookup.Item2.CurrentlyIndexing = true;
-                                    this.docsNotIndexed[lookup.Item2] = 1;
-                                }
-                                imp.Doc = lookup.Item2;
+                            imp.Doc = impDoc;
 
-                                // repeat the process for the import documents
-                                this.SetImportDocuments(imp.Doc);
-                            }
+                            // repeat the process for the import documents
+                            this.SetImportDocuments(imp.Doc);
                         }
                     }
                 }
@@ -967,46 +1150,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// 
         /// </summary>
-        internal async Task LoadImportsAsync(CdmDocumentDefinition doc)
+        internal async Task LoadImportsAsync(CdmDocumentDefinition doc, ResolveOptions resOpt)
         {
             var docsNowLoaded = new ConcurrentDictionary<CdmDocumentDefinition, byte>();
+            List<String> docsNotLoaded = this.documentLibrary.ListDocsNotLoaded();
 
-            if (this.docsNotLoaded.Count > 0)
+            if (docsNotLoaded.Count > 0)
             {
                 Func<string, Task> loadDocs = null;
                 loadDocs = async (string missing) =>
                 {
-                    if (!this.docsNotFound.ContainsKey(missing) && !this.docsCurrentlyLoading.ContainsKey(missing))
+                    if (this.documentLibrary.NeedToLoadDocument(missing))
                     {
-                        // set status to loading
-                        this.docsNotLoaded.TryRemove(missing, out byte val);
-                        this.docsCurrentlyLoading.TryAdd(missing, 1);
-
                         // load it
-                        CdmDocumentDefinition newDoc = await this.LoadFolderOrDocument(missing) as CdmDocumentDefinition;
+                        CdmDocumentDefinition newDoc = await this.LoadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
 
-                        if (newDoc != null)
+                        if (this.documentLibrary.MarkDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded))
                         {
                             Logger.Info(nameof(CdmCorpusDefinition), this.Ctx, $"resolved import for '{newDoc.Name}'", doc.AtCorpusPath);
-                            // doc is now loaded
-                            docsNowLoaded.TryAdd(newDoc, 1);
-                            // next step is that the doc needs to be indexed
-                            this.docsNotIndexed.TryAdd(newDoc, 1);
-                            newDoc.CurrentlyIndexing = true;
                         }
                         else
                         {
                             Logger.Warning(nameof(CdmCorpusDefinition), this.Ctx, $"unable to resolve import for '{missing}'", doc.AtCorpusPath);
-                            // set doc as not found
-                            this.docsNotFound.TryAdd(missing, 1);
                         }
-                        // doc is no longer loading
-                        this.docsCurrentlyLoading.TryRemove(missing, out val);
                     }
                 };
 
                 var taskList = new List<Task>();
-                foreach (var missing in this.docsNotLoaded.Keys)
+                foreach (var missing in docsNotLoaded)
                 {
                     taskList.Add(loadDocs(missing));
                 }
@@ -1015,7 +1186,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 await Task.WhenAll(taskList);
 
                 // now that we've loaded new docs, find imports from them that need loading
-                foreach (var loadedDoc in docsNowLoaded.Keys) {
+                foreach (var loadedDoc in docsNowLoaded.Keys)
+                {
                     this.FindMissingImportsFromDocument(loadedDoc);
                 }
 
@@ -1023,33 +1195,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 List<Task> importTaskList = new List<Task>();
                 foreach (var loadedDoc in docsNowLoaded.Keys)
                 {
-                    importTaskList.Add(this.LoadImportsAsync(loadedDoc));
+                    importTaskList.Add(this.LoadImportsAsync(loadedDoc, resOpt));
                 }
 
                 await Task.WhenAll(importTaskList);
-
-                // now we know everything for the imports have been loaded
-                // attach newly loaded import docs to import list
-                //   note: we do not know if all imports for 'doc' are loaded
-                //   because loadImportsAsync could have been called in parallel
-                //   and a different call of loadImportsAsync could be loading an
-                //   import that we will need
-                foreach (var loadedDoc in docsNowLoaded.Keys)
-                {
-                    this.SetImportDocuments(loadedDoc);
-                }
             }
         }
 
         /// <summary>
         /// Takes a callback that asks for a promise to do URI resolution.
         /// </summary>
-        internal async Task ResolveImportsAsync(CdmDocumentDefinition doc)
+        internal async Task ResolveImportsAsync(CdmDocumentDefinition doc, ResolveOptions resOpt)
         {
             // find imports for this doc
             this.FindMissingImportsFromDocument(doc);
             // load imports (and imports of imports)
-            await this.LoadImportsAsync(doc);
+            await this.LoadImportsAsync(doc, resOpt);
             // now that everything is loaded, attach import docs to this doc's import list
             this.SetImportDocuments(doc);
         }
@@ -1315,14 +1476,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                                 if (resNew == null)
                                 {
-                                    // it is 'ok' to not find entity refs sometimes
-                                    if (ot == CdmObjectType.EntityRef)
+                                    string message = $"Unable to resolve the reference '{reff.NamedReference}' to a known object";
+                                    string messagePath = $"{CurrentDoc.FolderPath}{path}";
+
+                                    // It's okay if references can't be resolved when shallow validation is enabled.
+                                    if (resOpt.ShallowValidation)
                                     {
-                                        Logger.Warning(nameof(CdmCorpusDefinition), ctx, $"unable to resolve the reference '{reff.NamedReference}' to a known object", $"{CurrentDoc.FolderPath}{path}");
+                                        Logger.Warning(nameof(CdmCorpusDefinition), ctx, message, messagePath);
                                     }
                                     else
                                     {
-                                        Logger.Error(nameof(CdmCorpusDefinition), ctx, $"unable to resolve the reference '{reff.NamedReference}' to a known object", $"{CurrentDoc.FolderPath}{path}");
+                                        Logger.Error(nameof(CdmCorpusDefinition), ctx, message, messagePath);
                                     }
                                     CdmObjectDefinition debugRes = reff.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
                                 }
@@ -1423,6 +1587,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             doc.CurrentlyIndexing = false;
             doc.ImportsIndexed = true;
             doc.NeedsIndexing = false;
+            this.documentLibrary.MarkDocumentAsIndexed(doc);
 
             doc.Definitions.AllItems.ForEach(def =>
             {
@@ -1431,8 +1596,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"indexed entity: {def.AtCorpusPath}");
                 }
             });
-
-            this.docsNotIndexed.TryRemove(doc, out byte val);
         }
 
         internal void FinishResolve()
@@ -1443,18 +1606,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ////////////////////////////////////////////////////////////////////////////////////////////////////
             Logger.Debug(nameof(CdmCorpusDefinition), ctx, "finishing...");
             // turn elevated traits back on, they are off by default and should work fully now that everything is resolved
-            int l = this.AllDocuments.Count;
+            List<CdmDocumentDefinition> AllDocuments = this.documentLibrary.ListAllDocuments();
+            int l = AllDocuments.Count;
             for (int i = 0; i < l; i++)
             {
-                Tuple<CdmFolderDefinition, CdmDocumentDefinition> fd = this.AllDocuments[i];
-                this.FinishDocumentResolve(fd.Item2);
+                this.FinishDocumentResolve(AllDocuments[i]);
             }
         }
 
         private bool IsPathManifestDocument(string path)
         {
-            return (path.EndsWith(PersistenceLayer.FetchManifestExtension())) || path.EndsWith(PersistenceLayer.FetchModelJsonExtension())
-                || path.EndsWith(PersistenceLayer.FetchFolioExtension()) || path.EndsWith(PersistenceLayer.FetchOdiExtension());
+            return (path.EndsWith(PersistenceLayer.ManifestExtension)) || path.EndsWith(PersistenceLayer.ModelJsonExtension)
+                || path.EndsWith(PersistenceLayer.FolioExtension) || path.EndsWith(PersistenceLayer.OdiExtension);
         }
 
         /// <summary>
@@ -1484,16 +1647,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <returns>A <see cref="Task"/> for the completion of entity graph calculation.</returns>
         public async Task CalculateEntityGraphAsync(CdmManifestDefinition currManifest)
         {
-            await _CalculateEntityGraphAsync(currManifest);
-        }
-
-        /// <summary>
-        /// Calculates the entity to entity relationships for all the entities present in the manifest and its sub-manifests.
-        /// </summary>
-        /// <param name="currManifest">The manifest (and any sub-manifests it contains) that we want to calculate relationships for.</param>
-        /// <returns>A <see cref="Task"/> for the completion of entity graph calculation.</returns>
-        internal async Task _CalculateEntityGraphAsync(CdmManifestDefinition currManifest, IDictionary<string, string> resEntMap = null)
-        {
             if (currManifest.Entities != null)
             {
                 foreach (CdmEntityDeclarationDefinition entityDec in currManifest.Entities)
@@ -1507,7 +1660,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         continue;
 
                     CdmEntityDefinition resEntity;
-                    ResolveOptions resOpt = new ResolveOptions(entity.InDocument);
+                     // make options wrt this entity document and "relational" always
+                    ResolveOptions resOpt = new ResolveOptions(entity.InDocument, new AttributeResolutionDirectiveSet(new HashSet<string>(){ "normalized", "referenceOnly" }));
 
                     bool isResolvedEntity = entity.AttributeContext != null;
 
@@ -1522,23 +1676,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         resEntity = entity;
                     }
 
-                    if (!this.symbol2EntityDefList.ContainsKey(entity.EntityName))
-                        this.symbol2EntityDefList[entity.EntityName] = new List<CdmEntityDefinition>();
-
-                    this.symbol2EntityDefList[entity.EntityName].Add(entity);
-
                     // find outgoing entity relationships using attribute context
                     List<CdmE2ERelationship> outgoingRelationships = this.FindOutgoingRelationships(resOpt, resEntity, resEntity.AttributeContext);
 
                     // if the entity is a resolved entity, change the relationships to point to the resolved versions
-                    if (isResolvedEntity && resEntMap != null)
+                    if (isResolvedEntity && this.resEntMap != null)
                     {
                         foreach (CdmE2ERelationship rel in outgoingRelationships)
                         {
-                            if (resEntMap.ContainsKey(rel.ToEntity))
-                            {
-                                rel.ToEntity = resEntMap[rel.ToEntity];
-                            }
+                            if (this.resEntMap.ContainsKey(rel.ToEntity))
+                                rel.ToEntity = this.resEntMap[rel.ToEntity];
                         }
                     }
 
@@ -1581,12 +1728,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
-        internal List<CdmE2ERelationship> FindOutgoingRelationships(ResolveOptions resOpt, CdmEntityDefinition resEntity, CdmAttributeContext attCtx, CdmAttributeContext outerAttGroup = null)
+        internal List<CdmE2ERelationship> FindOutgoingRelationships(ResolveOptions resOpt, CdmEntityDefinition resEntity, CdmAttributeContext attCtx, CdmAttributeContext generatedAttSetContext = null)
         {
             List<CdmE2ERelationship> outRels = new List<CdmE2ERelationship>();
 
             if (attCtx?.Contents != null)
             {
+                // as we traverse the context tree, look for these nodes which hold the foreign key
+                // once we find a context node that refers to an entity reference, we will use the
+                // nearest _generatedAttributeSet (which is above or at the same level as the entRef context)
+                // and use its foreign key
+                CdmAttributeContext newGenSet = (CdmAttributeContext)attCtx.Contents.Item("_generatedAttributeSet");
+                if (newGenSet == null)
+                    newGenSet = generatedAttSetContext;
+
                 foreach (dynamic subAttCtx in attCtx.Contents)
                 {
                     if (subAttCtx.ObjectType == CdmObjectType.AttributeContextDef)
@@ -1642,7 +1797,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     return null;
                                 };
 
-                                string foreignKey = findAddedAttributeIdentity(outerAttGroup != null ? outerAttGroup : attCtx);
+                                string foreignKey = findAddedAttributeIdentity(newGenSet);
 
                                 if (foreignKey != null)
                                 {
@@ -1659,14 +1814,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 }
                             }
                         }
-                        else if (child?.Definition?.ObjectType == CdmObjectType.AttributeGroupRef)
-                        {
-                            // if this is an attribute group, we need to search for foreign keys from this level
-                            outerAttGroup = child;
-                        }
                         // repeat the process on the child node
-                        List<CdmE2ERelationship> subOutRels = this.FindOutgoingRelationships(resOpt, resEntity, child, outerAttGroup);
-                        outerAttGroup = null;
+                        List<CdmE2ERelationship> subOutRels = this.FindOutgoingRelationships(resOpt, resEntity, child, newGenSet);
                         outRels.AddRange(subOutRels);
                     }
                 }
@@ -1742,16 +1891,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <returns>The validation step that follows the completed step.</returns>
         public async Task<CdmValidationStep> ResolveReferencesAndValidateAsync(CdmValidationStep stage, CdmValidationStep stageThrough, ResolveOptions resOpt)
         {
-            // use the provided directives or make a relational default
+            // use the provided directives or use the current default
             AttributeResolutionDirectiveSet directives = null;
             if (resOpt != null)
                 directives = resOpt.Directives;
             else
-                directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "normalized" });
+                directives = this.DefaultResolutionDirectives;
             resOpt = new ResolveOptions { WrtDoc = null, Directives = directives, RelationshipDepth = 0 };
 
-            foreach (Tuple<CdmFolderDefinition, CdmDocumentDefinition> doc in this.AllDocuments)
-                await doc.Item2.IndexIfNeeded(resOpt);
+            foreach (CdmDocumentDefinition doc in this.documentLibrary.ListAllDocuments())
+                await doc.IndexIfNeeded(resOpt);
 
             bool finishResolve = stageThrough == stage;
             switch (stage)
@@ -1821,10 +1970,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             var ctx = this.Ctx as ResolveContext;
             Logger.Debug(nameof(CdmCorpusDefinition), ctx, statusMessage);
             int entityNesting = 0;
-            foreach (var fd in this.AllDocuments)
+            foreach (CdmDocumentDefinition doc in this.documentLibrary.ListAllDocuments())
             {
                 // cache import documents
-                CdmDocumentDefinition CurrentDoc = fd.Item2;
+                CdmDocumentDefinition CurrentDoc = doc;
                 resolveOpt.WrtDoc = CurrentDoc;
                 resolveAction(ref CurrentDoc, ref resolveOpt, ref entityNesting);
             }

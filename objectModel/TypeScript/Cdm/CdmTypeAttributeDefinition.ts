@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { cdmDataFormat } from '../Enums/cdmDataFormat';
 import {
     AttributeResolutionContext,
@@ -9,7 +12,6 @@ import {
     CdmCorpusContext,
     CdmDataTypeReference,
     CdmObject,
-    CdmObjectBase,
     cdmObjectType,
     ResolvedAttribute,
     ResolvedAttributeSetBuilder,
@@ -94,10 +96,10 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public set dataFormat(val: cdmDataFormat) {
         this.traitToPropertyMap.updatePropertyValue('dataFormat', val);
     }
-    public get defaultValue(): string {
-        return this.traitToPropertyMap.fetchPropertyValue('defaultValue') as string;
+    public get defaultValue(): object {
+        return this.traitToPropertyMap.fetchPropertyValue('defaultValue') as object;
     }
-    public set defaultValue(val: string) {
+    public set defaultValue(val: object) {
         this.traitToPropertyMap.updatePropertyValue('defaultValue', val);
     }
 
@@ -113,10 +115,14 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
         {
             this.objectType = cdmObjectType.typeAttributeDef;
             this.traitToPropertyMap = new traitToPropertyMap(this);
+            this.attributeCount = 1;
         }
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public getProperty(propertyName: string): any {
         return this.traitToPropertyMap.fetchPropertyValue(propertyName, true);
     }

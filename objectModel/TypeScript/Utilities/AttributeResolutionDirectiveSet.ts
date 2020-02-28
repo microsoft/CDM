@@ -1,8 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 export class AttributeResolutionDirectiveSet {
     public set: Set<string>;
     public setRemoved: Set<string>;
-    public sortedTag: string;
+    private sortedTag: string;
     constructor(set?: Set<string>) {
         if (set) {
             this.set = new Set<string>(set);

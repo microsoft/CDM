@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -58,7 +61,7 @@
             Assert.IsTrue(document.NeedsIndexing);
             Assert.AreEqual(folder, document.Owner);
             Assert.IsTrue(folder.DocumentLookup.ContainsKey(document.Name));
-            Assert.IsTrue(manifest.Ctx.Corpus.AllDocuments.Contains(Tuple.Create(folder, document)));
+            Assert.IsTrue(manifest.Ctx.Corpus.documentLibrary.Contains(Tuple.Create(folder, document)));
         }
 
         [TestMethod]
@@ -169,10 +172,10 @@
             var document2 = folder.Documents.Add("DocumentName2");
             var document3 = folder.Documents.Add("DocumentName3");
 
-            Assert.AreEqual(manifest.Ctx.Corpus.AllDocuments.Count, 3);
-            Assert.IsTrue(manifest.Ctx.Corpus.AllDocuments.Contains(Tuple.Create(folder, document)));
-            Assert.IsTrue(manifest.Ctx.Corpus.AllDocuments.Contains(Tuple.Create(folder, document2)));
-            Assert.IsTrue(manifest.Ctx.Corpus.AllDocuments.Contains(Tuple.Create(folder, document3)));
+            Assert.AreEqual(manifest.Ctx.Corpus.documentLibrary.ListAllDocuments().Count, 3);
+            Assert.IsTrue(manifest.Ctx.Corpus.documentLibrary.Contains(Tuple.Create(folder, document)));
+            Assert.IsTrue(manifest.Ctx.Corpus.documentLibrary.Contains(Tuple.Create(folder, document2)));
+            Assert.IsTrue(manifest.Ctx.Corpus.documentLibrary.Contains(Tuple.Create(folder, document3)));
 
             Assert.AreEqual(folder.DocumentLookup.Count, 3);
             Assert.IsTrue(folder.DocumentLookup.ContainsKey(document.Name));
@@ -183,10 +186,10 @@
             folder.Documents.Remove("DocumentName");
             folder.Documents.Remove(document3);
 
-            Assert.AreEqual(manifest.Ctx.Corpus.AllDocuments.Count, 0);
-            Assert.IsFalse(manifest.Ctx.Corpus.AllDocuments.Contains(Tuple.Create(folder, document)));
-            Assert.IsFalse(manifest.Ctx.Corpus.AllDocuments.Contains(Tuple.Create(folder, document2)));
-            Assert.IsFalse(manifest.Ctx.Corpus.AllDocuments.Contains(Tuple.Create(folder, document3)));
+            Assert.AreEqual(manifest.Ctx.Corpus.documentLibrary.ListAllDocuments().Count, 0);
+            Assert.IsFalse(manifest.Ctx.Corpus.documentLibrary.Contains(Tuple.Create(folder, document)));
+            Assert.IsFalse(manifest.Ctx.Corpus.documentLibrary.Contains(Tuple.Create(folder, document2)));
+            Assert.IsFalse(manifest.Ctx.Corpus.documentLibrary.Contains(Tuple.Create(folder, document3)));
 
             Assert.AreEqual(folder.DocumentLookup.Count, 0);
             Assert.IsFalse(folder.DocumentLookup.ContainsKey(document.Name));
@@ -210,7 +213,7 @@
             folder.Documents.Clear();
 
             Assert.AreEqual(0, folder.DocumentLookup.Count);
-            Assert.AreEqual(0, manifest.Ctx.Corpus.AllDocuments.Count);
+            Assert.AreEqual(0, manifest.Ctx.Corpus.documentLibrary.ListAllDocuments().Count);
             Assert.AreEqual(0, folder.Documents.Count);
         }
     }

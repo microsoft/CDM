@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -23,10 +24,4 @@ public interface CdmObjectDefinition extends CdmObject {
    * this method returns the name independent of the name of the name property.
    */
   String getName();
-
-  /**
-   * Returns true if the object (or the referenced object) is an extension
-   * from the specified symbol name in some way.
-   */
-  boolean isDerivedFrom(String baseDef, ResolveOptions resOpt);
 }

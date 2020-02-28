@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmFolder } from '..';
 import {
     CdmCorpusContext,
@@ -7,8 +10,10 @@ import {
     CdmTypeAttributeDefinition,
     copyOptions,
     Logger,
-    resolveOptions
+    resolveOptions,
+    traitToPropertyMap
 } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeResolutionGuidance,
     DataTypeReference,
@@ -19,7 +24,7 @@ import {
 import * as utils from './utils';
 
 export class TypeAttributePersistence {
-    public static fromData(ctx: CdmCorpusContext, object: TypeAttribute): CdmTypeAttributeDefinition {
+    public static fromData(ctx: CdmCorpusContext, object: TypeAttribute, entityName?: string): CdmTypeAttributeDefinition {
         const typeAttribute: CdmTypeAttributeDefinition = ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, object.name);
 
         if (object.explanation) {
@@ -37,38 +42,24 @@ export class TypeAttributePersistence {
         typeAttribute.resolutionGuidance =
             CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.resolutionGuidance);
 
-        if (object.isReadOnly) {
-            typeAttribute.isReadOnly = object.isReadOnly;
+        if (object.isPrimaryKey && entityName) {
+            const t2pMap: traitToPropertyMap = new traitToPropertyMap(typeAttribute);
+            t2pMap.updatePropertyValue('isPrimaryKey', entityName + '/(resolvedAttributes)/' + typeAttribute.name);
         }
-        if (object.isNullable) {
-            typeAttribute.isNullable = object.isNullable;
-        }
-        if (object.sourceName) {
-            typeAttribute.sourceName = object.sourceName;
-        }
-        if (object.sourceOrdering) {
-            typeAttribute.sourceOrdering = object.sourceOrdering;
-        }
-        if (object.displayName) {
-            typeAttribute.displayName = object.displayName;
-        }
-        if (object.description) {
-            typeAttribute.description = object.description;
-        }
-        if (object.valueConstrainedToList) {
-            typeAttribute.valueConstrainedToList = object.valueConstrainedToList;
-        }
-        if (object.maximumLength) {
-            typeAttribute.maximumLength = object.maximumLength;
-        }
-        if (object.maximumValue) {
-            typeAttribute.maximumValue = object.maximumValue;
-        }
-        if (object.minimumValue) {
-            typeAttribute.minimumValue = object.minimumValue;
-        }
-        if (object.dataFormat) {
-            typeAttribute.dataFormat = this.dataTypeFromData(object.dataFormat);
+
+        typeAttribute.isReadOnly = TypeAttributePersistence.propertyFromDataToBool(object.isReadOnly);
+        typeAttribute.isNullable = TypeAttributePersistence.propertyFromDataToBool(object.isNullable);
+        typeAttribute.sourceName = TypeAttributePersistence.propertyFromDataToString(object.sourceName);
+        typeAttribute.sourceOrdering = TypeAttributePersistence.propertyFromDataToInt(object.sourceOrdering);
+        typeAttribute.displayName = TypeAttributePersistence.propertyFromDataToString(object.displayName);
+        typeAttribute.description = TypeAttributePersistence.propertyFromDataToString(object.description);
+        typeAttribute.valueConstrainedToList = TypeAttributePersistence.propertyFromDataToBool(object.valueConstrainedToList);
+        typeAttribute.maximumLength = TypeAttributePersistence.propertyFromDataToInt(object.maximumLength);
+        typeAttribute.maximumValue = TypeAttributePersistence.propertyFromDataToString(object.maximumValue);
+        typeAttribute.minimumValue = TypeAttributePersistence.propertyFromDataToString(object.minimumValue);
+
+        if (object.dataFormat !== undefined) {
+            typeAttribute.dataFormat = TypeAttributePersistence.dataTypeFromData(object.dataFormat);
             if (typeAttribute.dataFormat === undefined) {
                 Logger.warning(
                     TypeAttributePersistence.name,
@@ -78,12 +69,13 @@ export class TypeAttributePersistence {
                 );
             }
         }
-        if (object.defaultValue) {
+        if (object.defaultValue !== undefined) {
             typeAttribute.defaultValue = object.defaultValue;
         }
 
         return typeAttribute;
     }
+
     public static toData(instance: CdmTypeAttributeDefinition, resOpt: resolveOptions, options: copyOptions): TypeAttribute {
         const appliedTraits: CdmTraitReference[] = instance.appliedTraits ?
             instance.appliedTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
@@ -94,7 +86,7 @@ export class TypeAttributePersistence {
                 : undefined,
             dataType: instance.dataType ? instance.dataType.copyData(resOpt, options) as (string | DataTypeReference) : undefined,
             name: instance.name,
-            appliedTraits: utils.arrayCopyData<string | TraitReference>(resOpt, appliedTraits, options),
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, appliedTraits, options),
             resolutionGuidance: instance.resolutionGuidance
                 ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
             attributeContext: instance.attributeContext ? instance.attributeContext.copyData(resOpt, options) as string : undefined
@@ -108,7 +100,7 @@ export class TypeAttributePersistence {
         object.sourceName = instance.getProperty('sourceName') as string;
 
         const sourceOrdering: number = instance.getProperty('sourceOrdering') as number;
-        object.sourceOrdering = !isNaN(sourceOrdering) ? sourceOrdering : undefined;
+        object.sourceOrdering = !isNaN(sourceOrdering) && sourceOrdering !== 0 ? sourceOrdering : undefined;
 
         object.displayName = instance.getProperty('displayName') as string;
         object.description = instance.getProperty('description') as string;
@@ -126,12 +118,61 @@ export class TypeAttributePersistence {
         const dataFormat: cdmDataFormat = instance.getProperty('dataFormat') as cdmDataFormat;
         object.dataFormat = dataFormat !== cdmDataFormat.unknown ? this.dataTypeToData(dataFormat) : undefined;
 
-        const defaultValue: any = instance.getProperty('');
+        const defaultValue: any = instance.getProperty('defaultValue');
         if (defaultValue) {
             object.defaultValue = defaultValue;
         }
 
         return object;
+    }
+
+    /**
+     * Converts dynamic input into a string for a property (ints are converted to string)
+     * @param value The value that should be converted to a string.
+     */
+    private static propertyFromDataToString(value): string {
+        if (typeof value === 'string' && value !== '') {
+            return value;
+        } else if (typeof value === 'number') {
+            return value.toString();
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
+     * @param value The value that should be converted to an int.
+     */
+    private static propertyFromDataToInt(value): number {
+        if (typeof value === 'number') {
+            return value;
+        } else if (typeof value === 'string') {
+            const numberValue: number = Number(value);
+            if (!isNaN(numberValue)) {
+                return numberValue;
+            }
+        }
+
+        return undefined;
+    }
+
+    /**
+     * Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
+     * @param value The value that should be converted to a boolean.
+     */
+    private static propertyFromDataToBool(value): boolean {
+        if (typeof value === 'boolean') {
+            return value;
+        } else if (typeof value === 'string') {
+            if (value === 'true' || value === 'True') {
+                return true;
+            } else if (value === 'false' || value === 'False') {
+                return false;
+            }
+        }
+
+        return undefined;
     }
 
     // case insensitive for input

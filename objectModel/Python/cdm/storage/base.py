@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import abc
 import datetime
@@ -43,7 +41,7 @@ class StorageAdapterBase(abc.ABC):
         """Clear the cache of files and folders (if storage adapter uses a cache)."""
 
     @abc.abstractmethod
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime.datetime]:
+    async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime.datetime]:
         """Return last modified time of specified document."""
 
     @abc.abstractmethod

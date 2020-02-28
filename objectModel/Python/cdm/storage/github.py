@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import datetime
 import json
@@ -47,7 +45,7 @@ class GithubAdapter(NetworkAdapter, StorageAdapterBase):
     def clear_cache(self) -> None:
         self._is_folder = {}
 
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime.datetime]:
+    async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime.datetime]:
         return datetime.datetime.now()
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:

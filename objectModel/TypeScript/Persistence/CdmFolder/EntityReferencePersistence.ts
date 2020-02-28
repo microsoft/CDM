@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmConstantEntityDefinition,
     CdmCorpusContext,
@@ -6,7 +10,6 @@ import {
     cdmObjectType,
     CdmTraitReference
 } from '../../internal';
-import { CdmFolder } from '..';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import {
     ConstantEntity,

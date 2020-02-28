@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
@@ -6,23 +9,29 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.CdmFolderType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.DocumentPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
+import com.microsoft.commondatamodel.objectmodel.persistence.common.InterfaceToImpl;
 import com.microsoft.commondatamodel.objectmodel.persistence.common.PersistenceType;
+import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ModelJsonType;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.text.MessageFormat;
 import java.time.OffsetDateTime;
-import java.util.HashMap;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,32 +41,33 @@ public class PersistenceLayer {
   final CdmCorpusDefinition corpus;
   final CdmCorpusContext ctx;
 
-  static final String cdmFolder = "CdmFolder";
-  static final String modelJson = "ModelJson";
-  static final String odi = "Odi";
+  public static final String cdmFolder = "CdmFolder";
+  public static final String modelJson = "ModelJson";
+  public static final String odi = "Odi";
 
   private static final Map<String, PersistenceType> persistenceTypeMap = new LinkedHashMap<>();
   private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceLayer.class);
 
   static {
     persistenceTypeMap.put(cdmFolder, new CdmFolderType());
+    persistenceTypeMap.put(modelJson, new ModelJsonType());
   }
 
   /**
    * The dictionary of file extension <-> persistence class that handles the file format.
    */
-  private Map<String, Class> registeredPersistenceFormats;
+  private ConcurrentHashMap<String, Class> registeredPersistenceFormats;
 
   /**
    * The dictionary of persistence class <-> whether the persistence class has async methods.
    */
-  private Map<Class, Boolean> isRegisteredPersistenceAsync;
+  private ConcurrentHashMap<Class, Boolean> isRegisteredPersistenceAsync;
 
   public PersistenceLayer(final CdmCorpusDefinition corpus) {
     this.corpus = corpus;
     this.ctx = this.corpus.getCtx();
-    this.registeredPersistenceFormats = new LinkedHashMap<>();
-    this.isRegisteredPersistenceAsync = new LinkedHashMap<>();
+    this.registeredPersistenceFormats = new ConcurrentHashMap<>();
+    this.isRegisteredPersistenceAsync = new ConcurrentHashMap<>();
 
     this.registerFormat(ManifestPersistence.class.getCanonicalName());
     this.registerFormat(com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ManifestPersistence.class.getCanonicalName());
@@ -133,6 +143,19 @@ public class PersistenceLayer {
       final CdmFolderDefinition folder,
       final String docName,
       final CdmDocumentDefinition docContainer) {
+    return loadDocumentFromPathAsync(folder, docName, docContainer, null);
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public CompletableFuture<CdmDocumentDefinition> loadDocumentFromPathAsync(
+      final CdmFolderDefinition folder,
+      final String docName,
+      final CdmDocumentDefinition docContainer,
+      final ResolveOptions resOpt) {
     return CompletableFuture.supplyAsync(() -> {
       CdmDocumentDefinition docContent;
       String jsonData = null;
@@ -141,17 +164,34 @@ public class PersistenceLayer {
       final StorageAdapter adapter = this.corpus.getStorage().fetchAdapter(folder.getNamespace());
       try {
         if (adapter.canRead()) {
+          // log message used by navigator, do not change or remove
+          LOGGER.debug("request file: {}", docPath);
           jsonData = adapter.readAsync(docPath).join();
-          fsModifiedTime = adapter.computeLastModifiedTimeAsync(docPath).join();
-          LOGGER.info("read file: '{}'", docPath);
+          // log message used by navigator, do not change or remove
+          LOGGER.debug("received file: {}", docPath);
+        } else {
+          throw new Exception("Storage Adapter is not enabled to read.");
         }
       } catch (final Exception e) {
-        LOGGER.error(
-            "Could not read '{}' from the '{}' namespace. Reason '{}'",
-            docPath,
-            folder.getNamespace(),
-            e.getLocalizedMessage());
+        // log message used by navigator, do not change or remove
+        LOGGER.debug("fail file: {}", docPath);
+
+        String message = MessageFormat.format("Could not read ''{0}'' from the ''{1}'' namespace. Reason ''{2}''", docPath, folder.getNamespace(), e.getLocalizedMessage());
+        // When shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
+        if (resOpt != null && resOpt.getShallowValidation()) {
+          LOGGER.warn(message);
+        } else {
+          LOGGER.error(message);
+        }
         return null;
+      }
+
+      try {
+        fsModifiedTime = adapter.computeLastModifiedTimeAsync(docPath).join();
+      } catch (final Exception e) {
+        LOGGER.warn(
+            "Failed to compute file last modified time. Reason '{}'",
+            e.getLocalizedMessage());
       }
 
       if (StringUtils.isEmpty(docName)) {
@@ -209,7 +249,7 @@ public class PersistenceLayer {
           // especially because the caller has no idea this happened. So... sigh ... instead of
           // returning the new object return the one that was just killed off but make it contain
           // everything the new document loaded.
-          docContent = (CdmDocumentDefinition) docContent.copy(new ResolveOptions(docContainer), docContainer);
+          docContent = (CdmDocumentDefinition) docContent.copy(new ResolveOptions(docContainer,  this.ctx.getCorpus().getDefaultResolutionDirectives()), docContainer);
         }
 
         folder.getDocuments().add((CdmDocumentDefinition)docContent, docName);
@@ -422,10 +462,25 @@ public class PersistenceLayer {
   }
 
   private Class fetchRegisteredPersistenceFormat(String docName) {
-    for (Map.Entry<String, Class> registeredPersistenceFormat : registeredPersistenceFormats.entrySet()) {
+    // sort keys so that longest file extension is tested first
+    // i.e. .manifest.cdm.json is checked before .cdm.json
+    final SortedSet<String> sortedKeys = new TreeSet<>(new Comparator<String>() {
+      @Override
+      public int compare(String a, String b) {
+        if (a.length() > b.length()) {
+          return -1;
+        } else {
+          return 1;
+        }
+      }
+    });
+    sortedKeys.addAll(registeredPersistenceFormats.keySet());
+
+    for (String key : sortedKeys) {
+      final Class registeredPersistenceFormat = registeredPersistenceFormats.get(key);
       // Find the persistence class to use for this document.
-      if (StringUtils.endsWithIgnoreCase(docName, registeredPersistenceFormat.getKey())) {
-        return registeredPersistenceFormat.getValue();
+      if (registeredPersistenceFormat != null && StringUtils.endsWithIgnoreCase(docName, key)) {
+        return registeredPersistenceFormat;
       }
     }
     return null;

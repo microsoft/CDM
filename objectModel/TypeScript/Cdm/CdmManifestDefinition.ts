@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeResolutionDirectiveSet,
     CdmCollection,
@@ -32,9 +35,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
     public readonly subManifests: CdmCollection<CdmManifestDeclarationDefinition>;
     public readonly entities: CdmEntityCollection;
     public readonly relationships: CdmCollection<CdmE2ERelationship>;
-    /**
-     * @internal
-     */
     public readonly exhibitsTraits: CdmTraitCollection;
     public explanation: string;
     public lastFileStatusCheckTime: Date;
@@ -209,9 +209,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             return undefined;
         }
 
-        // mapping from entity path to resolved entity path for translating relationhsip paths
-        const resEntMap: Map<string, string> = new Map<string, string>();
-
         for (const entity of this.entities) {
             const entDef: CdmEntityDefinition = await this.getEntityFromReference(entity, this);
 
@@ -254,10 +251,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             }
 
             // Next create the resolved entity
-            const resOpt: resolveOptions = {
-                wrtDoc: entDef.inDocument,
-                directives: new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']))
-            };
+            const resOpt: resolveOptions = new resolveOptions(entDef.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
 
             Logger.debug(
                 'CdmManifestDefinition',
@@ -283,7 +277,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
 
             // absolute path is needed for generating relationships
             const absoluteEntPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(result.entityPath, resolvedManifest);
-            resEntMap.set(this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.atCorpusPath, entDef.inDocument), absoluteEntPath);
+            this.ctx.corpus.resEntMap.set(this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.atCorpusPath, entDef.inDocument), absoluteEntPath);
         }
 
         // add the new document to the folder
@@ -300,7 +294,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         );
 
         // calculate the entity graph for this manifest and any submanifests
-        await this.ctx.corpus._calculateEntityGraphAsync(resolvedManifest as unknown as CdmManifestDefinition, resEntMap);
+        await this.ctx.corpus.calculateEntityGraphAsync(resolvedManifest);
         // stick results into the relationships list for the manifest
         // only put in relationships that are between the entities that are used in the manifest
         await resolvedManifest.populateManifestRelationshipsAsync(cdmRelationshipDiscoveryStyle.exclusive);
@@ -352,7 +346,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                     // graph represented by an array where entity at i extends entity at i+1
                     const toInheritanceGraph: CdmEntityDefinition[] = [];
                     while (currentInBase) {
-                        const resOpt: resolveOptions = { wrtDoc: currentInBase.inDocument };
+                        const resOpt: resolveOptions = new resolveOptions(currentInBase.inDocument);
                         currentInBase = currentInBase.extendsEntity ? currentInBase.extendsEntity.fetchObjectDefinition(resOpt) : undefined;
 
                         if (currentInBase) {
@@ -399,9 +393,9 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         }
     }
 
-    // find and return an entity object from an EntityDeclaration object that probably comes from a manifest
     /**
      * @internal
+     * Find and return an entity object from an EntityDeclaration object that probably comes from a manifest
      */
     public async getEntityFromReference(
         entity: CdmEntityDeclarationDefinition,
@@ -464,18 +458,15 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
      * returns null for 0 results or an array of json objects, each matching the shape of the input query,
      * with entity and attribute names filled in
      */
-    /**
-     * @internal
-     */
-    public async queryOnTraitsAsync(querySpec: (string | object)): Promise<object[]> {
+    private async queryOnTraitsAsync(querySpec: (string | object)): Promise<object[]> {
         return undefined;
     }
 
-    // helper that fixes a path from local to absolute, gets the object from that path
-    // then looks at the document where the object is found.
-    // if dirty, the document is saved with the original name
     /**
      * @internal
+     * Helper that fixes a path from local to absolute, gets the object from that path 
+     * then looks at the document where the object is found.
+     * If dirty, the document is saved with the original name.
      */
     public async saveDirtyLink(relative: string, options: copyOptions): Promise<boolean> {
         // get the document object from the import
@@ -509,6 +500,9 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         return true;
     }
 
+    /**
+     * @internal
+     */
     public async saveLinkedDocuments(options?: copyOptions): Promise<boolean> {
         if (!options) {
             options = new copyOptions();

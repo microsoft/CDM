@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { ModelJson } from '..';
 import {
     CdmCorpusContext,
@@ -10,8 +13,11 @@ import {
     resolveOptions,
     traitToPropertyMap
 } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
+import { TraitReference } from '../CdmFolder/types';
 import { processExtensionFromJson } from './ExtensionHelper';
 import { Attribute, attributeBaseProperties, DataType } from './types';
+
 
 export class TypeAttributePersistence {
     public static async fromData(
@@ -48,12 +54,14 @@ export class TypeAttributePersistence {
     }
 
     public static async toData(instance: CdmTypeAttributeDefinition, resOpt: resolveOptions, options: copyOptions): Promise<Attribute> {
+        const appliedTraits: CdmTraitReference[] = instance.appliedTraits ?
+        instance.appliedTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
         const attribute: Attribute = {
             name: instance.name,
-            description: instance.description,
+            description: instance.getProperty('description') as string,
             dataType: this.dataTypeToData(instance.dataFormat) as DataType,
             annotations: undefined,
-            'cdm:traits': undefined
+            'cdm:traits': copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, appliedTraits, options)
         };
 
         await ModelJson.utils.processAnnotationsToData(instance.ctx, attribute, instance.appliedTraits);

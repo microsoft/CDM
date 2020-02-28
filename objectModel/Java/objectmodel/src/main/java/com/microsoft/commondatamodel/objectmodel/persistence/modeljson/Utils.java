@@ -1,17 +1,17 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.TraitReferencePersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Annotation;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.CsvFormatSettings;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -243,5 +243,35 @@ public class Utils {
 
   private static String convertAnnotationToTrait(final String name) {
     return annotationToTraitMap.get(name);
+  }
+
+  /**
+   * Creates a list of JSON objects that is a copy of the input Iterable object.
+   */
+  public static <T> List<JsonNode> listCopyData(
+          final Iterable<T> source,
+          final ResolveOptions resOpt,
+          final CopyOptions options) {
+    if (source == null) {
+      return null;
+    }
+
+    final List<JsonNode> casted = new ArrayList<>();
+    for (final Object element : source) {
+      if (element instanceof CdmObject) {
+        final Object serialized = ((CdmObject) element).copyData(resOpt, options);
+        if (serialized instanceof JsonNode) {
+          casted.add((JsonNode) serialized);
+        } else {
+          casted.add(JMapper.MAP.valueToTree(serialized));
+        }
+      }
+    }
+
+    if (casted.size() == 0) {
+      return null;
+    }
+
+    return casted;
   }
 }

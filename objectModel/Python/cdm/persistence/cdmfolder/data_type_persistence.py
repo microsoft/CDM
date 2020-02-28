@@ -1,6 +1,9 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from cdm.objectmodel import CdmCorpusContext, CdmDataTypeDefinition
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, CopyOptions
+from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
 
 from . import utils
 from .types import DataType
@@ -28,5 +31,5 @@ class DataTypePersistence:
         result.explanation = instance.explanation
         result.dataTypeName = instance.data_type_name
         result.extendsDataType = DataTypeReferencePersistence.to_data(instance.extends_data_type, res_opt, options) if instance.extends_data_type else None
-        result.exhibitsTraits = utils.array_copy_data(res_opt, instance.exhibits_traits, options)
+        result.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
         return result

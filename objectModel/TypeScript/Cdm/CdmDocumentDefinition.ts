@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmAttributeContext,
     CdmCollection,
@@ -59,13 +62,22 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         return `${this.namespace || this.folder.namespace}:${this.folderPath}${this.name}`;
     }
     public name: string;
+    /**
+     * @deprecated Only for internal use.
+     */
     public folderPath: string;
+    /**
+     * @deprecated Only for internal use.
+     */
     public namespace: string;
     public schema: string;
     public jsonSchemaSemanticVersion: string;
     public readonly imports: CdmImportCollection;
     public definitions: CdmDefinitionCollection;
     public importSetKey: string;
+    /**
+     * @deprecated Use owner property instead.
+     */
     public folder: CdmFolderDefinition;
     /**
      * @internal
@@ -103,7 +115,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.inDocument = this;
             this.objectType = cdmObjectType.documentDef;
             this.name = name;
-            this.jsonSchemaSemanticVersion = '0.9.0';
+            this.jsonSchemaSemanticVersion = '1.0.0';
             this.needsIndexing = true;
             this.importsIndexed = false;
             this.isDirty = true;
@@ -447,7 +459,10 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         return this.indexIfNeeded(resOpt);
     }
 
-    // remove any old document content from caches and re-declare and resolve with new content
+    /**
+     * @internal
+     * Remove any old document content from caches and re-declare and resolve with new content
+     */
     public async indexIfNeeded(resOpt: resolveOptions): Promise<boolean> {
         // let bodyCode = () =>
         {
@@ -455,10 +470,10 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 // make the corpus internal machinery pay attention to this document for this call
                 const corpus: CdmCorpusDefinition = this.folder.corpus;
 
-                await corpus.resolveImportsAsync(this);
+                await corpus.resolveImportsAsync(this, resOpt);
 
                 // maintain actual current doc
-                corpus.docsNotIndexed.add(this);
+                corpus.documentLibrary.markDocumentForIndexing(this);
 
                 return corpus.indexDocuments(resOpt);
             }
@@ -506,6 +521,9 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         await (this.ctx.corpus).fetchObjectAsync(this.corpusPath);
     }
 
+    /**
+     * @internal 
+     */
     public async saveLinkedDocuments(options?: copyOptions): Promise<boolean> {
         if (!options) {
             options = new copyOptions();

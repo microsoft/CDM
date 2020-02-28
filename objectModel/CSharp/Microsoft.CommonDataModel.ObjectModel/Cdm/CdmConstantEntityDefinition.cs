@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmConstantEntityDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -52,7 +49,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmConstantEntityDefinition copy;
@@ -96,7 +93,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return false;
@@ -200,16 +197,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // metadata library
                 ResolvedAttributeSet ras = this.FetchResolvedAttributes(resOpt);
                 // query validation and binding
-                int l = ras.Set.Count;
-                for (int i = 0; i < l; i++)
+                if (ras != null)
                 {
-                    string name = ras.Set[i].ResolvedName;
-                    if (resultAtt == -1 && name == attReturn)
-                        resultAtt = i;
-                    if (searchAtt == -1 && name == attSearch)
-                        searchAtt = i;
-                    if (resultAtt >= 0 && searchAtt >= 0)
-                        break;
+                    int l = ras.Set.Count;
+                    for (int i = 0; i < l; i++)
+                    {
+                        string name = ras.Set[i].ResolvedName;
+                        if (resultAtt == -1 && name == attReturn)
+                            resultAtt = i;
+                        if (searchAtt == -1 && name == attSearch)
+                            searchAtt = i;
+                        if (resultAtt >= 0 && searchAtt >= 0)
+                            break;
+                    }
                 }
             }
 

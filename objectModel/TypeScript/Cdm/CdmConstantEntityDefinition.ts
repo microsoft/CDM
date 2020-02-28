@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     AttributeContextParameters,
     CdmAttributeContext,
@@ -234,18 +237,21 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
             if (resultAtt === -1 || searchAtt === -1) {
                 // metadata library
                 const ras: ResolvedAttributeSet = this.fetchResolvedAttributes(resOpt);
+
                 // query validation and binding
-                const l: number = ras.set.length;
-                for (let i: number = 0; i < l; i++) {
-                    const name: string = ras.set[i].resolvedName;
-                    if (resultAtt === -1 && name === attReturn) {
-                        resultAtt = i;
-                    }
-                    if (searchAtt === -1 && name === attSearch) {
-                        searchAtt = i;
-                    }
-                    if (resultAtt >= 0 && searchAtt >= 0) {
-                        break;
+                if (ras !== undefined) {
+                    const l: number = ras.set.length;
+                    for (let i: number = 0; i < l; i++) {
+                        const name: string = ras.set[i].resolvedName;
+                        if (resultAtt === -1 && name === attReturn) {
+                            resultAtt = i;
+                        }
+                        if (searchAtt === -1 && name === attSearch) {
+                            searchAtt = i;
+                        }
+                        if (resultAtt >= 0 && searchAtt >= 0) {
+                            break;
+                        }
                     }
                 }
             }

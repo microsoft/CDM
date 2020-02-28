@@ -1,4 +1,9 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
+    CdmConstants,
     CdmCorpusContext,
     CdmDocumentDefinition,
     CdmFolderDefinition,
@@ -6,7 +11,7 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeGroup,
     ConstantEntity,
@@ -17,14 +22,13 @@ import {
     Purpose,
     Trait
 } from './types';
-import * as utils from './utils';
 
 export class DocumentPersistence {
     // Whether this persistence class has async methods.
     public static readonly isPersistenceAsync: boolean = false;
 
     // The file format/extension types this persistence class supports.
-    public static readonly formats: string[] = ['.cdm.json'];
+    public static readonly formats: string[] = [CdmConstants.cdmExtension];
 
     public static fromObject(ctx: CdmCorpusContext, name: string, namespace: string, path: string, object: DocumentContent): CdmDocumentDefinition {
         const document: CdmDocumentDefinition = ctx.corpus.MakeObject(cdmObjectType.documentDef, name);
@@ -42,7 +46,7 @@ export class DocumentPersistence {
             if (object.jsonSchemaSemanticVersion) {
                 document.jsonSchemaSemanticVersion = object.jsonSchemaSemanticVersion;
             }
-            if (document.jsonSchemaSemanticVersion !== '0.9.0') {
+            if (document.jsonSchemaSemanticVersion !== '0.9.0' && document.jsonSchemaSemanticVersion !== '1.0.0') {
                 // tslint:disable-next-line:no-suspicious-comment
                 // TODO: validate that this is a version we can understand with the OM
             }
@@ -84,8 +88,8 @@ export class DocumentPersistence {
         return {
             $schema: instance.schema,
             jsonSchemaSemanticVersion: instance.jsonSchemaSemanticVersion,
-            imports: utils.arrayCopyData<Import>(resOpt, instance.imports, options),
-            definitions: utils.arrayCopyData<Trait | DataType | Purpose | AttributeGroup | Entity | ConstantEntity>(
+            imports: copyDataUtils.arrayCopyData<Import>(resOpt, instance.imports, options),
+            definitions: copyDataUtils.arrayCopyData<Trait | DataType | Purpose | AttributeGroup | Entity | ConstantEntity>(
                 resOpt, instance.definitions, options)
         };
     }

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmAttributeContext,
     CdmCorpusContext,
@@ -139,8 +142,6 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
     /**
      * @inheritdoc
-     */
-    /**
      * @internal
      */
     public constructResolvedTraits(rtsb: ResolvedTraitSetBuilder, resOpt: resolveOptions): void {
@@ -149,8 +150,6 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
     /**
      * @inheritdoc
-     */
-    /**
      * @internal
      */
     public constructResolvedAttributes(resOpt: resolveOptions, under?: CdmAttributeContext): ResolvedAttributeSetBuilder {

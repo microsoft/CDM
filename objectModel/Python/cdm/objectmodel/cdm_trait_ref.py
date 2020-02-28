@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Any, Dict, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
@@ -94,24 +97,24 @@ class CdmTraitReference(CdmObjectReference):
 
         # store the previous reference symbol set, we will need to add it with
         # children found from the _construct_resolved_traits call
-        curr_sym_ref_set = res_opt.symbol_ref_set or SymbolSet()
-        res_opt.symbol_ref_set = SymbolSet()
+        curr_sym_ref_set = res_opt._symbol_ref_set or SymbolSet()
+        res_opt._symbol_ref_set = SymbolSet()
 
         # if not, then make one and save it
         if not rts_result:
             # get the set of resolutions, should just be this one trait
             if not rts_trait:
                 # store current doc ref set
-                new_doc_ref_set = res_opt.symbol_ref_set
-                res_opt.symbol_ref_set = SymbolSet()
+                new_doc_ref_set = res_opt._symbol_ref_set
+                res_opt._symbol_ref_set = SymbolSet()
 
                 rts_trait = trait._fetch_resolved_traits(res_opt)
 
                 # bubble up symbol reference set from children
                 if new_doc_ref_set:
-                    new_doc_ref_set.merge(res_opt.symbol_ref_set)
+                    new_doc_ref_set._merge(res_opt._symbol_ref_set)
 
-                res_opt.symbol_ref_set = new_doc_ref_set
+                res_opt._symbol_ref_set = new_doc_ref_set
             if rts_trait:
                 rts_result = rts_trait.deep_copy()
 
@@ -126,7 +129,7 @@ class CdmTraitReference(CdmObjectReference):
 
                     for index, argument in enumerate(self.arguments):
                         param_found = params.resolve_parameter(index, argument.get_name())
-                        argument.resolved_parameter = param_found
+                        argument._resolved_parameter = param_found
                         a_value = argument.value
                         a_value = ctx.corpus._const_type_check(res_opt, self.in_document, param_found, a_value)
                         argument.value = a_value
@@ -135,7 +138,7 @@ class CdmTraitReference(CdmObjectReference):
                     rts_result.set_parameter_value_from_argument(trait, argument)
 
             # register set of possible symbols
-            ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt.symbol_ref_set)
+            ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
 
             # get the new cache tag now that we have the list of docs
             cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_name)
@@ -145,11 +148,11 @@ class CdmTraitReference(CdmObjectReference):
             # cache was found
             # get the SymbolSet for this cached object
             key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
-            res_opt.symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
+            res_opt._symbol_ref_set = ctx.corpus._definition_reference_symbols.get(key)
 
         # merge child document set with current
-        curr_sym_ref_set.merge(res_opt.symbol_ref_set)
-        res_opt.symbol_ref_set = curr_sym_ref_set
+        curr_sym_ref_set._merge(res_opt._symbol_ref_set)
+        res_opt._symbol_ref_set = curr_sym_ref_set
 
         return rts_result
 

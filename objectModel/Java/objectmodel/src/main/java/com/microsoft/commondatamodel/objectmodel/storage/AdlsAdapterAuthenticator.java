@@ -1,9 +1,13 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.storage;
 
 import com.google.common.base.Strings;
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
+import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,6 +44,7 @@ class AdlsAdapterAuthenticator {
   private final String clientId;
   private final String secret;
   private AuthenticationResult lastAuthenticationResult;
+  private TokenProvider tokenProvider;
 
   AdlsAdapterAuthenticator(final String sharedKey) {
     if (sharedKey == null) {
@@ -61,6 +66,14 @@ class AdlsAdapterAuthenticator {
     this.secret = secret;
   }
 
+  AdlsAdapterAuthenticator(TokenProvider tokenProvider) {
+    this.sharedKey = null;
+    this.tenant = null;
+    this.clientId = null;
+    this.secret = null;
+    this.tokenProvider = tokenProvider;
+  }
+
   /**
    * Build a ADLS request's authentication header
    * @param url The url of the request
@@ -80,6 +93,10 @@ class AdlsAdapterAuthenticator {
       throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
     if (sharedKey != null) {
       return buildAuthenticationHeaderWithSharedKey(url, method, content, contentType);
+    } else if (this.tokenProvider != null) {
+      final Map<String, String> header = new LinkedHashMap<>();
+      header.put("authorization", this.tokenProvider.getToken());
+      return header;
     }
 
     return buildAuthenticationHeaderWithClientIdAndSecret();
@@ -173,7 +190,7 @@ class AdlsAdapterAuthenticator {
     }
 
     Date now = new Date();
-    return now.before(this.lastAuthenticationResult.getExpiresOnDate());
+    return this.lastAuthenticationResult.getExpiresOnDate().before(now);
   }
 
   /**

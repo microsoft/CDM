@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Any, Callable, List, TYPE_CHECKING
 
@@ -57,7 +55,7 @@ class TraitToPropertyMap:
             return self._host.applied_traits
         return self._host.exhibits_traits
 
-    def update_property_value(self, property_name: str, new_value: Any) -> None:
+    def _update_property_value(self, property_name: str, new_value: Any) -> None:
         trait_name = self._map_trait_name(property_name)
         list_of_props = trait_to_list_of_properties.get(trait_name, [])
         has_multiple_props = len(list_of_props) > 1
@@ -80,6 +78,8 @@ class TraitToPropertyMap:
             self._update_localized_trait_table('is.localized.describedAs', new_value)
         elif property_name == 'sourceOrdering':
             self._update_trait_argument('is.CDS.ordered', 'ordinal', str(new_value))
+        elif property_name == 'isPrimaryKey':
+            self._update_trait_argument('is.identifiedBy', '', new_value)
         elif property_name == 'isReadOnly':
             self._update_boolean_trait('is.readOnly', new_value)
         elif property_name == 'isNullable':
@@ -87,21 +87,23 @@ class TraitToPropertyMap:
         elif property_name == 'valueConstrainedToList':
             self._update_boolean_trait('is.constrainedList', new_value)
         elif property_name == 'maximumValue':
-            self._update_trait_argument('is.constrained', 'maximumValue', new_value)
+            self._update_trait_argument('is.constrained', 'maximumValue', str(new_value) if new_value else None)
         elif property_name == 'minimumValue':
             self._update_trait_argument('is.constrained', 'minimumValue', str(new_value) if new_value else None)
         elif property_name == 'maximumLength':
-            self._update_trait_argument('is.constrained', 'maximumLength', str(new_value) if new_value else None)
+            self._update_trait_argument('is.constrained', 'maximumLength', new_value)
         elif property_name == 'dataFormat':
             self._data_format_to_traits(new_value)
         elif property_name == 'defaultValue':
             self._update_default_value(new_value)
 
-    def fetch_property_value(self, property_name: str, only_from_property: bool = False) -> Any:
+    def _fetch_property_value(self, property_name: str, only_from_property: bool = False) -> Any:
+        from cdm.objectmodel import CdmTypeAttributeDefinition
+
         if property_name == 'version':
-            return _get_trait_ref_argument_value(self.fetch_trait_reference('is.CDM.entityVersion', only_from_property), 'versionNumber')
+            return _get_trait_ref_argument_value(self._fetch_trait_reference('is.CDM.entityVersion', only_from_property), 'versionNumber')
         elif property_name == 'sourceName':
-            return _get_trait_ref_argument_value(self.fetch_trait_reference('is.CDS.sourceNamed', only_from_property), 'name')
+            return _get_trait_ref_argument_value(self._fetch_trait_reference('is.CDS.sourceNamed', only_from_property), 'name')
         elif property_name == 'displayName':
             return self._fetch_localized_trait_table('is.localized.displayedAs', only_from_property)
         elif property_name == 'description':
@@ -109,27 +111,29 @@ class TraitToPropertyMap:
         elif property_name == 'cdmSchemas':
             return self._fetch_single_attribute_trait_table('is.CDM.attributeGroup', 'groupList', only_from_property)
         elif property_name == 'sourceOrdering':
-            return int(_get_trait_ref_argument_value(self.fetch_trait_reference('is.CDS.ordered'), 'ordinal') or 0)
+            return int(_get_trait_ref_argument_value(self._fetch_trait_reference('is.CDS.ordered'), 'ordinal') or 0)
         elif property_name == 'isPrimaryKey':
-            return self.fetch_trait_reference('is.identifiedBy', only_from_property) is not None
+            if not only_from_property and isinstance(self._host, CdmTypeAttributeDefinition) and self._host.purpose and self._host.purpose.named_reference == 'identifiedBy':
+                return True
+            return self._fetch_trait_reference('is.identifiedBy', only_from_property) is not None
         elif property_name == 'isNullable':
-            return self.fetch_trait_reference('is.nullable', only_from_property) is not None
+            return self._fetch_trait_reference('is.nullable', only_from_property) is not None
         elif property_name == 'isReadOnly':
-            return self.fetch_trait_reference('is.readOnly', only_from_property) is not None
+            return self._fetch_trait_reference('is.readOnly', only_from_property) is not None
         elif property_name == 'valueConstrainedToList':
-            return self.fetch_trait_reference('is.constrainedList', only_from_property) is not None
+            return self._fetch_trait_reference('is.constrainedList', only_from_property) is not None
         elif property_name == 'maximumValue':
-            return _get_trait_ref_argument_value(self.fetch_trait_reference('is.constrained', only_from_property), 'maximumValue')
+            return _get_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'maximumValue')
         elif property_name == 'minimumValue':
-            return _get_trait_ref_argument_value(self.fetch_trait_reference('is.constrained', only_from_property), 'minimumValue')
+            return _get_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'minimumValue')
         elif property_name == 'maximumLength':
-            temp = _get_trait_ref_argument_value(self.fetch_trait_reference('is.constrained', only_from_property), 'maximumLength')
+            temp = _get_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'maximumLength')
             if temp is not None:
                 return int(temp)
         elif property_name == 'dataFormat':
             return self._traits_to_data_format(only_from_property)
         elif property_name == 'primaryKey':
-            att_ref = _get_trait_ref_argument_value(self.fetch_trait_reference('is.identifiedBy', only_from_property), 'attribute')
+            att_ref = _get_trait_ref_argument_value(self._fetch_trait_reference('is.identifiedBy', only_from_property), 'attribute')
             if att_ref is not None:
                 return att_ref.fetch_object_definition_name()
         elif property_name == 'defaultValue':
@@ -137,7 +141,7 @@ class TraitToPropertyMap:
 
         return None
 
-    def fetch_trait_reference(self, trait: str, only_from_property: bool = False) -> 'CdmTraitReference':
+    def _fetch_trait_reference(self, trait: str, only_from_property: bool = False) -> 'CdmTraitReference':
         """Fetch a trait based on name from the array of traits."""
 
         resultant_trait = trait
@@ -304,7 +308,7 @@ class TraitToPropertyMap:
     def _fetch_or_create_trait(self, trait: Any, simple_ref: bool = False) -> 'CdmTraitReference':
 
         trait_name = trait if isinstance(trait, str) else None
-        resultant_trait = self.fetch_trait_reference(trait, True)
+        resultant_trait = self._fetch_trait_reference(trait, True)
 
         if resultant_trait is None:
             resultant_trait = trait_name if simple_ref else self._ctx.corpus.make_object(CdmObjectType.TRAIT_REF, trait_name, False)
@@ -328,7 +332,7 @@ class TraitToPropertyMap:
             if value is not None:
                 trait.arguments.append(arg_name, value)
             else:
-                self._remove_trait(trait)
+                self._remove_trait(trait_name)
             return
 
         for idx in range(len(args)):
@@ -384,7 +388,7 @@ class TraitToPropertyMap:
                 # -1 on order gets us the last row that matches. needed because inheritence
                 # chain with different descriptions stacks these up
                 # need to use ordinals because no binding done yet
-                c_ent.update_constant_value(None, 1, source_text, 0, 'en', -1)
+                c_ent._update_constant_value(None, 1, source_text, 0, 'en', -1)
 
         self._update_trait_table(trait_name, 'localizedDisplayText', 'localizedTable', action)
 
@@ -394,7 +398,7 @@ class TraitToPropertyMap:
         # -1 on order gets us the last row that matches. needed because inheritence
         # chain with different descriptions stacks these up
         # need to use ordinals because no binding done yet
-        return None if c_ent is None else c_ent.fetch_constant_value(None, 1, 0, 'en', -1)
+        return None if c_ent is None else c_ent._fetch_constant_value(None, 1, 0, 'en', -1)
 
     def _update_single_attribute_trait_table(self, trait: Any, arg_name: str, entity_name: str, source_text: List[str]) -> None:
         def action(c_ent, created):  # pylint: disable=unused-argument
@@ -409,7 +413,7 @@ class TraitToPropertyMap:
         return None if c_ent is None else [v[0] for v in c_ent.constant_values]
 
     def _fetch_default_value(self, only_from_property: bool) -> Any:
-        trait = self.fetch_trait_reference('does.haveDefault', only_from_property)
+        trait = self._fetch_trait_reference('does.haveDefault', only_from_property)
         if trait is None:
             return None
 

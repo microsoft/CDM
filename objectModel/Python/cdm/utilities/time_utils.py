@@ -1,13 +1,11 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from datetime import datetime, timezone
 from typing import Optional
 
 
-def get_formatted_date_string(date: datetime) -> Optional[str]:
+def _get_formatted_date_string(date: datetime) -> Optional[str]:
     if not date:
         return None
 
@@ -19,7 +17,7 @@ def get_formatted_date_string(date: datetime) -> Optional[str]:
     return (date.replace(tzinfo=None).isoformat() + '.000')[:23] + 'Z'
 
 
-def max_time(first: Optional[datetime], second: Optional[datetime]) -> Optional[datetime]:
+def _max_time(first: Optional[datetime], second: Optional[datetime]) -> Optional[datetime]:
     if not first or not second:
         return first or second
     return max(first, second)

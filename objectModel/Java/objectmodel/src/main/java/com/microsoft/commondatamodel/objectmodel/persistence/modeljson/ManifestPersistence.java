@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -13,7 +16,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ImportPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Entity;
@@ -256,7 +259,7 @@ public class ManifestPersistence {
           .map((CdmTraitDefinition cdmTraitDef) -> (CdmObjectDefinition) cdmTraitDef)
           .collect(Collectors.toList()).forEach(cdmObjectDef -> extensionDoc.getDefinitions().add(cdmObjectDef));
       extensionDoc.getImports().add("cdm:/extensions/base.extension.cdm.json");
-      extensionDoc.setJsonSchemaSemanticVersion("0.9.0");
+      extensionDoc.setJsonSchemaSemanticVersion("1.0.0");
       extensionDoc.setFolderPath(folder.getFolderPath());
       extensionDoc.setNamespace(folder.getNamespace());
 

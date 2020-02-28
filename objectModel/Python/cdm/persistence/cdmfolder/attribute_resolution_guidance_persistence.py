@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional
 
 from cdm.enums import CdmObjectType
@@ -74,7 +77,7 @@ class AttributeResolutionGuidancePersistence:
         result.renameFormat = instance.rename_format
 
         if instance.add_supporting_attribute:
-            result.addSupportingAttribute = PersistenceLayer.to_data(instance.add_supporting_attribute, res_opt, 'CdmFolder', options)
+            result.addSupportingAttribute = PersistenceLayer.to_data(instance.add_supporting_attribute, res_opt, options, PersistenceLayer.CDM_FOLDER)
 
         if instance.expansion:
             result.expansion = Expansion()
@@ -82,7 +85,7 @@ class AttributeResolutionGuidancePersistence:
             result.expansion.maximumExpansion = instance.expansion.maximum_expansion
 
             if instance.expansion.count_attribute:
-                result.expansion.countAttribute = PersistenceLayer.to_data(instance.expansion.count_attribute, res_opt, 'CdmFolder', options)
+                result.expansion.countAttribute = PersistenceLayer.to_data(instance.expansion.count_attribute, res_opt, options, PersistenceLayer.CDM_FOLDER)
 
         if instance.entity_by_reference:
             result.entityByReference = EntityByReference()
@@ -92,14 +95,14 @@ class AttributeResolutionGuidancePersistence:
 
             if instance.entity_by_reference.foreign_key_attribute:
                 result.entityByReference.foreignKeyAttribute = PersistenceLayer.to_data(
-                    instance.entity_by_reference.foreign_key_attribute, res_opt, 'CdmFolder', options)
+                    instance.entity_by_reference.foreign_key_attribute, res_opt, options, PersistenceLayer.CDM_FOLDER)
 
         if instance.selects_sub_attribute:
             result.selectsSubAttribute = SelectsSubAttribute()
             result.selectsSubAttribute.selects = instance.selects_sub_attribute.selects
             if instance.selects_sub_attribute.selected_type_attribute:
                 result.selectsSubAttribute.selectedTypeAttribute = PersistenceLayer.to_data(
-                    instance.selects_sub_attribute.selected_type_attribute, res_opt, 'CdmFolder', options)
+                    instance.selects_sub_attribute.selected_type_attribute, res_opt, options, PersistenceLayer.CDM_FOLDER)
                 result.selectsSubAttribute.selectsSomeTakeNames = instance.selects_sub_attribute.selects_some_take_names
                 result.selectsSubAttribute.selectsSomeAvoidNames = instance.selects_sub_attribute.selects_some_avoid_names
 

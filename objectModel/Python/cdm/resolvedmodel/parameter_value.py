@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from collections import OrderedDict
 from typing import Dict, TYPE_CHECKING
@@ -99,17 +97,18 @@ class ParameterValue():
                 rows = []
                 shape_atts = ent_shape._fetch_resolved_attributes(res_opt)
 
-                for row_data in ent_values:
-                    if not row_data:
-                        continue
+                if shape_atts is not None:
+                    for row_data in ent_values:
+                        if not row_data:
+                            continue
 
-                    row = {}
-                    for (c, tvalue) in enumerate(row_data):
-                        col_att = shape_atts.set[c]
-                        if col_att is not None and tvalue is not None:
-                            row[col_att.resolved_name] = tvalue
+                        row = {}
+                        for (c, tvalue) in enumerate(row_data):
+                            col_att = shape_atts._set[c]
+                            if col_att is not None and tvalue is not None:
+                                row[col_att.resolved_name] = tvalue
 
-                    rows.append(row)
+                        rows.append(row)
 
                 if rows:
                     keys = list(rows[0].keys())
@@ -127,7 +126,7 @@ class ParameterValue():
 
             from cdm.persistence import PersistenceLayer
             from cdm.utilities import CopyOptions
-            data = PersistenceLayer.to_data(self.value, res_opt, 'CdmFolder', CopyOptions(string_refs=False))
+            data = PersistenceLayer.to_data(self.value, res_opt, CopyOptions(string_refs=False), PersistenceLayer.CDM_FOLDER)
             if isinstance(data, str):
                 return data
 

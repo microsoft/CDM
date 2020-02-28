@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -233,7 +234,11 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     this.lowestOrder = value;
   }
 
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return false;
   }
 
@@ -286,9 +291,8 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmAttributeContext copy;
@@ -313,7 +317,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     return copy;
   }
 
-  public void setRelativePath(String rp) {
+  void setRelativePath(String rp) {
     this.declaredPath = rp;
   }
 

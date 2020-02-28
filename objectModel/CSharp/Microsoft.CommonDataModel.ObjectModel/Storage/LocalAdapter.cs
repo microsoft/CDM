@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="LocalAdapter.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
@@ -103,10 +100,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public string CreateAdapterPath(string corpusPath)
         {
             if (corpusPath.Contains(":"))
+            {
                 corpusPath = StringUtils.Slice(corpusPath, corpusPath.IndexOf(":") + 1);
+            }
+
+            if (corpusPath.StartsWith("/"))
+            {
+                corpusPath = corpusPath.Slice(1);
+            }
+
             if (Path.IsPathRooted(this.FullRoot))
-                return Path.GetFullPath(this.FullRoot + corpusPath);
-            return Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), this.FullRoot) + corpusPath);
+            {
+                return Path.GetFullPath(Path.Combine(this.FullRoot, corpusPath));
+            }
+
+            return Path.GetFullPath(Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), this.FullRoot), corpusPath));
         }
 
         /// <inheritdoc />

@@ -1,9 +1,13 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmFolder,
     ModelJson
 } from '.';
 import {
     AttributeResolutionDirectiveSet,
+    CdmConstants,
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
@@ -16,13 +20,16 @@ import {
 import { StorageAdapter } from '../Storage/StorageAdapter';
 import { Logger } from '../Utilities/Logging/Logger';
 import { IPersistence } from './Common/IPersistence';
-import { fetchModelJsonExtension, fetchOdiExtension } from './extensionFunctions';
 
 const PersistenceTypes = {
-    CdmFolder
+    CdmFolder,
+    ModelJson
 };
 
 export class PersistenceLayer {
+    public static cdmFolder: string = 'CdmFolder';
+    public static modelJson: string = 'ModelJson';
+    public static odi: string = 'Odi';
     /**
      * @internal
      */
@@ -32,21 +39,6 @@ export class PersistenceLayer {
      * @internal
      */
     public ctx: CdmCorpusContext;
-
-    /**
-     * @internal
-     */
-    public cdmFolder: string = 'CdmFolder';
-
-    /**
-     * @internal
-     */
-    public modelJson: string = 'ModelJson';
-
-    /**
-     * @internal
-     */
-    public odi: string = 'Odi';
 
     // The dictionary of file extension <-> persistence class that handles the file format.
     private readonly registeredPersistenceFormats: Map<string, any>;
@@ -65,9 +57,9 @@ export class PersistenceLayer {
         this.isRegisteredPersistenceAsync = new Map<any, boolean>();
 
         // Register known persistence classes.
-        this.registerFormat(`./CdmFolder/${CdmFolder.ManifestPersistence.name}`);
-        this.registerFormat(`./ModelJson/${ModelJson.ManifestPersistence.name}`);
-        this.registerFormat(`./CdmFolder/${CdmFolder.DocumentPersistence.name}`);
+        this.registerFormat(`./${PersistenceLayer.cdmFolder}/${CdmFolder.ManifestPersistence.name}`);
+        this.registerFormat(`./${PersistenceLayer.modelJson}/${ModelJson.ManifestPersistence.name}`);
+        this.registerFormat(`./${PersistenceLayer.cdmFolder}/${CdmFolder.DocumentPersistence.name}`);
         // this.registerFormat('./Odi/ManifestPersistence');
     }
 
@@ -128,9 +120,11 @@ export class PersistenceLayer {
      * @param folder The folder that contains the document we want to load.
      * @param docName The document name.
      * @param docContainer The loaded document, if it was previously loaded.
+     * @param resOpt Optional parameter. The resolve options.
      */
-    public async LoadDocumentFromPathAsync(folder: CdmFolderDefinition, docName: string, docContainer: CdmDocumentDefinition): Promise<CdmDocumentDefinition> {
-        let docContent: any;
+    public async LoadDocumentFromPathAsync(folder: CdmFolderDefinition, docName: string, docContainer: CdmDocumentDefinition, resOpt: resolveOptions = null):
+        Promise<CdmDocumentDefinition> {
+        let docContent: CdmDocumentDefinition;
         let jsonData: string;
         let fsModifiedTime: Date;
         const docPath: string = folder.folderPath + docName;
@@ -138,19 +132,38 @@ export class PersistenceLayer {
 
         try {
             if (adapter.canRead()) {
+                // log message used by navigator, do not change or remove
+                Logger.debug('PersistenceLayer', this.ctx, `request file: ${docPath}`, this.LoadDocumentFromPathAsync.name);
                 jsonData = await adapter.readAsync(docPath);
-                fsModifiedTime = await adapter.computeLastModifiedTimeAsync(adapter.createAdapterPath(docPath));
-                Logger.info(PersistenceLayer.name, this.ctx, `read file: ${docPath}`, this.LoadDocumentFromPathAsync.name);
+                // log message used by navigator, do not change or remove
+                Logger.debug(PersistenceLayer.name, this.ctx, `received file: ${docPath}`, this.LoadDocumentFromPathAsync.name);
+            } else {
+                throw new Error('Storage Adapter is not enabled to read.');
             }
         } catch (e) {
-            Logger.error(
-                PersistenceLayer.name,
-                this.ctx,
-                `Could not read ${docPath} from the '${folder.namespace}' namespace. Reason ${e}`,
-                this.LoadDocumentFromPathAsync.name
-            );
+            // log message used by navigator, do not change or remove
+            Logger.debug('PersistenceLayer', this.ctx, `fail file: ${docPath}`, this.LoadDocumentFromPathAsync.name);
+
+            const message: string = `Could not read ${docPath} from the '${folder.namespace}' namespace. Reason ${e}`;
+            // When shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
+            if (resOpt && resOpt.shallowValidation) {
+                Logger.warning(PersistenceLayer.name, this.ctx, message, this.LoadDocumentFromPathAsync.name);
+            } else {
+                Logger.error(PersistenceLayer.name, this.ctx, message, this.LoadDocumentFromPathAsync.name);
+            }
 
             return undefined;
+        }
+
+        try {
+            fsModifiedTime = await adapter.computeLastModifiedTimeAsync(docPath);
+        } catch (e) {
+            Logger.warning(
+                PersistenceLayer.name,
+                this.ctx,
+                `Failed to compute file last modified time. Reason ${e}`,
+                this.LoadDocumentFromPathAsync.name
+            );
         }
 
         if (!docName) {
@@ -160,16 +173,16 @@ export class PersistenceLayer {
         }
 
         // If loading an odi.json/model.json file, check that it is named correctly.
-        if (docName.toLowerCase().endsWith(fetchOdiExtension().toLowerCase()) &&
-            docName.toLowerCase() !== fetchOdiExtension().toLowerCase()) {
-            Logger.error(PersistenceLayer.name, this.ctx, `Failed to load '${docName}', as it's not an acceptable file name. It must be ${fetchOdiExtension()}.`, this.LoadDocumentFromPathAsync.name);
+        if (docName.toLowerCase().endsWith(CdmConstants.odiExtension.toLowerCase()) &&
+            docName.toLowerCase() !== CdmConstants.odiExtension.toLowerCase()) {
+            Logger.error(PersistenceLayer.name, this.ctx, `Failed to load '${docName}', as it's not an acceptable file name. It must be ${CdmConstants.odiExtension}.`, this.LoadDocumentFromPathAsync.name);
 
             return undefined;
         }
 
-        if (docName.toLowerCase().endsWith(fetchModelJsonExtension()) &&
-            docName.toLowerCase() !== fetchModelJsonExtension()) {
-            Logger.error(PersistenceLayer.name, this.ctx, `Failed to load '${docName}', as it's not an acceptable file name. It must be ${fetchModelJsonExtension()}.`, this.LoadDocumentFromPathAsync.name);
+        if (docName.toLowerCase().endsWith(CdmConstants.modelJsonExtension) &&
+            docName.toLowerCase() !== CdmConstants.modelJsonExtension) {
+            Logger.error(PersistenceLayer.name, this.ctx, `Failed to load '${docName}', as it's not an acceptable file name. It must be ${CdmConstants.modelJsonExtension}.`, this.LoadDocumentFromPathAsync.name);
 
             return undefined;
         }
@@ -283,23 +296,23 @@ export class PersistenceLayer {
             // Check file extensions using a case-insensitive ordinal string comparison.
             const newNameInLowCase: string = newName.toLowerCase();
             const persistenceType: string =
-                newNameInLowCase.endsWith(fetchModelJsonExtension()) ? this.modelJson :
-                    (newNameInLowCase.endsWith(fetchOdiExtension()) ? this.odi : this.cdmFolder);
+                newNameInLowCase.endsWith(CdmConstants.modelJsonExtension) ? PersistenceLayer.modelJson :
+                    (newNameInLowCase.endsWith(CdmConstants.odiExtension) ? PersistenceLayer.odi : PersistenceLayer.cdmFolder);
 
-            if (persistenceType === this.odi && newNameInLowCase !== fetchOdiExtension()) {
-                Logger.error(PersistenceLayer.name, this.ctx, `Failed to persist '${newName}', as it's not an acceptable file name. It must be ${fetchOdiExtension()}.`, this.saveDocumentAsAsync.name);
+            if (persistenceType === PersistenceLayer.odi && newNameInLowCase !== CdmConstants.odiExtension) {
+                Logger.error(CdmConstants.name, this.ctx, `Failed to persist '${newName}', as it's not an acceptable file name. It must be ${CdmConstants.odiExtension}.`, this.saveDocumentAsAsync.name);
 
                 return false;
             }
 
-            if (persistenceType === this.modelJson && newNameInLowCase !== fetchModelJsonExtension()) {
-                Logger.error(PersistenceLayer.name, this.ctx, `Failed to persist '${newName}', as it's not an acceptable file name. It must be ${fetchModelJsonExtension()}.`, this.saveDocumentAsAsync.name);
+            if (persistenceType === PersistenceLayer.modelJson && newNameInLowCase !== CdmConstants.modelJsonExtension) {
+                Logger.error(CdmConstants.name, this.ctx, `Failed to persist '${newName}', as it's not an acceptable file name. It must be ${CdmConstants.modelJsonExtension}.`, this.saveDocumentAsAsync.name);
 
                 return false;
             }
 
             // save the object into a json blob
-            const resOpt: resolveOptions = { wrtDoc: doc, directives: new AttributeResolutionDirectiveSet() };
+            const resOpt: resolveOptions = new resolveOptions(doc, new AttributeResolutionDirectiveSet());
             let persistedDoc: object;
 
             // Fetch the correct persistence class to use.
@@ -348,7 +361,7 @@ export class PersistenceLayer {
                 return false;
             }
 
-            if (persistenceType === this.odi) {
+            if (persistenceType === PersistenceLayer.odi) {
                 await this.saveOdiDocuments(persistedDoc, adapter, newName);
 
                 return true;
@@ -363,7 +376,7 @@ export class PersistenceLayer {
 
             // ask the adapter to make it happen
             try {
-                const content: string = JSON.stringify(persistedDoc, undefined, 2);
+                const content: string = JSON.stringify(persistedDoc, undefined, 4);
                 await adapter.writeAsync(newPath, content);
 
                 // write the adapter's config.
@@ -381,13 +394,12 @@ export class PersistenceLayer {
                     this.saveDocumentAsAsync.name
                 );
 
-                return false;
             }
 
             // if we also want to save referenced docs, then it depends on what kind of thing just got saved
             // if a model.json there are none. If a manifest or definition doc then ask the docs to do the right things
             // definition will save imports, manifests will save imports, schemas, sub manifests
-            if (saveReferenced && persistenceType === this.cdmFolder) {
+            if (saveReferenced && persistenceType === PersistenceLayer.cdmFolder) {
                 if (!await doc.saveLinkedDocuments(options)) {
                     Logger.error(
                         PersistenceLayer.name,
@@ -414,7 +426,7 @@ export class PersistenceLayer {
         try {
             const oldDocumentPath: string = doc.documentPath;
             const newDocumentPath: string =
-                oldDocumentPath.substring(0, oldDocumentPath.length - fetchOdiExtension().length) + newName;
+                oldDocumentPath.substring(0, oldDocumentPath.length - CdmConstants.odiExtension.length) + newName;
             const content = JSON.stringify(doc, undefined, 2);
             await adapter.writeAsync(newDocumentPath, content);
         } catch (e) {

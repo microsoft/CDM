@@ -1,12 +1,14 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="StringSpewCatcher.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 using System.Runtime.CompilerServices;
 using System.Text;
 
+#if INTERNAL_VSTS
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
+#else
 [assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Tests")]
+#endif
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     internal class StringSpewCatcher

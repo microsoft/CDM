@@ -1,9 +1,7 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
-
+from . import copy_data_utils
 from . import lang_utils
 from . import primitive_appliers
 from . import string_utils
@@ -35,6 +33,7 @@ __all__ = [
     'AttributeContextParameters',
     'AttributeResolutionApplier',
     'AttributeResolutionDirectiveSet',
+    'copy_data_utils',
     'CdmError',
     'CopyOptions',
     'DocsResult',

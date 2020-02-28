@@ -1,4 +1,7 @@
-﻿from typing import List, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import List, TYPE_CHECKING
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
@@ -53,7 +56,7 @@ class LocalEntityDeclarationPersistence:
         # Add traits for schema entity info.
         if data.get('schemas'):
             t2pm = TraitToPropertyMap(local_entity_dec)
-            t2pm.update_property_value('cdmSchemas', data.get('schemas'))
+            t2pm._update_property_value('cdmSchemas', data.get('schemas'))
 
         # Data partitions are part of the local entity, add them here.
         for element in (data.get('partitions') or []):
@@ -85,11 +88,11 @@ class LocalEntityDeclarationPersistence:
         t2pm = TraitToPropertyMap(instance)
 
         # Find the trait containing the schema info.
-        schemas = t2pm.fetch_property_value('cdmSchemas')
+        schemas = t2pm._fetch_property_value('cdmSchemas')
         if schemas:
             entity.schemas = schemas
 
-        entity.isHidden = bool(t2pm.fetch_trait_reference('is.hidden')) or None
+        entity.isHidden = bool(t2pm._fetch_trait_reference('is.hidden')) or None
 
         if instance.data_partitions:
             entity.partitions = []

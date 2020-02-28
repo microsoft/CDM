@@ -1,4 +1,6 @@
-// tslint:disable: typedef non-literal-fs-path
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
 import { isArray, isDate, isObject, isString } from 'util';
 import { CdmCorpusDefinition, cdmStatusLevel } from '../internal';
@@ -13,7 +15,6 @@ enum testFolders {
 export const testHelper = {
     testDataPath: '__test__/TestData',
     schemaDocumentsPath: '../../schemaDocuments',
-    doesWriteTestDebuggingFiles: false,
     getInputFolderPath: (testSubpath: string, testName: string) =>
         getTestFolderPath(testSubpath, testName, testFolders.Input),
     getExpectedOutputFolderPath: (testSubpath: string, testName: string) =>
@@ -318,9 +319,5 @@ describe('testHelper', () => {
         }
         expect(expectFailed)
             .toBeTruthy();
-    });
-    it('WriteTestDebuggingFiles', () => {
-        expect(testHelper.doesWriteTestDebuggingFiles)
-            .toBeFalsy();
     });
 });

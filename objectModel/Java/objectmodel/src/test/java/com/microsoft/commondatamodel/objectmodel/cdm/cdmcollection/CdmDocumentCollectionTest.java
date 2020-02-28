@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm.cdmcollection;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
@@ -68,7 +71,7 @@ public class CdmDocumentCollectionTest {
     Assert.assertEquals(folder, document.getOwner());
     Assert.assertTrue(folder.getDocumentLookup().containsKey(document.getName()));
     Assert.assertTrue(manifest.getCtx().getCorpus()
-        .getAllDocuments()
+        .getDocumentLibrary()
         .contains(ImmutablePair.of(folder, document)));
   }
 
