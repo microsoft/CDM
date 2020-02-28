@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
@@ -128,7 +131,7 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         return None
 
     async def _fetch_document_from_folder_path_async(self, document_path: str, adapter: 'StorageAdapterBase',
-                                                     force_reload: bool) -> 'CdmDocumentDefinition':
+                                                     force_reload: bool, res_opt: Optional['ResolveOptions'] = None) -> 'CdmDocumentDefinition':
         """Gets the document from folder path.
 
         arguments:
@@ -158,7 +161,7 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
             self.documents.remove(doc_name)
 
         # go get the doc
-        doc = await self._corpus.persistence._load_document_from_path_async(self, doc_name, doc)
+        doc = await self._corpus.persistence._load_document_from_path_async(self, doc_name, doc, res_opt)
 
         return doc
 

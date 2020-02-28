@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.utilities.network;
 
 import java.net.URI;
@@ -68,7 +71,10 @@ public class CdmHttpClient {
      * @param cdmHttpRequest The CDM Http request.
      * @param callback       The callback that gets executed after the request finishes.
      * @return A CompletableFuture object, representing the CDM Http response.
+     * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+     * to be called externally at all. Please refrain from using it.
      */
+    @Deprecated
     public CompletableFuture<CdmHttpResponse> sendAsync(final CdmHttpRequest cdmHttpRequest,
                                                         final Callback callback) {
         final CompletableFuture<CdmHttpResponse> response = new CompletableFuture<>();

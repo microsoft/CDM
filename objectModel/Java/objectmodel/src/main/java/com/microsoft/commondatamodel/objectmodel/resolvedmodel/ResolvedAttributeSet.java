@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttribute;
@@ -35,6 +38,7 @@ public class ResolvedAttributeSet extends RefCounted {
   private List<ResolvedAttribute> set;
   private CdmAttributeContext attributeContext;
   private int insertOrder;
+  private int resolvedAttributeCount;
 
   public ResolvedAttributeSet() {
     super();
@@ -43,6 +47,7 @@ public class ResolvedAttributeSet extends RefCounted {
     ra2attCtxSet = new LinkedHashMap<>();
     attCtx2ra = new LinkedHashMap<>();
     set = new ArrayList<>();
+    resolvedAttributeCount = 0;
   }
 
   public CdmAttributeContext createAttributeContext(
@@ -66,12 +71,34 @@ public class ResolvedAttributeSet extends RefCounted {
    */
   @Deprecated
   public void cacheAttributeContext(final CdmAttributeContext attCtx, final ResolvedAttribute ra) {
-    attCtx2ra.put(attCtx, ra);
-    // set collection will take care of adding context to set
-    if (!ra2attCtxSet.containsKey(ra)) {
-      ra2attCtxSet.put(ra, new LinkedHashSet<>());
+    if (attCtx != null && ra != null) {
+      attCtx2ra.put(attCtx, ra);
+      // set collection will take care of adding context to set
+      if (!ra2attCtxSet.containsKey(ra)) {
+        ra2attCtxSet.put(ra, new LinkedHashSet<>());
+      }
+      ra2attCtxSet.get(ra).add(attCtx);
     }
-    ra2attCtxSet.get(ra).add(attCtx);
+  }
+
+  /**
+   *
+   * @param attCtx
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void removeCachedAttributeContext(final CdmAttributeContext attCtx) {
+    if (attCtx != null) {
+      final ResolvedAttribute oldRa = this.attCtx2ra.get(attCtx);
+      if (oldRa != null && this.ra2attCtxSet.containsKey(oldRa)) {
+        this.attCtx2ra.remove(attCtx);
+        this.ra2attCtxSet.get(oldRa).remove(attCtx);
+        if (this.ra2attCtxSet.get(oldRa).size() == 0) {
+          this.ra2attCtxSet.remove(oldRa);
+        }
+      }
+    }
   }
 
   /**
@@ -101,6 +128,7 @@ public class ResolvedAttributeSet extends RefCounted {
     ResolvedAttributeSet rasResult = this;
 
     if (toMerge != null) {
+      // if there is already a resolve attribute present, remove it before adding the new attribute
       if (rasResult.getResolvedName2resolvedAttribute().containsKey(toMerge.getResolvedName())) {
         ResolvedAttribute existing = rasResult.getResolvedName2resolvedAttribute()
             .get(toMerge.getResolvedName());
@@ -108,10 +136,27 @@ public class ResolvedAttributeSet extends RefCounted {
         if (refCnt > 1 && existing.getTarget() != toMerge.getTarget()) {
           rasResult = rasResult.copy(); // copy on write
           existing = rasResult.getResolvedName2resolvedAttribute().get(toMerge.getResolvedName());
+        } else {
+          rasResult = this;
+        }
+
+        if (existing.getTarget() instanceof CdmAttribute) {
+          rasResult.resolvedAttributeCount -= ((CdmAttribute)existing.getTarget()).getAttributeCount();
+        } else if (existing.getTarget() instanceof ResolvedAttributeSet) {
+          rasResult.resolvedAttributeCount -= ((ResolvedAttributeSet)existing.getTarget()).resolvedAttributeCount;
+        }
+
+        if (toMerge.getTarget() instanceof CdmAttribute) {
+          rasResult.resolvedAttributeCount += ((CdmAttribute)toMerge.getTarget()).getAttributeCount();
+        } else if (toMerge.getTarget() instanceof ResolvedAttributeSet) {
+          rasResult.resolvedAttributeCount += ((ResolvedAttributeSet)toMerge.getTarget()).resolvedAttributeCount;
         }
 
         existing.setTarget(toMerge.getTarget()); // replace with newest version
         existing.setArc(toMerge.getArc());
+
+        // remove old context mappings with mappings to new attribute
+        rasResult.removeCachedAttributeContext(existing.getAttCtx());
 
         final ResolvedTraitSet rtsMerge = existing.fetchResolvedTraits()
             .mergeSet(toMerge.fetchResolvedTraits()); // newest one may replace
@@ -135,6 +180,7 @@ public class ResolvedAttributeSet extends RefCounted {
         }
         //toMerge.InsertOrder = rasResult.Set.Count;
         rasResult.getSet().add(toMerge);
+        rasResult.resolvedAttributeCount += toMerge.getResolvedAttributeCount();
       }
 
       baseTrait2Attributes = null;
@@ -149,7 +195,12 @@ public class ResolvedAttributeSet extends RefCounted {
     this.baseTrait2Attributes = null;
     this.resolvedName2resolvedAttribute = new LinkedHashMap<>(); // rebuild with smaller set
     this.set = newSet;
-    newSet.forEach(ra -> resolvedName2resolvedAttribute.put(ra.getResolvedName(), ra));
+
+    for (ResolvedAttribute ra : newSet) {
+      if (!resolvedName2resolvedAttribute.containsKey(ra.getResolvedName())) {
+        resolvedName2resolvedAttribute.put(ra.getResolvedName(), ra);
+      }
+    }
   }
 
   private void copyAttCtxMappingsInto(
@@ -181,7 +232,12 @@ public class ResolvedAttributeSet extends RefCounted {
 
       if (attCtxSet != null) {
         // map the new resolved attribute to the old context set
-        ra2attCtxSet.put(newRa, attCtxSet);
+        if (ra2attCtxSet.containsKey(newRa)) {
+          final Set<CdmAttributeContext> currentSet = ra2attCtxSet.get(newRa);
+          currentSet.addAll(attCtxSet);
+        } else {
+          ra2attCtxSet.put(newRa, attCtxSet);
+        }
         // map the old contexts to the new resolved attribute
         if (attCtxSet.size() > 0) {
           for (final CdmAttributeContext attCtx : attCtxSet) {
@@ -204,8 +260,10 @@ public class ResolvedAttributeSet extends RefCounted {
           rasResult = rasMerged;
         }
 
+        // get the attribute from the merged set, attributes that were already present were merged, not replaced
+        final ResolvedAttribute currentRa = rasResult.resolvedName2resolvedAttribute.get(ra.getResolvedName());
         // copy context here
-        toMerge.copyAttCtxMappingsInto(rasResult.getRa2attCtxSet(), rasResult.getAttCtx2ra(), ra);
+        toMerge.copyAttCtxMappingsInto(rasResult.getRa2attCtxSet(), rasResult.getAttCtx2ra(), ra, currentRa);
       }
     }
 
@@ -731,9 +789,25 @@ public class ResolvedAttributeSet extends RefCounted {
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  public void setSet(final List<ResolvedAttribute> set) {
+  public void setSet(final List<ResolvedAttribute> set)
+  {
+    this.setResolvedAttributeCount(set.stream().mapToInt(ResolvedAttribute::getResolvedAttributeCount).sum());
     this.set = set;
   }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public int getResolvedAttributeCount() { return this.resolvedAttributeCount; }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void setResolvedAttributeCount(final int resolvedAttributeCount) { this.resolvedAttributeCount = resolvedAttributeCount; }
 
   public CdmAttributeContext getAttributeContext() {
     return attributeContext;

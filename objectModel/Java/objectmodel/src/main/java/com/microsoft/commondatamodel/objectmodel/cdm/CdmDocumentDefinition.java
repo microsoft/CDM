@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
@@ -47,7 +50,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.setInDocument(this);
     this.setObjectType(CdmObjectType.DocumentDef);
     this.name = name;
-    this.jsonSchemaSemanticVersion = "0.9.0";
+    this.jsonSchemaSemanticVersion = "1.0.0";
     this.needsIndexing = true;
     this.isDirty = true;
     this.importsIndexed = false;
@@ -59,18 +62,28 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.definitions = new CdmDefinitionCollection(this.getCtx(), this);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public boolean getNeedsIndexing() {
     return this.needsIndexing;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public void setNeedsIndexing(final boolean value) {
     this.needsIndexing = value;
   }
 
   /**
    * @return
-   * @deprecated This function is extremely likely to be removed in
-   * the public interface, and no meant to be called externally at all. Please refrain from using it.
+   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
    */
   @Override
   @Deprecated
@@ -80,7 +93,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   /**
    * @param folderPath
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
@@ -91,7 +104,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   /**
    * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
@@ -102,7 +115,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   /**
    * @param namespace
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Override
@@ -133,7 +146,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   /**
    * @return
-   * @deprecated User the Owner Property instead. This function is extremely likely to be removed in the public interface, and not
+   * @deprecated Use the owner property instead. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
@@ -143,7 +156,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   /**
    * @param folder
-   * @deprecated User the Owner Property instead. This function is extremely likely to be removed in the public interface, and not
+   * @deprecated Use the owner property instead. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
@@ -345,21 +358,26 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   public CompletableFuture<Boolean> refreshAsync(ResolveOptions resOpt) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     this.needsIndexing = true;
     return this.indexIfNeededAsync(resOpt);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public CompletableFuture<Boolean> indexIfNeededAsync(final ResolveOptions resOpt) {
 
     return CompletableFuture.supplyAsync(() -> {
       if (this.getNeedsIndexing()) {
         final CdmCorpusDefinition corpus = this.getFolder().getCorpus();
 
-        corpus.resolveImportsAsync(this).join();
-        corpus.docsNotIndexed.put(this, (short) 1);
+        corpus.resolveImportsAsync(this, resOpt).join();
+        corpus.getDocumentLibrary().markDocumentForIndexing(this);
         return corpus.indexDocuments(resOpt, this);
       }
 
@@ -385,7 +403,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       options = new CopyOptions();
     }
 
-    final ResolveOptions resOpt = new ResolveOptions(this);
+    final ResolveOptions resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    
     if (!this.indexIfNeededAsync(resOpt).join()) {
       LOGGER.error("Failed to index document prior to save '{}'", this.getName());
       return CompletableFuture.completedFuture(false);
@@ -427,6 +446,15 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   @Override
+  public <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
+    return null;
+  }
+
+  @Override
   public boolean validate() {
     return !Strings.isNullOrEmpty(this.getName());
   }
@@ -448,7 +476,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmDocumentDefinition copy;
@@ -635,7 +663,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.schema = schema;
   }
 
-  public ImportPriorities getImportPriorities() {
+  ImportPriorities getImportPriorities() {
     if (this.importPriorities == null) {
       this.importPriorities = new ImportPriorities();
       this.importPriorities.getImportPriority().put(this, 0);
@@ -646,7 +674,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return this.importPriorities.copy();
   }
 
-  public void setImportPriorities(final ImportPriorities importPriorities) {
+  void setImportPriorities(final ImportPriorities importPriorities) {
     this.importPriorities = importPriorities;
   }
 
@@ -659,11 +687,16 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return isDirty;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public void setDirty(final boolean dirty) {
     isDirty = dirty;
   }
 
-  public CompletableFuture<Void> reloadAsync() {
+  CompletableFuture<Void> reloadAsync() {
     return getCtx().getCorpus().fetchObjectAsync(getAtCorpusPath(), null, true)
         .thenAccept((v) -> {
         });

@@ -1,7 +1,5 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 # TODO: Consider just inheriting from Python's set type -MPL
 
@@ -11,17 +9,17 @@ class SymbolSet:
         self._symbol_set_collection = set()
 
     @property
-    def size(self):
+    def _size(self):
         return len(self._symbol_set_collection)
 
-    def add(self, new_symbol):
+    def _add(self, new_symbol):
         self._symbol_set_collection.add(new_symbol)
 
-    def merge(self, sym_set):
+    def _merge(self, sym_set):
         if sym_set is not None:
             self._symbol_set_collection = self._symbol_set_collection.union(sym_set)
 
-    def copy(self):
+    def _copy(self):
         return self._symbol_set_collection.copy()
 
     def __iter__(self):

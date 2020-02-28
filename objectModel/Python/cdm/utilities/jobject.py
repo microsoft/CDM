@@ -1,7 +1,5 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Dict
 
@@ -148,7 +146,9 @@ class JObject(OrderedDict):
         self.__delitem__(key)
 
     def __getattr__(self, key):
-        return super().__getitem__(key)
+        if key in self:
+            return super().__getitem__(key)
+        return None
 
     def __setattr__(self, key, value):
         if key.startswith('_'):

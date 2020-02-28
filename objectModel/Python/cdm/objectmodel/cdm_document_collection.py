@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional, List, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
@@ -45,10 +48,10 @@ class CdmDocumentCollection(CdmCollection):
             self._remove_item_modifications(name)
             # setting this currentlyResolving flag will keep the base collection code from setting the inDocument to null
             # this makes sense because a document is "in" itself. always.
-            b_save = self.ctx.corpus.is_currently_resolving
-            self.ctx.corpus.is_currently_resolving = True
+            b_save = self.ctx.corpus._is_currently_resolving
+            self.ctx.corpus._is_currently_resolving = True
             elem = next(d for d in self if d.name == name)
-            self.ctx.corpus.is_currently_resolving = b_save
+            self.ctx.corpus._is_currently_resolving = b_save
             return super().remove(elem)
 
     def _add_item_modifications(self, obj: 'CdmDocumentDefinition') -> None:

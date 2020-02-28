@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.CdmCollection
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -93,7 +96,7 @@
             var callback = new EventCallback();
             var functionWasCalled = false;
             var functionParameter1 = CdmStatusLevel.Info;
-            string functionParameter2 = null, functionParameter3 = null;
+            string functionParameter2 = null;
             callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
             {
                 functionWasCalled = true;

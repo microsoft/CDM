@@ -1,14 +1,13 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ResolvedEntity.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleToAttribute("Microsoft.CommonDataModel.Tools.Processor"),
-    InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Tests")]
-
+#if INTERNAL_VSTS
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
+#else
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Tests")]
+#endif
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -98,7 +97,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             to.SpewLine(indent + "traits:");
             this.ResolvedTraits.Spew(resOpt, to, indent + " ", nameSort);
             to.SpewLine("attributes:");
-            this.ResolvedAttributes.Spew(resOpt, to, indent + " ", nameSort);
+            if (this.ResolvedAttributes != null)
+                this.ResolvedAttributes.Spew(resOpt, to, indent + " ", nameSort);
             to.SpewLine("relationships:");
             this.ResolvedEntityReferences.Spew(resOpt, to, indent + " ", nameSort);
         }

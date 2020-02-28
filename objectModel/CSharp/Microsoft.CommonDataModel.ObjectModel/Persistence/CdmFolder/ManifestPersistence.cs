@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
@@ -20,7 +23,7 @@
         /// <summary>
         /// The file format/extension types this persistence class supports.
         /// </summary>
-        public static readonly string[] Formats = { PersistenceLayer.FetchManifestExtension(), PersistenceLayer.FetchFolioExtension() };
+        public static readonly string[] Formats = { PersistenceLayer.ManifestExtension, PersistenceLayer.FolioExtension };
 
         public static CdmManifestDefinition FromObject(CdmCorpusContext ctx, string name, string nameSpace, string path, ManifestContent dataObj)
         {
@@ -28,7 +31,7 @@
             var manifestName = !string.IsNullOrEmpty(dataObj.ManifestName) ? dataObj.ManifestName : dataObj.FolioName;
             // We haven't found the name in the file, use one provided in the call but without the suffixes
             if (string.IsNullOrEmpty(manifestName))
-                manifestName = name.Replace(PersistenceLayer.FetchManifestExtension(), "").Replace(PersistenceLayer.FetchFolioExtension(), "");
+                manifestName = name.Replace(PersistenceLayer.ManifestExtension, "").Replace(PersistenceLayer.FolioExtension, "");
 
             var manifest = ctx.Corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, manifestName);
 
@@ -183,10 +186,10 @@
             manifestContent.LastFileStatusCheckTime = TimeUtils.GetFormattedDateString(instance.LastFileStatusCheckTime);
             manifestContent.LastFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastFileModifiedTime);
             manifestContent.LastChildFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastChildFileModifiedTime);
-            manifestContent.Entities = Utils.ListCopyData(resOpt, instance.Entities, options);
+            manifestContent.Entities = CopyDataUtils.ListCopyData(resOpt, instance.Entities, options);
             manifestContent.SubManifests = Utils.ListCopyData<ManifestDeclaration>(resOpt, instance.SubManifests, options);
             manifestContent.Explanation = instance.Explanation;
-            manifestContent.ExhibitsTraits = Utils.ListCopyData(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options);
+            manifestContent.ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options);
 
             if (instance.Relationships != null && instance.Relationships.Count > 0)
             {

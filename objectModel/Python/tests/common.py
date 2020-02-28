@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional
 import os
@@ -29,6 +27,9 @@ ACTUAL_OUTPUT_FOLDER_NAME = 'ActualOutput'
 
 
 class TestHelper:
+    @staticmethod
+    def get_schema_docs_root():
+        return os.path.join('..', '..', 'schemaDocuments')
     @staticmethod
     def get_input_folder_path(test_subpath: str, test_name: str):
         return TestHelper.get_test_folder_path(test_subpath, test_name, INPUT_FOLDER_NAME)

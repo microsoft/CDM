@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -66,7 +67,11 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
     return CdmObjectBase.copyData(this, resOpt, options, CdmAttributeGroupReference.class);
   }
 
-  public ResolvedEntityReferenceSet fetchResolvedEntityReferences(final ResolveOptions resOpt) {
+  public ResolvedEntityReferenceSet fetchResolvedEntityReferences(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final CdmObjectDefinition cdmObjectDefinition = this.fetchResolvedReference(resOpt);
     if (cdmObjectDefinition != null) {
       return ((CdmAttributeGroupDefinition) cdmObjectDefinition).fetchResolvedEntityReferences(resOpt);

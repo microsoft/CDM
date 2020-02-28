@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
@@ -106,7 +109,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                 arc.res_opt.directives.add('referenceOnly')
         else:
             res_link = CdmObject._copy_resolve_options(res_opt)
-            res_link.symbol_ref_set = res_opt.symbol_ref_set
+            res_link._symbol_ref_set = res_opt._symbol_ref_set
             res_link._relationship_depth = rel_info.next_depth
             rasb.merge_attributes(self.entity._fetch_resolved_attributes(res_link, acp_ent))
 
@@ -115,11 +118,11 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         rasb.apply_traits(arc)
         rasb.generate_applier_attributes(arc, True)  # True = apply the prepared traits to new atts
         # this may have added symbols to the dependencies, so merge them
-        res_opt.symbol_ref_set.merge(arc.res_opt.symbol_ref_set)
+        res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
 
         # use the traits for linked entity identifiers to record the actual foreign key links
-        if rasb.ras and rasb.ras.set and rel_info.is_by_ref:
-            for att in rasb.ras.set:
+        if rasb.ras and rasb.ras._set and rel_info.is_by_ref:
+            for att in rasb.ras._set:
                 reqd_trait = att.resolved_traits.find(res_opt, 'is.linkedEntity.identifier')
                 if not reqd_trait:
                     continue
@@ -289,9 +292,11 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                         if isinstance(other_ref, CdmObject):
                             other_attribute = other_ref.fetch_object_definition(other_opts)
                             if other_attribute:
-                                side_other._rasb.own_one(side_other.entity._fetch_resolved_attributes(other_opts)
-                                                         .get(other_attribute.get_name())
-                                                         .copy())
+                                ras = side_other.entity._fetch_resolved_attributes(other_opts)
+                                if ras is not None:
+                                    side_other._rasb.own_one(ras
+                                                             .get(other_attribute.get_name())
+                                                             .copy())
 
             return side_other
 
@@ -320,7 +325,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = path_from + self.name

@@ -1,4 +1,7 @@
-﻿using Microsoft.CommonDataModel.ObjectModel.Cdm;
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+using Microsoft.CommonDataModel.ObjectModel.Cdm;
 using Microsoft.CommonDataModel.ObjectModel.Storage;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.CommonDataModel.Tools.Processor;
@@ -26,11 +29,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         /// The path of the CDM Schema Documents Folder.
         /// </summary>
         public const string SchemaDocumentsPath = "../../../../../../schemaDocuments";
-
-        /// <summary>
-        /// Whether tests should write debugging files or not.
-        /// </summary>
-        public const bool DoesWriteTestDebuggingFiles = true;
 
         /// <summary>
         /// Gets the input folder path associated with specified test.
@@ -191,7 +189,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
                     return expectedDate == actualDate;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     Console.WriteLine($"Strings did not match. Expected = {expectedString} , Actual = {actualString}");
                     return false;

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm.cdmcollection;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
@@ -139,10 +142,10 @@ public class CdmDefinitionCollectionTest {
     final CdmDocumentDefinition document = folder.getDocuments().add("DocumentName");
     final CdmDocumentDefinition document2 = folder.getDocuments().add("DocumentName2");
     final CdmDocumentDefinition document3 = folder.getDocuments().add("DocumentName3");
-    Assert.assertEquals(manifest.getCtx().getCorpus().getAllDocuments().size(), 3);
-    Assert.assertTrue(manifest.getCtx().getCorpus().getAllDocuments().contains(new ImmutablePair<>(folder, document)));
-    Assert.assertTrue(manifest.getCtx().getCorpus().getAllDocuments().contains(new ImmutablePair<>(folder, document2)));
-    Assert.assertTrue(manifest.getCtx().getCorpus().getAllDocuments().contains(new ImmutablePair<>(folder, document3)));
+    Assert.assertEquals(manifest.getCtx().getCorpus().getDocumentLibrary().listAllDocuments().size(), 3);
+    Assert.assertTrue(manifest.getCtx().getCorpus().getDocumentLibrary().contains(new ImmutablePair<>(folder, document)));
+    Assert.assertTrue(manifest.getCtx().getCorpus().getDocumentLibrary().contains(new ImmutablePair<>(folder, document2)));
+    Assert.assertTrue(manifest.getCtx().getCorpus().getDocumentLibrary().contains(new ImmutablePair<>(folder, document3)));
     Assert.assertEquals(folder.getDocumentLookup().size(), 3);
     Assert.assertTrue(folder.getDocumentLookup().containsKey(document.getName()));
     Assert.assertTrue(folder.getDocumentLookup().containsKey(document2.getName()));
@@ -150,10 +153,10 @@ public class CdmDefinitionCollectionTest {
     folder.getDocuments().removeAt(1);
     folder.getDocuments().remove("DocumentName");
     folder.getDocuments().remove(document3);
-    Assert.assertEquals(manifest.getCtx().getCorpus().getAllDocuments().size(), 0);
-    Assert.assertFalse(manifest.getCtx().getCorpus().getAllDocuments().contains(new ImmutablePair<>(folder, document)));
-    Assert.assertFalse(manifest.getCtx().getCorpus().getAllDocuments().contains(new ImmutablePair<>(folder, document2)));
-    Assert.assertFalse(manifest.getCtx().getCorpus().getAllDocuments().contains(new ImmutablePair<>(folder, document3)));
+    Assert.assertEquals(manifest.getCtx().getCorpus().getDocumentLibrary().listAllDocuments().size(), 0);
+    Assert.assertFalse(manifest.getCtx().getCorpus().getDocumentLibrary().contains(new ImmutablePair<>(folder, document)));
+    Assert.assertFalse(manifest.getCtx().getCorpus().getDocumentLibrary().contains(new ImmutablePair<>(folder, document2)));
+    Assert.assertFalse(manifest.getCtx().getCorpus().getDocumentLibrary().contains(new ImmutablePair<>(folder, document3)));
     Assert.assertEquals(folder.getDocumentLookup().size(), 0);
     Assert.assertFalse(folder.getDocumentLookup().containsKey(document.getName()));
     Assert.assertFalse(folder.getDocumentLookup().containsKey(document2.getName()));

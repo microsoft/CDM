@@ -1,7 +1,5 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import cast, Dict, List, Optional, Set, TYPE_CHECKING
 
@@ -135,7 +133,7 @@ class ResolvedTraitSet:
             av = res_trait.parameter_values.values
             new_val = arg.value
             # Get the value index from the parameter collection given the parameter that this argument is setting.
-            idx = res_trait.parameter_values.index_of(arg.resolved_parameter)
+            idx = res_trait.parameter_values.index_of(arg._resolved_parameter)
             av[idx] = ParameterValue.fetch_replacement_value(self.res_opt, av[idx], new_val, True)
             res_trait.parameter_values.was_set[idx] = True
 

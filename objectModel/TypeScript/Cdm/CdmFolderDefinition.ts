@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmCorpusDefinition,
@@ -27,6 +30,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
     /**
      * @inheritdoc
+     * @deprecated Only for internal use.
      */
     public folderPath: string;
 
@@ -54,6 +58,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
     /**
      * @inheritdoc
+     * @deprecated Only for internal use.
      */
     public namespace: string;
 
@@ -188,7 +193,8 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
     public async fetchDocumentFromFolderPathAsync(
         objectPath: string,
         adapter: StorageAdapter,
-        forceReload: boolean = false): Promise<CdmDocumentDefinition> {
+        forceReload: boolean = false,
+        resOpt: resolveOptions = null): Promise<CdmDocumentDefinition> {
         let docName: string;
         let remainingPath: string;
         const first: number = objectPath.indexOf('/', 0);
@@ -216,7 +222,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
         }
 
         // go get the doc
-        doc = await this.corpus.persistence.LoadDocumentFromPathAsync(this, docName, doc);
+        doc = await this.corpus.persistence.LoadDocumentFromPathAsync(this, docName, doc, resOpt);
 
         return doc;
     }
@@ -248,6 +254,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
     /**
      * @inheritdoc
+     * @internal
      */
     public fetchResolvedTraits(resOpt?: resolveOptions): ResolvedTraitSet {
         if (!resOpt) {
@@ -259,6 +266,7 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
 
     /**
      * @inheritdoc
+     * @internal
      */
     public fetchResolvedAttributes(): ResolvedAttributeSet {
         return undefined;

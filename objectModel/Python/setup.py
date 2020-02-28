@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import os
 from os.path import isfile, join
 from os import listdir
@@ -33,7 +36,7 @@ class CopyResourcesCommand(distutils.cmd.Command):
         root_path = os.getcwd()
 
         paths_to_ignore = ['*.manifest.cdm.json', '*.0.6.cdm.json', '*.0.7.cdm.json', '*.0.8.cdm.json', '*.0.8.1.cdm.json',
-                           '*core*', '*office*', '*.git*', '*.jpg', '*.md']
+                           '*.0.9.0.cdm.json', '*.0.9.1.cdm.json', '*core*', '*office*', '*.git*', '*.jpg', '*.md']
 
         self.copy_and_overwrite('{}/../../schemaDocuments/'.format(root_path), '{}/resources/'.format(root_path), paths_to_ignore)
 
@@ -51,7 +54,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="commondatamodel-objectmodel",
-    version="0.9.0preview30",
+    version="1.0.0",
     author="Microsoft",
     #    author_email="author@example.com",
     description="Common Data Model Object Model library for Python",

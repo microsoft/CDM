@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 /**
  * Non essential contextual information (key/value pairs) that can be used to store additional
  * context about a properties in the model file. Annotations can be applied at multiple levels

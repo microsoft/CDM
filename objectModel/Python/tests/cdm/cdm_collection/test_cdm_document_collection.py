@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import unittest
 from tests.common import async_test
 from cdm.enums import CdmObjectType
@@ -53,7 +56,7 @@ class CdmDocumentCollectionTests(unittest.TestCase):
         self.assertTrue(document._needs_indexing)
         self.assertEqual(folder, document.owner)
         self.assertTrue(document.name in folder._document_lookup)
-        self.assertTrue((folder, document) in manifest.ctx.corpus._all_documents)
+        self.assertTrue(manifest.ctx.corpus._document_library._contains((folder, document)))
 
     @async_test
     def test_document_collection_add_with_document_name(self):
@@ -157,10 +160,10 @@ class CdmDocumentCollectionTests(unittest.TestCase):
         document2 = folder.documents.append('DocumentName2')
         document3 = folder.documents.append('DocumentName3')
 
-        self.assertEqual(3, len(manifest.ctx.corpus._all_documents))
-        self.assertTrue((folder, document) in manifest.ctx.corpus._all_documents)
-        self.assertTrue((folder, document2) in manifest.ctx.corpus._all_documents)
-        self.assertTrue((folder, document3) in manifest.ctx.corpus._all_documents)
+        self.assertEqual(3, len(manifest.ctx.corpus._document_library._list_all_documents()))
+        self.assertTrue(manifest.ctx.corpus._document_library._contains((folder, document)))
+        self.assertTrue(manifest.ctx.corpus._document_library._contains((folder, document2)))
+        self.assertTrue(manifest.ctx.corpus._document_library._contains((folder, document3)))
 
         self.assertEqual(3, len(folder._document_lookup))
         self.assertTrue((document.name) in folder._document_lookup)
@@ -171,10 +174,10 @@ class CdmDocumentCollectionTests(unittest.TestCase):
         folder.documents.remove('DocumentName')
         folder.documents.remove(document3)
 
-        self.assertEqual(0, len(manifest.ctx.corpus._all_documents))
-        self.assertFalse((folder, document) in manifest.ctx.corpus._all_documents)
-        self.assertFalse((folder, document2) in manifest.ctx.corpus._all_documents)
-        self.assertFalse((folder, document3) in manifest.ctx.corpus._all_documents)
+        self.assertEqual(0, len(manifest.ctx.corpus._document_library._list_all_documents()))
+        self.assertFalse(manifest.ctx.corpus._document_library._contains((folder, document)))
+        self.assertFalse(manifest.ctx.corpus._document_library._contains((folder, document2)))
+        self.assertFalse(manifest.ctx.corpus._document_library._contains((folder, document3)))
 
         self.assertEqual(0, len(folder._document_lookup))
         self.assertFalse((document.name) in folder._document_lookup)
@@ -198,5 +201,5 @@ class CdmDocumentCollectionTests(unittest.TestCase):
         folder.documents.clear()
 
         self.assertEqual(0, len(folder._document_lookup))
-        self.assertEqual(0, len(manifest.ctx.corpus._all_documents))
+        self.assertEqual(0, len(manifest.ctx.corpus._document_library._list_all_documents()))
         self.assertEqual(0, len(folder.documents))

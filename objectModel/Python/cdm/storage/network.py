@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import json
 import random
 import urllib
@@ -45,7 +48,7 @@ class NetworkAdapter:
         return request
 
     async def _read(self, request: 'CdmHttpRequest') -> str:
-        result = await self._http_client.send_async(request, self.wait_time_callback)
+        result = await self._http_client._send_async(request, self.wait_time_callback)
 
         if result is None:
             raise Exception('The result of a request is undefined.')

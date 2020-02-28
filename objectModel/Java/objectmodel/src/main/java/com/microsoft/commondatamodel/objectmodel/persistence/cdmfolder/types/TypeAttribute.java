@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -9,7 +12,7 @@ public class TypeAttribute {
     private JsonNode purpose;
     private JsonNode dataType;
     private ArrayNode appliedTraits;
-    private String attributeContext;
+    private JsonNode attributeContext;
     private Boolean isPrimaryKey;
     private Boolean isReadOnly;
     private Boolean isNullable;
@@ -65,11 +68,11 @@ public class TypeAttribute {
         this.appliedTraits = appliedTraits;
     }
 
-    public String getAttributeContext() {
+    public JsonNode getAttributeContext() {
         return attributeContext;
     }
 
-    public void setAttributeContext(final String attributeContext) {
+    public void setAttributeContext(final JsonNode attributeContext) {
         this.attributeContext = attributeContext;
     }
 

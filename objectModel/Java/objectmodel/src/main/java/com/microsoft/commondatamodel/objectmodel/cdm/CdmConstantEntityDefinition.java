@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -125,7 +126,7 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmConstantEntityDefinition copy;
@@ -145,7 +146,11 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return false;
   }
 
@@ -234,17 +239,19 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
       // metadata library
       final ResolvedAttributeSet ras = this.fetchResolvedAttributes(resOpt);
       // query validation and binding
-      final int l = ras.getSet().size();
-      for (int i = 0; i < l; i++) {
-        final String name = ras.getSet().get(1).getResolvedName();
-        if (resultAtt == -1 && name == attReturn) {
-          resultAtt = i;
-        }
-        if (searchAtt == -1 && name == attSearch) {
-          searchAtt = i;
-        }
-        if (resultAtt >= 0 && searchAtt >= 0) {
-          break;
+      if (ras != null) {
+        final int l = ras.getSet().size();
+        for (int i = 0; i < l; i++) {
+          final String name = ras.getSet().get(i).getResolvedName();
+          if (resultAtt == -1 && name == attReturn) {
+            resultAtt = i;
+          }
+          if (searchAtt == -1 && name == attSearch) {
+            searchAtt = i;
+          }
+          if (resultAtt >= 0 && searchAtt >= 0) {
+            break;
+          }
         }
       }
     }

@@ -1,8 +1,5 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="CdmDataPartitionPatternDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-// --------------------------------------------------------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -90,7 +87,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmDataPartitionPatternDefinition copy;
@@ -170,7 +167,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return false;
@@ -206,7 +203,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // get a list of all corpusPaths under the root
                 fileInfoList = await adapter.FetchAllFilesAsync(rootCorpus);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Logger.Warning(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"The folder location '{rootCorpus}' described by a partition pattern does not exist", nameof(FileStatusCheckAsync));
             }

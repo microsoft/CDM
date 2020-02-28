@@ -1,7 +1,10 @@
-from collections import OrderedDict
-import dateutil.parser
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import List, Optional, TYPE_CHECKING
+from collections import OrderedDict
 import uuid
+import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.persistence import PersistenceLayer
@@ -24,7 +27,7 @@ _TAG = 'ManifestPersistence'
 class ManifestPersistence:
     is_persistence_async = True
 
-    formats = [PersistenceLayer._MODEL_JSON_EXTENSION]
+    formats = [PersistenceLayer.MODEL_JSON_EXTENSION]
 
     @staticmethod
     async def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmManifestDefinition':
@@ -158,26 +161,26 @@ class ManifestPersistence:
 
         t2pm = TraitToPropertyMap(instance)
 
-        result.isHidden = bool(t2pm.fetch_trait_reference('is.hidden')) or None
+        result.isHidden = bool(t2pm._fetch_trait_reference('is.hidden')) or None
 
-        application_trait = t2pm.fetch_trait_reference('is.managedBy')
+        application_trait = t2pm._fetch_trait_reference('is.managedBy')
         if application_trait:
             result.application = application_trait.arguments[0].value
 
-        version_trait = t2pm.fetch_trait_reference('is.modelConversion.modelVersion')
+        version_trait = t2pm._fetch_trait_reference('is.modelConversion.modelVersion')
         if version_trait:
             result.version = version_trait.arguments[0].value
         else:
             result.version = '1.0'
 
-        culture_trait = t2pm.fetch_trait_reference('is.partition.culture')
+        culture_trait = t2pm._fetch_trait_reference('is.partition.culture')
         if culture_trait:
             result.culture = culture_trait.arguments[0].value
 
         reference_entity_locations = {}
         reference_models = OrderedDict()
 
-        reference_models_trait = t2pm.fetch_trait_reference('is.modelConversion.referenceModelMap')
+        reference_models_trait = t2pm._fetch_trait_reference('is.modelConversion.referenceModelMap')
 
         if reference_models_trait:
             ref_models = reference_models_trait.arguments[0].value

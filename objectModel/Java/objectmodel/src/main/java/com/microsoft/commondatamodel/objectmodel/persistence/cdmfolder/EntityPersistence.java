@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -48,7 +51,7 @@ public class EntityPersistence {
 
     Utils.addListToCdmCollection(
         entity.getAttributes(),
-        Utils.createAttributeList(ctx, obj.get("hasAttributes")));
+        Utils.createAttributeList(ctx, obj.get("hasAttributes"), entity.getEntityName()));
     entity.setSourceName(obj.has("sourceName") ? obj.get("sourceName").asText() : null);
     entity.setDisplayName(obj.has("displayName") ? obj.get("displayName").asText() : null);
     entity.setDescription(obj.has("description") ? obj.get("description").asText() : null);

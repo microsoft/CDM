@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmEntityDefinition,
     ResolvedAttributeSet,
@@ -65,7 +68,9 @@ export class ResolvedEntity {
         to.spewLine(`${indent}traits:`);
         this.resolvedTraits.spew(resOpt, to, `${indent} `, nameSort);
         to.spewLine('attributes:');
-        this.resolvedAttributes.spew(resOpt, to, `${indent} `, nameSort);
+        if (this.resolvedAttributes !== undefined) {
+            this.resolvedAttributes.spew(resOpt, to, `${indent} `, nameSort);
+        }
         to.spewLine('relationships:');
         this.resolvedEntityReferences.spew(resOpt, to, `${indent} `, nameSort);
     }

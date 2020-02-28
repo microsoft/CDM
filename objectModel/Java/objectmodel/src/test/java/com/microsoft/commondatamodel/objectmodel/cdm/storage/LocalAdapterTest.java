@@ -1,18 +1,17 @@
-/*
- * Copyright (c) Microsoft Corporation.
- */
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm.storage;
-
-import static org.testng.AssertJUnit.assertFalse;
-import static org.testng.AssertJUnit.assertTrue;
 
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterException;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
+
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
+
+import static org.testng.AssertJUnit.*;
 
 public class LocalAdapterTest {
 
@@ -68,16 +67,6 @@ public class LocalAdapterTest {
     }
   }
 
-  @Test(expectedExceptions = StorageAdapterException.class)
-  public void write_whenCorpusPathNotStartWithSlash_expectIsCompletedExceptionally() throws Throwable {
-    final String data = "";
-    try {
-      localAdapter.writeAsync("CORPUS_PATH_NOT_START_WITH_SLASH", data).get();
-    } catch (final InterruptedException | ExecutionException e) {
-      throw e.getCause();
-    }
-  }
-
   // TODO-BQ: Validate test.
   @Test
   public void dirExists_whenFolderPathIsEmptyString_returnTrue()
@@ -123,5 +112,15 @@ public class LocalAdapterTest {
     final LocalAdapter adapter = new LocalAdapter("../");
     // adapter.getFullRoot() should not contain "../".
     assertFalse(adapter.getFullRoot().contains("../"));
+  }
+
+  @Test
+  public void createAdapterPath_returnSameResult() throws ExecutionException, InterruptedException {
+    final LocalAdapter adapter = new LocalAdapter("C:/some/dir");
+    String pathWithLeadingSlash = adapter.createAdapterPath("/folder");
+    String pathWithoutLeadingSlash = adapter.createAdapterPath("folder");
+    // Path with or without a leading slash should return the same result.
+    assertEquals(pathWithLeadingSlash, "C:\\some\\dir\\folder");
+    assertEquals(pathWithLeadingSlash, pathWithoutLeadingSlash);
   }
 }

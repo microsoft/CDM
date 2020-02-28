@@ -1,0 +1,78 @@
+{
+    "$schema": "../../schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "/foundations.cdm.json"
+        },
+        {
+            "moniker": "base",
+            "corpusPath": "/POVResolution/Main.cdm.json"
+        },
+        {
+            "corpusPath": "/POVResolution/sub1/Linked.cdm.json"
+        },
+        {
+            "corpusPath": "/POVResolution/sub1/Linked3.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Main",
+            "extendsEntity": {
+                "entityReference": "base/Main",
+                "appliedTraits": [
+                    {
+                        "traitReference": "base/sampleEntityTrait",
+                        "arguments": [
+                            {
+                                "name": "P1",
+                                "value": "P1FromDerived"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "hasAttributes": [
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "A11"
+                },
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "A12"
+                },
+                {
+                    "name": "useLinked3",
+                    "entity": {
+                        "entityReference": "Linked3",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Linked3/(resolvedAttributes)/linkedId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "main2linked3",
+                                "appliedTraits": [
+                                    "is.linkedEntity.identifier"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from .argument import Argument
 from .attribute_context import AttributeContext
 from .attribute_group import AttributeGroup

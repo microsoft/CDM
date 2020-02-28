@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
 import { CdmCorpusDefinition, CdmEntityDefinition, CdmFolderDefinition, cdmStatusLevel } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
@@ -121,10 +124,7 @@ describe('Cdm.ResolutionGuidance', () => {
         expect(srcEntityDef)
             .toBeDefined();
 
-        const resOpt: resolveOptions = {
-            wrtDoc: srcEntityDef.inDocument,
-            directives: new AttributeResolutionDirectiveSet()
-        };
+        const resOpt: resolveOptions = new resolveOptions(srcEntityDef.inDocument, new AttributeResolutionDirectiveSet());
 
         const actualOutputFolder: CdmFolderDefinition = await corpus.fetchObjectAsync<CdmFolderDefinition>('localActualOutput:/');
         let resolvedEntityDef: CdmEntityDefinition;

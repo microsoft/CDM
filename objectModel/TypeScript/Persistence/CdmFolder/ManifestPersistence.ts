@@ -1,4 +1,8 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
+    CdmConstants,
     CdmCorpusContext,
     CdmE2ERelationship,
     CdmEntityDeclarationDefinition,
@@ -10,9 +14,9 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
-import { fetchFolioExtension, fetchManifestExtension } from '../extensionFunctions';
 import { AttributeGroupPersistence } from './AttributeGroupPersistence';
 import { ConstantEntityPersistence } from './ConstantEntityPersistence';
 import { DataTypePersistence } from './DataTypePersistence';
@@ -39,7 +43,7 @@ export class ManifestPersistence {
     public static readonly isPersistenceAsync: boolean = false;
 
     // The file format/extension types this persistence class supports.
-    public static readonly formats: string[] = [fetchManifestExtension(), fetchFolioExtension()];
+    public static readonly formats: string[] = [CdmConstants.manifestExtension, CdmConstants.folioExtension];
 
     public static fromObject(
         ctx: CdmCorpusContext,
@@ -55,8 +59,8 @@ export class ManifestPersistence {
         }
         // We haven't found the name in the file, use one provided in the call but without the suffixes
         if (!manifestName && name) {
-            manifestName = name.replace(fetchManifestExtension(), '')
-                .replace(fetchFolioExtension(), '');
+            manifestName = name.replace(CdmConstants.manifestExtension, '')
+                .replace(CdmConstants.folioExtension, '');
         }
         const manifest: CdmManifestDefinition = ctx.corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, manifestName);
         // this is the document name which is assumed by constructor to be related to the the manifestName, but may not be
@@ -78,7 +82,7 @@ export class ManifestPersistence {
             if (dataObj.jsonSchemaSemanticVersion) {
                 manifest.jsonSchemaSemanticVersion = dataObj.jsonSchemaSemanticVersion;
             }
-            if (manifest.jsonSchemaSemanticVersion !== '0.9.0') {
+            if (manifest.jsonSchemaSemanticVersion !== '1.0.0') {
                 // tslint:disable-next-line:no-suspicious-comment
                 // TODO: validate that this is a version we can understand with the OM
             }
@@ -198,17 +202,17 @@ export class ManifestPersistence {
         manifestContent.lastFileModifiedTime = timeUtils.getFormattedDateString(instance.lastFileModifiedTime);
         manifestContent.lastChildFileModifiedTime = timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime);
         manifestContent.explanation = instance.explanation;
-        manifestContent.exhibitsTraits = utils.arrayCopyData<TraitReference>(resOpt, instance.exhibitsTraits, options);
-        manifestContent.entities = utils.arrayCopyData<EntityDeclarationDefinition>(
+        manifestContent.exhibitsTraits = copyDataUtils.arrayCopyData<TraitReference>(resOpt, instance.exhibitsTraits, options);
+        manifestContent.entities = copyDataUtils.arrayCopyData<EntityDeclarationDefinition>(
             resOpt,
             instance.entities,
             options
         );
 
-        manifestContent.subManifests = utils.arrayCopyData<ManifestDeclaration>(resOpt, instance.subManifests, options);
+        manifestContent.subManifests = copyDataUtils.arrayCopyData<ManifestDeclaration>(resOpt, instance.subManifests, options);
         manifestContent.imports = [];
         instance.imports.allItems.forEach((importDoc: CdmImport) => {
-            manifestContent.imports.push(ImportPersistence.toData(importDoc, {}, {}));
+            manifestContent.imports.push(ImportPersistence.toData(importDoc, new resolveOptions(), {}));
         });
 
         if (instance.relationships && instance.relationships.length > 0) {

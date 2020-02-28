@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmEntityAttributeDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -44,7 +41,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return false;
@@ -61,7 +58,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             CdmEntityAttributeDefinition copy;
@@ -118,6 +115,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         private RelationshipInfo GetRelationshipInfo(ResolveOptions resOpt, AttributeResolutionContext arc)
         {
             ResolvedTraitSet rts = null;
+            bool noMaxDepth = false;
             bool hasRef = false;
             bool isByRef = false;
             bool isArray = false;
@@ -131,6 +129,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     hasRef = true;
                 if (arc.ResOpt.Directives != null)
                 {
+                    noMaxDepth = arc.ResOpt.Directives.Has("noMaxDepth");
                     // based on directives
                     if (hasRef)
                         isByRef = arc.ResOpt.Directives.Has("referenceOnly");
@@ -155,6 +154,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         int maxDepth = 2;
                         if (hasRef && arc.ResGuide.entityByReference.referenceOnlyAfterDepth != null)
                             maxDepth = (int)arc.ResGuide.entityByReference.referenceOnlyAfterDepth;
+                        if (noMaxDepth)
+                            maxDepth = 32; // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system.
 
                         if (nextDepth > maxDepth)
                         {
@@ -195,7 +196,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // the purpose of the attribute, any traits applied to the attribute.
             ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
             CdmEntityReference ctxEnt = this.Entity as CdmEntityReference;
-            CdmAttributeContext underAtt = (CdmAttributeContext)under;
+            CdmAttributeContext underAtt = under;
             AttributeContextParameters acpEnt = null;
             if (underAtt != null)
             {
@@ -373,7 +374,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // a 'structured' directive wants to keep all entity attributes together in a group
             if (arc.ResOpt.Directives?.Has("structured") == true)
             {
-                ResolvedAttribute raSub = new ResolvedAttribute(rtsThisAtt.ResOpt, rasb.ResolvedAttributeSet, this.Name, (CdmAttributeContext)rasb.ResolvedAttributeSet.AttributeContext);
+                ResolvedAttribute raSub = new ResolvedAttribute(rtsThisAtt.ResOpt, rasb.ResolvedAttributeSet, this.Name, rasb.ResolvedAttributeSet.AttributeContext);
                 if (relInfo.IsArray)
                 {
                     // put a resolved trait on this att group, yuck, hope I never need to do this again and then need to make a function for this
@@ -383,6 +384,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     raSub.ResolvedTraits = raSub.ResolvedTraits.Merge(rt, true);
                 }
                 rasb = new ResolvedAttributeSetBuilder();
+                rasb.ResolvedAttributeSet.AttributeContext = raSub.AttCtx; // this got set to null with the new builder
                 rasb.OwnOne(raSub);
             }
 
@@ -394,7 +396,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" }));
             }
 
             ResolvedTraitSet rtsThisAtt = this.FetchResolvedTraits(resOpt);
@@ -434,7 +436,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                         otherAttribute = (otherRef as CdmObject).FetchObjectDefinition<CdmObjectDefinition>(otherOpts) as CdmAttribute;
                                         if (otherAttribute != null)
                                         {
-                                            sideOther.ResolvedAttributeSetBuilder.OwnOne(sideOther.Entity.FetchResolvedAttributes(otherOpts).Get(otherAttribute.GetName()).Copy());
+                                            ResolvedAttributeSet resolvedAttributeSet = sideOther.Entity.FetchResolvedAttributes(otherOpts);
+                                            if (resolvedAttributeSet != null)
+                                                sideOther.ResolvedAttributeSetBuilder.OwnOne(resolvedAttributeSet.Get(otherAttribute.GetName()).Copy());
                                         }
                                     }
                                 }

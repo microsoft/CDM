@@ -1,6 +1,10 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmValidationStep;
@@ -17,6 +21,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+
+import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,14 +42,12 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.mutable.MutableInt;
-import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class CdmCorpusDefinition {
   private static final Logger LOGGER = LoggerFactory.getLogger(CdmCorpusDefinition.class);
-  private static final String cdmExtension = "cdm.json";
 
   private static AtomicInteger nextId = new AtomicInteger(0);
   private final StorageManager storage;
@@ -51,24 +55,17 @@ public class CdmCorpusDefinition {
   private CdmCorpusContext ctx;
   final private Map<CdmEntityDefinition, ArrayList<CdmE2ERelationship>> outgoingRelationships;
   final private Map<CdmEntityDefinition, ArrayList<CdmE2ERelationship>> incomingRelationships;
-  final private Map<String, List<CdmEntityDefinition>> symbol2EntityDefList;
+  Map<String, String> resEntMap;
 
   private String appId;
   private String rootPath;
-  private List<Pair<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
-  private Map<CdmDocumentDefinition, CdmFolderDefinition> directory;
-  private Map<String, Pair<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
   private Map<String, List<CdmDocumentDefinition>> symbolDefinitions;
   private Map<String, SymbolSet> definitionReferenceSymbols;
   private Map<String, String> definitionWrtTag;
   private Map<String, ResolvedTraitSet> emptyRts;
 
   private Map<String, CdmObject> objectCache;
-
-  Map<String, Short> docsNotLoaded;
-  Map<String, Short> docsCurrentlyLoading;
-  Map<CdmDocumentDefinition, Short> docsNotIndexed;
-  Map<String, Short> docsNotFound;
+  private DocumentLibrary documentLibrary;
 
   /**
    * Whether we are currently performing a resolution or not.
@@ -81,10 +78,13 @@ public class CdmCorpusDefinition {
    */
   boolean blockDeclaredPathChanges = false;
 
+  /**
+   * The set of resolution directives that will be used by default by the object model when it is resolving
+   * entities and when no per-call set of directives is provided.
+   */
+  private AttributeResolutionDirectiveSet defaultResolutionDirectives;
+
   public CdmCorpusDefinition() {
-    this.allDocuments = new ArrayList<>();
-    this.pathLookup = new LinkedHashMap<>();
-    this.directory = new LinkedHashMap<>();
     this.symbolDefinitions = new LinkedHashMap<>();
     this.definitionReferenceSymbols = new LinkedHashMap<>();
     this.definitionWrtTag = new LinkedHashMap<>();
@@ -96,13 +96,16 @@ public class CdmCorpusDefinition {
 
     this.outgoingRelationships = new LinkedHashMap<>();
     this.incomingRelationships = new LinkedHashMap<>();
-    this.symbol2EntityDefList = new LinkedHashMap<>();
+    this.resEntMap = new LinkedHashMap<>();
     this.objectCache = new LinkedHashMap<>();
+    this.documentLibrary = new DocumentLibrary();
 
-    this.docsNotLoaded = new ConcurrentHashMap<>();
-    this.docsCurrentlyLoading = new ConcurrentHashMap<>();
-    this.docsNotFound = new ConcurrentHashMap<>();
-    this.docsNotIndexed = new ConcurrentHashMap<>();
+    // the default for the default is to make entity attributes into foreign key references when they point at one other instance and 
+    // to ignore the other entities when there are an array of them
+    Set<String> directives = new LinkedHashSet<> ();
+    directives.add("normalized");
+    directives.add("referenceOnly");
+    this.defaultResolutionDirectives = new AttributeResolutionDirectiveSet(directives);
   }
 
   static CdmDocumentDefinition fetchPriorityDocument(final List<CdmDocumentDefinition> docs,
@@ -126,7 +129,7 @@ public class CdmCorpusDefinition {
     return docBest;
   }
 
-  public static String createCacheKeyFromObject(final CdmObject definition, final String kind) {
+  static String createCacheKeyFromObject(final CdmObject definition, final String kind) {
     return definition.getId() + "-" + kind;
   }
 
@@ -179,7 +182,7 @@ public class CdmCorpusDefinition {
     return null;
   }
 
-  public static CdmObjectType mapReferenceType(final CdmObjectType ofType) {
+  static CdmObjectType mapReferenceType(final CdmObjectType ofType) {
     switch (ofType) {
       case ArgumentDef:
       case DocumentDef:
@@ -237,6 +240,14 @@ public class CdmCorpusDefinition {
     this.rootPath = value;
   }
 
+  public AttributeResolutionDirectiveSet getDefaultResolutionDirectives() {
+    return this.defaultResolutionDirectives;
+  }
+
+  public void setDefaultResolutionDirectives(final AttributeResolutionDirectiveSet defaultResolutionDirectives) {
+    this.defaultResolutionDirectives = defaultResolutionDirectives;
+  }
+
   public <T extends CdmObject> T makeObject(final CdmObjectType ofType, final String nameOrRef) {
     return this.makeObject(ofType, nameOrRef, false);
   }
@@ -251,28 +262,25 @@ public class CdmCorpusDefinition {
     }
   }
 
-  public String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind) {
+  String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind) {
     return createDefinitionCacheTag(resOpt, definition, kind, "", false);
   }
 
-  public CdmDocumentDefinition addDocumentObjects(final CdmFolderDefinition cdmFolderDefinition, final CdmDocumentDefinition docDef) {
+  CdmDocumentDefinition addDocumentObjects(final CdmFolderDefinition cdmFolderDefinition, final CdmDocumentDefinition docDef) {
     final CdmDocumentDefinition doc = docDef;
     final String path = this.storage.createAbsoluteCorpusPath(doc.getFolderPath() + doc.getName(), doc)
         .toLowerCase();
-    if (!this.getPathLookup().containsKey(path)) {
-      this.getAllDocuments().add(new ImmutablePair<>(cdmFolderDefinition, doc));
-      this.getPathLookup().put(path, new ImmutablePair<>(cdmFolderDefinition, doc));
-      this.getDirectory().put(doc, cdmFolderDefinition);
-    }
+    this.documentLibrary.addDocumentPath(path, cdmFolderDefinition, doc);
+
     return doc;
   }
 
-  public String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind,
+  String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind,
                                          final String extraTags) {
     return createDefinitionCacheTag(resOpt, definition, kind, extraTags, false);
   }
 
-  public String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind,
+  String createDefinitionCacheTag(final ResolveOptions resOpt, final CdmObjectBase definition, final String kind,
                                          final String extraTags, final boolean useNameNotId) {
     // construct a tag that is unique for a given object in a given context
     // context is:
@@ -370,46 +378,6 @@ public class CdmCorpusDefinition {
       }
     }
     return (T) oRef;
-  }
-
-  CompletableFuture<Void> resolveImportsAsync(
-      final CdmDocumentDefinition doc,
-      final LinkedHashMap<CdmDocumentDefinition, Short> docsNotIndexed,
-      final LinkedHashMap<String, Short> docsNotFound) {
-    return CompletableFuture.runAsync(() -> {
-      final LinkedHashMap<String, Short> missingSet = new LinkedHashMap<>();
-      final LinkedHashMap<CdmDocumentDefinition, Short> importsNotIndexed = new LinkedHashMap<>();
-      this.resolveDocumentImports(doc, missingSet, importsNotIndexed, docsNotFound);
-
-      if (missingSet.size() > 0) {
-        for (final Entry<String, Short> stringByteEntry : missingSet.entrySet()) {
-          final String missing = stringByteEntry.getKey();
-
-          if (!docsNotFound.containsKey(missing)) {
-            final CdmDocumentDefinition newDoc = (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(missing).join();
-            if (newDoc != null) {
-              LOGGER.info("resolved import for '{}'", newDoc.getName());
-              this.resolveImportsAsync(newDoc, docsNotIndexed, docsNotFound).join();
-              docsNotIndexed.put(newDoc, (short) 1);
-            } else {
-              LOGGER.warn("unable to resolve import for '{}'", missing);
-              docsNotFound.put(missing, (short) 1);
-            }
-          }
-        }
-
-        // keep doing it until there is no longer anything missing
-        this.resolveImportsAsync(doc, docsNotIndexed, docsNotFound).join();
-      }
-
-      if (importsNotIndexed.size() > 0) {
-        for (final Entry<CdmDocumentDefinition, Short> documentByteEntry : importsNotIndexed.entrySet()) {
-          final CdmDocumentDefinition imp = documentByteEntry.getKey();
-          this.resolveImportsAsync(imp, docsNotIndexed, docsNotFound).join();
-          docsNotIndexed.put(imp, (short) 1);
-        }
-      }
-    });
   }
 
   public <T extends CdmObject> T makeObject(final CdmObjectType ofType, final String nameOrRef,
@@ -523,11 +491,8 @@ public class CdmCorpusDefinition {
 
     // remove from path lookup, cdmFolderDefinition lookup and global list of documents
     final String path = this.storage.createAbsoluteCorpusPath(doc.getFolderPath() + doc.getName(), doc).toLowerCase();
-    if (this.getPathLookup().containsKey(path)) {
-      this.getPathLookup().remove(path);
-      final int index = this.getAllDocuments().indexOf(ImmutablePair.of(cdmFolderDefinition, doc));
-      this.getAllDocuments().remove(index);
-    }
+    this.documentLibrary.removeDocumentPath(path, cdmFolderDefinition, doc);
+
   }
 
   private void removeObjectDefinitions(final CdmDocumentDefinition doc) {
@@ -555,13 +520,7 @@ public class CdmCorpusDefinition {
         if (anImport.getDoc() == null) {
           // No document set for this import, see if it is already loaded into the corpus.
           final String path = this.getStorage().createAbsoluteCorpusPath(anImport.getCorpusPath(), doc);
-          if (!this.docsNotFound.containsKey(path)) {
-            Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup =
-                    this.pathLookup.get(path.toLowerCase());
-            if (lookup == null) {
-              this.docsNotLoaded.put(path, (short) 1);
-            }
-          }
+          this.documentLibrary.addToDocsNotLoaded(path);
         }
       }
     }
@@ -576,120 +535,68 @@ public class CdmCorpusDefinition {
           final String path =
                   this.getStorage().createAbsoluteCorpusPath(anImport.getCorpusPath(), doc);
 
-          if (!this.docsNotFound.containsKey(path)) {
-            final Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup =
-                    this.pathLookup.get(path.toLowerCase());
+          final CdmDocumentDefinition impDoc = this.documentLibrary.fetchDocumentAndMarkForIndexing(path);
 
-            if (lookup != null) {
-              if (!lookup.getRight().isImportsIndexed()
-                      && !lookup.getRight().isCurrentlyIndexing()) {
-                lookup.getRight().setCurrentlyIndexing(true);
-                this.docsNotIndexed.put(lookup.getRight(), (short) 1);
-              }
-              anImport.setDoc(lookup.getRight());
+          if (impDoc != null) {
+            anImport.setDoc(impDoc);
 
-              // Repeat the process for the import documents.
-              this.setImportDocuments(anImport.getDoc());
-            }
+            // Repeat the process for the import documents.
+            this.setImportDocuments(anImport.getDoc());
           }
         }
       }
     }
   }
 
-  CompletableFuture<Void> loadImportsAsync(CdmDocumentDefinition doc) {
-    return CompletableFuture.runAsync(() -> {
-      Map<CdmDocumentDefinition, Short> docsNowLoaded = new ConcurrentHashMap<>();
-      if (this.docsNotLoaded.size() > 0) {
-        Function<String, CompletableFuture<Void>> loadDocs = (missing) ->
-                CompletableFuture.runAsync(() -> {
-                  if (!this.docsNotFound.containsKey(missing)
-                          && !this.docsCurrentlyLoading.containsKey(missing)) {
+  CompletableFuture<Void> loadImportsAsync(CdmDocumentDefinition doc, ResolveOptions resOpt) {
+    Map<CdmDocumentDefinition, Short> docsNowLoaded = new ConcurrentHashMap<>();
+    List<String> docsNotLoaded = this.documentLibrary.listDocsNotLoaded();
 
+    if (docsNotLoaded.size() > 0) {
+      Function<String, CompletableFuture<Void>> loadDocs = (missing) ->
+              CompletableFuture.runAsync(() -> {
+                if (this.documentLibrary.needToLoadDocument(missing)) {
+                  // Load it.
+                  final CdmDocumentDefinition newDoc =
+                          (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(missing, false, resOpt).join();
 
-                    // Set status to loading.
-                    this.docsNotLoaded.remove(missing);
-                    this.docsCurrentlyLoading.put(missing, (short) 1);
-
-                    // Load it.
-                    final CdmDocumentDefinition newDoc =
-                            (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(missing).join();
-
-                    if (newDoc != null) {
-                      LOGGER.info("Resolved import for '{}' {}.", newDoc.getName(), doc.getAtCorpusPath());
-
-                      // Doc is now loaded.
-                      docsNowLoaded.put(newDoc, (short) 1);
-
-                      // Next step is that the doc needs to be indexed.
-
-                      this.docsNotIndexed.put(newDoc, (short) 1);
-                      newDoc.setCurrentlyIndexing(true);
-                    } else {
-                      LOGGER.warn("Unable to resolve import for '{}' {}.", missing, doc.getAtCorpusPath());
-
-                      // Set doc as not found.
-                      this.docsNotFound.put(missing, (short) 1);
-                    }
-
-
-                    // Doc is no longer loading.
-                    this.docsCurrentlyLoading.remove(missing);
+                  if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
+                    LOGGER.info("Resolved import for '{}' {}.", newDoc.getName(), doc.getAtCorpusPath());
+                  } else {
+                    LOGGER.warn("Unable to resolve import for '{}' {}.", missing, doc.getAtCorpusPath());
                   }
-                });
+                }
+              });
 
-        List<CompletableFuture> taskList = new ArrayList<>();
-        this.docsNotLoaded.forEach((key, value) -> taskList.add(loadDocs.apply(key)));
+      List<CompletableFuture> taskList = new ArrayList<>();
+      docsNotLoaded.forEach((key) -> taskList.add(loadDocs.apply(key)));
 
-        // Wait for all of the missing docs to finish loading.
-        CompletableFuture.allOf(taskList.toArray(new CompletableFuture[0])).join();
+      // Wait for all of the missing docs to finish loading.
+      CompletableFuture.allOf(taskList.toArray(new CompletableFuture[0])).join();
 
-        // Now that we've loaded new docs, find imports from them that need loading.
-        docsNowLoaded.forEach((key, value) -> this.findMissingImportsFromDocument(key));
+      // Now that we've loaded new docs, find imports from them that need loading.
+      docsNowLoaded.forEach((key, value) -> this.findMissingImportsFromDocument(key));
 
-        // Repeat this process for the imports of the imports.
-        List<CompletableFuture> importTaskList = new ArrayList<>();
+      // Repeat this process for the imports of the imports.
+      List<CompletableFuture> importTaskList = new ArrayList<>();
+      docsNowLoaded.forEach((key, value) -> importTaskList.add(this.loadImportsAsync(key, resOpt)));
 
-        docsNowLoaded.forEach((key, value) -> importTaskList.add(this.loadImportsAsync(key)));
-
-        // Wait for all of the missing docs to finish loading.
-        CompletableFuture.allOf(importTaskList.toArray(new CompletableFuture[0])).join();
-
-        // Now we know everything for the imports have been loaded.
-        // Attach newly loaded import docs to import list
-        //   note: we do not know if all imports for 'doc' are loaded
-        //   because loadImportsAsync could have been called in parallel
-        //   and a different call of loadImportsAsync could be loading an
-        //   import that we will need.
-        docsNowLoaded.forEach((key, value) -> this.setImportDocuments(key));
-      }
-    });
+      // Wait for all of the missing docs to finish loading.
+      return CompletableFuture.allOf(importTaskList.toArray(new CompletableFuture[0]));
+    }
+    return CompletableFuture.completedFuture(null);
   }
 
-  CompletableFuture<Void> resolveImportsAsync(final CdmDocumentDefinition doc) {
-
+  CompletableFuture<Void> resolveImportsAsync(final CdmDocumentDefinition doc, ResolveOptions resOpt) {
     // find imports for this doc
     this.findMissingImportsFromDocument(doc);
 
-
     // load imports (and imports of imports)
-    return this.loadImportsAsync(doc).thenRun(() -> {
+    return this.loadImportsAsync(doc, resOpt).thenRun(() -> {
 
       // now that everything is loaded, attach import docs to this doc's import list
       this.setImportDocuments(doc);
     });
-  }
-
-  Map<String, Short> listMissingImports() {
-    for (final Pair<CdmFolderDefinition, CdmDocumentDefinition> document : this.getAllDocuments()) {
-      this.findMissingImportsFromDocument(document.getRight());
-    }
-
-    if (this.docsNotLoaded.isEmpty()) {
-      return null;
-    }
-
-    return this.docsNotLoaded;
   }
 
   private DocsResult docsForSymbol(final ResolveOptions resOpt, final CdmDocumentDefinition wrtDoc, final CdmDocumentDefinition fromDoc, final String symbol) {
@@ -720,25 +627,31 @@ public class CdmCorpusDefinition {
         final List<CdmDocumentDefinition> tempDocList = this.symbolDefinitions.get(result.getNewSymbol());
         result.setDocList(tempDocList);
 
+        CdmDocumentDefinition tempMoniker = null;
+        boolean usingWrtDoc = false;
         if (fromDoc.getImportPriorities().getMonikerPriorityMap().containsKey(prefix)) {
-          final CdmDocumentDefinition tempMoniker = fromDoc.getImportPriorities().getMonikerPriorityMap()
+          tempMoniker = fromDoc.getImportPriorities().getMonikerPriorityMap()
               .get(prefix);
-          // if more monikers, keep looking
-          if (result.getNewSymbol().contains("/") && !this.symbolDefinitions
-              .containsKey(result.getNewSymbol())) {
-            return docsForSymbol(resOpt, wrtDoc, tempMoniker, result.getNewSymbol());
-          }
-          resOpt.setFromMoniker(prefix);
-          result.setDocBest(tempMoniker);
+          
         } else if (wrtDoc.getImportPriorities().getMonikerPriorityMap().containsKey(prefix)) {
           // if that didn't work, then see if the wrtDoc can find the moniker.
-
-          final CdmDocumentDefinition tempMoniker = wrtDoc.getImportPriorities().getMonikerPriorityMap()
+          tempMoniker = wrtDoc.getImportPriorities().getMonikerPriorityMap()
               .get(prefix);
+          usingWrtDoc = true;
+        }
 
+        if (tempMoniker != null) {
           // if more monikers, keep looking
-          if (result.getNewSymbol().contains("/")) {
-            return docsForSymbol(resOpt, wrtDoc, tempMoniker, result.getNewSymbol());
+          if (result.getNewSymbol().contains("/") && (usingWrtDoc || !this.symbolDefinitions
+              .containsKey(result.getNewSymbol()))) {
+            final DocsResult currDocsResult =
+              docsForSymbol(resOpt, wrtDoc, tempMoniker, result.getNewSymbol());
+            if (currDocsResult.getDocList() == null && fromDoc == wrtDoc) {
+              // we are back at the top and we have not found the docs, move the wrtDoc down one level
+              return this.docsForSymbol(resOpt, tempMoniker, tempMoniker, result.getNewSymbol());
+            } else {
+              return currDocsResult;
+            }
           }
           resOpt.setFromMoniker(prefix);
           result.setDocBest(tempMoniker);
@@ -899,33 +812,6 @@ public class CdmCorpusDefinition {
     }
   }
 
-  private void resolveDocumentImports(final CdmDocumentDefinition doc, final LinkedHashMap<String, Short> missingSet,
-                                      final LinkedHashMap<CdmDocumentDefinition, Short> importsNotIndexed,
-                                      final LinkedHashMap<String, Short> docsNotFound) {
-    if (doc.getImports() != null) {
-      for (final CdmImport imp : doc.getImports()) {
-        if (imp.getDoc() == null) {
-          // no document set for this import, see if it is already loaded into the corpus
-          final String path = this.storage.createAbsoluteCorpusPath(imp.getCorpusPath(), doc);
-          if (!docsNotFound.containsKey(path)) {
-            if (this.pathLookup.containsKey(path.toLowerCase())) {
-              final Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path.toLowerCase());
-
-              if (!lookup.getRight().isImportsIndexed() && !lookup.getRight()
-                  .isCurrentlyIndexing()) {
-                lookup.getValue().setCurrentlyIndexing(true);
-                importsNotIndexed.put(lookup.getRight(), (short) 1);
-              }
-              imp.setDoc(lookup.getRight());
-            } else if (missingSet != null) {
-              missingSet.put(path, (short) 1);
-            }
-          }
-        }
-      }
-    }
-  }
-
   boolean visit(final String path, final VisitCallback preChildren, final VisitCallback postChildren) {
     return false;
   }
@@ -935,10 +821,10 @@ public class CdmCorpusDefinition {
   }
 
   boolean indexDocuments(final ResolveOptions resOpt, final CdmDocumentDefinition currentDoc) {
-    if (this.docsNotIndexed.size() > 0) {      // Index any imports.
-      for (final Map.Entry<CdmDocumentDefinition, Short> iCdmDocumentDefByteEntry
-          : this.docsNotIndexed.entrySet()) {
-        final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
+    List<CdmDocumentDefinition> docsNotIndexed = this.documentLibrary.listDocsNotIndexed();
+
+    if (docsNotIndexed.size() > 0) {      // Index any imports.
+      for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.getNeedsIndexing()) {
           LOGGER.debug("index start: {}", doc.getAtCorpusPath());
           doc.clearCaches();
@@ -947,9 +833,7 @@ public class CdmCorpusDefinition {
       }
 
       // Check basic integrity.
-      for (final Map.Entry<CdmDocumentDefinition, Short> iCdmDocumentDefByteEntry
-          : this.docsNotIndexed.entrySet()) {
-        final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
+      for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.getNeedsIndexing()) {
           if (!this.checkObjectIntegrity(doc)) {
             return false;
@@ -958,18 +842,14 @@ public class CdmCorpusDefinition {
       }
 
       // Declare definitions in objects in this doc.
-      for (final Map.Entry<CdmDocumentDefinition, Short> iCdmDocumentDefByteEntry
-          : this.docsNotIndexed.entrySet()) {
-        final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
+      for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.getNeedsIndexing()) {
           this.declareObjectDefinitions(doc, "");
         }
       }
 
       // Make sure we can find everything that is named by reference.
-      for (final Map.Entry<CdmDocumentDefinition, Short> iCdmDocumentDefByteEntry
-          : this.docsNotIndexed.entrySet()) {
-        final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
+      for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.getNeedsIndexing()) {
           final ResolveOptions resOptLocal = CdmObjectBase.copyResolveOptions(resOpt);
           resOptLocal.setWrtDoc(doc);
@@ -978,9 +858,7 @@ public class CdmCorpusDefinition {
       }
 
       // Now resolve any trait arguments that are type object.
-      for (final Map.Entry<CdmDocumentDefinition, Short> iCdmDocumentDefByteEntry
-          : this.docsNotIndexed.entrySet()) {
-        final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
+      for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.getNeedsIndexing()) {
           final ResolveOptions resOptLocal = CdmObjectBase.copyResolveOptions(resOpt);
           resOptLocal.setWrtDoc(doc);
@@ -989,9 +867,7 @@ public class CdmCorpusDefinition {
       }
 
       // Finish up.
-      for (final Map.Entry<CdmDocumentDefinition, Short> iCdmDocumentDefByteEntry
-          : this.docsNotIndexed.entrySet()) {
-        final CdmDocumentDefinition doc = iCdmDocumentDefByteEntry.getKey();
+      for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.getNeedsIndexing()) {
           LOGGER.debug("index finish: {}", doc.getAtCorpusPath());
           this.finishDocumentResolve(doc);
@@ -1004,6 +880,12 @@ public class CdmCorpusDefinition {
 
   private CompletableFuture<CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
                                                                               final boolean forceReload) {
+    return loadFolderOrDocumentAsync(objectPath, forceReload, null);
+  }
+
+  private CompletableFuture<CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
+                                                                              final boolean forceReload,
+                                                                              final ResolveOptions resOpt) {
     if (!StringUtils.isNullOrTrimEmpty(objectPath)) {
       // first check for namespace
       final Map.Entry<String, String> pathTuple = this.storage.splitNamespacePath(objectPath);
@@ -1036,7 +918,7 @@ public class CdmCorpusDefinition {
           final String newObjectPath = StringUtils.slice(objectPath, lastPath.length());
 
           return CompletableFuture.completedFuture(
-              lastFolder.fetchDocumentFromFolderPathAsync(newObjectPath, namespaceAdapter, forceReload)
+              lastFolder.fetchDocumentFromFolderPathAsync(newObjectPath, namespaceAdapter, forceReload, resOpt)
                   .join());
         }
       }
@@ -1070,14 +952,35 @@ public class CdmCorpusDefinition {
       final String objectPath,
       final CdmObject cdmObject) {
     return
-        fetchObjectAsync(objectPath, cdmObject, false)
+        fetchObjectAsync(objectPath, cdmObject, false, false)
+            .thenApply(fetchedCdmObject -> (T) fetchedCdmObject);
+  }
+
+  /**
+   * Fetches an object by the path from the corpus, with the CDM object specified.
+   *
+   * @param <T>        Type of the object to be fetched.
+   * @param objectPath Object path, absolute or relative.
+   * @param cdmObject  Optional parameter. When provided, it is used to obtain the FolderPath and
+   *                   the Namespace needed to create the absolute path from a relative path.
+   * @param shallowValidation Optional parameter. When provided, shallow validation in ResolveOptions is enabled,
+   *                          which logs errors regarding resolving/loading references as warnings.
+   * @return The object obtained from the provided path.
+   */
+  public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(
+      final String objectPath,
+      final CdmObject cdmObject,
+      final boolean shallowValidation) {
+    return
+        fetchObjectAsync(objectPath, cdmObject, false, shallowValidation)
             .thenApply(fetchedCdmObject -> (T) fetchedCdmObject);
   }
 
   CompletableFuture<CdmObject> fetchObjectAsync(
       final String objectPath,
       final CdmObject cdmObject,
-      final boolean forceReload) {
+      final boolean forceReload,
+      final boolean shallowValidation) {
     // isRootManifestPath is required to deal with the load of the initial root manifest.
     // In this case the the file name can be something different than a CDM CdmManifestDefinition,
     // e.g.: "model.json".
@@ -1085,11 +988,11 @@ public class CdmCorpusDefinition {
     final String absolutePath = this.storage.createAbsoluteCorpusPath(objectPath, cdmObject);
 
     String documentPath = absolutePath;
-    int documentNameIndex = absolutePath.lastIndexOf(cdmExtension);
+    int documentNameIndex = absolutePath.lastIndexOf(CdmConstants.CDM_EXTENSION);
 
     if (documentNameIndex != -1) {
       // entity path has to have at least one slash with the entity name at the end
-      documentNameIndex += cdmExtension.length();
+      documentNameIndex += CdmConstants.CDM_EXTENSION.length();
       documentPath = absolutePath.substring(0, documentNameIndex);
     }
 
@@ -1104,6 +1007,7 @@ public class CdmCorpusDefinition {
           final ResolveOptions resOpt = new ResolveOptions();
           resOpt.setWrtDoc((CdmDocumentDefinition) loadedCdmObject);
           resOpt.setDirectives(new AttributeResolutionDirectiveSet());
+          resOpt.setShallowValidation(shallowValidation);
 
           if (!((CdmDocumentDefinition) loadedCdmObject).indexIfNeededAsync(resOpt).join()) {
             return null;
@@ -1168,7 +1072,7 @@ public class CdmCorpusDefinition {
   }
 
 
-  public CompletableFuture<Void> generateWarningsForSingleDoc(
+  private CompletableFuture<Void> generateWarningsForSingleDoc(
       final Pair<CdmFolderDefinition, CdmDocumentDefinition> fd,
       final ResolveOptions resOpt) {
     final CdmDocumentDefinition doc = fd.getRight();
@@ -1232,20 +1136,6 @@ public class CdmCorpusDefinition {
    * @return A {@link CompletableFuture<Void>} for the completion of entity graph calculation.
    */
   public CompletableFuture<Void> calculateEntityGraphAsync(final CdmManifestDefinition currManifest) {
-    return calculateEntityGraphAsync(currManifest, null);
-  }
-
-  /**
-   * Calculates the entity to entity relationships for all the entities present in the manifest and
-   * its sub-manifests.
-   *
-   * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate
-   *                     relationships for.
-   * @return A {@link CompletableFuture<Void>} for the completion of entity graph calculation.
-   */
-  CompletableFuture<Void> calculateEntityGraphAsync(
-      final CdmManifestDefinition currManifest,
-      final Map<String, String> resEntMap) {
     return CompletableFuture.runAsync(() -> {
       if (currManifest.getEntities() != null) {
         for (final CdmEntityDeclarationDefinition entityDec : currManifest.getEntities()) {
@@ -1260,7 +1150,11 @@ public class CdmCorpusDefinition {
             continue;
           }
           final CdmEntityDefinition resEntity;
-          final ResolveOptions resOpt = new ResolveOptions(entity);
+          // make options wrt this entity document and "relational" always 
+          Set<String> directives = new LinkedHashSet<> ();
+          directives.add("normalized");
+          directives.add("referenceOnly");
+          final ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), new AttributeResolutionDirectiveSet(directives));
           final boolean isResolvedEntity = entity.getAttributeContext() != null;
 
           // only create a resolved entity if the entity passed in was not a resolved entity
@@ -1271,23 +1165,15 @@ public class CdmCorpusDefinition {
             resEntity = entity;
           }
 
-          if (!this.symbol2EntityDefList.containsKey(entity.getEntityName())) {
-            this.symbol2EntityDefList.put(
-                entity.getEntityName(),
-                new ArrayList<>());
-          }
-
-          this.symbol2EntityDefList.get(entity.getEntityName()).add(entity);
-
           // find outgoing entity relationships using attribute context
           final ArrayList<CdmE2ERelationship> outgoingRelationships =
               this.findOutgoingRelationships(resOpt, resEntity, resEntity.getAttributeContext());
 
           // if the entity is a resolved entity, change the relationships to point to the resolved versions
-          if (isResolvedEntity && resEntMap != null) {
+          if (isResolvedEntity && this.resEntMap != null) {
             for (final CdmE2ERelationship rel : outgoingRelationships) {
-              if (resEntMap.containsKey(rel.getToEntity())) {
-                rel.setToEntity(resEntMap.get(rel.getToEntity()));
+              if (this.resEntMap.containsKey(rel.getToEntity())) {
+                rel.setToEntity(this.resEntMap.get(rel.getToEntity()));
               }
             }
           }
@@ -1351,10 +1237,19 @@ public class CdmCorpusDefinition {
       final ResolveOptions resOpt,
       final CdmEntityDefinition resEntity,
       final CdmAttributeContext attCtx,
-      CdmAttributeContext outerAttGroup) {
+      CdmAttributeContext generatedAttSetContext) {
     final ArrayList<CdmE2ERelationship> outRels = new ArrayList<>();
 
     if (attCtx != null && attCtx.getContents() != null) {
+      // as we traverse the context tree, look for these nodes which hold the foreign key
+      // once we find a context node that refers to an entity reference, we will use the
+      // nearest _generatedAttributeSet (which is above or at the same level as the entRef context)
+      // and use its foreign key
+      CdmAttributeContext newGenSet = (CdmAttributeContext)attCtx.getContents().item("_generatedAttributeSet");
+      if (newGenSet == null) {
+        newGenSet = generatedAttSetContext;
+      }
+
       for (final Object subAttCtx : attCtx.getContents()) {
         // find entity references that identifies the 'this' entity
         final CdmAttributeContext child = subAttCtx instanceof CdmAttributeContext
@@ -1383,7 +1278,7 @@ public class CdmCorpusDefinition {
           // entity references should have the "is.identifiedBy" trait, and the entity ref should be valid
           if (toAtt.size() == 1 && toEntity != null) {
             // get the attribute name from the foreign key
-            final String foreignKey = findAddedAttributeIdentity(outerAttGroup != null ? outerAttGroup : attCtx);
+            final String foreignKey = findAddedAttributeIdentity(newGenSet);
 
             if (!foreignKey.isEmpty()) {
               final String fromAtt = foreignKey
@@ -1407,16 +1302,11 @@ public class CdmCorpusDefinition {
               outRels.add(newE2ERel);
             }
           }
-        } else if (child != null
-            && child.getDefinition() != null
-            && child.getDefinition().getObjectType() == CdmObjectType.AttributeGroupRef) {
-          // if this is an attribute group, we need to search for foreign keys from this level
-          outerAttGroup = child;
         }
+
         // repeat the process on the child node
         final ArrayList<CdmE2ERelationship>
-            subOutRels = this.findOutgoingRelationships(resOpt, resEntity, child, outerAttGroup);
-        outerAttGroup = null;
+            subOutRels = this.findOutgoingRelationships(resOpt, resEntity, child, newGenSet);
         outRels.addAll(subOutRels);
       }
     }
@@ -1468,16 +1358,12 @@ public class CdmCorpusDefinition {
       final CdmValidationStep stageThrough,
       final ResolveOptions resOpt) {
     return CompletableFuture.supplyAsync(() -> {
-      // Use the provided directives or make a relational default.
+      // Use the provided directives or use the current default.
       final AttributeResolutionDirectiveSet directives;
       if (null != resOpt) {
         directives = resOpt.getDirectives();
       } else {
-        final Set<String> set = new LinkedHashSet<>();
-        set.add("referenceOnly");
-        set.add("normalized");
-
-        directives = new AttributeResolutionDirectiveSet(set);
+        directives = this.defaultResolutionDirectives;
       }
 
       final ResolveOptions finalResolveOptions = new ResolveOptions();
@@ -1485,9 +1371,8 @@ public class CdmCorpusDefinition {
       finalResolveOptions.setDirectives(directives);
       finalResolveOptions.setRelationshipDepth(0);
 
-      for (final Pair doc : this.allDocuments) {
-        final Object documentImpl = doc.getRight();
-        ((CdmDocumentDefinition) documentImpl).indexIfNeededAsync(resOpt).join();
+      for (final CdmDocumentDefinition doc : this.documentLibrary.listAllDocuments()) {
+        doc.indexIfNeededAsync(resOpt).join();
       }
 
       final boolean finishResolve = stageThrough == stage;
@@ -1685,9 +1570,9 @@ public class CdmCorpusDefinition {
     LOGGER.debug(statusMessage);
 
     final MutableInt entityNesting = new MutableInt(0);
-    for (final Pair<CdmFolderDefinition, CdmDocumentDefinition> doc : this.allDocuments) {
+    for (final CdmDocumentDefinition doc : this.documentLibrary.listAllDocuments()) {
       // Cache import documents.
-      CdmDocumentDefinition currentDoc = doc.getRight();
+      CdmDocumentDefinition currentDoc = doc;
       resolveOpt.setWrtDoc(currentDoc);
       resolveAction.invoke(currentDoc, resolveOpt, entityNesting);
     }
@@ -1803,11 +1688,12 @@ public class CdmCorpusDefinition {
             final CdmObjectDefinition resNew = objectRef.fetchObjectDefinition(resOpt);
 
             if (null == resNew) {
-              // It is 'ok' to not find entity refs sometimes.
-              if (objectType == CdmObjectType.EntityRef) {
-                LOGGER.warn("Unable to resolve the reference: '{}' to a known object, folderPath: '{}', path: '{}'", objectRef.getNamedReference(), currentDoc.getFolderPath(), path);
+              String message = MessageFormat.format("Unable to resolve the reference: ''{0}'' to a known object, folderPath: ''{1}'', path: ''{2}''", objectRef.getNamedReference(), currentDoc.getFolderPath(), path);
+              // It's okay if references can't be resolved when shallow validation is enabled.
+              if (resOpt.getShallowValidation()) {
+                LOGGER.warn(message);
               } else {
-                LOGGER.error("Unable to resolve the reference: '{}' to a known object, folderPath: '{}', path: '{}'", objectRef.getNamedReference(), currentDoc.getFolderPath(), path);
+                LOGGER.error(message);
               }
 
               final CdmObjectDefinition debugRes = objectRef.fetchObjectDefinition(resOpt);
@@ -1853,7 +1739,7 @@ public class CdmCorpusDefinition {
     doc.setCurrentlyIndexing(false);
     doc.setImportsIndexed(true);
     doc.setNeedsIndexing(false);
-    this.docsNotIndexed.remove(doc);
+    this.documentLibrary.markDocumentAsIndexed(doc);
 
     doc.getDefinitions().forEach(def -> {
       if (def.getObjectType() == CdmObjectType.EntityDef) {
@@ -2123,9 +2009,9 @@ public class CdmCorpusDefinition {
 
     // Turn elevated traits back on, they are off by default and should work fully now that
     // everything is resolved.
-    final int documentCount = this.allDocuments.size();
-    for (final Pair<CdmFolderDefinition, CdmDocumentDefinition> fd : this.allDocuments) {
-      this.finishDocumentResolve(fd.getRight());
+    List<CdmDocumentDefinition> allDocuments = this.documentLibrary.listAllDocuments();
+    for (final CdmDocumentDefinition doc : allDocuments) {
+      this.finishDocumentResolve(doc);
     }
   }
 
@@ -2174,36 +2060,12 @@ public class CdmCorpusDefinition {
    * to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  public List<Pair<CdmFolderDefinition, CdmDocumentDefinition>> getAllDocuments() {
-    return this.allDocuments;
-  }
-
-  public Map<String, Pair<CdmFolderDefinition, CdmDocumentDefinition>> getPathLookup() {
-    return pathLookup;
-  }
-
-  public void setPathLookup(final Map<String, Pair<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup) {
-    this.pathLookup = pathLookup;
-  }
-
-  public Map<String, List<CdmDocumentDefinition>> getSymbolDefinitions() {
-    return symbolDefinitions;
-  }
-
-  public void setSymbolDefinitions(final Map<String, List<CdmDocumentDefinition>> symbolDefinitions) {
-    this.symbolDefinitions = symbolDefinitions;
+  public DocumentLibrary getDocumentLibrary() {
+    return this.documentLibrary;
   }
 
   Map<String, SymbolSet> getDefinitionReferenceSymbols() {
     return definitionReferenceSymbols;
-  }
-
-  public Map<CdmDocumentDefinition, CdmFolderDefinition> getDirectory() {
-    return directory;
-  }
-
-  public void setDirectory(final Map<CdmDocumentDefinition, CdmFolderDefinition> directory) {
-    this.directory = directory;
   }
 
   /**
@@ -2226,11 +2088,11 @@ public class CdmCorpusDefinition {
     }
   }
 
-  public Map<String, ResolvedTraitSet> getEmptyRts() {
+  Map<String, ResolvedTraitSet> getEmptyRts() {
     return emptyRts;
   }
 
-  public void setEmptyRts(final Map<String, ResolvedTraitSet> emptyRts) {
+  void setEmptyRts(final Map<String, ResolvedTraitSet> emptyRts) {
     this.emptyRts = emptyRts;
   }
 
@@ -2284,16 +2146,8 @@ public class CdmCorpusDefinition {
     });
   }
 
-  public Map<CdmEntityDefinition, ArrayList<CdmE2ERelationship>> getOutgoingRelationships() {
-    return outgoingRelationships;
-  }
-
-  public Map<CdmEntityDefinition, ArrayList<CdmE2ERelationship>> getIncomingRelationships() {
-    return incomingRelationships;
-  }
-
   @FunctionalInterface
-  public interface ResolveAction {
+  private interface ResolveAction {
     void invoke(CdmDocumentDefinition currentDoc, ResolveOptions resOptions, MutableInt entityNesting);
   }
 

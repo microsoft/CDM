@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     addTraitRef,
     ArgumentValue,
@@ -6,7 +9,6 @@ import {
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmObject,
-    CdmObjectBase,
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmParameterDefinition,
@@ -24,16 +26,16 @@ import {
 } from '../internal';
 
 export class CdmTraitDefinition extends CdmObjectDefinitionBase {
+    public associatedProperties: string[];
     public explanation: string;
+    public elevated: boolean;
     public traitName: string;
     public extendsTrait: CdmTraitReference;
-    public _parameters: CdmCollection<CdmParameterDefinition>;
-    public allParameters: ParameterCollection;
-    public hasSetFlags: boolean;
-    public elevated: boolean;
     public ugly: boolean;
-    public associatedProperties: string[];
-    public baseIsKnownToHaveParameters: boolean;
+    public _parameters: CdmCollection<CdmParameterDefinition>;
+    private allParameters: ParameterCollection;
+    private hasSetFlags: boolean;
+    private baseIsKnownToHaveParameters: boolean;
     /**
      * @internal
      */
@@ -187,6 +189,9 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * @internal
+     */
     public fetchResolvedTraits(resOpt?: resolveOptions): ResolvedTraitSet {
         // let bodyCode = () =>
         {

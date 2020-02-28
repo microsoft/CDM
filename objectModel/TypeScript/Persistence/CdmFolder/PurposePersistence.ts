@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmCorpusContext,
     cdmObjectType,
@@ -6,7 +10,7 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     Purpose,
     PurposeReference,
@@ -34,7 +38,7 @@ export class PurposePersistence {
             purposeName: instance.purposeName,
             extendsPurpose: instance.extendsPurpose
                 ? instance.extendsPurpose.copyData(resOpt, options) as object as PurposeReference : undefined,
-            exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits.allItems, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits.allItems, options)
         };
     }
 }

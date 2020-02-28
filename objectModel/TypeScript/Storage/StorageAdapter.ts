@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 export interface StorageAdapter {
     /**
      * The location hint, gives a hint to the reader app about the
