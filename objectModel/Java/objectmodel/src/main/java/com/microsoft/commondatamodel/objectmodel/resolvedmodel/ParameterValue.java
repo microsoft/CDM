@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.resolvedmodel;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -184,18 +187,20 @@ public class ParameterValue {
         final List<Map<String, String>> rows = new ArrayList<>();
         final ResolvedAttributeSet shapeAtts = entShape.fetchResolvedAttributes(resOpt);
 
-        for (final List<String> rowData : entValues) {
-          final Map<String, String> row = new TreeMap<>();
+        if (shapeAtts != null) {
+          for (final List<String> rowData : entValues) {
+            final Map<String, String> row = new TreeMap<>();
 
-          if (rowData != null && rowData.size() > 0) {
-            for (int c = 0; c < rowData.size(); c++) {
-              final String tValue = rowData.get(c);
-              final ResolvedAttribute colAtt = shapeAtts.getSet().get(c);
-              if (colAtt != null) {
-                row.put(colAtt.getResolvedName(), tValue);
+            if (rowData != null && rowData.size() > 0) {
+              for (int c = 0; c < rowData.size(); c++) {
+               final String tValue = rowData.get(c);
+                final ResolvedAttribute colAtt = shapeAtts.getSet().get(c);
+                if (colAtt != null) {
+                 row.put(colAtt.getResolvedName(), tValue);
+                }
               }
+              rows.add(row);
             }
-            rows.add(row);
           }
         }
 

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { ModelJson } from '..';
 import { CdmCorpusContext, CdmE2ERelationship, cdmObjectType, copyOptions, resolveOptions } from '../../internal';
 import { Logger } from '../../Utilities/Logging/Logger';

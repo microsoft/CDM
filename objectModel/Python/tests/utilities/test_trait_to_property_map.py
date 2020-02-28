@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 import unittest
 
 from cdm.enums import CdmDataFormat
@@ -40,8 +43,8 @@ class TraitToPropertyMapTests(unittest.TestCase):
             }
         ]
 
-        trait_to_property_map.update_property_value('defaultValue', constant_values)
-        result = trait_to_property_map.fetch_property_value('defaultValue')
+        trait_to_property_map._update_property_value('defaultValue', constant_values)
+        result = trait_to_property_map._fetch_property_value('defaultValue')
 
         self.assertEqual(1, len(result))
         self.assertEqual('en', result[0].get('languageTag'))

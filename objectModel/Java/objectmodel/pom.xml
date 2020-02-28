@@ -13,13 +13,13 @@
   <properties>
     <apache.checkstyle.version>3.1.0</apache.checkstyle.version>
     <apache.compiler.version>3.8.1</apache.compiler.version>
-    <apache.commons.version>3.5</apache.commons.version>
+    <apache.commons.version>3.9</apache.commons.version>
     <apache.commonio.version>2.6</apache.commonio.version>
     <apache.httpcomponents.version>4.5.9</apache.httpcomponents.version>
     <apache.logging.version>2.9.0</apache.logging.version>
     <apache.surefire.version>2.14</apache.surefire.version>
     <fasterxml.jackson.version>2.10.0</fasterxml.jackson.version>
-    <google.guava.version>14.0.1</google.guava.version>
+    <google.guava.version>28.2-jre</google.guava.version>
     <java.version>8</java.version>
     <microsoft.adal4j.version>1.6.3</microsoft.adal4j.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -27,6 +27,40 @@
     <slf4j.version>1.7.25</slf4j.version>
     <testng.testng.version>6.14.3</testng.testng.version>
   </properties>
+
+  <profiles>
+    <profile>
+      <id>build-with-dependencies</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+        <property>
+          <name>build-with-dependencies</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <descriptorRefs>
+                    <descriptorRef>jar-with-dependencies</descriptorRef>
+                  </descriptorRefs>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 
   <dependencies>
     <dependency>
@@ -161,24 +195,6 @@
 
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>package</phase>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <configuration>
-              <descriptorRefs>
-                <descriptorRef>jar-with-dependencies</descriptorRef>
-              </descriptorRefs>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${apache.surefire.version}</version>
         <configuration>
@@ -212,6 +228,8 @@
           <exclude>*.0.7.cdm.json</exclude>
           <exclude>*.0.8.cdm.json</exclude>
           <exclude>*.0.8.1.cdm.json</exclude>
+          <exclude>*.0.9.0.cdm.json</exclude>
+          <exclude>*.0.9.1.cdm.json</exclude>
           <exclude>*.md</exclude>
           <exclude>*.jpg</exclude>
         </excludes>

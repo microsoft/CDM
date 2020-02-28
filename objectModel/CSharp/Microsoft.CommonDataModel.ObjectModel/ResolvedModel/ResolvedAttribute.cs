@@ -1,7 +1,6 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ResolvedAttribute.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 //-----------------------------------------------------------------------using System;
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
@@ -12,7 +11,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     internal class ResolvedAttribute
     {
         private TraitToPropertyMap T2pm;
-        public dynamic Target { get; set; }
+        private dynamic _target;
+        public dynamic Target
+        {
+            get
+            {
+                return this._target;
+            }
+            set 
+            {
+                if (value != null)
+                {
+                    if (value is CdmAttribute)
+                        this.ResolvedAttributeCount = value.AttributeCount;
+                    else if (value is ResolvedAttributeSet)
+                        this.ResolvedAttributeCount = value.ResolvedAttributeCount;
+                }
+                this._target = value;
+            }
+        }
         private string _resolvedName;
         public string previousResolvedName { get; set; }
         public string ResolvedName
@@ -29,6 +46,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     this.previousResolvedName = value;
             }
         }
+        internal int ResolvedAttributeCount { get; set; }
         internal ResolvedTraitSet ResolvedTraits { get; set; }
         public int InsertOrder { get; set; }
         public CdmAttributeContext AttCtx { get; set; }
@@ -39,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         {
             this.Target = target;
             this.ResolvedTraits = new ResolvedTraitSet(resOpt);
-            this._resolvedName = defaultName;
+            this.ResolvedName = defaultName;
             this.previousResolvedName = defaultName;
             this.AttCtx = attCtx;
         }
@@ -50,10 +68,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ResolvedAttribute copy = new ResolvedAttribute(resOpt, this.Target, this._resolvedName, this.AttCtx)
             {
                 ResolvedName = this.ResolvedName,
+                ResolvedAttributeCount = this.ResolvedAttributeCount,
                 ResolvedTraits = this.ResolvedTraits.ShallowCopy(),
                 InsertOrder = this.InsertOrder,
                 Arc = this.Arc
             };
+
+            if (copy.Target is ResolvedAttributeSet)
+            {
+                // deep copy when set contains sets. this copies the resolved att set and the context, etc.
+                copy.Target = copy.Target.Copy();
+            }
+
             if (ApplierState != null)
             {
                 copy.ApplierState = ApplierState.Copy();

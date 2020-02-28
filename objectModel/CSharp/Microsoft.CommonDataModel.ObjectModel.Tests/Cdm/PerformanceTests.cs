@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
     using System;
     using System.Collections.Generic;
@@ -60,7 +63,7 @@
 
             var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestResolveEntities");
 
-            ((CdmCorpusDefinition)cdmCorpus).RootPath = testInputPath;
+            cdmCorpus.RootPath = testInputPath;
             cdmCorpus.Storage.Mount("local", new LocalAdapter(testInputPath));
             cdmCorpus.Storage.DefaultNamespace = "local";
             var entities = this.GetAllEntities(cdmCorpus);

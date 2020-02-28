@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmAttribute.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -32,6 +29,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Gets or sets the attribute's applied traits.
         /// </summary>
         public CdmTraitCollection AppliedTraits { get; }
+
+        /// <summary>
+        /// Indicates the number of attributes held within this attribute
+        /// </summary>
+        internal int AttributeCount { get; set; } = 0;
 
         /// <summary>
         /// Constructs a CdmAttribute.

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
@@ -70,6 +73,7 @@ export class LocalAdapter implements StorageAdapter {
         if (corpusPath.includes(':')) {
             corpusPath = corpusPath.slice(corpusPath.indexOf(':') + 1);
         }
+        
         if (path.isAbsolute(this.fullRoot)) {
             return path.join(this.fullRoot, corpusPath);
         }

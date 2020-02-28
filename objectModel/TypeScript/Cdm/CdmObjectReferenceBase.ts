@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { isString } from 'util';
 import {
     addTraitRef,
@@ -5,7 +8,6 @@ import {
     CdmAttribute,
     CdmAttributeContext,
     cdmAttributeContextType,
-    CdmCollection,
     CdmCorpusContext,
     CdmCorpusDefinition,
     CdmDocumentDefinition,
@@ -15,12 +17,8 @@ import {
     CdmObjectDefinitionBase,
     CdmObjectReference,
     cdmObjectType,
-    cdmStatusLevel,
     CdmTraitCollection,
-    CdmTraitDefinition,
-    CdmTraitReference,
     Logger,
-    removeTraitRef,
     resolveContext,
     ResolvedAttribute,
     ResolvedAttributeSet,
@@ -33,6 +31,9 @@ import {
 } from '../internal';
 
 export abstract class CdmObjectReferenceBase extends CdmObjectBase implements CdmObjectReference {
+    /**
+     * @internal
+     */
     public static resAttToken: string = '/(resolvedAttributes)/';
     public readonly appliedTraits: CdmTraitCollection;
     public namedReference?: string;
@@ -96,6 +97,9 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         return this;
     }
 
+    /**
+     * @deprecated Only for internal use.
+     */
     public fetchResolvedReference(resOpt?: resolveOptions): CdmObjectDefinition {
         // let bodyCode = () =>
         {
@@ -134,9 +138,11 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 }
 
                 // get the resolved attribute
-                const ra: ResolvedAttribute
-                    = ent.fetchResolvedAttributes(resOpt)
-                        .get(attName);
+                const ras: ResolvedAttributeSet = ent.fetchResolvedAttributes(resOpt);
+                let ra: ResolvedAttribute;
+                if (ras !== undefined) {
+                    ra = ras.get(attName);
+                }
                 if (ra) {
                     res = ra.target as CdmAttribute;
                 } else {

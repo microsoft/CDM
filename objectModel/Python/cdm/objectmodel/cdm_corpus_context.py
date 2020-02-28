@@ -1,7 +1,5 @@
-# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
@@ -36,7 +34,7 @@ class CdmCorpusContext:
         if not self._scope_stack:
             self._scope_stack = []
 
-        current_trait = current_trait if current_trait else (self._current_scope.current_trait if self._current_scope else None)
+        current_trait = current_trait if current_trait else (self._current_scope._current_trait if self._current_scope else None)
 
         ctx_new = ResolveContextScope(current_trait=current_trait, current_parameter=0)
         self._current_scope = ctx_new

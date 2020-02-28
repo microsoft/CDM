@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmAttributeItem,
     CdmCorpusContext,
@@ -7,7 +11,7 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeContext,
     AttributeGroupReference,
@@ -54,7 +58,7 @@ export class EntityPersistence {
             entity.attributeContext = CdmFolder.AttributeContextPersistence.fromData(ctx, object.attributeContext);
         }
 
-        utils.addArrayToCdmCollection<CdmAttributeItem>(entity.attributes, utils.createAttributeArray(ctx, object.hasAttributes));
+        utils.addArrayToCdmCollection<CdmAttributeItem>(entity.attributes, utils.createAttributeArray(ctx, object.hasAttributes, entity.entityName));
 
         return entity;
     }
@@ -69,7 +73,7 @@ export class EntityPersistence {
                 instance.extendsEntity.copyData(resOpt, options) as (string | EntityReference) : undefined,
             extendsEntityResolutionGuidance: instance.extendsEntityResolutionGuidance ?
                 instance.extendsEntityResolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
-            exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, exhibitsTraits, options)
         };
 
         if (instance.sourceName) {
@@ -91,7 +95,7 @@ export class EntityPersistence {
         // after the properties so they show up first in doc
         if (instance.attributes) {
             object.hasAttributes =
-                utils.arrayCopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(
+            copyDataUtils.arrayCopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(
                     resOpt, instance.attributes, options);
             object.attributeContext = instance.attributeContext ?
                 instance.attributeContext.copyData(resOpt, options) as AttributeContext : undefined;

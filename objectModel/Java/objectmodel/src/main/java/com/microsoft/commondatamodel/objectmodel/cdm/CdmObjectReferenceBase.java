@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -144,7 +145,11 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
    */
   @Deprecated
   @Override
-  public ResolvedTraitSet fetchResolvedTraits(final ResolveOptions resOpt) {
+  public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     if (this.getNamedReference() != null && this.getAppliedTraits() == null) {
       final String kind = "rts";
       final ResolveContext ctx = (ResolveContext) this.getCtx();
@@ -220,13 +225,23 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public CdmObjectDefinition fetchResolvedReference() {
     return fetchResolvedReference(null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public CdmObjectDefinition fetchResolvedReference(ResolveOptions resOpt) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     if (this.getExplicitReference() != null) {
@@ -255,7 +270,11 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       }
 
       // get the resolved attribute
-      final ResolvedAttribute ra = ent.fetchResolvedAttributes(resOpt).get(attName);
+      final ResolvedAttributeSet ras = ent.fetchResolvedAttributes(resOpt);
+      ResolvedAttribute ra = null;
+      if (ras != null) {
+        ra = ras.get(attName);
+      }
       if (ra != null) {
         res = (CdmObjectDefinitionBase) ra.getTarget();
       } else {
@@ -308,8 +327,13 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  public <T extends CdmObjectDefinition> T fetchObjectDefinition(final ResolveOptions resOpt) {
+  public <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final CdmObjectDefinition def = this.fetchResolvedReference(resOpt);
+
     if (def != null) {
       return (T) def;
     }
@@ -318,7 +342,11 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final CdmObjectDefinition def = this.fetchObjectDefinition(resOpt);
     if (def != null) {
       return def.isDerivedFrom(baseDef, resOpt);
@@ -391,7 +419,11 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  public CdmObject copy(final ResolveOptions resOpt, CdmObject host) {
+  public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final CdmObjectReferenceBase copy;
     if (!Strings.isNullOrEmpty(this.getNamedReference())) {
       copy = this.copyRefObject(resOpt, this.getNamedReference(), this.isSimpleNamedReference());
@@ -413,7 +445,11 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   }
 
   @Override
-  public CdmObjectReference createSimpleReference(final ResolveOptions resOpt) {
+  public CdmObjectReference createSimpleReference(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     if (!Strings.isNullOrEmpty(this.namedReference)) {
       return this.copyRefObject(resOpt, this.namedReference, true);
     }

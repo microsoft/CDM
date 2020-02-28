@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="ParameterValue.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
@@ -60,35 +57,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     }
                     List<IDictionary<string, string>> rows = new List<IDictionary<string, string>>();
                     ResolvedAttributeSet shapeAtts = entShape.FetchResolvedAttributes(resOpt);
-                    for (int r = 0; r < entValues.Count; r++)
+                    if (shapeAtts != null)
                     {
-                        List<string> rowData = entValues[r];
-                        IDictionary<string, string> row = new SortedDictionary<string, string>();
-                        if (rowData?.Count > 0)
+                        for (int r = 0; r < entValues.Count; r++)
                         {
-                            for (int c = 0; c < rowData.Count; c++)
+                            List<string> rowData = entValues[r];
+                            IDictionary<string, string> row = new SortedDictionary<string, string>();
+                            if (rowData?.Count > 0)
                             {
-                                string tvalue = rowData[c];
-                                ResolvedAttribute colAtt = shapeAtts.Set[c];
-                                if (colAtt != null)
-                                    row.Add(colAtt.ResolvedName, tvalue);
-                            }
-                            rows.Add(row);
-                        }
-
-                        if (rows.Count > 0)
-                        {
-                            var keys = rows[0].Keys.OrderBy(key => key).ToList();
-                            var firstKey = keys[0];
-                            var orderesRows = rows.OrderBy(currentRow => currentRow[firstKey]);
-
-                            if (keys.Count > 1)
-                            {
-                                var secondKey = keys[1];
-                                orderesRows = orderesRows.ThenBy(currentRow => currentRow[secondKey]);
+                                for (int c = 0; c < rowData.Count; c++)
+                                {
+                                    string tvalue = rowData[c];
+                                    ResolvedAttribute colAtt = shapeAtts.Set[c];
+                                    if (colAtt != null)
+                                        row.Add(colAtt.ResolvedName, tvalue);
+                                }
+                                rows.Add(row);
                             }
 
-                            rows = orderesRows.ToList();
+                            if (rows.Count > 0)
+                            {
+                                var keys = rows[0].Keys.OrderBy(key => key).ToList();
+                                var firstKey = keys[0];
+                                var orderesRows = rows.OrderBy(currentRow => currentRow[firstKey]);
+
+                                if (keys.Count > 1)
+                                {
+                                    var secondKey = keys[1];
+                                    orderesRows = orderesRows.ThenBy(currentRow => currentRow[secondKey]);
+                                }
+
+                                rows = orderesRows.ToList();
+                            }
                         }
                     }
                     return JsonConvert.SerializeObject(rows, Formatting.None, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });

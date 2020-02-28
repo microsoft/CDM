@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
 import com.google.common.base.Strings;
@@ -8,6 +11,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ImportPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
@@ -29,7 +33,7 @@ public class DocumentPersistence {
       final List<CdmTraitDefinition> extensionTraitDefList,
       final List<CdmTraitDefinition> localExtensionTraitDefList) {
     return CompletableFuture.supplyAsync(() -> {
-      final String docName = obj.getName() + ".cdm.json";
+      final String docName = obj.getName() + CdmConstants.CDM_EXTENSION;
       final CdmDocumentDefinition document = ctx.getCorpus()
           .makeObject(
               CdmObjectType.DocumentDef,

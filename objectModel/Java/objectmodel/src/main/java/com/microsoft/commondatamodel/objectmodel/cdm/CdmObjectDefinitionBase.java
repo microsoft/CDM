@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
@@ -33,8 +36,13 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
   }
 
   @Override
-  public CdmObjectReference createSimpleReference(final ResolveOptions resOpt) {
+  public CdmObjectReference createSimpleReference(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final String name;
+
     if (!Strings.isNullOrEmpty(this.getDeclaredPath())) {
       name = this.getDeclaredPath();
     } else {
@@ -53,7 +61,10 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
   }
 
   @Override
-  public <T extends CdmObjectDefinition> T fetchObjectDefinition(final ResolveOptions resOpt) {
+  public <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
     resOpt.setFromMoniker(null);
     return (T) this;
   }

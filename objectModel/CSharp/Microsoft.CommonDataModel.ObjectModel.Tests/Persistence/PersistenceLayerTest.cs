@@ -1,4 +1,7 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -6,6 +9,7 @@
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.IO;
     using System.Threading.Tasks;
@@ -33,7 +37,7 @@
             {
                 invalidManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/invalidManifest.manifest.cdm.json");
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 Assert.Fail("Error should not be thrown when input json is invalid.");
             }
@@ -68,7 +72,7 @@
             var manifestFromModelJson = await corpus.FetchObjectAsync<CdmManifestDefinition>("Model.json");
 
             // Swap out the adapter for a fake one so that we aren't actually saving files. 
-            Dictionary<string, string> allDocs = new Dictionary<string, string>();
+            ConcurrentDictionary<string, string> allDocs = new ConcurrentDictionary<string, string>();
             var testAdapter = new TestStorageAdapter(allDocs);
             corpus.Storage.SetAdapter("local", testAdapter);
 
@@ -106,7 +110,7 @@
             var manifestFromModelJson = await corpus.FetchObjectAsync<CdmManifestDefinition>("sub-folder/model.json");
 
             // Swap out the adapter for a fake one so that we aren't actually saving files. 
-            Dictionary<string, string> allDocs = new Dictionary<string, string>();
+            ConcurrentDictionary<string, string> allDocs = new ConcurrentDictionary<string, string>();
             var testAdapter = new TestStorageAdapter(allDocs);
             corpus.Storage.SetAdapter("local", testAdapter);
 
@@ -131,7 +135,7 @@
             corpus.Storage.FetchRootFolder("local").Documents.Add(manifest);
 
 
-            Dictionary<string, string> allDocs = new Dictionary<string, string>();
+            ConcurrentDictionary<string, string> allDocs = new ConcurrentDictionary<string, string>();
             var testAdapter = new TestStorageAdapter(allDocs);
             corpus.Storage.SetAdapter("local", testAdapter);
 

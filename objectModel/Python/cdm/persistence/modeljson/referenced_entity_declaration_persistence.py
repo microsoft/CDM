@@ -1,4 +1,7 @@
-﻿from typing import List, Optional, TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import List, Optional, TYPE_CHECKING
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
@@ -77,9 +80,9 @@ class ReferencedEntityDeclarationPersistence:
         reference_entity.description = instance.explanation
         reference_entity.lastFileStatusCheckTime = utils.get_formatted_date_string(instance.last_file_status_check_time)
         reference_entity.lastFileModifiedTime = utils.get_formatted_date_string(instance.last_file_modified_time)
-        reference_entity.isHidden = bool(t2pm.fetch_trait_reference('is.hidden')) or None
+        reference_entity.isHidden = bool(t2pm._fetch_trait_reference('is.hidden')) or None
 
-        properties_trait = t2pm.fetch_trait_reference('is.propertyContent.multiTrait')
+        properties_trait = t2pm._fetch_trait_reference('is.propertyContent.multiTrait')
         if properties_trait:
             reference_entity.modelId = properties_trait.arguments[0].value
 

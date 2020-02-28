@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
 import com.google.common.base.Strings;
@@ -15,7 +18,13 @@ import java.util.Objects;
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
  * to be called externally at all. Please refrain from using it.
  */
+@Deprecated
 public class PrimitiveAppliers {
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier isRemoved = new AttributeResolutionApplier();
 
   static {
@@ -25,6 +34,11 @@ public class PrimitiveAppliers {
     isRemoved.willRemove = (ApplierContext onStep) -> true;
   }
 
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier doesImposeDirectives = new AttributeResolutionApplier();
 
   static {
@@ -42,6 +56,11 @@ public class PrimitiveAppliers {
     };
   }
 
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier doesRemoveDirectives = new AttributeResolutionApplier();
 
   static {
@@ -59,6 +78,11 @@ public class PrimitiveAppliers {
     };
   }
 
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier doesAddSupportingAttribute = new AttributeResolutionApplier();
 
   static {
@@ -101,6 +125,11 @@ public class PrimitiveAppliers {
     };
   }
 
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier doesDisambiguateNames = new AttributeResolutionApplier();
 
   static {
@@ -162,6 +191,11 @@ public class PrimitiveAppliers {
     };
   }
 
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier doesExplainArray = new AttributeResolutionApplier();
 
   static {
@@ -293,6 +327,11 @@ public class PrimitiveAppliers {
     };
   }
 
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier doesReferenceEntity = new AttributeResolutionApplier();
 
   static {
@@ -300,14 +339,15 @@ public class PrimitiveAppliers {
     doesReferenceEntity.priority = 4;
     doesReferenceEntity.overridesBase = true;
     doesReferenceEntity.willRemove = (ApplierContext appCtx) -> {
-      boolean visible = true;
-      if (appCtx.resAttSource != null) {
-        // all others go away
-        visible = Objects.equals(
-            appCtx.resAttSource.getTarget(),
-            appCtx.resGuide.getEntityByReference().getForeignKeyAttribute());
-      }
-      return false; // TODO: A bug? Check in C# and TS
+      // Return always false for the time being.
+      // boolean visible = true;
+      // if (appCtx.resAttSource != null) {
+      //   // all others go away
+      //   visible = Objects.equals(
+      //       appCtx.resAttSource.getTarget(),
+      //       appCtx.resGuide.getEntityByReference().getForeignKeyAttribute());
+      // }
+      return false;
     };
     doesReferenceEntity.willRoundAdd = (ApplierContext appCtx) -> true;
     doesReferenceEntity.doRoundAdd = (ApplierContext appCtx) -> {
@@ -345,6 +385,11 @@ public class PrimitiveAppliers {
     };
   }
 
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier doesReferenceEntityVia = new AttributeResolutionApplier();
 
   static {
@@ -357,7 +402,8 @@ public class PrimitiveAppliers {
       final boolean isNorm = dir != null && dir.has("normalized");
       final boolean isArray = dir != null && dir.has("isArray");
       final boolean isRefOnly = dir != null && dir.has("referenceOnly");
-      final boolean alwaysAdd = appCtx.resGuide.getEntityByReference().doesAlwaysIncludeForeignKey();
+      final boolean alwaysAdd = appCtx.resGuide.getEntityByReference().getForeignKeyAttribute() != null &&
+        appCtx.resGuide.getEntityByReference().doesAlwaysIncludeForeignKey();
       final boolean doFKOnly = isRefOnly && (!isNorm || !isArray);
       boolean visible = true;
 
@@ -373,7 +419,8 @@ public class PrimitiveAppliers {
       final boolean isNorm = dir != null && dir.has("normalized");
       final boolean isArray = dir != null && dir.has("isArray");
       final boolean isRefOnly = dir != null && dir.has("referenceOnly");
-      final boolean alwaysAdd = appCtx.resGuide.getEntityByReference().doesAlwaysIncludeForeignKey();
+      final boolean alwaysAdd = appCtx.resGuide.getEntityByReference().getForeignKeyAttribute() != null &&
+        appCtx.resGuide.getEntityByReference().doesAlwaysIncludeForeignKey();
 
       // add a foreign key and remove everything else when asked to do so.
       // however, avoid doing this for normalized arrays, since they remove all atts anyway
@@ -412,7 +459,8 @@ public class PrimitiveAppliers {
       final boolean isNorm = dir != null && dir.has("normalized");
       final boolean isArray = dir != null && dir.has("isArray");
       final boolean isRefOnly = dir != null && dir.has("referenceOnly");
-      final boolean alwaysAdd = appCtx.resGuide.getEntityByReference().doesAlwaysIncludeForeignKey();
+      final boolean alwaysAdd = appCtx.resGuide.getEntityByReference().getForeignKeyAttribute() != null &&
+        appCtx.resGuide.getEntityByReference().doesAlwaysIncludeForeignKey();
 
       // add a foreign key and remove everything else when asked to do so.
       // however, avoid doing this for normalized arrays, since they remove all atts anyway
@@ -430,6 +478,11 @@ public class PrimitiveAppliers {
     };
   }
 
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
   public static AttributeResolutionApplier doesSelectAttributes = new AttributeResolutionApplier();
 
   static {

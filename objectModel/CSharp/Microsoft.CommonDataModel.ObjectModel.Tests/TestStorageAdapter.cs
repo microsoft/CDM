@@ -1,17 +1,21 @@
-﻿namespace Microsoft.CommonDataModel.ObjectModel.Tests
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+namespace Microsoft.CommonDataModel.ObjectModel.Tests
 {
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
     public class TestStorageAdapter : StorageAdapter
     {
-        public Dictionary<string, string> Target { get; }
+        public ConcurrentDictionary<string, string> Target { get; }
         public string LocationHint { get; set; }
 
-        public TestStorageAdapter(Dictionary<string, string> target)
+        public TestStorageAdapter(ConcurrentDictionary<string, string> target)
         {
             this.Target = target;
         }
@@ -26,7 +30,7 @@
             // ensure that the path exists before trying to write the file
             string path = this.CreateAdapterPath(corpusPath);
 
-            this.Target[path] = data;
+            this.Target.TryAdd(path, data);
 
             return Task.CompletedTask;
         }

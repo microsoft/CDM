@@ -1,4 +1,7 @@
-﻿from abc import abstractmethod
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from abc import abstractmethod
 from typing import Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType

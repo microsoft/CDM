@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
     CdmDocumentDefinition,
@@ -11,6 +14,9 @@ import {
 export class CdmImport extends cdmObjectSimple {
     public corpusPath: string;
     public moniker: string;
+    /**
+     * @internal
+     */
     public doc: CdmDocumentDefinition;
 
     public static get objectType(): cdmObjectType {

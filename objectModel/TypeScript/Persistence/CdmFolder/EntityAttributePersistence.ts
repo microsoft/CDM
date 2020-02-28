@@ -1,3 +1,7 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
+import { CdmFolder } from '..';
 import {
     CdmCorpusContext,
     CdmEntityAttributeDefinition,
@@ -6,7 +10,7 @@ import {
     copyOptions,
     resolveOptions
 } from '../../internal';
-import { CdmFolder } from '..';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeResolutionGuidance,
     EntityAttribute,
@@ -45,7 +49,7 @@ export class EntityAttributePersistence {
                 ? instance.purpose.copyData(resOpt, options) as (string | PurposeReference)
                 : undefined,
             entity: entity,
-            appliedTraits: utils.arrayCopyData<string | TraitReference>(resOpt, instance.appliedTraits, options),
+            appliedTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.appliedTraits, options),
             resolutionGuidance: instance.resolutionGuidance
                 ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined
         };

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     ArgumentValue,
     AttributeContextParameters,
@@ -34,7 +37,8 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback
+    VisitCallback,
+    ResolvedAttributeSet
 } from '../internal';
 
 export class CdmEntityAttributeDefinition extends CdmAttribute {
@@ -377,7 +381,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                             sideOther.entity = entRef.fetchObjectDefinition(resOpt);
                             if (sideOther.entity) {
                                 let otherAttribute: CdmAttribute;
-                                const otherOpts: resolveOptions = { wrtDoc: resOpt.wrtDoc, directives: resOpt.directives };
+                                const otherOpts: resolveOptions = new resolveOptions(resOpt.wrtDoc, resOpt.directives);
                                 const t: ResolvedTrait = entRef.fetchResolvedTraits(otherOpts)
                                     .find(otherOpts, 'is.identifiedBy');
                                 if (t && t.parameterValues && t.parameterValues.length) {
@@ -389,9 +393,12 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                                             if (!otherAttribute.getName) {
                                                 otherAttribute.getName();
                                             }
-                                            sideOther.rasb.ownOne(sideOther.entity.fetchResolvedAttributes(otherOpts)
-                                                .get(otherAttribute.getName())
-                                                .copy());
+                                            const sideOtherRas: ResolvedAttributeSet = sideOther.entity.fetchResolvedAttributes(otherOpts);
+                                            if (sideOtherRas !== undefined) {
+                                                sideOther.rasb.ownOne(sideOtherRas
+                                                    .get(otherAttribute.getName())
+                                                    .copy());
+                                            }
                                         }
                                     }
                                 }

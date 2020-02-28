@@ -1,10 +1,13 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import List
 
 from cdm.enums import CdmObjectType
+from cdm.persistence import PersistenceLayer
 from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition
-from cdm.utilities import CopyOptions, ResolveOptions
+from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
 
-from . import utils
 from .attribute_group_persistence import AttributeGroupPersistence
 from .constant_entity_persistence import ConstantEntityPersistence
 from .data_type_persistence import DataTypePersistence
@@ -18,7 +21,7 @@ from .types import DocumentContent
 class DocumentPersistence:
     is_persistence_async = False
 
-    formats = ['.cdm.json']
+    formats = [PersistenceLayer.CDM_EXTENSION]
 
     @staticmethod
     def from_data(ctx: 'CdmCorpusContext', doc_name: str, json_data: str, folder: 'CdmFolderDefinition') -> 'CdmDocumentDefinition':
@@ -42,7 +45,7 @@ class DocumentPersistence:
             if data.get('jsonSchemaSemanticVersion'):
                 document.json_schema_semantic_version = data.jsonSchemaSemanticVersion
 
-            if document.json_schema_semantic_version != '0.9.0':
+            if document.json_schema_semantic_version not in ['0.9.0', '1.0.0']:
                 # TODO: validate that this is a version we can understand with the OM
                 pass
 
@@ -72,6 +75,6 @@ class DocumentPersistence:
         result = DocumentContent()
         result.schema = instance.schema
         result.jsonSchemaSemanticVersion = instance.json_schema_semantic_version
-        result.imports = utils.array_copy_data(res_opt, instance.imports, options)
-        result.definitions = utils.array_copy_data(res_opt, instance.definitions, options)
+        result.imports = copy_data_utils._array_copy_data(res_opt, instance.imports, options)
+        result.definitions = copy_data_utils._array_copy_data(res_opt, instance.definitions, options)
         return result

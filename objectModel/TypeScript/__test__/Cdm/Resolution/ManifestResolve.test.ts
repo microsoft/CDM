@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { CdmCorpusDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition, cdmStatusLevel } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
@@ -38,6 +41,6 @@ describe('Cdm/Resolution/ManifestResolve', () => {
         expect(resolvedManifest.entities.allItems[0].entityPath)
             .toBe('core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/resolved/Account.cdm.json/Account');
         expect(resolvedManifest.entities.allItems[1].entityPath)
-            .toBe('cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/electronicMedicalRecords.manifest.cdm.json/Address');
+            .toBe('cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/electronicMedicalRecords.manifest.cdm.json/Address');        
     });
 });

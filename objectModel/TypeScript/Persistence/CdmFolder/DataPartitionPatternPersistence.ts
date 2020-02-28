@@ -1,11 +1,15 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import {
     CdmCorpusContext,
-    cdmObjectType,
-    copyOptions,
     CdmDataPartitionPatternDefinition,
+    cdmObjectType,
     CdmTraitReference,
+    copyOptions,
     resolveOptions
 } from '../../internal';
+import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import * as timeUtils from '../../Utilities/timeUtils';
 import {
     DataPartitionPattern,
@@ -61,7 +65,7 @@ export class DataPartitionPatternPersistence {
             regularExpression: instance.regularExpression,
             parameters: instance.parameters,
             specializedSchema: instance.specializedSchema,
-            exhibitsTraits: utils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
+            exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, instance.exhibitsTraits, options)
         };
     }
 }

@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from datetime import datetime, timezone
 from typing import cast, Optional, TYPE_CHECKING
 
@@ -56,7 +59,7 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
         modified_time = await cast('CdmCorpusDefinition', self.ctx.corpus)._compute_last_modified_time_async(full_path, self)
 
         self.last_file_status_check_time = datetime.now(timezone.utc)
-        self.last_file_modified_time = time_utils.max_time(modified_time, self.last_file_modified_time)
+        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
 
         await self.report_most_recent_time_async(self.last_file_modified_time)
 
@@ -76,7 +79,7 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = '{}{}'.format(path_from, self.get_name())

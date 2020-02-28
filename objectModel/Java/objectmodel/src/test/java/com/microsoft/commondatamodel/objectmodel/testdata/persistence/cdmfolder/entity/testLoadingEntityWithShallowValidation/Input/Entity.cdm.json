@@ -1,0 +1,56 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Entity",
+      "extendsEntity": "CdmEntity",
+      "hasAttributes": [
+        {
+          "name": "aTypeAttribute",
+          "dataType": "integer"
+        },
+        {
+          "name": "anotherTypeAttribute",
+          "dataType": "string",
+          "appliedTraits": [
+            "this.trait.does.not.exist"
+          ],
+          "description": "a type attribute that has a known data type but unknown trait"
+        },
+        {
+          "name": "yetAnotherTypeAttribute",
+          "dataType": "fakeDataType",
+          "appliedTraits": [
+            "is.fake.trait"
+          ],
+          "description": "a type attribute that has an unknown data type and trait"
+        },
+        {
+          "name": "entityThatExists",
+          "entity": "EntityThatExists",
+          "description": "an entity that is imported and has a declaration that exists"
+        },
+        {
+          "name": "entityThatExistsMissingImports",
+          "entity": "EntityThatExistsMissingImports",
+          "description": "an entity that is imported and has a declaration, but itself is missing an import"
+        },
+        {
+          "name": "entityThatDoesNotExist",
+          "entity": "EntityThatDoesNotExist",
+          "description": "an entity that is imported but does not have a declaration that can be found"
+        },
+        {
+          "name": "entityNotImported",
+          "entity": "EntityNotImported",
+          "description": "an entity that is not imported at all"
+        }
+      ]
+    }
+  ]
+}

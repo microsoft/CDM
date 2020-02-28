@@ -1,3 +1,6 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Optional, TYPE_CHECKING
 import json
 
@@ -25,10 +28,9 @@ class CdmArgumentDefinition(CdmObjectSimple):
         # the argument value.
         self.value = None  # type: Optional[CdmArgumentValue]
 
-        self.resolved_parameter = None
-
         # Internal
 
+        self._resolved_parameter = None
         self._declared_path = None  # Optional[str]
         self._unresolved_value = None  # type: Optional[CdmArgumentValue]
 
@@ -55,19 +57,22 @@ class CdmArgumentDefinition(CdmObjectSimple):
             else:
                 copy.value = self.value
 
-        copy.resolved_parameter = self.resolved_parameter
+        copy._resolved_parameter = self._resolved_parameter
         copy.explanation = self.explanation
         return copy
 
     def get_name(self) -> str:
         return self.name
 
+    def set_value(self, value):
+        self.value = value
+
     def validate(self) -> bool:
-        return bool(self.value)
+        return self.value is not None
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
-        if self.ctx.corpus.block_declared_path_changes is False:
+        if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
                 path = '{}{}'.format(path_from, ('value/' if self.value else ''))

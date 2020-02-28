@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 import { isArray, isObject } from 'util';
 import {
     ArgumentValue,
@@ -146,18 +149,20 @@ export class ParameterValue {
                     const rows: (object)[] = [];
                     const shapeAtts: ResolvedAttributeSet = entShape.fetchResolvedAttributes(resOpt);
 
-                    for (const entVal of entValues) {
-                        const rowData: string[] = entVal;
-                        if (rowData && rowData.length) {
-                            const row: any = {};
-                            for (let c: number = 0; c < rowData.length; c++) {
-                                const tvalue: string = rowData[c];
-                                let colAtt = shapeAtts.set[c];
-                                if (colAtt != undefined) {
-                                    row[colAtt.resolvedName] = tvalue;
+                    if (shapeAtts !== undefined) {
+                        for (const entVal of entValues) {
+                            const rowData: string[] = entVal;
+                            if (rowData && rowData.length) {
+                                const row: any = {};
+                                for (let c: number = 0; c < rowData.length; c++) {
+                                    const tvalue: string = rowData[c];
+                                    let colAtt = shapeAtts.set[c];
+                                    if (colAtt != undefined) {
+                                        row[colAtt.resolvedName] = tvalue;
+                                    }
                                 }
+                                rows.push(row);
                             }
-                            rows.push(row);
                         }
                     }
 

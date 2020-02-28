@@ -1,4 +1,5 @@
-// Copyright (c) Microsoft Corporation.
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
@@ -37,7 +38,11 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   }
 
   @Override
-  public boolean isDerivedFrom(final String baseDef, final ResolveOptions resOpt) {
+  public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     return false;
   }
 
@@ -108,7 +113,11 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   }
 
   @Override
-  public ResolvedEntityReferenceSet fetchResolvedEntityReferences(final ResolveOptions resOpt) {
+  public ResolvedEntityReferenceSet fetchResolvedEntityReferences(ResolveOptions resOpt) {
+    if (resOpt == null) {
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    }
+
     final ResolvedEntityReferenceSet rers = new ResolvedEntityReferenceSet(resOpt);
     if (this.members != null) {
       for (int i = 0; i < this.members.getCount(); i++) {
@@ -140,7 +149,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this);
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     CdmAttributeGroupDefinition copy;
@@ -220,5 +229,10 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
       rtsb.mergeTraits(rtsElevated);
     }
     this.constructResolvedTraitsDef(null, rtsb, resOpt);
+  }
+
+  CdmAttributeItem addAttributeDef(CdmAttributeItem attributeDef) {
+      this.getMembers().add(attributeDef);
+      return attributeDef;
   }
 }

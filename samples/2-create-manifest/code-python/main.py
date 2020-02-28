@@ -1,14 +1,12 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import asyncio
 import os
 import sys
 from typing import cast
 
-sys.path.append('../CDM.ObjectModel.Python')
+sys.path.append('../../objectModel/Python')
 
 from cdm.enums import CdmObjectType, CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition, CdmLocalEntityDeclarationDefinition, CdmEntityDefinition, CdmManifestDefinition
@@ -62,7 +60,7 @@ async def main():
 
     # Add the temp manifest to the root of the local documents in the corpus.
     local_root = cdm_corpus.storage.fetch_root_folder('local')
-    local_root.documents.append(manifest_abstract, 'temp_abstract.manifest.cdm.json')
+    local_root.documents.append(manifest_abstract)
 
     # Create the resolved version of everything in the root folder too.
     print('Resolve the placeholder')

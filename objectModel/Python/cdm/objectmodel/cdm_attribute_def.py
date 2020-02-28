@@ -1,4 +1,7 @@
-﻿from typing import TYPE_CHECKING
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from typing import TYPE_CHECKING
 
 from .cdm_attribute_item import CdmAttributeItem
 from .cdm_trait_collection import CdmTraitCollection
@@ -24,8 +27,11 @@ class CdmAttribute(CdmObjectDefinition, CdmAttributeItem):
         self.resolution_guidance = None  # type: Optional[CdmAttributeResolutionGuidanceDefinition]
 
         # Internal
-
+        # the attribute's applied traits.
         self._applied_traits = CdmTraitCollection(self.ctx, self)
+
+        # Indicates the number of attributes held within this attribute.
+        self._attribute_count = 0  # type: int
 
     @property
     def applied_traits(self) -> 'CdmTraitCollection':

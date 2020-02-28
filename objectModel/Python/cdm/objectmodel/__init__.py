@@ -1,4 +1,7 @@
-﻿from .cdm_argument_value import CdmArgumentValue
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
+from .cdm_argument_value import CdmArgumentValue
 from .cdm_corpus_context import CdmCorpusContext
 from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_attribute_context import CdmAttributeContext

@@ -1,3 +1,6 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 {
     using System;
@@ -34,9 +37,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "cdmTest", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             Assert.AreEqual(cdmManifest.Schema, "CdmManifestDefinition.cdm.json");
             Assert.AreEqual(cdmManifest.ManifestName, "cdmTest");
-            Assert.AreEqual(cdmManifest.JsonSchemaSemanticVersion, "0.9.0");
+            Assert.AreEqual(cdmManifest.JsonSchemaSemanticVersion, "1.0.0");
             Assert.AreEqual(TimeUtils.GetFormattedDateString((DateTimeOffset)cdmManifest.LastFileModifiedTime), "2008-09-15T23:53:23.000Z");
-            Assert.AreEqual(cdmManifest.Explanation, "test cdm folder for cdm version 0.9+");
+            Assert.AreEqual(cdmManifest.Explanation, "test cdm folder for cdm version 1.0+");
             Assert.AreEqual(cdmManifest.Imports.Count, 1);
             Assert.AreEqual(cdmManifest.Imports[0].CorpusPath, "/primitives.cdm.json");
             Assert.AreEqual(cdmManifest.Entities.Count, 0);
@@ -92,9 +95,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(new CdmCorpusDefinition(), null), "docName", "someNamespace", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
             ManifestContent manifestObject = CdmObjectBase.CopyData(cdmManifest, null, null);
             Assert.AreEqual(manifestObject.Schema, "CdmManifestDefinition.cdm.json");
-            Assert.AreEqual(manifestObject.JsonSchemaSemanticVersion, "0.9.0");
+            Assert.AreEqual(manifestObject.JsonSchemaSemanticVersion, "1.0.0");
             Assert.AreEqual(manifestObject.ManifestName, "cdmTest");
-            Assert.AreEqual(manifestObject.Explanation, "test cdm folder for cdm version 0.9+");
+            Assert.AreEqual(manifestObject.Explanation, "test cdm folder for cdm version 1.0+");
             Assert.AreEqual(manifestObject.Imports.Count, 1);
             Assert.AreEqual(manifestObject.Imports[0].CorpusPath, "/primitives.cdm.json");
             Assert.AreEqual(manifestObject.ExhibitsTraits.Count, 1);
@@ -124,6 +127,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var statusTimeAtLoad = cdmManifest.LastFileStatusCheckTime;
             // hard coded because the time comes from inside the file
             Assert.AreEqual(TimeUtils.GetFormattedDateString(statusTimeAtLoad), "2019-02-01T15:36:19.410Z");
+
+            Assert.IsNotNull(cdmManifest._fileSystemModifiedTime);
+            Assert.IsTrue(cdmManifest._fileSystemModifiedTime < timeBeforeLoad);
 
             System.Threading.Thread.Sleep(100);
 
@@ -305,7 +311,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var callback = new EventCallback();
             var functionWasCalled = false;
             var functionParameter1 = CdmStatusLevel.Info;
-            string functionParameter2 = null, functionParameter3 = null;
+            string functionParameter2 = null;
             callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
             {
                 functionWasCalled = true;
@@ -355,7 +361,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var callback = new EventCallback();
             var functionWasCalled = false;
             var functionParameter1 = CdmStatusLevel.Info;
-            string functionParameter2 = null, functionParameter3 = null;
+            string functionParameter2 = null;
             callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
             {
                 functionWasCalled = true;

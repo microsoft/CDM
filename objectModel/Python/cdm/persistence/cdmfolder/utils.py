@@ -1,7 +1,9 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import Union, List, Optional, TYPE_CHECKING
 
 from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmAttributeItem, CdmObjectReference, CdmTraitReference
-from cdm.persistence import PersistenceLayer
 from cdm.utilities import JObject, IdentifierRef, ResolveOptions, CopyOptions
 
 from .attribute_group_reference_persistence import AttributeGroupReferencePersistence
@@ -15,7 +17,7 @@ from .types import AttributeGroupReference, CdmJsonType, EntityAttribute, TypeAt
 
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCollection, CdmObject
+    pass
 
 
 def create_trait_reference_array(ctx: CdmCorpusContext, obj: Optional[List[Union[str, CdmTraitReference]]]) -> Optional[List[CdmTraitReference]]:
@@ -34,21 +36,6 @@ def create_trait_reference_array(ctx: CdmCorpusContext, obj: Optional[List[Union
         result.append(TraitReferencePersistence.from_data(ctx, elem))
 
     return result
-
-
-def array_copy_data(res_opt: ResolveOptions, source: Union['CdmCollection', List['CdmObject']], options: CopyOptions) -> Optional[List]:
-    """Creates a list object that is a copy of the input IEnumerable object"""
-    if not source:
-        return None
-
-    casted = []
-
-    for elem in source:
-        if elem:
-            data = PersistenceLayer.to_data(elem, res_opt, 'CdmFolder', options)
-            casted.append(data)
-
-    return casted
 
 
 def create_constant(ctx: CdmCorpusContext, obj: CdmJsonType) -> Optional[CdmArgumentValue]:
@@ -79,20 +66,20 @@ def create_constant(ctx: CdmCorpusContext, obj: CdmJsonType) -> Optional[CdmArgu
         return obj
 
 
-def create_attribute(ctx: CdmCorpusContext, obj: Union[str, 'AttributeGroupReference', 'EntityAttribute', 'TypeAttribute']) -> Optional['CdmAttributeItem']:
+def create_attribute(ctx: CdmCorpusContext, obj: Union[str, 'AttributeGroupReference', 'EntityAttribute', 'TypeAttribute'], entity_name: Optional[str] = None) -> Optional['CdmAttributeItem']:
     """Converts a JSON object to an Attribute object"""
     if obj is None:
         return None
     if isinstance(obj, str) or 'attributeGroupReference' in obj:
-        return AttributeGroupReferencePersistence.from_data(ctx, obj)
+        return AttributeGroupReferencePersistence.from_data(ctx, obj, entity_name)
     if 'entity' in obj:
         return EntityAttributePersistence.from_data(ctx, obj)
     if 'name' in obj:
-        return TypeAttributePersistence.from_data(ctx, obj)
+        return TypeAttributePersistence.from_data(ctx, obj, entity_name)
     return None
 
 
-def create_attribute_array(ctx: CdmCorpusContext, obj: Optional[List[Union[str, AttributeGroupReference, EntityAttribute, TypeAttribute]]]) \
+def create_attribute_array(ctx: CdmCorpusContext, obj: Optional[List[Union[str, AttributeGroupReference, EntityAttribute, TypeAttribute]]], entity_name: Optional[str] = None) \
         -> Optional[List[CdmAttributeItem]]:
     """Converts a JSON object to a CdmCollection of attributes"""
 
@@ -101,7 +88,7 @@ def create_attribute_array(ctx: CdmCorpusContext, obj: Optional[List[Union[str, 
 
     result = []
     for elem in obj:
-        result.append(create_attribute(ctx, elem))
+        result.append(create_attribute(ctx, elem, entity_name))
 
     return result
 

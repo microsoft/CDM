@@ -1,7 +1,5 @@
-﻿# ----------------------------------------------------------------------
-# Copyright (c) Microsoft Corporation.
-# All rights reserved.
-# ----------------------------------------------------------------------
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
 
 import json
 import os
@@ -36,6 +34,13 @@ class LocalStorageAdapterTestCase(unittest.TestCase):
         adapter = LocalAdapter()
         self.assertEqual(adapter.create_adapter_path('local:/dir5/dir6/file.json'), 'C:\\dir1\\dir2\\dir5\\dir6\\file.json')
         self.assertEqual(adapter.create_adapter_path('file.json'), 'C:\\dir1\\dir2\\file.json')
+
+        # Test that path with or without a leading slash returns the same result.
+        adapter = LocalAdapter(root='C:/some/dir')
+        path_with_leading_slash = adapter.create_adapter_path('/folder')
+        path_without_leading_slash = adapter.create_adapter_path('folder')
+        self.assertEqual(path_with_leading_slash, 'C:\\some\\dir\\folder')
+        self.assertEqual(path_with_leading_slash, path_without_leading_slash)
 
     @mock.patch('cdm.storage.local.os.path.abspath')
     def test_make_corpus_path(self, mock_abspath):

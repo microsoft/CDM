@@ -1,9 +1,12 @@
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License. See License.txt in the project root for license information.
+
 from typing import TYPE_CHECKING
 import dateutil.parser
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmLocalEntityDeclarationDefinition
-from cdm.utilities import logger, time_utils
+from cdm.utilities import logger, time_utils, copy_data_utils
 
 from . import utils
 from .data_partition_persistence import DataPartitionPersistence
@@ -58,11 +61,11 @@ class LocalEntityDeclarationPersistence:
         local_entity.entityName = instance.entity_name
         local_entity.explanation = instance.explanation
         local_entity.entityPath = instance.entity_path
-        local_entity.lastFileStatusCheckTime = time_utils.get_formatted_date_string(instance.last_file_status_check_time)
-        local_entity.lastFileModifiedTime = time_utils.get_formatted_date_string(instance.last_file_modified_time)
-        local_entity.lastChildFileModifiedTime = time_utils.get_formatted_date_string(instance.last_child_file_modified_time)
-        local_entity.exhibitsTraits = utils.array_copy_data(res_opt, instance.exhibits_traits, options)
-        local_entity.dataPartitions = utils.array_copy_data(res_opt, instance.data_partitions, options)
-        local_entity.dataPartitionPatterns = utils.array_copy_data(res_opt, instance.data_partition_patterns, options)
+        local_entity.lastFileStatusCheckTime = time_utils._get_formatted_date_string(instance.last_file_status_check_time)
+        local_entity.lastFileModifiedTime = time_utils._get_formatted_date_string(instance.last_file_modified_time)
+        local_entity.lastChildFileModifiedTime = time_utils._get_formatted_date_string(instance.last_child_file_modified_time)
+        local_entity.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
+        local_entity.dataPartitions = copy_data_utils._array_copy_data(res_opt, instance.data_partitions, options)
+        local_entity.dataPartitionPatterns = copy_data_utils._array_copy_data(res_opt, instance.data_partition_patterns, options)
 
         return local_entity

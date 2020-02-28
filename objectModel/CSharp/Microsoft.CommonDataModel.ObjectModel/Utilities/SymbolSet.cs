@@ -1,14 +1,12 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="SymbolSet.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
+
 using System.Collections;
 using System.Collections.Generic;
 
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
-    public class SymbolSet : IEnumerable
+    internal class SymbolSet : IEnumerable
     {
         private HashSet<string> SymbolSetCollection;
         internal int Size { get { return this.SymbolSetCollection.Count; } }

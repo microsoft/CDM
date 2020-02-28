@@ -1,8 +1,5 @@
-﻿//-----------------------------------------------------------------------
-// <copyright file="CdmManifestDefinition.cs" company="Microsoft">
-//      All rights reserved.
-// </copyright>
-//-----------------------------------------------------------------------
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See License.txt in the project root for license information.
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -94,11 +91,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
+        public new bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
             if (resOpt == null)
             {
-                resOpt = new ResolveOptions(this);
+                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
             return false;
@@ -166,7 +163,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Every instance of the string {n} is replaced with the entity name from the source manifest.
         /// Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
         /// (if there is one that is possible as a relative location, else nothing).
-        public async Task<CdmManifestDefinition> CreateResolvedManifestAsync(string newManifestName, string newEntityDocumentNameFormat)
+        public async Task<CdmManifestDefinition> CreateResolvedManifestAsync(string newManifestName, string newEntityDocumentNameFormat, AttributeResolutionDirectiveSet Directives = null)
         {
             if (this.Entities == null)
             {
@@ -215,9 +212,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null;
             }
 
-            // mapping from entity path to resolved entity path for translating relationhsip paths
-            Dictionary<string, string> resEntMap = new Dictionary<string, string>();
-
             foreach (var entity in this.Entities)
             {
                 var entDef = await this.GetEntityFromReference(entity, this);
@@ -253,10 +247,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
 
                 // Next create the resolved entity
+                AttributeResolutionDirectiveSet withDirectives = Directives != null ? Directives : this.Ctx.Corpus.DefaultResolutionDirectives;
                 var resOpt = new ResolveOptions
                 {
                     WrtDoc = entDef.InDocument,
-                    Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" })
+                    Directives = withDirectives?.Copy()
                 };
 
                 Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    resolving entity {sourceEntityFullPath} to document {newDocumentFullPath}", nameof(CreateResolvedManifestAsync));
@@ -278,13 +273,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 // absolute path is needed for generating relationships
                 var absoluteEntPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(result.EntityPath, resolvedManifest);
-                resEntMap.Add(this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument), absoluteEntPath);
+                this.Ctx.Corpus.resEntMap.Add(this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument), absoluteEntPath);
             }
 
             Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    calculating relationships", nameof(CreateResolvedManifestAsync));
 
             // calculate the entity graph for just this manifest and any submanifests
-            await (this.Ctx.Corpus as CdmCorpusDefinition)._CalculateEntityGraphAsync(resolvedManifest, resEntMap);
+            await (this.Ctx.Corpus as CdmCorpusDefinition).CalculateEntityGraphAsync(resolvedManifest);
             // stick results into the relationships list for the manifest
             // only put in relationships that are between the entities that are used in the manifest
             await resolvedManifest.PopulateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive);
