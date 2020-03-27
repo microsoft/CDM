@@ -670,14 +670,15 @@ public class TraitToPropertyMap {
       if (CdmDataFormat.Float.equals(baseType) && isBig) {
         baseType = CdmDataFormat.Double;
       }
-      if (isInteger && isBig) {
-        baseType = CdmDataFormat.Int64;
-      }
-      if (isInteger && isSmall) {
-        baseType = CdmDataFormat.Int16;
-      }
+
       if (isInteger) {
-        baseType = CdmDataFormat.Int32;
+          if (isBig) {
+              baseType = CdmDataFormat.Int64;
+          } else if (isSmall) {
+              baseType = CdmDataFormat.Int16;
+          } else {
+              baseType = CdmDataFormat.Int32;
+          }
       }
     }
 

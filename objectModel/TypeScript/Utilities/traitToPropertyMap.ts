@@ -389,14 +389,15 @@ export class traitToPropertyMap {
         if (baseType === cdmDataFormat.float && isBig) {
             baseType = cdmDataFormat.double;
         }
-        if (isInteger && isBig) {
-            baseType = cdmDataFormat.int64;
-        }
-        if (isInteger && isSmall) {
-            baseType = cdmDataFormat.int16;
-        }
+
         if (isInteger) {
-            baseType = cdmDataFormat.int32;
+            if (isBig) {
+                baseType = cdmDataFormat.int64;
+            } else if (isSmall) {
+                baseType = cdmDataFormat.int16;
+            } else {
+                baseType = cdmDataFormat.int32;
+            }
         }
 
         return baseType;

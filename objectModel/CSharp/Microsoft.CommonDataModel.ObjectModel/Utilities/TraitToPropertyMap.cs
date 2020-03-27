@@ -417,12 +417,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 
                 if (baseType == CdmDataFormat.Float && isBig)
                     baseType = CdmDataFormat.Double;
-                if (isInteger && isBig)
-                    baseType = CdmDataFormat.Int64;
-                if (isInteger && isSmall)
-                    baseType = CdmDataFormat.Int16;
-                if (isInteger)
-                    baseType = CdmDataFormat.Int32;
+
+                if (isInteger) {
+                    if (isBig)
+                        baseType = CdmDataFormat.Int64;
+                    else if (isSmall)
+                        baseType = CdmDataFormat.Int16;
+                    else
+                        baseType = CdmDataFormat.Int32;
+                }
             }
 
             return baseType;
