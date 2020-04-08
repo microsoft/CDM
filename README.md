@@ -20,7 +20,7 @@ contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additio
 
 ### Open Data Initiative
 
-As announced at Microsoft Ignite, the Common Data Model is evolving as part of the [Open Data Initiative](https://www.microsoft.com/en-us/quantum/open-data-initiative), a jointly-developed vision by Microsoft, Adobe, and SAP.
+As announced at Microsoft Ignite, the Common Data Model is evolving as part of the [Open Data Initiative](https://www.microsoft.com/en-us/open-data-initiative), a jointly-developed vision by Microsoft, Adobe, and SAP.
 
 CDM is already supported in the Common Data Service, Dynamics 365, PowerApps, Power BI, and upcoming Azure data services, directly accruing value towards the Open Data Initiative. 
 
