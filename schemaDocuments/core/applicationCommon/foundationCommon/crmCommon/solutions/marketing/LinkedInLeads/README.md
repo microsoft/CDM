@@ -1,6 +1,7 @@
 
 # LinkedInLeads
 
+CDM standard entities  
 
 ## Entities
 

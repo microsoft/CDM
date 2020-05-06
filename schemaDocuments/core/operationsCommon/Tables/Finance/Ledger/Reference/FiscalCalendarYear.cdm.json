@@ -1,0 +1,86 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "FiscalCalendar.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FiscalCalendarYear",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EndDate",
+          "dataType": "FiscalYearEnd",
+          "description": ""
+        },
+        {
+          "name": "FiscalCalendar",
+          "dataType": "FiscalCalendarRecId",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "FiscalYearName",
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "FiscalYearStart",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendar"
+          },
+          "name": "Relationship_FiscalCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal calendar year"
+    },
+    {
+      "dataTypeName": "FiscalYearEnd",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FiscalCalendarRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalYearName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalYearStart",
+      "extendsDataType": "date"
+    }
+  ]
+}

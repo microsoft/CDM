@@ -1,0 +1,218 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetLocation.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMOperatingUnit.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Group/LtInvoiceAutoNumberingTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/TransportationDocument.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LtAssetPackingSlip",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetLocationIdTo",
+          "dataType": "AssetLocationId",
+          "isNullable": true,
+          "displayName": "New location",
+          "description": ""
+        },
+        {
+          "name": "DepartmentToId",
+          "dataType": "OMDepartmentRecId",
+          "isNullable": true,
+          "displayName": "New department",
+          "description": ""
+        },
+        {
+          "name": "NumberingCode",
+          "dataType": "LtDocNumberingCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackingSlipNo",
+          "dataType": "PackingSlipId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegisterById",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "displayName": "Registered by",
+          "description": ""
+        },
+        {
+          "name": "ResponsibleToId",
+          "dataType": "HcmResponsibleRecId",
+          "isNullable": true,
+          "displayName": "New responsible",
+          "description": ""
+        },
+        {
+          "name": "TransportationDocument",
+          "dataType": "TransportationDocumentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TrCreateDate",
+          "dataType": "BaseDate",
+          "isNullable": true,
+          "displayName": "Date",
+          "description": ""
+        },
+        {
+          "name": "TrCreatePlace",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Created",
+          "description": ""
+        },
+        {
+          "name": "TrCreateTime",
+          "dataType": "TimeOfDay",
+          "isNullable": true,
+          "displayName": "Time",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetLocation"
+          },
+          "name": "Relationship_AssetLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMOperatingUnit"
+          },
+          "name": "Relationship_DepartmentToRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LtInvoiceAutoNumberingTable"
+          },
+          "name": "Relationship_LtInvoiceAutoNumberingTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TransportationDocument"
+          },
+          "name": "Relationship_TransportationDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Packing slip details"
+    },
+    {
+      "dataTypeName": "AssetLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OMDepartmentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LtDocNumberingCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PackingSlipId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmResponsibleRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransportationDocumentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BaseDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TimeOfDay",
+      "extendsDataType": "time"
+    }
+  ]
+}

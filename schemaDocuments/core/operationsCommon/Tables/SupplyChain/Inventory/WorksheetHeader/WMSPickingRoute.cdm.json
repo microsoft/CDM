@@ -1,0 +1,460 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvMode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "InventTransferTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionLine/MCRPackingBoxTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionHeader/MCRPickingWorkbenchWave.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.cdm.json"
+    },
+    {
+      "corpusPath": "WMSShipment.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WMSPickingRoute",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivationDateTime",
+          "dataType": "ActivationDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "autoDecreaseQty",
+          "dataType": "WMSAutoDecreaseQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "customer",
+          "dataType": "WMSCustomer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryName",
+          "dataType": "WMSDeliveryName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Delivery address",
+          "description": ""
+        },
+        {
+          "name": "DlvDate",
+          "dataType": "WMSDlvDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvModeId",
+          "dataType": "DlvModeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTermId",
+          "dataType": "DlvTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "endDateTime",
+          "dataType": "EndDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "expectedExpeditionTime",
+          "dataType": "WMSExpeditionTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Estimated handling time",
+          "description": ""
+        },
+        {
+          "name": "expeditionStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyPosted",
+          "dataType": "InterCompanyPosted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "inventLocationId",
+          "dataType": "InventLocationId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRPackingBoxName",
+          "dataType": "MCRPackingBoxName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRPickingWaveRef",
+          "dataType": "MCRPickingWave",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "operatorWorker",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "pickingRouteID",
+          "dataType": "WMSPickingRouteID",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PrintMgmtSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "displayName": "Print site",
+          "description": ""
+        },
+        {
+          "name": "priority",
+          "dataType": "WMSPriority",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "shipmentId",
+          "dataType": "WMSShipmentId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "shipmentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "startDateTime",
+          "dataType": "StartDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transRefId",
+          "dataType": "InventTransRefId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferTable"
+          },
+          "name": "Relationship_InventTransferTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_LogisticsPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRPackingBoxTable"
+          },
+          "name": "Relationship_MCRPackingBoxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRPickingWorkbenchWave"
+          },
+          "name": "Relationship_MCRPickingWaveReferenceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_PrintSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSShipment"
+          },
+          "name": "Relationship_WMSShipmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Picking route"
+    },
+    {
+      "dataTypeName": "ActivationDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WMSAutoDecreaseQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WMSCustomer",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSDeliveryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WMSDlvDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WMSExpeditionTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "InterCompanyPosted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRPackingBoxName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRPickingWave",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSPickingRouteID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSPriority",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WMSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventTransRefId",
+      "extendsDataType": "string"
+    }
+  ]
+}

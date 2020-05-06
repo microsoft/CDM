@@ -1,0 +1,68 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Reference/FiscalCalendar.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerFiscalCloseGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Name",
+          "dataType": "LedgerFiscalCloseGroupName",
+          "description": ""
+        },
+        {
+          "name": "FiscalCalendar",
+          "dataType": "FiscalCalendarRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendar"
+          },
+          "name": "Relationship_FiscalCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal close group"
+    },
+    {
+      "dataTypeName": "LedgerFiscalCloseGroupName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalCalendarRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

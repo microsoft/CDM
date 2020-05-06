@@ -1,0 +1,310 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/BatchGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BatchJob.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/SysServerConfig.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Batch",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutomaticTransaction",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Automatically start transaction",
+          "description": ""
+        },
+        {
+          "name": "BatchJobId",
+          "dataType": "RefRecId",
+          "displayName": "Batch job ID",
+          "description": ""
+        },
+        {
+          "name": "Caption",
+          "dataType": "BatchCaption",
+          "isNullable": true,
+          "displayName": "Task description",
+          "description": ""
+        },
+        {
+          "name": "ClassNumber",
+          "dataType": "ClassId",
+          "description": ""
+        },
+        {
+          "name": "Company",
+          "dataType": "SelectableDataArea",
+          "displayName": "Company accounts",
+          "description": ""
+        },
+        {
+          "name": "ConstraintType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataPartition",
+          "dataType": "PartitionKey",
+          "description": ""
+        },
+        {
+          "name": "EndDateTime",
+          "dataType": "EndDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExceptionCode",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutedBy",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Run by",
+          "description": ""
+        },
+        {
+          "name": "GroupId",
+          "dataType": "BatchGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IgnoreOnFail",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Ignore task failure",
+          "description": ""
+        },
+        {
+          "name": "Info",
+          "dataType": "InfologData",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Parameters",
+          "dataType": "BatchParameters",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Priority",
+          "dataType": "BatchPriority",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrivateTask",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Private",
+          "description": ""
+        },
+        {
+          "name": "retriesOnFailure",
+          "dataType": "BatchRetries",
+          "isNullable": true,
+          "displayName": "Maximum retries",
+          "description": ""
+        },
+        {
+          "name": "retryCount",
+          "dataType": "BatchRetries",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Actual retries",
+          "description": ""
+        },
+        {
+          "name": "RunTimeTask",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Runtime task",
+          "description": ""
+        },
+        {
+          "name": "RunType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServerId",
+          "dataType": "ServerId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionIdx",
+          "dataType": "SessionId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionLoginDateTime",
+          "dataType": "UTCTimestamp",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "StartDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BatchGroup"
+          },
+          "name": "Relationship_BatchGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BatchJob"
+          },
+          "name": "Relationship_BatchJobRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysServerConfig"
+          },
+          "name": "Relationship_SysServerConfigRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Batch transactions"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BatchCaption",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ClassId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PartitionKey",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BatchGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InfologData",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "BatchParameters",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "BatchPriority",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BatchRetries",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ServerId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SessionId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

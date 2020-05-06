@@ -1,0 +1,72 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ConfigGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResNomenclatureSegment.cdm.json",
+      "moniker": "base_EcoResNomenclatureSegment"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResNomenclatureSegmentConfigGroupItemId",
+      "extendsEntity": "base_EcoResNomenclatureSegment/EcoResNomenclatureSegment",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConfigGroupId",
+          "dataType": "ConfigGroupId",
+          "description": ""
+        },
+        {
+          "name": "ConfigGroupDataAreaId",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ConfigGroup"
+          },
+          "name": "Relationship_ConfigGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Configuration group item id"
+    },
+    {
+      "dataTypeName": "ConfigGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    }
+  ]
+}

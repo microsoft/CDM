@@ -1,0 +1,82 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysCorpNetPrinters.cdm.json"
+    },
+    {
+      "corpusPath": "DocumentRoutingClientApp.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DocumentRoutingPrinterAppAssociation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ClientApp",
+          "dataType": "DocumentRoutingClientAppRecId",
+          "description": ""
+        },
+        {
+          "name": "Printer",
+          "dataType": "SysCorpNetPrintersRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysCorpNetPrinters"
+          },
+          "name": "Relationship_SysCorpNetPrintersFKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocumentRoutingClientApp"
+          },
+          "name": "Relationship_ClientAppFKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "DocumentRoutingClientAppRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SysCorpNetPrintersRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

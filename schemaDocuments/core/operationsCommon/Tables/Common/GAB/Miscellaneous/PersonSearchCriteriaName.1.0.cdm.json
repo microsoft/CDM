@@ -1,0 +1,167 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PersonSearch.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsElectronicAddress.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PersonSearchCriteriaName",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaskId",
+          "dataType": "PersonSearchTaskId",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "DataAreaId",
+          "displayName": "Legal entity",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "displayName": "Line number",
+          "description": ""
+        },
+        {
+          "name": "NameAlias",
+          "dataType": "NameAlias",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FirstName",
+          "dataType": "FirstName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MiddleName",
+          "dataType": "MiddleName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastName",
+          "dataType": "LastName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastNamePrefix",
+          "dataType": "LastNamePrefix",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Locator",
+          "dataType": "LogisticsElectronicAddressLocator",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PersonSearch"
+          },
+          "name": "Relationship_PersonSearchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTable_NameAliasRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsElectronicAddress"
+          },
+          "name": "Relationship_ContactInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Search by name"
+    },
+    {
+      "dataTypeName": "PersonSearchTaskId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NameAlias",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FirstName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MiddleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LastName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LastNamePrefix",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsElectronicAddressLocator",
+      "extendsDataType": "string"
+    }
+  ]
+}

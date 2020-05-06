@@ -1,0 +1,212 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMAServiceBOMTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMAServiceObjectRelation.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMAServiceObjectTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/WorksheetHeader/SMAServiceOrderTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMATemplateBOMTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SMAServiceBOMChange",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActiveServiceBOMLineId",
+          "dataType": "SMAMasterBOMLineId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMQty",
+          "dataType": "BOMQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsRequirement",
+          "dataType": "SMAIsRequirement",
+          "isNullable": true,
+          "displayName": "Item requirement",
+          "description": ""
+        },
+        {
+          "name": "ObjectId",
+          "dataType": "SMAServiceObjectId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplacedServiceBOMLineId",
+          "dataType": "SMATemplateBOMLineId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceBOMChangeAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceBOMId",
+          "dataType": "SMATemplateBOMId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceObjectRelationId",
+          "dataType": "SMAServiceObjectRelationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceOrderId",
+          "dataType": "SMAServiceOrderId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceBOMTable"
+          },
+          "name": "Relationship_SMAServiceBOMActiveRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceObjectRelation"
+          },
+          "name": "Relationship_SMAServiceObjectRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceObjectTable"
+          },
+          "name": "Relationship_SMAServiceObjectTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceOrderTable"
+          },
+          "name": "Relationship_SMAServiceOrderTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMATemplateBOMTable"
+          },
+          "name": "Relationship_SMATemplateBOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Template BOM history"
+    },
+    {
+      "dataTypeName": "SMAMasterBOMLineId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SMAIsRequirement",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SMAServiceObjectId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMATemplateBOMLineId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMATemplateBOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAServiceObjectRelationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAServiceOrderId",
+      "extendsDataType": "string"
+    }
+  ]
+}

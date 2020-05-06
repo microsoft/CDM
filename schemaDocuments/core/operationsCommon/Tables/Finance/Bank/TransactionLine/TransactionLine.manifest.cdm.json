@@ -1,0 +1,258 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "manifestName": "TransactionLine",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "BankStmtISOCashBalanceAvailibility",
+      "entityPath": "BankStmtISOCashBalanceAvailibility.cdm.json/BankStmtISOCashBalanceAvailibility"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "BankCodaTrans",
+      "entityPath": "BankCodaTrans.cdm.json/BankCodaTrans"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "VendPaymSchedLineHistory",
+      "entityPath": "VendPaymSchedLineHistory.cdm.json/VendPaymSchedLineHistory"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "CustSettlementLine",
+      "entityPath": "CustSettlementLine.cdm.json/CustSettlementLine"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "BankCodaTransCategory",
+      "entityPath": "BankCodaTransCategory.cdm.json/BankCodaTransCategory"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "BankCodaAccountStatementLines",
+      "entityPath": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "CustPaymSchedLine",
+      "entityPath": "CustPaymSchedLine.cdm.json/CustPaymSchedLine"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "VendPaymSchedLine",
+      "entityPath": "VendPaymSchedLine.cdm.json/VendPaymSchedLine"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "BankStmtISOCashBalanceAvailibility.cdm.json/BankStmtISOCashBalanceAvailibility",
+      "fromEntityAttribute": "Relationship_Relation1RelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Transaction/BankStmtISOReportEntry.cdm.json/BankStmtISOReportEntry",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankStmtISOCashBalanceAvailibility.cdm.json/BankStmtISOCashBalanceAvailibility",
+      "fromEntityAttribute": "Relationship_Relation2RelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Transaction/BankStmtISOCashBalance.cdm.json/BankStmtISOCashBalance",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankStmtISOCashBalanceAvailibility.cdm.json/BankStmtISOCashBalanceAvailibility",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaTrans.cdm.json/BankCodaTrans",
+      "fromEntityAttribute": "Relationship_BankCodaTransFamilyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Group/BankCodaTransFamily.cdm.json/BankCodaTransFamily",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaTrans.cdm.json/BankCodaTrans",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Bank/Transaction/BankCodaTransDefTable.cdm.json/BankCodaTransDefTable",
+      "fromEntityAttribute": "Relationship_BankCodaTransRelationshipId",
+      "toEntity": "BankCodaTrans.cdm.json/BankCodaTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaTransCategory.cdm.json/BankCodaTransCategory",
+      "fromEntityAttribute": "Relationship_BankCodaTransRelationshipId",
+      "toEntity": "BankCodaTrans.cdm.json/BankCodaTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_BankCodaTransRelationshipId",
+      "toEntity": "BankCodaTrans.cdm.json/BankCodaTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/Finance/CashAndBankManagement/BankCodaTransEntity.cdm.json/BankCodaTransEntity",
+      "fromEntityAttribute": "BackingTable_BankCodaTransRelationshipId",
+      "toEntity": "BankCodaTrans.cdm.json/BankCodaTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "VendPaymSchedLineHistory.cdm.json/VendPaymSchedLineHistory",
+      "fromEntityAttribute": "Relationship_VendPaymSchedRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Transaction/VendPaymSched.cdm.json/VendPaymSched",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "VendPaymSchedLineHistory.cdm.json/VendPaymSchedLineHistory",
+      "fromEntityAttribute": "Relationship_VendPaymSchedLineRelationshipId",
+      "toEntity": "VendPaymSchedLine.cdm.json/VendPaymSchedLine",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "VendPaymSchedLineHistory.cdm.json/VendPaymSchedLineHistory",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustSettlementLine.cdm.json/CustSettlementLine",
+      "fromEntityAttribute": "Relationship_CustInvoiceLineIdRefRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceLineIdRef.cdm.json/CustInvoiceLineIdRef",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustSettlementLine.cdm.json/CustSettlementLine",
+      "fromEntityAttribute": "Relationship_CustSettlementRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Transaction/CustSettlement.cdm.json/CustSettlement",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustSettlementLine.cdm.json/CustSettlementLine",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaTransCategory.cdm.json/BankCodaTransCategory",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Bank/Transaction/BankCodaTransDefTable.cdm.json/BankCodaTransDefTable",
+      "fromEntityAttribute": "Relationship_BankCodaTransCategoryRelationshipId",
+      "toEntity": "BankCodaTransCategory.cdm.json/BankCodaTransCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_BankCodaTransCategoryRelationshipId",
+      "toEntity": "BankCodaTransCategory.cdm.json/BankCodaTransCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/Finance/CashAndBankManagement/BankCodaTransCategoryEntity.cdm.json/BankCodaTransCategoryEntity",
+      "fromEntityAttribute": "BackingTable_BankCodaTransCategoryRelationshipId",
+      "toEntity": "BankCodaTransCategory.cdm.json/BankCodaTransCategory",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_BankAccountTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.cdm.json/BankAccountTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_BankCodaAccountTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Group/BankCodaAccountTable.cdm.json/BankCodaAccountTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_BankCodaTransFamilyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Group/BankCodaTransFamily.cdm.json/BankCodaTransFamily",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_CurrencyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json/Currency",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_LedgerDimensionRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json/DimensionAttributeValueCombination",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_SpecTransRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/WorksheetLine/SpecTrans.cdm.json/SpecTrans",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_TaxGroupHeadingRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.cdm.json/TaxGroupHeading",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_TaxItemGroupHeadingRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.cdm.json/TaxItemGroupHeading",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_BankCodaAccountStatementRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/TransactionHeader/BankCodaAccountStatement.cdm.json/BankCodaAccountStatement",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Bank/WorksheetLine/SpecTrans.cdm.json/SpecTrans",
+      "fromEntityAttribute": "Relationship_BankCodaAccountStatementLinesRelationshipId",
+      "toEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Entities/Finance/CashAndBankManagement/BankCodaAccountStatementLinesEntity.cdm.json/BankCodaAccountStatementLinesEntity",
+      "fromEntityAttribute": "BackingTable_BankCodaAccountStatementLinesRelationshipId",
+      "toEntity": "BankCodaAccountStatementLines.cdm.json/BankCodaAccountStatementLines",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustPaymSchedLine.cdm.json/CustPaymSchedLine",
+      "fromEntityAttribute": "Relationship_CustPaymentSchedRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Transaction/CustPaymSched.cdm.json/CustPaymSched",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustPaymSchedLine.cdm.json/CustPaymSchedLine",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "VendPaymSchedLine.cdm.json/VendPaymSchedLine",
+      "fromEntityAttribute": "Relationship_VendPaymentSchedRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Bank/Transaction/VendPaymSched.cdm.json/VendPaymSched",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "VendPaymSchedLine.cdm.json/VendPaymSchedLine",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    }
+  ]
+}

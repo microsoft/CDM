@@ -1,0 +1,93 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendInvoiceDeclaration_IS",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "InvoiceSlipDeclarationDescription_IS",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceDeclarationId",
+          "dataType": "InvoiceSlipDeclarationId_IS",
+          "description": ""
+        },
+        {
+          "name": "RecordType",
+          "dataType": "InvoiceSlipRecordType_IS",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCode",
+          "dataType": "InvoiceSlipReportingCode_IS",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor invoice declaration"
+    },
+    {
+      "dataTypeName": "InvoiceSlipDeclarationDescription_IS",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceSlipDeclarationId_IS",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceSlipRecordType_IS",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InvoiceSlipReportingCode_IS",
+      "extendsDataType": "string"
+    }
+  ]
+}

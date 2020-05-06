@@ -1,0 +1,85 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CatDisplayCategorySharedInfo.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProductCategory.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatDisplayProductCategory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Origin",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ProductCategory",
+          "dataType": "RefRecId",
+          "displayName": "Product category record ID",
+          "description": ""
+        },
+        {
+          "name": "SharedData",
+          "dataType": "RefRecId",
+          "displayName": "Shared data record ID",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CatDisplayCategorySharedInfo"
+          },
+          "name": "Relationship_CatDisplayCategorySharedInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductCategory"
+          },
+          "name": "Relationship_EcoResProductCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Manually hidden products in the navigation categories"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

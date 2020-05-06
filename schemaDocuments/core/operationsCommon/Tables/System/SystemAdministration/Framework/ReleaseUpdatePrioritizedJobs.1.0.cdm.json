@@ -1,0 +1,178 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ReleaseUpdateScripts.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReleaseUpdatePrioritizedJobs",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ClassID",
+          "dataType": "ClassId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsTableJob",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Is table-copy script",
+          "description": ""
+        },
+        {
+          "name": "IsUserCustomized",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "User customized",
+          "description": ""
+        },
+        {
+          "name": "JobName",
+          "dataType": "IdentifierName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "Method",
+          "dataType": "SysMethodName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "newtablename",
+          "dataType": "TableName",
+          "isNullable": true,
+          "displayName": "Target table name",
+          "description": ""
+        },
+        {
+          "name": "oldtablename",
+          "dataType": "TableName",
+          "isNullable": true,
+          "displayName": "Source table name",
+          "description": ""
+        },
+        {
+          "name": "ScriptId",
+          "dataType": "ReleaseUpdateScriptId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScriptType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "scriptVersion",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TableRows",
+          "dataType": "ReleaseUpdateCount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Table row count",
+          "description": ""
+        },
+        {
+          "name": "TableSize",
+          "dataType": "ReleaseUpdateSize",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Table size (MB)",
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "ReleaseUpdateWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ReleaseUpdateScripts"
+          },
+          "name": "Relationship_ReleaseUpdateScriptsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Prioritized upgrade scripts"
+    },
+    {
+      "dataTypeName": "ClassId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "IdentifierName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysMethodName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TableName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateScriptId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateSize",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateWeight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

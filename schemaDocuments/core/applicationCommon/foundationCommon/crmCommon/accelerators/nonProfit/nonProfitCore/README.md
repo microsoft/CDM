@@ -1,18 +1,19 @@
 
 # nonProfitCore
 
+CDM Solution for the 'NONPROFITCORE' CDS Solution  
 
 ## Entities
 
 |Name|Description|
 |---|---|
-|[Account](Account.cdm.json)||
-|[Address](Address.cdm.json)||
+|[Account](Account.cdm.json)|Business that represents a customer or potential customer. The company that is billed in business transactions.|
+|[Address](Address.cdm.json)|Address and shipping information. Used to store additional addresses for an account or contact.|
 |[Award](Award.cdm.json)|An Award represents the total amount of funding that has been agreed to be awarded to an individual or institution.|
 |[AwardVersion](AwardVersion.cdm.json)|An Award Version represents a point in time snapshot of the attributes of an Award.|
 |[BenefitRecipient](BenefitRecipient.cdm.json)|Benefit Recipient for contact, account and resource catalog.|
 |[Budget](Budget.cdm.json)|A Budget represents the amount of funds that can be awarded for a particular delivery framework (i.e Program, Project, Initiative, Activity) for a defined period of time (i.e. fiscal year).|
-|[Contact](Contact.cdm.json)||
+|[Contact](Contact.cdm.json)|Person with whom a business unit has a relationship, such as customer, supplier, and colleague.|
 |[CreditPlan](CreditPlan.cdm.json)|Credit Plans control who will be credited with hard or soft credits after a payment clears.|
 |[CreditPlanRecipient](CreditPlanRecipient.cdm.json)|The contact, donor or constituent who receives "credit" for the hard or soft cleared payment.|
 |[DeliveryFramework](DeliveryFramework.cdm.json)|Delivery Framework represents a management unit of work defined by the organization or entity doing the work. In IATI, the Delivery Framework is an “Activity.”|

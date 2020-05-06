@@ -1,0 +1,69 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResReleaseProductLegalEntity.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResReleaseProductLegalEntityLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InfologData",
+          "dataType": "InfologData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReleaseProductLegalEntity",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResReleaseProductLegalEntity"
+          },
+          "name": "Relationship_EcoResReleaseProductLegalEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Release product to legal entity log"
+    },
+    {
+      "dataTypeName": "InfologData",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

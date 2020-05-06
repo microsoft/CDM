@@ -1,0 +1,97 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchReqTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchReqExternalSource",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExternalSourceID",
+          "dataType": "PurchReqExternalSourceID",
+          "description": ""
+        },
+        {
+          "name": "ExternalSourceName",
+          "dataType": "PurchReqExternalSourceName",
+          "description": ""
+        },
+        {
+          "name": "IsDeleted",
+          "dataType": "VersioningIsDeleted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsModified",
+          "dataType": "VersioningIsModified",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchReqTable",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PurchReqTable"
+          },
+          "name": "Relationship_Relation1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase requisition external source"
+    },
+    {
+      "dataTypeName": "PurchReqExternalSourceID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchReqExternalSourceName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VersioningIsDeleted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VersioningIsModified",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

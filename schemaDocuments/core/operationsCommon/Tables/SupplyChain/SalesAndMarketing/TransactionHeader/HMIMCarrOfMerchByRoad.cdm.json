@@ -1,0 +1,353 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrier.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HMIMCarrOfMerchByRoad",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ShipmentId",
+          "dataType": "WHSShipmentId",
+          "description": ""
+        },
+        {
+          "name": "CMRDocumentId",
+          "dataType": "HMIMCarrOfMerchByRoadId",
+          "description": ""
+        },
+        {
+          "name": "PickupDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PickupName",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PickupLoc",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DropOffDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DropOffLoc",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DropOffName",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsignorInstruction",
+          "dataType": "HMIMConsignorInstruction",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierCode",
+          "dataType": "TMSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierName",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierAddress",
+          "dataType": "LogisticsAddressing",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SuccessiveCarrier",
+          "dataType": "HMIMSuccessiveCarrier",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierObservation",
+          "dataType": "HMIMCarrierObservation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Documents",
+          "dataType": "HMIMDocument",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialAgreement",
+          "dataType": "HMIMSpecialAgreement",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Payment",
+          "dataType": "HMIMPayment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Particular",
+          "dataType": "HMIMParticular",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "COD",
+          "dataType": "HMIMCOD",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CRMConvention",
+          "dataType": "HMIMCRMConvention",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShippingLocation",
+          "dataType": "HMIMShippingLocation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyName",
+          "dataType": "CompanyName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "displayName": "Delivery address",
+          "description": ""
+        },
+        {
+          "name": "ShippingPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "displayName": "Ship from",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryLogisticsPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_ShippingLogisticsPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Carriage of Merchandise by Road"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMCarrOfMerchByRoadId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Addressing",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMConsignorInstruction",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressing",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMSuccessiveCarrier",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMCarrierObservation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMDocument",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMSpecialAgreement",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMPayment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMParticular",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMCOD",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMCRMConvention",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMShippingLocation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

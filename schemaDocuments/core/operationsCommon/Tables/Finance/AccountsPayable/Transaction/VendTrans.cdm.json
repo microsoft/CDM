@@ -1,0 +1,1432 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Transaction/AccountingEvent.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankCentralBankPurpose.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Transaction/BankChequePaymTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/WorksheetLine/BankLCImportLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Transaction/BankRemittanceFilesVend.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CashDisc.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetHeader/FactureJour_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Miscellaneous/Tax1099BoxDetail.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/Tax1099Fields.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressState.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendBankAccount.cdm.json"
+    },
+    {
+      "corpusPath": "VendExchRateAdjustment.cdm.json"
+    },
+    {
+      "corpusPath": "VendInvoiceJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeSpec.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Transaction/VendPromissoryNoteJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Transaction/VendPromissoryNoteTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Main/VendStateTaxID.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Main/JournalizingDefinition.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PostingProfile",
+          "dataType": "VendPostingProfile",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountingEvent",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountNum",
+          "dataType": "VendAccount",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCurDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountMST",
+          "dataType": "AmountMSTDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Approved",
+          "dataType": "Approved",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ApprovedDate",
+          "dataType": "ApprovedDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Approver",
+          "dataType": "HcmApprover",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Arrival",
+          "dataType": "ArrivalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankCentralBankPurposeCode",
+          "dataType": "BankCentralBankPurposeCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankCentralBankPurposeText",
+          "dataType": "BankCentralBankPurposeText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLCImportLine",
+          "dataType": "BankLCLineRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankRemittanceFileId",
+          "dataType": "BankRemittanceFileIdVend",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Cancel",
+          "dataType": "Cancelled",
+          "isNullable": true,
+          "displayName": "Cancellation",
+          "description": ""
+        },
+        {
+          "name": "CashDiscBaseDate",
+          "dataType": "CashDiscBaseDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscCode",
+          "dataType": "CashDiscCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Closed",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Closed date",
+          "description": ""
+        },
+        {
+          "name": "CompanyBankAccountId",
+          "dataType": "CompanyBankAccountId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Correct",
+          "dataType": "Correct",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "VendCurrencyCode",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentNum",
+          "dataType": "DocumentNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EUROTriangulation",
+          "dataType": "EUROTriangulation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchAdjustment",
+          "dataType": "VendExchAdjustment",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchAdjustmentReporting",
+          "dataType": "VendExchAdjustment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRate",
+          "dataType": "ExchRate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRateSecond",
+          "dataType": "ExchrateSecondary",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FixedExchRate",
+          "dataType": "FixedExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Invoice",
+          "dataType": "VendInvoiceId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceProject",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Project contract",
+          "description": ""
+        },
+        {
+          "name": "InvoiceReleaseDate",
+          "dataType": "InvoiceReleaseDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalNum",
+          "dataType": "LedgerJournalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastExchAdj",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last foreign currency revaluation adjustment date",
+          "description": ""
+        },
+        {
+          "name": "LastExchAdjRate",
+          "dataType": "ExchRate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last foreign currency revaluation adjustment rate",
+          "description": ""
+        },
+        {
+          "name": "LastExchAdjRateReporting",
+          "dataType": "CurrencyExchangeRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastExchAdjVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last foreign currency revaluation adjustment voucher",
+          "description": ""
+        },
+        {
+          "name": "LastSettleAccountNum",
+          "dataType": "VendAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last settlement voucher account number",
+          "description": ""
+        },
+        {
+          "name": "LastSettleCompany",
+          "dataType": "CompanyId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last settlement voucher company account",
+          "description": ""
+        },
+        {
+          "name": "LastSettleDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last settlement",
+          "description": ""
+        },
+        {
+          "name": "LastSettleVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last settlement voucher",
+          "description": ""
+        },
+        {
+          "name": "OffsetRecid",
+          "dataType": "VendTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymId",
+          "dataType": "PaymId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymMode",
+          "dataType": "VendPaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymReference",
+          "dataType": "VendPaymReference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymSpec",
+          "dataType": "VendPaymSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymTermId",
+          "dataType": "PaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingChangeVoucher",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Voucher",
+          "description": ""
+        },
+        {
+          "name": "PostingProfileApprove",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Approve",
+          "description": ""
+        },
+        {
+          "name": "PostingProfileCancel",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Cancel",
+          "description": ""
+        },
+        {
+          "name": "PostingProfileClose",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Close",
+          "description": ""
+        },
+        {
+          "name": "PostingProfileReOpen",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Reopen",
+          "description": ""
+        },
+        {
+          "name": "Prepayment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prepayment journal voucher",
+          "description": ""
+        },
+        {
+          "name": "PromissoryNoteID",
+          "dataType": "VendPromissoryNoteID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PromissoryNoteSeqNum",
+          "dataType": "CustVendNegInstSeqNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PromissoryNoteStatus",
+          "dataType": "VendPromissoryNoteStatus",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RBOVendTrans",
+          "dataType": "RetailCustTrans",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonRefRecId",
+          "dataType": "ReasonRefRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReleaseDateComment",
+          "dataType": "ReleaseDateComment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemittanceAddress",
+          "dataType": "RemittanceAddress",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemittanceLocation",
+          "dataType": "RemittanceLocation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyAmount",
+          "dataType": "AmountMSTSecondary",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyCrossRate",
+          "dataType": "CurrencyExchangeRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingExchAdjustmentRealized",
+          "dataType": "VendExchAdjustmentRealized",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingExchAdjustmentUnrealized",
+          "dataType": "VendExchAdjustmentUnrealized",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettleAmountCur",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Settled currency",
+          "description": ""
+        },
+        {
+          "name": "SettleAmountMST",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Settled amount in standard currency",
+          "description": ""
+        },
+        {
+          "name": "SettleAmountReporting",
+          "dataType": "AmountMSTSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Settlement",
+          "dataType": "VendAutoSettlement",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettleTax1099Amount",
+          "dataType": "SettleTax1099Amount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettleTax1099StateAmount",
+          "dataType": "SettleTax1099StateAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax1099Amount",
+          "dataType": "Tax1099Amount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax1099Date",
+          "dataType": "Tax1099Date",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax1099Fields",
+          "dataType": "Tax1099FieldsRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax1099Num",
+          "dataType": "Tax1099Num",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax1099RecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax1099State",
+          "dataType": "Tax1099State",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax1099StateAmount",
+          "dataType": "Tax1099StateAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInvoicePurchId",
+          "dataType": "TaxInvoicePurchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ThirdPartyBankAccountId",
+          "dataType": "BankThirdPartyAccountId",
+          "isNullable": true,
+          "displayName": "Vendor bank account",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Txt",
+          "dataType": "TransTxt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendExchAdjustmentRealized",
+          "dataType": "VendExchAdjustmentRealized",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendExchAdjustmentUnrealized",
+          "dataType": "VendExchAdjustmentUnrealized",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendPaymentGroup",
+          "dataType": "VendPaymentGrouping",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyExchRate",
+          "dataType": "ReportingCurrencyExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyExchRateSecondary",
+          "dataType": "ReportingCurrencyExchRateSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNPurchasingCardType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNJournalizingDefinition",
+          "dataType": "JournalizingDefinitionId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingEvent"
+          },
+          "name": "Relationship_AccountingEventRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankCentralBankPurpose"
+          },
+          "name": "Relationship_BankCentralBankPurposeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankChequePaymTrans"
+          },
+          "name": "Relationship_BankChequePaymentTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankLCImportLine"
+          },
+          "name": "Relationship_BankLCImportLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankRemittanceFilesVend"
+          },
+          "name": "Relationship_BankRemittanceFilesVendRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CashDisc"
+          },
+          "name": "Relationship_CashDiscRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJourAmountDifference_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_RemittanceAddress_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_RemittanceLocation_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Tax1099BoxDetail"
+          },
+          "name": "Relationship_Tax1099DetailRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Tax1099Fields"
+          },
+          "name": "Relationship_Tax1099FieldsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressState"
+          },
+          "name": "Relationship_Tax1099StateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendBankAccount"
+          },
+          "name": "Relationship_ThirdPartyBankAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendExchRateAdjustment"
+          },
+          "name": "Relationship_VendExchRateAdjustmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceJour"
+          },
+          "name": "Relationship_VendInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingChangeVoucherRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileApproveRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileCancelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileCloseRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_PostingProfileReOpenRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeTable"
+          },
+          "name": "Relationship_VendPaymentModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeSpec"
+          },
+          "name": "Relationship_VendPaymentModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPromissoryNoteJour"
+          },
+          "name": "Relationship_VendPromissoryNoteJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPromissoryNoteTrans"
+          },
+          "name": "Relationship_VendPromissoryNoteTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendStateTaxID"
+          },
+          "name": "Relationship_VendStateTaxIDRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_AccountNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTable_LastSettleAcountNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JournalizingDefinition"
+          },
+          "name": "Relationship_PSNJournalizingDefinitionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor transactions"
+    },
+    {
+      "dataTypeName": "VendPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCurDebCred",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMSTDebCred",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Approved",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ApprovedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "HcmApprover",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ArrivalId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankCentralBankPurposeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankCentralBankPurposeText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankLCLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BankRemittanceFileIdVend",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Cancelled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CashDiscBaseDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CashDiscCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CompanyBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Correct",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EUROTriangulation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendExchAdjustment",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExchrateSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FixedExchRate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceReleaseDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyExchangeRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "PaymId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymReference",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymSpec",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPromissoryNoteID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendNegInstSeqNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendPromissoryNoteStatus",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailCustTrans",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReasonRefRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReleaseDateComment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RemittanceAddress",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RemittanceLocation",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountMSTSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendExchAdjustmentRealized",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendExchAdjustmentUnrealized",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendAutoSettlement",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SettleTax1099Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SettleTax1099StateAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Tax1099Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Tax1099Date",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Tax1099FieldsRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Tax1099Num",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Tax1099State",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Tax1099StateAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxInvoicePurchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankThirdPartyAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPaymentGrouping",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReportingCurrencyExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReportingCurrencyExchRateSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JournalizingDefinitionId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

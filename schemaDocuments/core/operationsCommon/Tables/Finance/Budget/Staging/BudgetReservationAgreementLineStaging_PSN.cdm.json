@@ -1,0 +1,180 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/WorksheetHeader/BudgetReservationHeader_PSN.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetReservationAgreementLineStaging_PSN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefinitionGroup",
+          "dataType": "DMFDefinitionGroupName",
+          "description": ""
+        },
+        {
+          "name": "ExecutionId",
+          "dataType": "DMFExecutionId",
+          "description": ""
+        },
+        {
+          "name": "IsSelected",
+          "dataType": "DMFIsSelected",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetReservationDocumentNumber",
+          "dataType": "BudgetReservationDocumentNumber_PSN",
+          "description": ""
+        },
+        {
+          "name": "BudgetReservationLineNumber",
+          "dataType": "BudgetReservationLineNumber_PSN",
+          "description": ""
+        },
+        {
+          "name": "AgreementLineNumber",
+          "dataType": "AgreementLineNumber_PSN",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EffectiveDate",
+          "dataType": "EffectiveDate",
+          "description": ""
+        },
+        {
+          "name": "ExpirationDate",
+          "dataType": "ExpirationDate",
+          "description": ""
+        },
+        {
+          "name": "PurchaseNumberSequence",
+          "dataType": "PurchAgreementId",
+          "description": ""
+        },
+        {
+          "name": "VendorAccount",
+          "dataType": "VendAccount",
+          "description": ""
+        },
+        {
+          "name": "BuyingLegalEntityId",
+          "dataType": "SelectableDataArea",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetReservationHeader_PSN"
+          },
+          "name": "Relationship_BudgetReservationHeader_PSNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget reservation line and purchase agreement line"
+    },
+    {
+      "dataTypeName": "DMFDefinitionGroupName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DMFExecutionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DMFIsSelected",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BudgetReservationDocumentNumber_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetReservationLineNumber_PSN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AgreementLineNumber_PSN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EffectiveDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ExpirationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchAgreementId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    }
+  ]
+}

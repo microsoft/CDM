@@ -1,0 +1,153 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LeanProductionFlowReference.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/Plan.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LeanProductionFlow",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AverageTakt",
+          "dataType": "LeanAverageTakt",
+          "description": ""
+        },
+        {
+          "name": "MaximumTakt",
+          "dataType": "LeanMaximumTakt",
+          "description": ""
+        },
+        {
+          "name": "MinimumTakt",
+          "dataType": "LeanMinimumTakt",
+          "description": ""
+        },
+        {
+          "name": "PeriodForActualCycleTime",
+          "dataType": "LeanPeriodForActualCycleTime",
+          "description": ""
+        },
+        {
+          "name": "Plan",
+          "dataType": "PlanRefRecId",
+          "description": ""
+        },
+        {
+          "name": "ProductionFlowReference",
+          "dataType": "LeanProductionFlowReferenceRefRecId",
+          "description": ""
+        },
+        {
+          "name": "QuantityPerCycle",
+          "dataType": "LeanQuantityPerCycle",
+          "description": ""
+        },
+        {
+          "name": "QuantityPerCycleUnitOfMeasure",
+          "dataType": "UnitOfMeasureRecId",
+          "displayName": "Per cycle unit of measure",
+          "description": ""
+        },
+        {
+          "name": "RequiredTakt",
+          "dataType": "LeanRequiredTakt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaktUnitOfMeasure",
+          "dataType": "UnitOfMeasureRecId",
+          "displayName": "Takt unit",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LeanProductionFlowReference"
+          },
+          "name": "Relationship_LeanProductionFlowReferenceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Plan"
+          },
+          "name": "Relationship_PlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Production flows"
+    },
+    {
+      "dataTypeName": "LeanAverageTakt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LeanMaximumTakt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LeanMinimumTakt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LeanPeriodForActualCycleTime",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlanRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanProductionFlowReferenceRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanQuantityPerCycle",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanRequiredTakt",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

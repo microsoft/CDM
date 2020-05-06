@@ -1,0 +1,220 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/UserGroupInfo.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventJournalName",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BlockUserGroupId",
+          "dataType": "JournalBlockUserGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeletePostedLines",
+          "dataType": "JournalDeletePostedLines",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "JournalDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DetailSummary",
+          "dataType": "JournalDetailSummary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDocType_PL",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalNameId",
+          "dataType": "InventJournalNameId",
+          "description": ""
+        },
+        {
+          "name": "JournalType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Offset account",
+          "description": ""
+        },
+        {
+          "name": "Reservation",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VoucherChange",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VoucherDraw",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VoucherNumberSequenceTable",
+          "dataType": "InventJournalVoucherNumberSeq",
+          "description": ""
+        },
+        {
+          "name": "CountingStatusRegistrationPolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowApproval",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Approval workflow",
+          "description": ""
+        },
+        {
+          "name": "Configuration",
+          "dataType": "WorkflowSequenceNumber",
+          "isNullable": true,
+          "displayName": "Workflow",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "UserGroupInfo"
+          },
+          "name": "Relationship_BlockingUserGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Inventory journal names"
+    },
+    {
+      "dataTypeName": "JournalBlockUserGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalDeletePostedLines",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalDetailSummary",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventJournalVoucherNumberSeq",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WorkflowSequenceNumber",
+      "extendsDataType": "string"
+    }
+  ]
+}

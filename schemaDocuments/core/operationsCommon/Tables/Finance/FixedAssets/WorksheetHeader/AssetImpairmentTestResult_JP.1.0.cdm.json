@@ -1,0 +1,171 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetImpairmentCGUGroup_JP.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetImpairmentTestResult_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetBookType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CGUGroup",
+          "dataType": "AssetImpairmentCGUGroupRefRecId_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetSellingPriceAsRecovable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Shared asset is recoverable",
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "JournalSessionId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionLoginDateTime",
+          "dataType": "JournalSessionLoginDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedAssetAllocBasis",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "SharedAssetHasHigherPriority",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Shared assets have higher priority than ordinary fixed asset",
+          "description": ""
+        },
+        {
+          "name": "SharedAssetImpairMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedAssetsImpairmentAllocateToCGU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TestDate",
+          "dataType": "AssetImpairmentTestDate_JP",
+          "description": ""
+        },
+        {
+          "name": "TestNum",
+          "dataType": "AssetImpairmentTestNum_JP",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetImpairmentCGUGroup_JP"
+          },
+          "name": "Relationship_CGUGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Asset impairment test result"
+    },
+    {
+      "dataTypeName": "AssetImpairmentCGUGroupRefRecId_JP",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JournalSessionId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JournalSessionLoginDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetImpairmentTestDate_JP",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetImpairmentTestNum_JP",
+      "extendsDataType": "string"
+    }
+  ]
+}

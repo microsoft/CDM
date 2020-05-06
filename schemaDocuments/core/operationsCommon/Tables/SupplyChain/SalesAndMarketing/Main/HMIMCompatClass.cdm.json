@@ -1,0 +1,105 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/HMIMCompatibilityGroup.cdm.json"
+    },
+    {
+      "corpusPath": "HMIMClass.cdm.json"
+    },
+    {
+      "corpusPath": "HMIMDivision.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HMIMCompatClass",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompatibilityCode",
+          "dataType": "HMIMCompatibilityCode",
+          "description": ""
+        },
+        {
+          "name": "ClassCode",
+          "dataType": "HMIMClassCode",
+          "description": ""
+        },
+        {
+          "name": "DivisionCode",
+          "dataType": "HMIMDivisionCode",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "HMIMCompatibilityGroup"
+          },
+          "name": "Relationship_HMIMCompatibilityGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HMIMClass"
+          },
+          "name": "Relationship_HMIMClassRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HMIMDivision"
+          },
+          "name": "Relationship_HMIMDivisionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Compatibility class"
+    },
+    {
+      "dataTypeName": "HMIMCompatibilityCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMClassCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMDivisionCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

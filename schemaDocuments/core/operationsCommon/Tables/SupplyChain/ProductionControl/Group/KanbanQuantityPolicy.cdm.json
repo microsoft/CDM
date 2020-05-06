@@ -1,0 +1,108 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlan.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "KanbanQuantityPolicy",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MinimumKanbanQuantity",
+          "dataType": "KanbanMinimumQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "KanbanQuantityPolicyName",
+          "description": ""
+        },
+        {
+          "name": "ReqPlanId",
+          "dataType": "ReqPlanId",
+          "displayName": "Master plan",
+          "description": ""
+        },
+        {
+          "name": "SafetyFactor",
+          "dataType": "KanbanQuantityPolicySafetyFactor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlan"
+          },
+          "name": "Relationship_ReqPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kanban quantity calculation policies"
+    },
+    {
+      "dataTypeName": "KanbanMinimumQuantity",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "KanbanQuantityPolicyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqPlanId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanQuantityPolicySafetyFactor",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WorkPeriodTemplate.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkPeriodTemplateLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExplodePeriods",
+          "dataType": "PeriodTemplateExplodePeriods",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "LineNum",
+          "description": ""
+        },
+        {
+          "name": "NumberOfPeriods",
+          "dataType": "PeriodTemplateNumberOfPeriods",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Period",
+          "dataType": "PeriodTemplatePeriod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodDescription",
+          "dataType": "PeriodTemplateDescription",
+          "description": ""
+        },
+        {
+          "name": "PeriodTemplate",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WorkPeriodTemplate"
+          },
+          "name": "Relationship_WorkPeriodTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Period template lines"
+    },
+    {
+      "dataTypeName": "PeriodTemplateExplodePeriods",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PeriodTemplateNumberOfPeriods",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PeriodTemplatePeriod",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PeriodTemplateDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,173 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Parameter/ProdParametersDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WrkCtrParametersDim",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "KeepProductionUnit",
+          "dataType": "KeepProductionUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "KeepWarehouseFromResource",
+          "dataType": "KeepWarehouseFromResource",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrimaryResourceSelection",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Primary resource selection",
+          "description": ""
+        },
+        {
+          "name": "SequenceOptimizationRuntimeLimit",
+          "dataType": "SequenceOptimizationRuntimeLimit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceOptimizationTimeoutEnabled",
+          "dataType": "SequenceOptimizationTimeoutEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceScheduleRuntimeLimit",
+          "dataType": "SequenceScheduleRuntimeLimit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceScheduleTimeoutEnabled",
+          "dataType": "SequenceScheduleTimeoutEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnableLog",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogOnlyOnErrorEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Enable logging only on error ",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdParametersDim"
+          },
+          "name": "Relationship_ProdParametersDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Resource parameters by site"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KeepProductionUnit",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "KeepWarehouseFromResource",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SequenceOptimizationRuntimeLimit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SequenceOptimizationTimeoutEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SequenceScheduleRuntimeLimit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SequenceScheduleTimeoutEnabled",
+      "extendsDataType": "integer"
+    }
+  ]
+}

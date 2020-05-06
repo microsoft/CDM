@@ -1,0 +1,114 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DimensionAttributeEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/System/SystemAdministration/OfficeAddinLegalEntityEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueTotallingCriteria.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FinancialDimensionValueTotalAccountIntervalEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FinancialDimension",
+          "dataType": "string",
+          "displayName": "Financial dimension name",
+          "description": ""
+        },
+        {
+          "name": "LegalEntityId",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Company",
+          "description": ""
+        },
+        {
+          "name": "DimensionValue",
+          "dataType": "string",
+          "displayName": "Dimension value",
+          "description": ""
+        },
+        {
+          "name": "FromValue",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "ToValue",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "InvertTotalSign",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Invert sign",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeEntity"
+          },
+          "name": "Relationship_DimensionAttributeEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OfficeAddinLegalEntityEntity"
+          },
+          "name": "Relationship_OfficeAddinLegalEntityEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueTotallingCriteria"
+          },
+          "name": "BackingTable_DimensionAttributeValueTotallingCriteriaRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Financial dimension value totaling account intervals"
+    }
+  ]
+}

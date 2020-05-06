@@ -1,0 +1,313 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TaxWithholdFileHeader_IN.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdRegNumbers_IN.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxWithholdBatchHeader_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BatchRecordNumber",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectionType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeductorAddress",
+          "dataType": "AddressStreet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeductorBranchId",
+          "dataType": "CompanyBranchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeductorChangeOfAddress",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Address",
+          "description": ""
+        },
+        {
+          "name": "DeductorEmail",
+          "dataType": "Email",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeductorName",
+          "dataType": "CompanyName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeductorStateCode",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeductorTelePhone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeductorType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Status",
+          "description": ""
+        },
+        {
+          "name": "DeliveyLocation",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NilChallanIndicator",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PanNumber",
+          "dataType": "PANNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecIdFileHdr",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponsiblePersonAddress",
+          "dataType": "AddressStreet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponsiblePersonChangeOfAddress",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Address",
+          "description": ""
+        },
+        {
+          "name": "ResponsiblePersonEmail",
+          "dataType": "Email",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponsiblePersonsDesignation",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponsiblePersonsName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponsiblePersonStateCode",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponsiblePersonTelePhone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RRROriginal",
+          "dataType": "TaxWithholdProvisionalReceiptNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RRRPrevious",
+          "dataType": "TaxWithholdProvisionalReceiptNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdRegNumber",
+          "dataType": "TaxWithholdRegNumberRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdRegNumberPrevious",
+          "dataType": "TaxWithholdRegNumberRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveyLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdFileHeader_IN"
+          },
+          "name": "Relationship_TaxWithholdFileHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdRegNumbers_IN"
+          },
+          "name": "Relationship_TaxWithholdRegNumberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdRegNumbers_IN"
+          },
+          "name": "Relationship_TaxWithholdRegNumberPreviousRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Header"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AddressStreet",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyBranchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Email",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Phone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PANNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdProvisionalReceiptNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdRegNumberRecId_IN",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,120 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AddressTypeTable_RU.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressZipCode.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LogisticsAddressProperties_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AddressTypeTable_RU",
+          "dataType": "AddrTypeRecId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GniCode",
+          "dataType": "GniCode_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IMNSDistrict",
+          "dataType": "IMNSDistrict_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ObjectStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OKATO",
+          "dataType": "OKATO_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ZipCode",
+          "dataType": "LogisticsAddressZipCodeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AddressTypeTable_RU"
+          },
+          "name": "Relationship_AddressTypeTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressZipCode"
+          },
+          "name": "Relationship_ZipCode_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Address property"
+    },
+    {
+      "dataTypeName": "AddrTypeRecId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "GniCode_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IMNSDistrict_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OKATO_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressZipCodeRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

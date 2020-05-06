@@ -1,6 +1,7 @@
 
 # customerInsights
 
+CDM Schema for the Customer Insights' Solution  
 
 ## Entities
 

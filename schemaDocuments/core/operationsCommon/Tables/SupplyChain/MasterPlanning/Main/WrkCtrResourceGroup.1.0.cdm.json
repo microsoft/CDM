@@ -1,0 +1,228 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WMSLocation.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/ProdUnitTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WrkCtrResourceGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InputInventLocationId",
+          "dataType": "InventLocationIdInput",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InputWMSLocationId",
+          "dataType": "WMSLocationIdInput",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsWorkCell",
+          "dataType": "isWorkCell",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OutputInventLocationId",
+          "dataType": "InventLocationIdOutput",
+          "isNullable": true,
+          "displayName": "Output warehouse",
+          "description": ""
+        },
+        {
+          "name": "OutputWMSLocationId",
+          "dataType": "WMSLocationIdOutput",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdUnitId",
+          "dataType": "ProdUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SiteId",
+          "dataType": "InventSiteId",
+          "description": ""
+        },
+        {
+          "name": "WrkCtrId",
+          "dataType": "WrkCtrGroupId",
+          "isNullable": true,
+          "displayName": "Resource group",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InputInventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_InputWMSLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_OutputInventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_OutputWMSLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdUnitTable"
+          },
+          "name": "Relationship_ProdUnitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_ResourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_SiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Resource groups"
+    },
+    {
+      "dataTypeName": "InventLocationIdInput",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSLocationIdInput",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "isWorkCell",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventLocationIdOutput",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSLocationIdOutput",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WrkCtrGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,264 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/BatchJobActivePeriod.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/BatchGroup.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BatchJob",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CanceledBy",
+          "dataType": "BatchCanceledBy",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Caption",
+          "dataType": "BatchCaption",
+          "isNullable": true,
+          "displayName": "Job description",
+          "description": ""
+        },
+        {
+          "name": "Company",
+          "dataType": "SelectableDataArea",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Company accounts",
+          "description": ""
+        },
+        {
+          "name": "DataPartition",
+          "dataType": "PartitionKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDateTime",
+          "dataType": "EndDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Finishing",
+          "dataType": "Integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogLevel",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigStartDateTime",
+          "dataType": "StartDateTime",
+          "displayName": "Scheduled start date/time",
+          "description": ""
+        },
+        {
+          "name": "recurrenceData",
+          "dataType": "SysRecurrenceData",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RuntimeJob",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "StartDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Actual start date/time",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "StartDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartTime",
+          "dataType": "TimeOfDay",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Critical",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Critical Job",
+          "description": ""
+        },
+        {
+          "name": "MonitoringCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Managed",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Managed Data Access Job",
+          "description": ""
+        },
+        {
+          "name": "ActivePeriod",
+          "dataType": "BatchJobActivePeriodId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutingBy",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Run by",
+          "description": ""
+        },
+        {
+          "name": "SchedulingPriority",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedulingPriorityIsOverridden",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Scheduling Priority is overidden",
+          "description": ""
+        },
+        {
+          "name": "BatchGroup",
+          "dataType": "BatchGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BatchJobActivePeriod"
+          },
+          "name": "Relationship_BatchJobActivePeriodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BatchGroup"
+          },
+          "name": "Relationship_BatchGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Batch job"
+    },
+    {
+      "dataTypeName": "BatchCanceledBy",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BatchCaption",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PartitionKey",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SysRecurrenceData",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TimeOfDay",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "BatchJobActivePeriodId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BatchGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

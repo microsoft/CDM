@@ -1,0 +1,99 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResAttributeType.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResValue.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResBoundedAttributeTypeValue",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AttributeType",
+          "dataType": "RefRecId",
+          "displayName": "Attribute type",
+          "description": ""
+        },
+        {
+          "name": "LowerBound",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Lower bound",
+          "description": ""
+        },
+        {
+          "name": "UpperBound",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Upper bound",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttributeType"
+          },
+          "name": "Relationship_AttributeTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResValue"
+          },
+          "name": "Relationship_LowerBoundValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResValue"
+          },
+          "name": "Relationship_UpperBoundValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Attribute type boundaries"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

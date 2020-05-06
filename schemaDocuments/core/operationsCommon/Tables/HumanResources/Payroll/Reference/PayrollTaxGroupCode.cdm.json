@@ -1,0 +1,68 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/Payroll/Group/PayrollTaxGroup.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollTaxGroupCode",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaxCode",
+          "dataType": "PayrollTaxCodeRecId",
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "PayrollTaxGroupRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollTaxGroup"
+          },
+          "name": "Relationship_PayrollTaxGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax group code"
+    },
+    {
+      "dataTypeName": "PayrollTaxCodeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollTaxGroupRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/WorksheetHeader/LedgerBalanceSheetHeader.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerBalanceSheetDefinitionEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LineType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Line",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Mark",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundingForm",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrossInvertSign",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Invert sign of gross",
+          "description": ""
+        },
+        {
+          "name": "GrossTotal",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Total of gross",
+          "description": ""
+        },
+        {
+          "name": "GrossGroupOfAccounts",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Group of accounts of gross",
+          "description": ""
+        },
+        {
+          "name": "GrossMainAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Main account of gross",
+          "description": ""
+        },
+        {
+          "name": "GrossLineId",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Line id of gross",
+          "description": ""
+        },
+        {
+          "name": "AdjustmentInvertSign",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Invert sign of adjustment",
+          "description": ""
+        },
+        {
+          "name": "AdjustmentTotal",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Total of adjustment",
+          "description": ""
+        },
+        {
+          "name": "AdjustmentGroupOfAccounts",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Group of accounts of adjustment",
+          "description": ""
+        },
+        {
+          "name": "AdjustmentMainAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Main account of adjustment",
+          "description": ""
+        },
+        {
+          "name": "AdjustmentLineId",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Line id of adjustment",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerBalanceSheetHeader"
+          },
+          "name": "BackingTable_LedgerBalanceSheetHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Balance sheet definition"
+    }
+  ]
+}

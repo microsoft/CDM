@@ -1,0 +1,191 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LogisticsAddressCountryRegion.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressCounty.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressProperties_RU.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressState.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LogisticsAddresssCity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Name",
+          "dataType": "LogisticsAddressCityName",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "LogisticsAddressCityDescr",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountryRegionId",
+          "dataType": "LogisticsAddressCountryRegionId",
+          "description": ""
+        },
+        {
+          "name": "StateId",
+          "dataType": "LogisticsAddressStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountyId",
+          "dataType": "LogisticsAddressCountyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IBGECode_BR",
+          "dataType": "CityIBGECode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Properties_RU",
+          "dataType": "LogisticsAddressPropertiesId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CityKana_JP",
+          "dataType": "AssetCityKana_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MunicipalityCode_IT",
+          "dataType": "AddressMunicipalityCode_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CityCode_IT",
+          "dataType": "CityCode_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_Country_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCounty"
+          },
+          "name": "Relationship_County_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressProperties_RU"
+          },
+          "name": "Relationship_Properties_RU_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressState"
+          },
+          "name": "Relationship_State_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Cities"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCityDescr",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressStateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CityIBGECode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressPropertiesId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetCityKana_JP",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressMunicipalityCode_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CityCode_IT",
+      "extendsDataType": "string"
+    }
+  ]
+}

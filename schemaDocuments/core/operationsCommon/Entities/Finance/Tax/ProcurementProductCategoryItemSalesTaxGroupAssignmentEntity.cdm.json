@@ -1,0 +1,86 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Main/ProcCategoryItemTaxGroup.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProcurementProductCategoryItemSalesTaxGroupAssignmentEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ProductCategoryHierarchyName",
+          "dataType": "string",
+          "displayName": "Product category hierarchy name",
+          "description": ""
+        },
+        {
+          "name": "ProductCategoryName",
+          "dataType": "string",
+          "displayName": "Product category name",
+          "description": ""
+        },
+        {
+          "name": "ProductSalesTaxGroupLegalEntityId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductSalesTaxGroupId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPurchasingCalculatingWithholdingTax",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemWithholdingTaxPurchaseGroupCode",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ProcCategoryItemTaxGroup"
+          },
+          "name": "BackingTable_ProcCategoryItemTaxGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Procurement product category item sales tax group assignments"
+    }
+  ]
+}

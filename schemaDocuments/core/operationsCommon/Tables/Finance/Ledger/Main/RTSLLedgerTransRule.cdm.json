@@ -1,0 +1,315 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/RTSLCurrencyRuleGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/RTSLDimensionRuleGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/MainAccount.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/RTSLRuleGroup.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTSLLedgerTransRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Correct",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Only reversing entry",
+          "description": ""
+        },
+        {
+          "name": "Crediting",
+          "dataType": "RTSLLedgerCrediting",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyRuleGroupId",
+          "dataType": "RTSLCurrencyRuleGroupId",
+          "description": ""
+        },
+        {
+          "name": "DefaultLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultLedgerDimensionOffset",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Offset account",
+          "description": ""
+        },
+        {
+          "name": "DimensionRuleGroupId",
+          "dataType": "RTSLDimensionRuleGroupId",
+          "description": ""
+        },
+        {
+          "name": "MainAccountNum",
+          "dataType": "MainAccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MainAccountNumOffset",
+          "dataType": "MainAccountNum",
+          "isNullable": true,
+          "displayName": "Offset account",
+          "description": ""
+        },
+        {
+          "name": "OperationTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Posting",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingOffset",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Priority",
+          "dataType": "Priority",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RuleGroupId",
+          "dataType": "RTSLRuleGroupId",
+          "description": ""
+        },
+        {
+          "name": "ToCompanyId",
+          "dataType": "RTSLToCompanyId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ToDefaultLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "displayName": "To account",
+          "description": ""
+        },
+        {
+          "name": "ToMainAccountNum",
+          "dataType": "MainAccountNum",
+          "isNullable": true,
+          "displayName": "To account",
+          "description": ""
+        },
+        {
+          "name": "ToOperationTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "To posting layer",
+          "description": ""
+        },
+        {
+          "name": "LineId",
+          "dataType": "SysGuid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLCurrencyRuleGroup"
+          },
+          "name": "Relationship_CurrencyRuleGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DefaultAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DefaultAccountOffsetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLDimensionRuleGroup"
+          },
+          "name": "Relationship_DimensionRuleGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_MainAccountNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_MainAccountNumOffsetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLRuleGroup"
+          },
+          "name": "Relationship_RuleGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_ToDefaultAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccount"
+          },
+          "name": "Relationship_ToMainAccountNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Translation ledger account rules"
+    },
+    {
+      "dataTypeName": "RTSLLedgerCrediting",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTSLCurrencyRuleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTSLDimensionRuleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MainAccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Priority",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTSLRuleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLToCompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysGuid",
+      "extendsDataType": "guid"
+    }
+  ]
+}

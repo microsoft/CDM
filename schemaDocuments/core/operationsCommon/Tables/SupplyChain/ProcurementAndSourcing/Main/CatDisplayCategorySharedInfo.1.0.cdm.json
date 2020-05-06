@@ -1,0 +1,111 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatDisplayCategorySharedInfo",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Category",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultView",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsCustomOrderShown",
+          "dataType": "CatProcurementCustomOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastSyncTime",
+          "dataType": "DisplayCategoryLastSyncTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "SearchText",
+          "dataType": "EcoResCategorySearchText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WelcomeText",
+          "dataType": "CatDisplayHtmlText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_CategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "The shared information between multiple CatDisplayCategoryTable entries"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CatProcurementCustomOrder",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DisplayCategoryLastSyncTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EcoResCategorySearchText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CatDisplayHtmlText",
+      "extendsDataType": "string"
+    }
+  ]
+}

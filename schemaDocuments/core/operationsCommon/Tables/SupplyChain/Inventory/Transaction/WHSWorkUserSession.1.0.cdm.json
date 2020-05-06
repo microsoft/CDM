@@ -1,0 +1,284 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSLicensePlate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSWorkUser.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWorkUserSession",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompanyId",
+          "dataType": "CompanyId",
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "LanguageId",
+          "isNullable": true,
+          "displayName": "Language code",
+          "description": ""
+        },
+        {
+          "name": "LastActionDateTime",
+          "dataType": "WHSLastActionDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastPrintedLicensePlate",
+          "dataType": "WHSLastPrintedLicensePlate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoginDateTime",
+          "dataType": "WHSLoginDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MenuBreadcrumbs",
+          "dataType": "WHSMenuBreadcrumbs",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrevPass",
+          "dataType": "WHSPrevPass",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResetNavigation",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RFErrorLog",
+          "dataType": "WHSRFErrorLog",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "WHSUserId",
+          "description": ""
+        },
+        {
+          "name": "UserSessionId",
+          "dataType": "WHSWorkUserSessionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkExecuteMode",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkExecutePassThrough",
+          "dataType": "WHSWorkExecutePassThrough",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkExecuteStep",
+          "dataType": "WHSWorkExecuteStep",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "XML",
+          "dataType": "XML",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionStateCheck",
+          "dataType": "WHSWorkUserSessionStateCheck",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionNumber",
+          "dataType": "SysBuildNo",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLicensePlate"
+          },
+          "name": "Relationship_WHSLicensePlateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkUser"
+          },
+          "name": "Relationship_WHSWorkUserRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Work User Session"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLastActionDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSLastPrintedLicensePlate",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoginDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSMenuBreadcrumbs",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSPrevPass",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSRFErrorLog",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkUserSessionId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WHSWorkExecutePassThrough",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSWorkExecuteStep",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "XML",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkUserSessionStateCheck",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysBuildNo",
+      "extendsDataType": "string"
+    }
+  ]
+}

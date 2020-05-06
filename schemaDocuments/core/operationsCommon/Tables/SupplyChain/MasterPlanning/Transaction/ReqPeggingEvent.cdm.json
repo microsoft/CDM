@@ -1,0 +1,125 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/KanbanRule.cdm.json"
+    },
+    {
+      "corpusPath": "ReqPeggingAssignment.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqPeggingEvent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "KanbanRule",
+          "dataType": "KanbanRuleRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "OriginalQty",
+          "dataType": "InventQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeggingRequirement",
+          "dataType": "ReqPeggingAssignmentRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReservedPhysicalQtyDelta",
+          "dataType": "InventQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "SessionId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionLoginDateTime",
+          "dataType": "SessionLoginDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "KanbanRule"
+          },
+          "name": "Relationship_KanbanRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPeggingAssignment"
+          },
+          "name": "Relationship_ReqPeggingAssignmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pegging events"
+    },
+    {
+      "dataTypeName": "KanbanRuleRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReqPeggingAssignmentRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SessionId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SessionLoginDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

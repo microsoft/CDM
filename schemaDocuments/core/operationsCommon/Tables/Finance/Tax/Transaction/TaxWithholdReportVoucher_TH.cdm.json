@@ -1,0 +1,151 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdPeriodHead_TH.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdReportPeriod_TH.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxWithholdReportVoucher_TH",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Corrections",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Posted withholding tax corrections",
+          "description": ""
+        },
+        {
+          "name": "TaxRepVersion",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Withholding tax payment version",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdFromDate",
+          "dataType": "TaxWithholdFromDate_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdPeriodHead_TH",
+          "dataType": "TaxWithholdPeriodId_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdToDate",
+          "dataType": "TaxWithholdToDate_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdPeriodHead_TH"
+          },
+          "name": "Relationship_TaxWithholdPeriodHead_THRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdReportPeriod_TH"
+          },
+          "name": "Relationship_TaxWithholdReportPeriod_THRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Withholding tax payments"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxWithholdFromDate_TH",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxWithholdPeriodId_TH",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdToDate_TH",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

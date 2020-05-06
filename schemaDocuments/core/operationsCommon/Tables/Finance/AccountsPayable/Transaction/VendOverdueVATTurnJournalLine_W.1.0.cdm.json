@@ -1,0 +1,203 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Parameter/OverdueJournalSettings_W.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "VendOverdueVATDebtJournalLine_W.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "VendOverdueVATJournalTable_W.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "VendTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendOverdueVATTurnJournalLine_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Exclude",
+          "dataType": "Exclude_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "VendOverdueVATJournalId_W",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "OverdueAmountCur",
+          "dataType": "AmountCurDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Overdue amount in transaction currency",
+          "description": ""
+        },
+        {
+          "name": "OverdueAmountMST",
+          "dataType": "AmountMSTDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Overdue amount",
+          "description": ""
+        },
+        {
+          "name": "OverdueTaxAmountCur",
+          "dataType": "AmountCurDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Overdue tax amount in transaction currency",
+          "description": ""
+        },
+        {
+          "name": "OverdueTaxAmountMST",
+          "dataType": "AmountMSTDebCred",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Overdue tax amount",
+          "description": ""
+        },
+        {
+          "name": "SettingRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransRefRecId",
+          "dataType": "VendTransRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "OverdueJournalSettings_W"
+          },
+          "name": "Relationship_OverdueJournalSettings_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendOverdueVATDebtJournalLine_W"
+          },
+          "name": "Relationship_VendOverdueVATDebtJournalLine_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendOverdueVATJournalTable_W"
+          },
+          "name": "Relationship_VendOverdueVATJournalTable_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Overdue debt turnover VAT lines"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Exclude_W",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendOverdueVATJournalId_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCurDebCred",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMSTDebCred",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendTransRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

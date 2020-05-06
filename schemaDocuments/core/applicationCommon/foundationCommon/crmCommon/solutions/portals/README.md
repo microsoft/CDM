@@ -1,6 +1,7 @@
 
 # portals
 
+CDM standard entities  
 
 ## Entities
 

@@ -1,0 +1,348 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvTravelTxt.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvDestinations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvCashAdvance",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdvanceLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Balance",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Balance",
+          "description": ""
+        },
+        {
+          "name": "BalanceMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BalanceReturned",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashAdvanceNumber",
+          "dataType": "TrvCashAdvanceNumber",
+          "isReadOnly": true,
+          "displayName": "Cash advance number",
+          "description": ""
+        },
+        {
+          "name": "CashAdvanceStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Destination",
+          "dataType": "TrvDestination",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRate",
+          "dataType": "ExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "Notes",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaidAmountCur",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Paid amount",
+          "description": ""
+        },
+        {
+          "name": "PaidAmountMST",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Paid amount (company currency)",
+          "description": ""
+        },
+        {
+          "name": "PaidDate",
+          "dataType": "TrvPaidDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayingWorker",
+          "dataType": "TrvHcmWorkerRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Paying worker",
+          "description": ""
+        },
+        {
+          "name": "Purpose",
+          "dataType": "TrvTravelTxtEDT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestAmountMST",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Requested amount (company currency)",
+          "description": ""
+        },
+        {
+          "name": "RequestedAmountCur",
+          "dataType": "TrvTransactionCurrencyAmount",
+          "displayName": "Requested amount",
+          "description": ""
+        },
+        {
+          "name": "RequestedDate",
+          "dataType": "TrvRequestedDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestingWorker",
+          "dataType": "TrvHcmWorkerRecId",
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "SysGroup",
+          "isNullable": true,
+          "displayName": "Sales tax group",
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "SysGroup",
+          "isNullable": true,
+          "displayName": "Item sales tax group",
+          "description": ""
+        },
+        {
+          "name": "TransactionDate",
+          "dataType": "TrvDateStd",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Transaction date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvTravelTxt"
+          },
+          "name": "Relationship_PurposeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvDestinations"
+          },
+          "name": "Relationship_TrvDestinationsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Cash advance request"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TrvCashAdvanceNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TrvDestination",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvPaidDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TrvHcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TrvTravelTxtEDT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvTransactionCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TrvRequestedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SysGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvDateStd",
+      "extendsDataType": "date"
+    }
+  ]
+}

@@ -1,0 +1,512 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/FinancialDimensions/DimensionCombinationEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/GeneralLedger/LedgerJournalNameEntity.cdm.json"
+    },
+    {
+      "corpusPath": "VendorPaymentFormatEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendorPaymentMethodEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowPaymentCopies",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankTransactionType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExportFormatClassId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemittanceFormatClassId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnFormatClassId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscountGracePeriodDays",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExportPromissoryNoteDuringInvoicePosting",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BridgingPostingEnabled",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BridgingPostingAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastFileNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastFileDate",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastFileNumberToday",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentJournalName",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreateAndDrawPromissoryNoteDuringInvoicePosting",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentStatus",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SumByPeriod",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EnablePostdatedCheckClearingPosting",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PromissoryNoteDraftType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BridgingPostingAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Bridging account",
+          "description": ""
+        },
+        {
+          "name": "PaymentAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Payment account",
+          "description": ""
+        },
+        {
+          "name": "ValidateTransactionTypeIsBank",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Bank transaction type is mandatory",
+          "description": ""
+        },
+        {
+          "name": "ValidateOffsetTransactionTypeIsBank",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Offset account has the type bank",
+          "description": ""
+        },
+        {
+          "name": "ValidateCheckNumberIsMandatory",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Check number is mandatory",
+          "description": ""
+        },
+        {
+          "name": "ValidatePaymentSpecificationIsMandatory",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Payment specification is mandatory",
+          "description": ""
+        },
+        {
+          "name": "ValidatePaymentIdIsMandatory",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Payment ID is mandatory",
+          "description": ""
+        },
+        {
+          "name": "ValidatePaymentNoteIsMandatory",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Payment note is mandatory",
+          "description": ""
+        },
+        {
+          "name": "ValidatePaymentReferenceIsMandatory",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Payment reference is mandatory",
+          "description": ""
+        },
+        {
+          "name": "AttributePaymentAccountEnabled",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Payment account",
+          "description": ""
+        },
+        {
+          "name": "AttributeThirdPartyBankEnabled",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Third-party bank",
+          "description": ""
+        },
+        {
+          "name": "AttributePaymentIdEnabled",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Payment ID",
+          "description": ""
+        },
+        {
+          "name": "AttributeBelgianStructuredPaymentIdEnabled",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Belgian structured payment ID",
+          "description": ""
+        },
+        {
+          "name": "ExportFormatClassName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Export format",
+          "description": ""
+        },
+        {
+          "name": "RemittanceFormatClassName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Remittance format",
+          "description": ""
+        },
+        {
+          "name": "ReturnFormatClassName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Return format",
+          "description": ""
+        },
+        {
+          "name": "UseGERConfiguration",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SATPaymentType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ERFormatMapping",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ElectronicReportingSolution",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Configuration",
+          "description": ""
+        },
+        {
+          "name": "ElectronicReportingVendor",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Configuration provider",
+          "description": ""
+        },
+        {
+          "name": "SPEDPrimaryPaymentMethodDescription",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SPEDPrimaryPaymentMethod",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GeneratePaymentOneVoucher",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimensionControl",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimensionAttributeSet",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimensionAttributeDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Ledger account",
+          "description": ""
+        },
+        {
+          "name": "ExportLayoutGroupId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnLayoutGroupId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryPurpose",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChargeBearer",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocalInstrument",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLevel",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChargeBearerValue",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DirectDebit",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfileRemitNotes",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_BridgingPostingAccountCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_PaymentAccountCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalNameEntity"
+          },
+          "name": "Relationship_PaymentJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendorPaymentFormatEntity"
+          },
+          "name": "Relationship_ExportFormatRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendorPaymentFormatEntity"
+          },
+          "name": "Relationship_RemittanceFormatRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendorPaymentFormatEntity"
+          },
+          "name": "Relationship_ReturnFormatRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeTable"
+          },
+          "name": "BackingTable_VendPaymModeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor payment method"
+    }
+  ]
+}

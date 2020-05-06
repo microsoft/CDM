@@ -1,0 +1,124 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "WorkTimeTable.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkPeriodTemplate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FixedDayStart",
+          "dataType": "PeriodTemplateFixedDayStart",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "RefRecId",
+          "displayName": "Legal entities",
+          "description": ""
+        },
+        {
+          "name": "LegalEntityDefault",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Default",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PeriodTemplateName",
+          "description": ""
+        },
+        {
+          "name": "WorkTimeId",
+          "dataType": "WorkTimeIdBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTimeIdDataAreaId",
+          "dataType": "SelectableDataArea",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkTimeTable"
+          },
+          "name": "Relationship_WorkTimeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Period templates"
+    },
+    {
+      "dataTypeName": "PeriodTemplateFixedDayStart",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PeriodTemplateName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkTimeIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    }
+  ]
+}

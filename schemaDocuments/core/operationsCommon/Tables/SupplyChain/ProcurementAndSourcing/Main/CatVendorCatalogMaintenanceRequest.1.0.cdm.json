@@ -1,0 +1,131 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CatVendorCatalog.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatVendorCatalogMaintenanceRequest",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FileName",
+          "dataType": "Filename",
+          "description": ""
+        },
+        {
+          "name": "FileSize",
+          "dataType": "CatVendorCatalogCMRFileSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastImportStatus",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "PriceValidFromDate",
+          "dataType": "CatVendorDate",
+          "isNullable": true,
+          "displayName": "Price valid from",
+          "description": ""
+        },
+        {
+          "name": "PriceValidToDate",
+          "dataType": "CatVendorDate",
+          "isNullable": true,
+          "displayName": "Price valid to",
+          "description": ""
+        },
+        {
+          "name": "UploadType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorCatalog",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "WorkflowStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Workflow status",
+          "description": ""
+        },
+        {
+          "name": "UploadDateTime",
+          "dataType": "CatVendorDateTime",
+          "isNullable": true,
+          "displayName": "Upload date",
+          "description": ""
+        },
+        {
+          "name": "CategoryHierarchyType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CatVendorCatalog"
+          },
+          "name": "Relationship_CatVendorCatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Dependent"
+    },
+    {
+      "dataTypeName": "Filename",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CatVendorCatalogCMRFileSize",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CatVendorDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CatVendorDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

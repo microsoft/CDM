@@ -1,0 +1,185 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjPeriodTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgPayAdjustSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Adjust",
+          "dataType": "JmgPayAdjust",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustCriteria",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustId",
+          "dataType": "JmgPayAdjustId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustLimit",
+          "dataType": "JmgPayAdjustLimit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustPeriod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayAgreement",
+          "dataType": "JmgPayAgreement",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PayCostType",
+          "dataType": "JmgPayCostType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjPeriodId",
+          "dataType": "ProjPeriodId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayAgreementTable"
+          },
+          "name": "Relationship_JmgPayAgreementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayTable"
+          },
+          "name": "Relationship_JmgPayTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTable"
+          },
+          "name": "Relationship_ProjPeriodTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pay adjustment pay types"
+    },
+    {
+      "dataTypeName": "JmgPayAdjust",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgPayAdjustId",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgPayAdjustLimit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgPayAgreement",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgPayCostType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPeriodId",
+      "extendsDataType": "string"
+    }
+  ]
+}

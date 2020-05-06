@@ -1,0 +1,132 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResProduct.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResPhysicalProductDimensions",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Product",
+          "dataType": "EcoResProductRecId",
+          "description": ""
+        },
+        {
+          "name": "DimensionType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "PhysicalUnitSymbol",
+          "dataType": "UnitOfMeasureSymbol",
+          "displayName": "Physical unit",
+          "description": ""
+        },
+        {
+          "name": "Depth",
+          "dataType": "InventDepth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Height",
+          "dataType": "InventHeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Width",
+          "dataType": "InventWidth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MassUnitSymbol",
+          "dataType": "UnitOfMeasureSymbol",
+          "displayName": "Weight unit",
+          "description": ""
+        },
+        {
+          "name": "LengthUnitSymbol",
+          "dataType": "UnitOfMeasureSymbol",
+          "displayName": "Length unit",
+          "description": ""
+        },
+        {
+          "name": "VolumeUnitSymbol",
+          "dataType": "UnitOfMeasureSymbol",
+          "displayName": "Volume unit",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_ProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Physical product dimensions"
+    },
+    {
+      "dataTypeName": "EcoResProductRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDepth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventHeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventWidth",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

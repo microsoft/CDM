@@ -1,0 +1,305 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionHeader/InventClosing.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventCostBundleList",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EndTime",
+          "dataType": "EndDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventClosing",
+          "dataType": "InventClosingRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Level",
+          "dataType": "BOMLevel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadCount",
+          "dataType": "InventCostLoadCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadTime",
+          "dataType": "InventCostLoadTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadTransferOrderCount",
+          "dataType": "InventCostLoadTransferOrderCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadTransferOrderTime",
+          "dataType": "InventCostLoadTransferOrderTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreCloseNonFinancialCount",
+          "dataType": "InventCostPreCloseNonFinancialCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreCloseNonFinancialTime",
+          "dataType": "InventCostPreCloseNonFinancialTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreCloseTransferOrderCount",
+          "dataType": "InventCostPreCloseTransferOrderCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreCloseTransferOrderTime",
+          "dataType": "InventCostPreCloseTransferOrderTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessingState",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartTime",
+          "dataType": "StartDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateLevelAdjustmentCount",
+          "dataType": "InventCostUpdateLevelAdjustmentCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateLevelAdjustmentTime",
+          "dataType": "InventCostUpdateLevelAdjustmentTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateMarkingCount",
+          "dataType": "InventCostUpdateMarkingCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateMarkingTime",
+          "dataType": "InventCostUpdateMarkingTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateModelCount",
+          "dataType": "InventCostUpdateModelCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateModelTime",
+          "dataType": "InventCostUpdateModelTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateReceiptAdjustmentCount",
+          "dataType": "InventCostUpdateReceiptAdjustmentCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateReceiptAdjustmentTime",
+          "dataType": "InventCostUpdateReceiptAdjustmentTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateReturnAdjustmentsCount",
+          "dataType": "InventCostUpdateReturnAdjustmentsCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateReturnAdjustmentsTime",
+          "dataType": "InventCostUpdateReturnAdjustmentsTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Batch",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventClosing"
+          },
+          "name": "Relationship_InventClosingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Calculation of task bundles"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventClosingRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BOMLevel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostLoadCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostLoadTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostLoadTransferOrderCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostLoadTransferOrderTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostPreCloseNonFinancialCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostPreCloseNonFinancialTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostPreCloseTransferOrderCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostPreCloseTransferOrderTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventCostUpdateLevelAdjustmentCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateLevelAdjustmentTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateMarkingCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateMarkingTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateModelCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateModelTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateReceiptAdjustmentCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateReceiptAdjustmentTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateReturnAdjustmentsCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventCostUpdateReturnAdjustmentsTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

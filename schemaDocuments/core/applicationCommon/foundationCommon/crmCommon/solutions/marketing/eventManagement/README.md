@@ -1,6 +1,7 @@
 
 # eventManagement
 
+CDM standard entities  
 
 ## Entities
 

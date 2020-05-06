@@ -1,0 +1,86 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategoryAttributeLookup.cdm.json"
+    },
+    {
+      "corpusPath": "CatDisplayCategorySharedInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatDisplayCategoryFilterableAttribute",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CategoryAttributeLookup",
+          "dataType": "RefRecId",
+          "displayName": "Category",
+          "description": ""
+        },
+        {
+          "name": "IsFilterable",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedData",
+          "dataType": "RefRecId",
+          "displayName": "Shared",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategoryAttributeLookup"
+          },
+          "name": "Relationship_EcoResCategoryAttributeLookupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CatDisplayCategorySharedInfo"
+          },
+          "name": "Relationship_SharedDataRelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Filterable attribute"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

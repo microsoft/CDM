@@ -1,0 +1,99 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Group/PCClass.cdm.json"
+    },
+    {
+      "corpusPath": "PCConstraint.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCComponentConstraint",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ComponentClass",
+          "dataType": "RefRecId",
+          "displayName": "Component",
+          "description": ""
+        },
+        {
+          "name": "Constraint",
+          "dataType": "RefRecId",
+          "displayName": "Constraint",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "PCDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PCConstraintName",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PCClass"
+          },
+          "name": "Relationship_ComponentClassRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCConstraint"
+          },
+          "name": "Relationship_ConstraintRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Component constraint"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PCDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PCConstraintName",
+      "extendsDataType": "string"
+    }
+  ]
+}

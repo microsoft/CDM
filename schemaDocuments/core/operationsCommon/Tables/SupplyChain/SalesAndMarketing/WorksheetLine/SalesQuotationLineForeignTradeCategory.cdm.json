@@ -1,0 +1,103 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Miscellaneous/NGPCodesTable_FR.cdm.json"
+    },
+    {
+      "corpusPath": "SalesQuotationLine.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesQuotationLineForeignTradeCategory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "NGPCodesTable_FR",
+          "dataType": "NGPCodesTableFRId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "salesQuotationLineDataAreaId",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "name": "salesQuotationLineInventTransId",
+          "dataType": "TradeInventTransId",
+          "description": ""
+        },
+        {
+          "name": "UnitWeight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "displayName": "Unit weight",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "NGPCodesTable_FR"
+          },
+          "name": "Relationship_NGPCodesTable_FRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesQuotationLine"
+          },
+          "name": "Relationship_SalesQuotationLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Quotation line foreign trade"
+    },
+    {
+      "dataTypeName": "NGPCodesTableFRId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeInventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

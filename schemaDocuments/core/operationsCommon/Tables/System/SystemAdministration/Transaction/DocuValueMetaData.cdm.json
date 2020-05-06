@@ -1,0 +1,114 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/ContentType.cdm.json"
+    },
+    {
+      "corpusPath": "DocuValue.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DocuValueMetaData",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContentType",
+          "dataType": "RefRecId",
+          "displayName": "Content type",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "DocumentFileDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocuValue",
+          "dataType": "RefRecId",
+          "displayName": "Document value ID",
+          "description": ""
+        },
+        {
+          "name": "ReceiveDate",
+          "dataType": "DocumentFileReceiveDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "DocumentFileSequenceNumber",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ContentType"
+          },
+          "name": "Relationship_ContentTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuValue"
+          },
+          "name": "Relationship_DocuValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Document file meta data"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DocumentFileDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentFileReceiveDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DocumentFileSequenceNumber",
+      "extendsDataType": "string"
+    }
+  ]
+}

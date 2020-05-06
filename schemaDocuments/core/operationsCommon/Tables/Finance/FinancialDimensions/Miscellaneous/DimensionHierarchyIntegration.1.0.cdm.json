@@ -1,0 +1,78 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchy.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DimensionHierarchyIntegration",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IsDefault",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Active for type",
+          "description": ""
+        },
+        {
+          "name": "DisplayString",
+          "dataType": "DefaultDimensionIntegrationStructureDisplay",
+          "isNullable": true,
+          "displayName": "Financial dimension format",
+          "description": ""
+        },
+        {
+          "name": "DimensionHierarchy",
+          "dataType": "DimensionHierarchyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_DimensionHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "DefaultDimensionIntegrationStructureDisplay",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionHierarchyId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

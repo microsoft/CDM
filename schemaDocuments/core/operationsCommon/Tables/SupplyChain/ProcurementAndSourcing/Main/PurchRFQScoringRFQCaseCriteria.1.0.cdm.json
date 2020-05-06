@@ -1,0 +1,118 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchRFQCaseTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchRFQScoringRFQCaseCriteria",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "PurchRFQScoringCriteriaDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PurchRFQScoringCriteriaName",
+          "description": ""
+        },
+        {
+          "name": "RangeFrom",
+          "dataType": "PurchRFQScoringCriteriaRangeFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RangeTo",
+          "dataType": "PurchRFQScoringCriteriaRangeTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQCaseRecId",
+          "dataType": "PurchRFQCaseRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQCaseTable"
+          },
+          "name": "Relationship_PurchRFQCaseRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Scoring criteria"
+    },
+    {
+      "dataTypeName": "PurchRFQScoringCriteriaDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQScoringCriteriaName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQScoringCriteriaRangeFrom",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQScoringCriteriaRangeTo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQCaseRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

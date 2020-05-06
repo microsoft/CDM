@@ -1,0 +1,97 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Miscellaneous/BrazilianElectronicReportingParameters.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BrazilianElectronicReportingParametersEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ReportType",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ERModelMappingTable",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModelMappingName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Model mapping name",
+          "description": ""
+        },
+        {
+          "name": "SolutionName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Solution name",
+          "description": ""
+        },
+        {
+          "name": "VendorUrl",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Vendor internet address",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BrazilianElectronicReportingParameters"
+          },
+          "name": "BackingTable_BrazilianElectronicReportingParametersRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Brazilian electronic reporting parameters"
+    }
+  ]
+}

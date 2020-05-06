@@ -1,0 +1,337 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AssetBookTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetDepreciationProfile.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetLedger.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "AssetTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetLVPTransferProposal_AU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AltProfileId",
+          "dataType": "AssetDepreciationAltProfileId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetId",
+          "dataType": "AssetId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "BookId",
+          "dataType": "AssetBookId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CheckMaxPercentRB_DE",
+          "dataType": "AssetCheckMaxPercentRB_DE",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrentOperationsTax",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Depreciation",
+          "dataType": "AssetDepreciate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationStartDate",
+          "dataType": "AssetDepreciationStartDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DerogatoryBook_FR",
+          "dataType": "AssetDerogatoryBook_FR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DerogatoryModel_FR",
+          "dataType": "AssetDerogatoryValueModel_FR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastDepreciationDate",
+          "dataType": "AssetLastDepreciationDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LifeTime",
+          "dataType": "AssetLifeTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LifeTimeRest",
+          "dataType": "AssetLifeTimeRest",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "AssetName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetBookValue",
+          "dataType": "AssetNetBookValue",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "AssetPostingProfile",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfileId",
+          "dataType": "AssetDepreciationProfileId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLife",
+          "dataType": "AssetServiceLife",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SessionId",
+          "dataType": "SessionId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferToPool",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Transfer to low value pool",
+          "description": ""
+        },
+        {
+          "name": "UTCTimestamp",
+          "dataType": "UTCTimestamp",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationProfile"
+          },
+          "name": "Relationship_AssetDepreciationProfile_AltProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationProfile"
+          },
+          "name": "Relationship_AssetDepreciationProfile_ProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetLedger"
+          },
+          "name": "Relationship_AssetLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Asset LVP transfer proposal temp"
+    },
+    {
+      "dataTypeName": "AssetDepreciationAltProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetCheckMaxPercentRB_DE",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciationStartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetDerogatoryBook_FR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDerogatoryValueModel_FR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetLastDepreciationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetLifeTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetLifeTimeRest",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetNetBookValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetServiceLife",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SessionId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    }
+  ]
+}

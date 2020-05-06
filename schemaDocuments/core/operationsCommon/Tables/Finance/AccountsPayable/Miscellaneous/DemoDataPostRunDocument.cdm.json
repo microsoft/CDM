@@ -1,0 +1,152 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DemoDataPostRun.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DemoDataPostRunDocument",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RunId",
+          "dataType": "DemoDataPostRunId",
+          "displayName": "Demo data job",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "displayName": "Line number",
+          "description": ""
+        },
+        {
+          "name": "Document",
+          "dataType": "integer",
+          "displayName": "Document",
+          "description": ""
+        },
+        {
+          "name": "DocumentTarget",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Document target",
+          "description": ""
+        },
+        {
+          "name": "RunStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Demo data task status",
+          "description": ""
+        },
+        {
+          "name": "CompletionTime",
+          "dataType": "date",
+          "isNullable": true,
+          "displayName": "Completion time",
+          "description": ""
+        },
+        {
+          "name": "FromDocumentId",
+          "dataType": "DemoDataPostDocumentId",
+          "isNullable": true,
+          "displayName": "From document",
+          "description": ""
+        },
+        {
+          "name": "ToDocumentId",
+          "dataType": "DemoDataPostDocumentId",
+          "isNullable": true,
+          "displayName": "To document",
+          "description": ""
+        },
+        {
+          "name": "FromDocumentDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "ToDocumentDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "End date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DemoDataPostRun"
+          },
+          "name": "Relationship_DemoDataPostRunRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "DemoDataPostRunId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DemoDataPostDocumentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

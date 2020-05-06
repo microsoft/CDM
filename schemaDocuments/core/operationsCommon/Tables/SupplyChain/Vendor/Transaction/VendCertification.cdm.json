@@ -1,0 +1,214 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Miscellaneous/VendCertType.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendCertification",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CertificateReceived",
+          "dataType": "VendCertificateReceived",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CertificationDate",
+          "dataType": "VendCertificationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CertificationNumber",
+          "dataType": "VendCertificationNumber",
+          "description": ""
+        },
+        {
+          "name": "CertificationType",
+          "dataType": "VendCertificationType",
+          "description": ""
+        },
+        {
+          "name": "Comments_PSN",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Comments",
+          "description": ""
+        },
+        {
+          "name": "DueDate_PSN",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InProcess_PSN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "In process",
+          "description": ""
+        },
+        {
+          "name": "IssuerParty",
+          "dataType": "VendCertificationIssuer",
+          "description": ""
+        },
+        {
+          "name": "LiabilityAmount_PSN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Liability amount/Bond limit",
+          "description": ""
+        },
+        {
+          "name": "ValidFromDate",
+          "dataType": "ValidFromDate",
+          "isNullable": true,
+          "displayName": "Effective date",
+          "description": ""
+        },
+        {
+          "name": "ValidToDate",
+          "dataType": "ValidToDate",
+          "isNullable": true,
+          "displayName": "Expiration date",
+          "description": ""
+        },
+        {
+          "name": "VendParty",
+          "dataType": "DirPartyRecId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_IssuerPartyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendCertType"
+          },
+          "name": "Relationship_VendCertificationTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendorPartyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Set up certifications"
+    },
+    {
+      "dataTypeName": "VendCertificateReceived",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendCertificationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendCertificationNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendCertificationType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendCertificationIssuer",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DirPartyRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

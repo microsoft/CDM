@@ -1,0 +1,84 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Reference/FiscalCalendar.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetCycleTimeSpan",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetCycleLengthOption",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DefaultNumberOfAccountingPeriods",
+          "dataType": "BudgetNumberOfPeriods",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalCalendar",
+          "dataType": "RefRecId",
+          "displayName": "Fiscal calendar",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "BudgetCycleTimeSpanName",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendar"
+          },
+          "name": "Relationship_FiscalCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget cycle time span"
+    },
+    {
+      "dataTypeName": "BudgetNumberOfPeriods",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetCycleTimeSpanName",
+      "extendsDataType": "string"
+    }
+  ]
+}

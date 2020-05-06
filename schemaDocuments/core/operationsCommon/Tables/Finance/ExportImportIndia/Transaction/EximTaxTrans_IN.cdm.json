@@ -1,0 +1,157 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Transaction/TaxTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EximTaxTrans_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssessableValue",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Assessable value",
+          "description": ""
+        },
+        {
+          "name": "AuthorizationId",
+          "dataType": "EximAuthorizationId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BalanceTaxAmount",
+          "dataType": "TaxAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Calculated balance tax amount",
+          "description": ""
+        },
+        {
+          "name": "BalanceTaxCorrectedAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Actual balance tax amount",
+          "description": ""
+        },
+        {
+          "name": "DEPBAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "DEPB amount",
+          "description": ""
+        },
+        {
+          "name": "DEPBAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "displayName": "DEPB amount",
+          "description": ""
+        },
+        {
+          "name": "IncentiveScheme",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Incentive scheme",
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Calculated incentive scheme tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxCorrectedAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Actual incentive scheme tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxTransRecId",
+          "dataType": "TaxTransRecId_IN",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTrans"
+          },
+          "name": "Relationship_TaxTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Posted sales tax for EXIM"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EximAuthorizationId_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxTransRecId_IN",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

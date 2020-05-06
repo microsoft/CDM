@@ -1,0 +1,249 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "AgreementLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchReqConsolidation.cdm.json"
+    },
+    {
+      "corpusPath": "PurchReqLine.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchReqConsolidationLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "Discount",
+          "dataType": "DiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscountPercent",
+          "dataType": "DiscPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscountPercentStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Consolidation discount percent status",
+          "description": ""
+        },
+        {
+          "name": "DiscountStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NewLineAmount",
+          "dataType": "PurchLineAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NewPurchAgreement",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NewPurchPrice",
+          "dataType": "PurchReqPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NewPurchQty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NewRequestedDate",
+          "dataType": "PurchReqRequiredDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NewVendor",
+          "dataType": "VendAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NewVendorDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NewVendorQuoteNumber",
+          "dataType": "VendQuoteNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchReqConsolidationId",
+          "dataType": "PurchReqConsolidationRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchReqLineID",
+          "dataType": "PurchReqConsolidationReqLineId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_NewVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AgreementLine"
+          },
+          "name": "Relationship_PurchaseAgreementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchReqConsolidation"
+          },
+          "name": "Relationship_PurchReqAggregationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchReqLine"
+          },
+          "name": "Relationship_PurchReqLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase requisition consolidation line"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLineAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchReqPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchReqRequiredDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendQuoteNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchReqConsolidationRefId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchReqConsolidationReqLineId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

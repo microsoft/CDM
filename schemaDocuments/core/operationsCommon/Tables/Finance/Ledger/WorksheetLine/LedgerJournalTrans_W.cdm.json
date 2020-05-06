@@ -1,0 +1,374 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/PaymentFormatCodeSets_W.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CashRegisterTerminal_W.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EInvoice/Group/CFDIWithholdingType_MX.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerJournalTrans_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CashRegisterTerminal",
+          "dataType": "CashRegisterTerminalRecId_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryPurpose",
+          "dataType": "CategoryPurposeRecId_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChargeBearer",
+          "dataType": "ChargeBearerRecId_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocalInstrument",
+          "dataType": "LocalInstrumentRecId_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLevel",
+          "dataType": "ServiceLevelRecId_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalTrans",
+          "dataType": "LedgerJournalTransRefRecId",
+          "description": ""
+        },
+        {
+          "name": "EPaymCFDIConfirmNumber_MX",
+          "dataType": "EInvoiceCFDIConfirmNumber_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIBeneficiaryRetains_MX",
+          "dataType": "CFDIBeneficiaryRetains_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIFinancialSystem_MX",
+          "dataType": "CFDIFinancialSystem_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestBelongsDerivedFinOp_MX",
+          "dataType": "CFDIInterestBelongsDerivedFinOp_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestCashedInTheCurrentPeriod_MX",
+          "dataType": "CFDIInterestCashedInTheCurrentPeriod_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestLossAmount_MX",
+          "dataType": "CFDIInterestLossAmount_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestNominalAmount_MX",
+          "dataType": "CFDIInterestNominalAmount_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFDIInterestRealAmount_MX",
+          "dataType": "CFDIInterestRealAmount_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithholdingTypeCode_MX",
+          "dataType": "CFDIWithholdingTypeCode_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefPurchInvoiceDate_IN",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefPurchInvoiceId_IN",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefSalesInvoiceDate_IN",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefSalesInvoiceId_IN",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigPaymRefRecId_RU",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Original prepayment",
+          "description": ""
+        },
+        {
+          "name": "OrigPaymRefTableId_RU",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymentFormatCodeSets_W"
+          },
+          "name": "Relationship_PaymentFormatCodeSets_CategoryPurposeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymentFormatCodeSets_W"
+          },
+          "name": "Relationship_PaymentFormatCodeSets_ChargeBearerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymentFormatCodeSets_W"
+          },
+          "name": "Relationship_PaymentFormatCodeSets_LocalInstrumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymentFormatCodeSets_W"
+          },
+          "name": "Relationship_PaymentFormatCodeSets_ServiceLevelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CashRegisterTerminal_W"
+          },
+          "name": "Relationship_CashRegisterTerminal_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFDIWithholdingType_MX"
+          },
+          "name": "Relationship_CFDIWithholdingType_MXRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Order line information for other country contexts"
+    },
+    {
+      "dataTypeName": "CashRegisterTerminalRecId_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CategoryPurposeRecId_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ChargeBearerRecId_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LocalInstrumentRecId_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ServiceLevelRecId_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerJournalTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EInvoiceCFDIConfirmNumber_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CFDIBeneficiaryRetains_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFDIFinancialSystem_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFDIInterestBelongsDerivedFinOp_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFDIInterestCashedInTheCurrentPeriod_MX",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFDIInterestLossAmount_MX",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CFDIInterestNominalAmount_MX",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CFDIInterestRealAmount_MX",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CFDIWithholdingTypeCode_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

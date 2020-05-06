@@ -1,0 +1,538 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "FiscalDocument_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Transaction/CustPackingSlipTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendInvoiceTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FiscalDocumentLine_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Accounting amount",
+          "description": ""
+        },
+        {
+          "name": "ApproximateTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Approximate tax amount",
+          "description": ""
+        },
+        {
+          "name": "AssetId",
+          "dataType": "FiscalDocumentAssetId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFOP",
+          "dataType": "SalesPurchCFOPId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "FiscalDocumentItemDescription_BR",
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "DIAddition",
+          "dataType": "PurchDIAddition_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExceptionCode",
+          "dataType": "ExceptionCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FCINumber",
+          "dataType": "FCINumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FinancialLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalClassification",
+          "dataType": "TaxFiscalClassificationId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocument",
+          "dataType": "FiscalDocumentRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreightNature",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GrossWeight",
+          "dataType": "FiscalDocumentGrossWeight_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "FiscalDocumentInventTransId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdBase",
+          "isNullable": true,
+          "displayName": "Item number",
+          "description": ""
+        },
+        {
+          "name": "ItemType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "FiscalDocumentLineAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDiscount",
+          "dataType": "FiscalDocumentDiscAmount_BR",
+          "isNullable": true,
+          "displayName": "Line discount",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetWeight",
+          "dataType": "FiscalDocumentItemNetWeight_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "FiscalDocumentUnitQty_BR",
+          "isNullable": true,
+          "displayName": "Quantity",
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCode",
+          "dataType": "TaxServiceCodeId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Unit",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitPrice",
+          "dataType": "FiscalDocumentPriceCur_BR",
+          "isNullable": true,
+          "displayName": "Unit price",
+          "description": ""
+        },
+        {
+          "name": "SuframaDiscountCOFINS",
+          "dataType": "FiscalDocumentDiscAmount_BR",
+          "isNullable": true,
+          "displayName": "SUFRAMA COFINS discount",
+          "description": ""
+        },
+        {
+          "name": "SuframaDiscountICMS",
+          "dataType": "FiscalDocumentDiscAmount_BR",
+          "isNullable": true,
+          "displayName": "SUFRAMA ICMS discount",
+          "description": ""
+        },
+        {
+          "name": "SuframaDiscountPIS",
+          "dataType": "FiscalDocumentDiscAmount_BR",
+          "isNullable": true,
+          "displayName": "SUFRAMA PIS discount",
+          "description": ""
+        },
+        {
+          "name": "TaxSubstitutionCode",
+          "dataType": "TaxSubstitutionCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BenefitCode",
+          "dataType": "FBFiscalDocumentTaxSpedAdjustmentCode_BR",
+          "isNullable": true,
+          "displayName": "Adjustment code 5.2",
+          "description": ""
+        },
+        {
+          "name": "CNPJ",
+          "dataType": "CNPJMan_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScaleIndicator",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ICMSSTCollectionPaymentMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RespWithholdingICMSST",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ICMSSTCollectionPaymentNumber",
+          "dataType": "ICMSSTCollectionPaymentNumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NfeVbcstretVicmsstretTagsReported",
+          "dataType": "FBNfeVbcstretVicmsstretTagsReported_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustmentCode53",
+          "dataType": "FBFiscalDocumentTaxSpedAdjustmentCode_BR",
+          "isNullable": true,
+          "displayName": "Adjustment code 5.3",
+          "description": ""
+        },
+        {
+          "name": "ObservationCode",
+          "dataType": "FBObservationCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocument_BR"
+          },
+          "name": "Relationship_FiscalDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_OriginatingCustInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPackingSlipTrans"
+          },
+          "name": "Relationship_OriginatingCustPackingSlipTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceTrans"
+          },
+          "name": "Relationship_OriginatingVendInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal document journal lines"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FiscalDocumentAssetId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesPurchCFOPId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentItemDescription_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchDIAddition_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExceptionCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FCINumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxFiscalClassificationId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalDocumentGrossWeight_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FiscalDocumentInventTransId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentLineAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FiscalDocumentDiscAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FiscalDocumentItemNetWeight_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FiscalDocumentUnitQty_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentPriceCur_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxSubstitutionCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBFiscalDocumentTaxSpedAdjustmentCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CNPJMan_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ICMSSTCollectionPaymentNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBNfeVbcstretVicmsstretTagsReported_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FBObservationCode_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

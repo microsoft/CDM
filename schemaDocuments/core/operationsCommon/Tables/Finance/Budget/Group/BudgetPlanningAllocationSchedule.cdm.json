@@ -1,0 +1,259 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetPlanScenario.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetAllocationTerm.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/Ledger.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerAllocateKey.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/LedgerAllocationRule.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanningAllocationSchedule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllocationMethod",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "AllocationTerm",
+          "dataType": "BudgetAllocationTermRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BasisPlanScenario",
+          "dataType": "BudgetPlanScenarioRecId",
+          "isNullable": true,
+          "displayName": "Basis scenario",
+          "description": ""
+        },
+        {
+          "name": "DestinationPlanScenario",
+          "dataType": "BudgetPlanScenarioRecId",
+          "displayName": "Destination scenario",
+          "description": ""
+        },
+        {
+          "name": "Factor",
+          "dataType": "BudgetPlanAllocationScheduleFactor",
+          "description": ""
+        },
+        {
+          "name": "Ledger",
+          "dataType": "LedgerRecId",
+          "displayName": "Ledger",
+          "description": ""
+        },
+        {
+          "name": "LedgerAllocationKey",
+          "dataType": "LedgerAllocateKeyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerAllocationKeyDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerAllocationRule",
+          "dataType": "BudgetPlanningAllocationRuleId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerAllocationRuleDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "BudgetPlanAllocationScheduleName",
+          "description": ""
+        },
+        {
+          "name": "SourcePlanScenario",
+          "dataType": "BudgetPlanScenarioRecId",
+          "isNullable": true,
+          "displayName": "Source scenario",
+          "description": ""
+        },
+        {
+          "name": "UseSourceEffectiveDate",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Use Source effective dates",
+          "description": ""
+        },
+        {
+          "name": "AncestorLevel",
+          "dataType": "BudgetPlanAncestorLevel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AppendLines",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Append to plan",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanScenario"
+          },
+          "name": "Relationship_BasisPlanScenarioRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetAllocationTerm"
+          },
+          "name": "Relationship_BudgetAllocationTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanScenario"
+          },
+          "name": "Relationship_DestinationPlanScenarioRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Ledger"
+          },
+          "name": "Relationship_LedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocateKey"
+          },
+          "name": "Relationship_LedgerAllocateKeyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocationRule"
+          },
+          "name": "Relationship_LedgerAllocationRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanScenario"
+          },
+          "name": "Relationship_SourcePlanScenarioRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget planning allocation schedules"
+    },
+    {
+      "dataTypeName": "BudgetAllocationTermRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanScenarioRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanAllocationScheduleFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerAllocateKeyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanningAllocationRuleId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetPlanAllocationScheduleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BudgetPlanAncestorLevel",
+      "extendsDataType": "integer"
+    }
+  ]
+}

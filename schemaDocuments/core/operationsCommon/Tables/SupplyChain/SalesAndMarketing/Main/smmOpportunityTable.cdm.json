@@ -1,0 +1,387 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.cdm.json"
+    },
+    {
+      "corpusPath": "smmBusRelTable.cdm.json"
+    },
+    {
+      "corpusPath": "smmOpportunityRelTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmQuotationProbabilityGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmQuotationPrognosisGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmQuotationReasonGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmSalesUnit.cdm.json"
+    },
+    {
+      "corpusPath": "smmSourceTypeTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmOpportunityTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ClosedByWorker",
+          "dataType": "smmOpportunityClosedByWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedDate",
+          "dataType": "smmOpportunityClosedDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DaysToClose",
+          "dataType": "smmDaysToClose",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EstimatedRevenue",
+          "dataType": "smmOpportunityEstimatedRevenue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Memo",
+          "dataType": "smmOpportunityMemo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OpenedByWorker",
+          "dataType": "smmOpportunityOpenedByWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OpenedDate",
+          "dataType": "smmOpportunityOpenedDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OpportunityId",
+          "dataType": "smmOpportunityId",
+          "description": ""
+        },
+        {
+          "name": "OwnerWorker",
+          "dataType": "smmOpportunityOwnerWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Party",
+          "dataType": "DirPartyRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProbabilityId",
+          "dataType": "smmQuotationProbabilityId",
+          "isNullable": true,
+          "displayName": "Probability",
+          "description": ""
+        },
+        {
+          "name": "ProcessName",
+          "dataType": "smmOpportunitySalesProcess",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrognosisId",
+          "dataType": "smmQuotationPrognosisId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Reason",
+          "dataType": "smmQuotationReasonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesUnitId",
+          "dataType": "smmSalesUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDescription",
+          "dataType": "smmSourceComment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRefRecId",
+          "dataType": "smmSourceRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTypeId",
+          "dataType": "SmmSourceTypeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Subject",
+          "dataType": "smmOpportunitySubject",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTable_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelTable"
+          },
+          "name": "Relationship_smmBusRelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmOpportunityRelTable"
+          },
+          "name": "Relationship_smmOpportunityRelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmQuotationProbabilityGroup"
+          },
+          "name": "Relationship_smmQuotationProbabilityGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmQuotationPrognosisGroup"
+          },
+          "name": "Relationship_smmQuotationPrognosisGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmQuotationReasonGroup"
+          },
+          "name": "Relationship_smmQuotationReasonGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmSalesUnit"
+          },
+          "name": "Relationship_smmSalesUnitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmSourceTypeTable"
+          },
+          "name": "Relationship_smmSourceTypeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Opportunities"
+    },
+    {
+      "dataTypeName": "smmOpportunityClosedByWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmOpportunityClosedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "smmDaysToClose",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmOpportunityEstimatedRevenue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "smmOpportunityMemo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmOpportunityOpenedByWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmOpportunityOpenedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "smmOpportunityId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmOpportunityOwnerWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DirPartyRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmQuotationProbabilityId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmOpportunitySalesProcess",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmQuotationPrognosisId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmQuotationReasonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmSalesUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmSourceComment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmSourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SmmSourceTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmOpportunitySubject",
+      "extendsDataType": "string"
+    }
+  ]
+}

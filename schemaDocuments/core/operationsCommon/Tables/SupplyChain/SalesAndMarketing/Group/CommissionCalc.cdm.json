@@ -1,0 +1,284 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/TransactionHeader/AgreementHeaderExt_RU.cdm.json"
+    },
+    {
+      "corpusPath": "CommissionCustomerGroup.cdm.json"
+    },
+    {
+      "corpusPath": "CommissionItemGroup.cdm.json"
+    },
+    {
+      "corpusPath": "CommissionSalesGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CommissionCalc",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AgreementHeaderExt_RU",
+          "dataType": "AgreementHeaderExtRecId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CommissionBase",
+          "dataType": "CommissionRate",
+          "isNullable": true,
+          "displayName": "Commission percentage",
+          "description": ""
+        },
+        {
+          "name": "CommissionBasis",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Basic",
+          "description": ""
+        },
+        {
+          "name": "CustomerCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Customer code",
+          "description": ""
+        },
+        {
+          "name": "CustomerRelation",
+          "dataType": "CustVendRel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscLevel",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Discount",
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "StartDate",
+          "isNullable": true,
+          "displayName": "From",
+          "description": ""
+        },
+        {
+          "name": "ItemCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Item code",
+          "description": ""
+        },
+        {
+          "name": "ItemRelation",
+          "dataType": "ItemRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesRepCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesRepRelation",
+          "dataType": "SalesRepRel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SearchAgain",
+          "dataType": "SearchAgain",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "EndDate",
+          "isNullable": true,
+          "displayName": "To",
+          "description": ""
+        },
+        {
+          "name": "UseThresholds_IT",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Payment thresholds",
+          "description": ""
+        },
+        {
+          "name": "UpperThreshold_IT",
+          "dataType": "CommissionUpperThreshold_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LowerThreshold_IT",
+          "dataType": "CommissionLowerThreshold_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AgreementHeaderExt_RU"
+          },
+          "name": "Relationship_AgreementHeaderExt_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CommissionCustomerGroup"
+          },
+          "name": "Relationship_CommisionCustomerGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CommissionItemGroup"
+          },
+          "name": "Relationship_CommissionItemGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CommissionSalesGroup"
+          },
+          "name": "Relationship_CommissionSalesGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Commission rates"
+    },
+    {
+      "dataTypeName": "AgreementHeaderExtRecId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CommissionRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustVendRel",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ItemRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesRepRel",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SearchAgain",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EndDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CommissionUpperThreshold_IT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CommissionLowerThreshold_IT",
+      "extendsDataType": "integer"
+    }
+  ]
+}

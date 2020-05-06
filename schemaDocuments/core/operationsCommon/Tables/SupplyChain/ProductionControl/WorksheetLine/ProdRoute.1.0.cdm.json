@@ -1,0 +1,679 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/WorksheetLine/ProdRouteProj.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/RouteCostCategory.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/RouteGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/RouteOpr.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/RouteOprTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/WrkCtrProperty.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/WorksheetLine/DocuRef.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProdRoute",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "SetUpCategoryId",
+          "dataType": "RouteCostCategoryIdSetup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccError",
+          "dataType": "RouteAccErrorPct",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BackorderStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalcProc",
+          "dataType": "RouteOprTimeProcess",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Process",
+          "description": ""
+        },
+        {
+          "name": "CalcQty",
+          "dataType": "RouteOprQtyToOpr",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalcSetUp",
+          "dataType": "RouteOprTimeSetup",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Setup",
+          "description": ""
+        },
+        {
+          "name": "ConstantReleased",
+          "dataType": "ProdConstantReleased",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "InventSiteLinkedDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorPct",
+          "dataType": "RouteErrorPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutedProcess",
+          "dataType": "ProdExecutedPctProcess",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutedSetup",
+          "dataType": "ProdExecutedPctSetup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Formula",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FormulaFactor1",
+          "dataType": "RouteFormulaFactor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "SchedFromDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromTime",
+          "dataType": "SchedFromTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobIdProcess",
+          "dataType": "JmgJobId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Process job ID",
+          "description": ""
+        },
+        {
+          "name": "JobIdSetup",
+          "dataType": "JmgJobId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Set up job ID",
+          "description": ""
+        },
+        {
+          "name": "JobPayType",
+          "dataType": "JmgJobPayType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Level",
+          "dataType": "RouteLevel",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LinkType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OprFinished",
+          "dataType": "ProdFinishedOpr",
+          "isNullable": true,
+          "displayName": "Reported as finished",
+          "description": ""
+        },
+        {
+          "name": "OprId",
+          "dataType": "RouteOprId",
+          "description": ""
+        },
+        {
+          "name": "OprNum",
+          "dataType": "OprNum",
+          "description": ""
+        },
+        {
+          "name": "OprNumNext",
+          "dataType": "OprNumNext",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OprPriority",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OprStartedUp",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Started",
+          "description": ""
+        },
+        {
+          "name": "OverlapQty",
+          "dataType": "RouteOprQtyOverlap",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhantomBOMFactor",
+          "dataType": "Factor",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessCategoryId",
+          "dataType": "RouteCostCategoryIdProcess",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessPerQty",
+          "dataType": "RouteOprQtyProcessNumOf",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessTime",
+          "dataType": "RouteOprTimeProcess",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdId",
+          "dataType": "ProdId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PropertyId",
+          "dataType": "PropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyCategoryId",
+          "dataType": "RouteCostCategoryIdQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QueueTimeAfter",
+          "dataType": "RouteOprTimeQueueAfter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QueueTimeBefore",
+          "dataType": "RouteOprTimeQueueBefore",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteGroupId",
+          "dataType": "RouteGroupId",
+          "description": ""
+        },
+        {
+          "name": "RouteOprRefRecId",
+          "dataType": "RouteOprRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SetupTime",
+          "dataType": "RouteOprTimeSetup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "SchedToDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToHours",
+          "dataType": "RouteHourFactor",
+          "description": ""
+        },
+        {
+          "name": "ToTime",
+          "dataType": "SchedToTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferBatch",
+          "dataType": "RouteOprQtyTransferBatch",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TranspTime",
+          "dataType": "RouteOprTimeTransport",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WrkCtrIdCost",
+          "dataType": "WrkCtrIdCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SkipJobCreation",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_CostResourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqTrans"
+          },
+          "name": "Relationship_InventReqRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdRouteProj"
+          },
+          "name": "Relationship_ProdRouteProjRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteCostCategory"
+          },
+          "name": "Relationship_QuantityCostCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteGroup"
+          },
+          "name": "Relationship_RouteGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteOpr"
+          },
+          "name": "Relationship_RouteOprRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteOprTable"
+          },
+          "name": "Relationship_RouteOprTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteCostCategory"
+          },
+          "name": "Relationship_RuntimeCostCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteCostCategory"
+          },
+          "name": "Relationship_SetupCostCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrProperty"
+          },
+          "name": "Relationship_WrkCtrPropertyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DocuRef"
+          },
+          "name": "Relationship_DocuRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Production route"
+    },
+    {
+      "dataTypeName": "RouteCostCategoryIdSetup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteAccErrorPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteOprTimeProcess",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteOprQtyToOpr",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteOprTimeSetup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdConstantReleased",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventSiteLinkedDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RouteErrorPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdExecutedPctProcess",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdExecutedPctSetup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteFormulaFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SchedFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SchedFromTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "JmgJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgJobPayType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RouteLevel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProdFinishedOpr",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RouteOprId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OprNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "OprNumNext",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RouteOprQtyOverlap",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Factor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteCostCategoryIdProcess",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteOprQtyProcessNumOf",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteCostCategoryIdQty",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteOprTimeQueueAfter",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteOprTimeQueueBefore",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteOprRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SchedToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RouteHourFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SchedToTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "RouteOprQtyTransferBatch",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteOprTimeTransport",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WrkCtrIdCost",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,142 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.cdm.json"
+    },
+    {
+      "corpusPath": "ResResourceIdentifier.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ResProjectResource",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Name",
+          "dataType": "ResResourceName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecipientCompany",
+          "dataType": "ResResourceRecipientCompany",
+          "description": ""
+        },
+        {
+          "name": "Resource",
+          "dataType": "ResourceRecId",
+          "description": ""
+        },
+        {
+          "name": "ResourceId",
+          "dataType": "ResResourceID",
+          "description": ""
+        },
+        {
+          "name": "SourceCompany",
+          "dataType": "ResResourceCompany",
+          "description": ""
+        },
+        {
+          "name": "SourceLegalEntity",
+          "dataType": "LegalEntityRecId",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "ResourceIdExt",
+          "dataType": "ResResourceIdExt",
+          "description": ""
+        },
+        {
+          "name": "Schedulable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Is schedulable",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_WrkCtrTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ResResourceIdentifier"
+          },
+          "name": "Relationship_ResResourceIdentifierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project resource"
+    },
+    {
+      "dataTypeName": "ResResourceName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ResResourceRecipientCompany",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ResResourceID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ResResourceCompany",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LegalEntityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ResResourceIdExt",
+      "extendsDataType": "string"
+    }
+  ]
+}

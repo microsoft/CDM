@@ -1,0 +1,125 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/EMPAShared/Reference/SharedCategory.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CategoryTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CategoryId",
+          "dataType": "CategoryId",
+          "description": ""
+        },
+        {
+          "name": "CategoryName",
+          "dataType": "CategoryName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedCategory",
+          "dataType": "SharedCategoryRecId",
+          "description": ""
+        },
+        {
+          "name": "UseInExpense",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use in Expense",
+          "description": ""
+        },
+        {
+          "name": "UseInProduction",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use in Production",
+          "description": ""
+        },
+        {
+          "name": "UseInProject",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use in Project",
+          "description": ""
+        },
+        {
+          "name": "IntegrationId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Integration ID",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SharedCategory"
+          },
+          "name": "Relationship_SharedCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Category table"
+    },
+    {
+      "dataTypeName": "CategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CategoryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SharedCategoryRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

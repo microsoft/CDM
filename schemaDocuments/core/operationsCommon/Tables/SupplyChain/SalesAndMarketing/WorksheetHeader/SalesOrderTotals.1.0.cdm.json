@@ -1,0 +1,155 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SalesTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesOrderTotals",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "SalesId",
+          "dataType": "SalesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineTotalAmount",
+          "dataType": "MCRTotalAmount",
+          "isNullable": true,
+          "displayName": "Line total",
+          "description": ""
+        },
+        {
+          "name": "OrderTotalChargesAmount",
+          "dataType": "MCRTotalMarkupAmount",
+          "isNullable": true,
+          "displayName": "Total charges",
+          "description": ""
+        },
+        {
+          "name": "TotalDiscountAmount",
+          "dataType": "SalesDiscountAmount",
+          "isNullable": true,
+          "displayName": "Total discount amount",
+          "description": ""
+        },
+        {
+          "name": "OrderTotalDiscountAmount",
+          "dataType": "SalesDiscountAmount",
+          "isNullable": true,
+          "displayName": "Sales order discount",
+          "description": ""
+        },
+        {
+          "name": "OrderTotalTaxAmount",
+          "dataType": "MCRTotalTaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderTotalAmount",
+          "dataType": "MCRTotalAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastUpdatedDateTime",
+          "dataType": "SalesTotalsLastUpdatedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderHeaderTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales order totals"
+    },
+    {
+      "dataTypeName": "SalesId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRTotalAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRTotalMarkupAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesDiscountAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRTotalTaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesTotalsLastUpdatedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

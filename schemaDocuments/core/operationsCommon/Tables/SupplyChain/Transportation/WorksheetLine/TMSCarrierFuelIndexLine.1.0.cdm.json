@@ -1,0 +1,149 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrierFuelIndexTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSCarrierFuelIndexLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CarrierFuelIndexCode",
+          "dataType": "TMSCarrierFuelIndexCode",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "EffectiveUTCDateTime",
+          "dataType": "TransDateTime",
+          "displayName": "Effective start date and time",
+          "description": ""
+        },
+        {
+          "name": "Percent",
+          "dataType": "TMSPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PPGFrom",
+          "dataType": "TMSPPG",
+          "isNullable": true,
+          "displayName": "PPG From",
+          "description": ""
+        },
+        {
+          "name": "PPGTo",
+          "dataType": "TMSPPG",
+          "isNullable": true,
+          "displayName": "PPG To",
+          "description": ""
+        },
+        {
+          "name": "Rate",
+          "dataType": "TMSRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierFuelIndexTable"
+          },
+          "name": "Relationship_TMSCarrierFuelIndexTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Carrier fuel index lines"
+    },
+    {
+      "dataTypeName": "TMSCarrierFuelIndexCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSPPG",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSRate",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

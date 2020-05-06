@@ -1,0 +1,115 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TaxJournalTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxJournalTransExchangeRateAmount",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExchangeRateSourceBaseAmountRegulated",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Adjusted amount origin (VAT exchange rate)",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateSourceRegulateAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Adjusted sales tax amount (VAT exchange rate)",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Sales tax amount (VAT exchange rate)",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateTaxBaseAmount",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Amount origin (VAT exchange rate)",
+          "description": ""
+        },
+        {
+          "name": "TaxJournalTrans",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxJournalTrans"
+          },
+          "name": "Relationship_TaxJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "VAT exchange rate info"
+    },
+    {
+      "dataTypeName": "TaxBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

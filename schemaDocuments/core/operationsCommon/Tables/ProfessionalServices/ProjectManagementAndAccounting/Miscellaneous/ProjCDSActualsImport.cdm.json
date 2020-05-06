@@ -1,0 +1,564 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResDistinctProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjFundingSource.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Transaction/ProjProposalJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjCDSActualsImport",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualsImportId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Actuals import id",
+          "description": ""
+        },
+        {
+          "name": "AccountingDate",
+          "dataType": "AccountingDate",
+          "description": ""
+        },
+        {
+          "name": "ActualId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Actual ID",
+          "description": ""
+        },
+        {
+          "name": "AdjustmentStatus",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Adjustment status",
+          "description": ""
+        },
+        {
+          "name": "Amount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Amount",
+          "description": ""
+        },
+        {
+          "name": "AmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BillingStatusId",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Billing status ID",
+          "description": ""
+        },
+        {
+          "name": "BillingType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ContractId",
+          "dataType": "ProjInvoiceProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContractLine",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Contract line",
+          "description": ""
+        },
+        {
+          "name": "ContractingUnit",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Contracting unit",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description255",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "TransDate",
+          "displayName": "Document date",
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "date",
+          "isNullable": true,
+          "displayName": "End date",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Exchange rate date",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRate",
+          "dataType": "CurrencyExchangeRate",
+          "isNullable": true,
+          "displayName": "Exchange rate",
+          "description": ""
+        },
+        {
+          "name": "ExternalDescription",
+          "dataType": "Description255",
+          "isNullable": true,
+          "displayName": "External description",
+          "description": ""
+        },
+        {
+          "name": "ExternalReference",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "External reference",
+          "description": ""
+        },
+        {
+          "name": "InvoiceId",
+          "dataType": "ProjInvoiceId",
+          "isNullable": true,
+          "displayName": "Invoice ID",
+          "description": ""
+        },
+        {
+          "name": "IsJournalized",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Journalized",
+          "description": ""
+        },
+        {
+          "name": "OwningBusinessId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Owning business ID",
+          "description": ""
+        },
+        {
+          "name": "OwningUser",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Owning user",
+          "description": ""
+        },
+        {
+          "name": "ProjectId",
+          "dataType": "ProjId",
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Quantity",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Status",
+          "description": ""
+        },
+        {
+          "name": "StatusReason",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Status reason",
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "date",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "TaskId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Task ID",
+          "description": ""
+        },
+        {
+          "name": "TransactionClassification",
+          "dataType": "bigInteger",
+          "displayName": "Transaction classification",
+          "description": ""
+        },
+        {
+          "name": "TransactionCategory",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Transaction category",
+          "description": ""
+        },
+        {
+          "name": "TransactionCurrencyId",
+          "dataType": "CurrencyCode",
+          "displayName": "Transaction currency",
+          "description": ""
+        },
+        {
+          "name": "TransType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasure",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitPrice",
+          "dataType": "UnitPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitPriceMST",
+          "dataType": "UnitPrice",
+          "isNullable": true,
+          "displayName": "Unit price in monetary standard (national currency)",
+          "description": ""
+        },
+        {
+          "name": "ProjAdvancedJournalLine",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Project advanced journal line",
+          "description": ""
+        },
+        {
+          "name": "ResourceId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Resource ID",
+          "description": ""
+        },
+        {
+          "name": "ResourceOperationUnitId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Resource operation unit ID",
+          "description": ""
+        },
+        {
+          "name": "ProjectDataAreaId",
+          "dataType": "LegalEntityDataAreaId",
+          "isNullable": true,
+          "displayName": "Project company",
+          "description": ""
+        },
+        {
+          "name": "IsProcessed",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Processed",
+          "description": ""
+        },
+        {
+          "name": "IntegrationCount",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Integration count",
+          "description": ""
+        },
+        {
+          "name": "IsDuplicate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Duplicate",
+          "description": ""
+        },
+        {
+          "name": "TransactionCategoryId",
+          "dataType": "ProjTransactionCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerAccountNumber",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductNumber",
+          "dataType": "EcoResProductDisplayProductNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VoucherNumber",
+          "dataType": "ProjVoucherNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxAmount",
+          "dataType": "ProjSalesTaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountingAmount",
+          "dataType": "ProjAccountingAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BookableResourceName",
+          "dataType": "ProjBookableResourceName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivityNumber",
+          "dataType": "smmActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FundingSourceId",
+          "dataType": "ProjFundingSourceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceProposalId",
+          "dataType": "ProjProposalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceProposalLineTransId",
+          "dataType": "ProjTransIdBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResDistinctProduct"
+          },
+          "name": "Relationship_EcoResDistinctProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjFundingSource"
+          },
+          "name": "Relationship_ProjFundingSourceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjProposalJour"
+          },
+          "name": "Relationship_ProjProposalJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project actuals import"
+    },
+    {
+      "dataTypeName": "AccountingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjInvoiceProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CurrencyExchangeRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LegalEntityDataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTransactionCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResProductDisplayProductNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjVoucherNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjSalesTaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjAccountingAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjBookableResourceName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjFundingSourceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjProposalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTransIdBase",
+      "extendsDataType": "string"
+    }
+  ]
+}

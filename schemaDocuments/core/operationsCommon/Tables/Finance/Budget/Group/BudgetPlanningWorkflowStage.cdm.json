@@ -1,0 +1,92 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetPlanningStage.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPlanningWorkflow.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanningWorkflowStage",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetPlanningStage",
+          "dataType": "BudgetPlanningStageRecId",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanningWorkflow",
+          "dataType": "BudgetPlanningWorkflowRecId",
+          "description": ""
+        },
+        {
+          "name": "PriorBudgetPlanningWorkflowStage",
+          "dataType": "BudgetPlanningWorkflowStageRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningStage"
+          },
+          "name": "Relationship_BudgetPlanningStageRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanningWorkflow"
+          },
+          "name": "Relationship_BudgetPlanningWorkflowRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget planning workflow stages"
+    },
+    {
+      "dataTypeName": "BudgetPlanningStageRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningWorkflowRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningWorkflowStageRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

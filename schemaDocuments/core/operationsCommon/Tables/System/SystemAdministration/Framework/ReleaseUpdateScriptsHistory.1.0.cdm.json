@@ -1,0 +1,179 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Transaction/Batch.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReleaseUpdateScriptsHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BatchId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Batch ID",
+          "description": ""
+        },
+        {
+          "name": "ClassID",
+          "dataType": "ClassId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Company",
+          "dataType": "CompanyId",
+          "displayName": "Company",
+          "description": ""
+        },
+        {
+          "name": "DataPartition",
+          "dataType": "PartitionKey",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "FreeText",
+          "isNullable": true,
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "Method",
+          "dataType": "SysMethodName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Module",
+          "dataType": "ReleaseUpdateModule",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScriptId",
+          "dataType": "ReleaseUpdateCount",
+          "description": ""
+        },
+        {
+          "name": "ScriptStage",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScriptType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "scriptVersion",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "StartDateTime",
+          "isNullable": true,
+          "displayName": "Start time",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Status",
+          "description": ""
+        },
+        {
+          "name": "TimeRunning",
+          "dataType": "RealBase",
+          "isNullable": true,
+          "displayName": "Duration",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Batch"
+          },
+          "name": "Relationship_BatchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Upgrade script history"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ClassId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PartitionKey",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FreeText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysMethodName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateModule",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReleaseUpdateCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RealBase",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

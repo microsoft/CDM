@@ -1,0 +1,119 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PRLDeductionArrear.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/Payroll/WorksheetHeader/PayrollPayStatement.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PRLDeductionArrearRecovery",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingCurrencyAmount",
+          "dataType": "PayrollStatementAccountingCurrencyAmount",
+          "description": ""
+        },
+        {
+          "name": "DeductionArrear",
+          "dataType": "RefRecId",
+          "displayName": "Arrears transaction",
+          "description": ""
+        },
+        {
+          "name": "OffsetType",
+          "dataType": "integer",
+          "displayName": "Arrears change type",
+          "description": ""
+        },
+        {
+          "name": "PayStatement",
+          "dataType": "PayrollPayStatementRecId",
+          "isNullable": true,
+          "displayName": "Pay Statement",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PRLDeductionArrear"
+          },
+          "name": "Relationship_PRLDeductionArrearRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollPayStatement"
+          },
+          "name": "Relationship_RecoveringPayStatementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deduction arrears recovery"
+    },
+    {
+      "dataTypeName": "PayrollStatementAccountingCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollPayStatementRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

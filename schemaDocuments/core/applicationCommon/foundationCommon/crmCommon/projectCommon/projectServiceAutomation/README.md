@@ -1,6 +1,7 @@
 
 # projectServiceAutomation
 
+CDM standard entities  
 
 ## Entities
 

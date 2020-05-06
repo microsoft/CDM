@@ -1,0 +1,168 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPerson.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysUserRequest",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestAction",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestID",
+          "dataType": "SysUserRequestID",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RequestStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "User",
+          "dataType": "UserId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserAlias",
+          "dataType": "SysUserRequestUserAlias",
+          "description": ""
+        },
+        {
+          "name": "UserDomain",
+          "dataType": "SysUserRequestUserDomain",
+          "description": ""
+        },
+        {
+          "name": "DateSubmitted",
+          "dataType": "SysUserRequestSubmittedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateResolved",
+          "dataType": "SysUserRequestResolvedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserName",
+          "dataType": "SysUserRequestUserName",
+          "description": ""
+        },
+        {
+          "name": "UserLanguageId",
+          "dataType": "InstalledLanguageId",
+          "description": ""
+        },
+        {
+          "name": "Person",
+          "dataType": "DirPersonRecID",
+          "isNullable": true,
+          "displayName": "Person",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirPerson"
+          },
+          "name": "Relationship_DirPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "User requests"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SysUserRequestID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysUserRequestUserAlias",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysUserRequestUserDomain",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysUserRequestSubmittedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SysUserRequestResolvedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SysUserRequestUserName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InstalledLanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DirPersonRecID",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ProjPeriodTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjPeriodTimesheetWeek",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PeriodFrom",
+          "dataType": "TSPeriodFrom",
+          "description": ""
+        },
+        {
+          "name": "PeriodId",
+          "dataType": "ProjPeriodId",
+          "displayName": "Period types",
+          "description": ""
+        },
+        {
+          "name": "PeriodName",
+          "dataType": "ProjPeriodName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodTo",
+          "dataType": "TSPeriodTo",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTable"
+          },
+          "name": "Relationship_ProjPeriodTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Timesheet weekly periods"
+    },
+    {
+      "dataTypeName": "TSPeriodFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjPeriodId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPeriodName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TSPeriodTo",
+      "extendsDataType": "date"
+    }
+  ]
+}

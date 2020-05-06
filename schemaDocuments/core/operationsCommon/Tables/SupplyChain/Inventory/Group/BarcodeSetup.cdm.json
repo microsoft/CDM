@@ -1,0 +1,130 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BarcodeSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "barcodeSetupId",
+          "dataType": "BarcodeSetupId",
+          "description": ""
+        },
+        {
+          "name": "barcodeType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "fontName",
+          "dataType": "FontName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "fontSize",
+          "dataType": "FontSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "maximumLength",
+          "dataType": "MaximumLength",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "minimumLength",
+          "dataType": "MinimumLength",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailBarcodeMask",
+          "dataType": "RetailBarcodeMask",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Barcode setup"
+    },
+    {
+      "dataTypeName": "BarcodeSetupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FontName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FontSize",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MaximumLength",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MinimumLength",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailBarcodeMask",
+      "extendsDataType": "string"
+    }
+  ]
+}

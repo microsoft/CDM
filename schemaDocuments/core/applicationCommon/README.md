@@ -1,6 +1,7 @@
 
 # applicationCommon
 
+CDM standard entities  
 
 ## Sub-folders
 

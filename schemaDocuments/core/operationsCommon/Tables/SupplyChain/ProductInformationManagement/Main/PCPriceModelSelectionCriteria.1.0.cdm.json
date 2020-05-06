@@ -1,0 +1,184 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PCOrderlineTypeSelectionCriteria.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PCPriceModel.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PCProductConfigurationModel.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCPriceModelSelectionCriteria",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "PCDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PCPriceModelSelectionCriteriaName",
+          "description": ""
+        },
+        {
+          "name": "OrderlineTypeSelectionCriteria",
+          "dataType": "PCOrderlineTypeSelectionCriteriaRefRecId",
+          "description": ""
+        },
+        {
+          "name": "packedQuery",
+          "dataType": "PackedQueryRun",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "priceModel",
+          "dataType": "PcPriceModelRefRecId",
+          "description": ""
+        },
+        {
+          "name": "ProductConfigurationModel",
+          "dataType": "RefRecId",
+          "displayName": "Product configuration model",
+          "description": ""
+        },
+        {
+          "name": "SearchSequence",
+          "dataType": "PCPriceModelSearchSequence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFromDate",
+          "dataType": "PCPriceModelEffectiveDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidToDate",
+          "dataType": "PCPriceModelExpirationDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PCOrderlineTypeSelectionCriteria"
+          },
+          "name": "Relationship_PCOrderlineTypeSelectionCriteriaRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCPriceModel"
+          },
+          "name": "Relationship_PCPriceModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCProductConfigurationModel"
+          },
+          "name": "Relationship_PCProductConfigurationModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Price model criteria"
+    },
+    {
+      "dataTypeName": "PCDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PCPriceModelSelectionCriteriaName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PCOrderlineTypeSelectionCriteriaRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PackedQueryRun",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "PcPriceModelRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PCPriceModelSearchSequence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PCPriceModelEffectiveDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PCPriceModelExpirationDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

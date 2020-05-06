@@ -1,0 +1,85 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Reference/DirNameSequence.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DirSubNameSequence",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "NameSequence",
+          "dataType": "DirNameSequenceRecId",
+          "description": ""
+        },
+        {
+          "name": "NameType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ordinal",
+          "dataType": "DirSubNameSequencePosition",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Seperator",
+          "dataType": "DirSubNameSequenceSeperator",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirNameSequence"
+          },
+          "name": "Relationship_DirNameSequence_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Name sequence details"
+    },
+    {
+      "dataTypeName": "DirNameSequenceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DirSubNameSequencePosition",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DirSubNameSequenceSeperator",
+      "extendsDataType": "string"
+    }
+  ]
+}

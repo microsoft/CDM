@@ -1,0 +1,166 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TrvPerDiems.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvAllowanceRate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DeductBreakf",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Reduction in percentage for breakfast",
+          "description": ""
+        },
+        {
+          "name": "DeductDinner",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Reduction in percentage for dinner",
+          "description": ""
+        },
+        {
+          "name": "DeductLunch",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Reduction in percentage for lunch",
+          "description": ""
+        },
+        {
+          "name": "DeductOneMeal",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Percentage reduction for 1 meal",
+          "description": ""
+        },
+        {
+          "name": "DeductThreeOrMoreMeals",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Percentage reduction for 3 or more meals",
+          "description": ""
+        },
+        {
+          "name": "DeductTwoMeals",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Percentage reduction for 2 meals",
+          "description": ""
+        },
+        {
+          "name": "FromQty",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Minimum hours",
+          "description": ""
+        },
+        {
+          "name": "HotelReduction",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Hotel percent",
+          "description": ""
+        },
+        {
+          "name": "MealReduction",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Meal percent",
+          "description": ""
+        },
+        {
+          "name": "OtherReduction",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Other percent",
+          "description": ""
+        },
+        {
+          "name": "PerDiemRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ToQty",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Maximum hours",
+          "description": ""
+        },
+        {
+          "name": "TrvFirstLastBoth",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Apply to",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TrvPerDiems"
+          },
+          "name": "Relationship_PerDiemRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Allowance rate"
+    },
+    {
+      "dataTypeName": "TrvRealBasePositive",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

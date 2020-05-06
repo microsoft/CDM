@@ -1,0 +1,148 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LedgerPostingJournal.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerJournalPeriodFinalPrintBE",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Compressed",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Compressed",
+          "description": ""
+        },
+        {
+          "name": "CreditTotal",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Credit",
+          "description": ""
+        },
+        {
+          "name": "DebitTotal",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Debit",
+          "description": ""
+        },
+        {
+          "name": "LedgerPostingJournalId",
+          "dataType": "LedgerPostingJournalId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumberLastPage",
+          "dataType": "PageNo",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "No. last page",
+          "description": ""
+        },
+        {
+          "name": "PeriodEnd",
+          "dataType": "PeriodEnd",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodStart",
+          "dataType": "PeriodStart",
+          "isReadOnly": true,
+          "displayName": "Start",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerPostingJournal"
+          },
+          "name": "Relationship_LedgerPostingJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Journal reports final periods"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerPostingJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PageNo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PeriodEnd",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PeriodStart",
+      "extendsDataType": "date"
+    }
+  ]
+}

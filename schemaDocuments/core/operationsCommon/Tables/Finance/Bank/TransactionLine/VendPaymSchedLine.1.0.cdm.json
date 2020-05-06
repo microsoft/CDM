@@ -1,0 +1,177 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Transaction/VendPaymSched.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPaymSchedLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DiscAmount",
+          "dataType": "DiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscDate",
+          "dataType": "DiscDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Value",
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FatherRecID",
+          "dataType": "VendPaymSchedParentRecID",
+          "description": ""
+        },
+        {
+          "name": "IsDeleted",
+          "dataType": "VersioningIsDeleted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsModified",
+          "dataType": "VersioningIsModified",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRShipping",
+          "dataType": "MCRPaymSchedShipping",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentType_ES",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFMPrepayment",
+          "dataType": "CFMPrepayment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymSched"
+          },
+          "name": "Relationship_VendPaymentSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor payment schedule lines"
+    },
+    {
+      "dataTypeName": "DiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DiscDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendPaymSchedParentRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VersioningIsDeleted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VersioningIsModified",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRPaymSchedShipping",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFMPrepayment",
+      "extendsDataType": "integer"
+    }
+  ]
+}

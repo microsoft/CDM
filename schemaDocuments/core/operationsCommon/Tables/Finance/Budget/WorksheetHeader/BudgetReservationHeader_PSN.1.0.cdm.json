@@ -1,0 +1,300 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/AccountingDistributionTemplate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Miscellaneous/BudgetReservationType_PSN.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetTransactionHeader.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetReservationHeader_PSN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingDate",
+          "dataType": "TransDate",
+          "displayName": "Accounting date",
+          "description": ""
+        },
+        {
+          "name": "AccountingDistributionTemplate",
+          "dataType": "AccountingDistributionTemplateRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetReservationType_PSN",
+          "dataType": "BudgetReservationTypeRecId_PSN",
+          "description": ""
+        },
+        {
+          "name": "CancelDate",
+          "dataType": "BudgetReservationCancelDate_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarriedForwardBudgetTransactionHeader",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepartmentReference",
+          "dataType": "BudgetReservationDepartmentReference_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentNumber",
+          "dataType": "BudgetReservationDocumentNumber_PSN",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentTitle",
+          "dataType": "BudgetReservationDocumentTitle_PSN",
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "BudgetReservationEndDate_PSN",
+          "description": ""
+        },
+        {
+          "name": "ExternalReference",
+          "dataType": "BudgetReservationExternalReference_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FinalizeClosingDate",
+          "dataType": "BudgetReservationFinalizeClosingDate_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelievingDocumentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "SourceDocumentHeaderRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "BudgetReservationStartDate_PSN",
+          "description": ""
+        },
+        {
+          "name": "WorkflowStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNIsCorrection",
+          "dataType": "PSNIsCorrection",
+          "isNullable": true,
+          "displayName": "Prior year correction",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingDistributionTemplate"
+          },
+          "name": "Relationship_AccountingDistributionTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetReservationType_PSN"
+          },
+          "name": "Relationship_BudgetReservationType_PSNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetTransactionHeader"
+          },
+          "name": "Relationship_CarriedForwardBudgetTransactionHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "General budget reservation header"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AccountingDistributionTemplateRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetReservationTypeRecId_PSN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetReservationCancelDate_PSN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetReservationDepartmentReference_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetReservationDocumentNumber_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetReservationDocumentTitle_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetReservationEndDate_PSN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BudgetReservationExternalReference_PSN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetReservationFinalizeClosingDate_PSN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SourceDocumentHeaderRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetReservationStartDate_PSN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PSNIsCorrection",
+      "extendsDataType": "integer"
+    }
+  ]
+}

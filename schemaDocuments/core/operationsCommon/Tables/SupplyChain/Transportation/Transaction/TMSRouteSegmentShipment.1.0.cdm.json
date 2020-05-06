@@ -1,0 +1,214 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSRoute.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/WorksheetLine/TMSRouteSegment.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSRouteSegmentShipment",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualWeight",
+          "dataType": "TMSActualWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BillOfLadingId",
+          "dataType": "WHSBillOfLadingId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestinationPostalCode",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTermId",
+          "dataType": "DlvTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Id",
+          "dataType": "WHSShipmentId",
+          "description": ""
+        },
+        {
+          "name": "OriginPostalCode",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProNum",
+          "dataType": "WHSProNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteCode",
+          "dataType": "TMSRouteCode",
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "TMSSequence",
+          "description": ""
+        },
+        {
+          "name": "StopNum",
+          "dataType": "TMSStopNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WayBill",
+          "dataType": "TMSWayBill",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRoute"
+          },
+          "name": "Relationship_TMSRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteSegment"
+          },
+          "name": "Relationship_TMSRouteSegmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route Segment Shipment"
+    },
+    {
+      "dataTypeName": "TMSActualWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSBillOfLadingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSPostalCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSProNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSSequence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSStopNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSWayBill",
+      "extendsDataType": "string"
+    }
+  ]
+}

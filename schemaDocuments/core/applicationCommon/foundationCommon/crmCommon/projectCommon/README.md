@@ -1,6 +1,7 @@
 
 # projectCommon
 
+CDM standard entities  
 
 ## Sub-folders
 

@@ -1,6 +1,7 @@
 
 # electronicMedicalRecords
 
+CDM standard entities  
 
 ## Entities
 

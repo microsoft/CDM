@@ -1,0 +1,105 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "MeasurementActivity.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "MeasurementSourceSystem.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/EMPAShared/Reference/SharedCategory.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MeasurementActivityCategoryRestriction",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Activity",
+          "dataType": "MeasurementActivityRecId",
+          "description": ""
+        },
+        {
+          "name": "Category",
+          "dataType": "SharedCategoryRecId",
+          "description": ""
+        },
+        {
+          "name": "SourceSystem",
+          "dataType": "MeasurementSourceSystemRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "MeasurementActivity"
+          },
+          "name": "Relationship_MeasurementActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MeasurementSourceSystem"
+          },
+          "name": "Relationship_MeasurementSourceSystemRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SharedCategory"
+          },
+          "name": "Relationship_ActivityCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Activity category combination restrictions"
+    },
+    {
+      "dataTypeName": "MeasurementActivityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SharedCategoryRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MeasurementSourceSystemRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

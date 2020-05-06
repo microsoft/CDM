@@ -1,0 +1,64 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TMSLoadBuildStrategy.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResInstanceValue.cdm.json",
+      "moniker": "base_EcoResInstanceValue"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSLoadBuildStrategyAttribValueSet",
+      "extendsEntity": "base_EcoResInstanceValue/EcoResInstanceValue",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LoadBuildStrategy",
+          "dataType": "TMSLoadBuildStrategyId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "TMSLoadBuildStrategy"
+          },
+          "name": "Relationship_TMSLoadBuildStrategyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Load building strategy attribute values"
+    },
+    {
+      "dataTypeName": "TMSLoadBuildStrategyId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

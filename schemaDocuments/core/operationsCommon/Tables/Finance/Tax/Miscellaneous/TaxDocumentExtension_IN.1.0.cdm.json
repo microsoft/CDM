@@ -1,0 +1,154 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxDocumentExtension_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RefTaxDocumentExtension",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Original transaction id",
+          "description": ""
+        },
+        {
+          "name": "RefTaxTransactionDate",
+          "dataType": "TaxTransactionDate_IN",
+          "isNullable": true,
+          "displayName": "Original transaction date",
+          "description": ""
+        },
+        {
+          "name": "TaxableDocumentType",
+          "dataType": "TaxableDocumentTypeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInvReferenceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxTransactionDate",
+          "dataType": "TaxTransactionDate_IN",
+          "isNullable": true,
+          "displayName": "Transaction date",
+          "description": ""
+        },
+        {
+          "name": "TaxTransactionRefType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Transaction type",
+          "description": ""
+        },
+        {
+          "name": "TaxTransactionId",
+          "dataType": "TaxTransactionId_IN",
+          "isNullable": true,
+          "displayName": "Transaction Id",
+          "description": ""
+        },
+        {
+          "name": "TaxDocumentGUID",
+          "dataType": "ERGUID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDocument",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GSTTransactionInNumSeq",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax document extension information for India"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxTransactionDate_IN",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxableDocumentTypeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxTransactionId_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ERGUID",
+      "extendsDataType": "guid"
+    }
+  ]
+}
