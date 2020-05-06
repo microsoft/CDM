@@ -1,0 +1,232 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerAllocateKey.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerAccrualTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllocateKeyId",
+          "dataType": "LedgerAllocateKeyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "displayName": "Credit",
+          "description": ""
+        },
+        {
+          "name": "DebitLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "displayName": "Debit",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Description of accrual scheme",
+          "description": ""
+        },
+        {
+          "name": "Id",
+          "dataType": "LedgerAccrualId",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceTable",
+          "dataType": "LedgerNumberSequence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Period",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Accrual basis",
+          "description": ""
+        },
+        {
+          "name": "PeriodLength",
+          "dataType": "LedgerAccrualPeriodLength",
+          "isNullable": true,
+          "displayName": "Number of occurrences by period",
+          "description": ""
+        },
+        {
+          "name": "PeriodType",
+          "dataType": "LedgerAccrualPeriodType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingFreq",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post transactions",
+          "description": ""
+        },
+        {
+          "name": "TransTxt",
+          "dataType": "TransTxt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValuePosted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Spread month and quarter values",
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "PostingDate",
+          "dataType": "LedgerAccrualPostingDate",
+          "isNullable": true,
+          "displayName": "Post in week, month or quarter",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CreditLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DebitLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocateKey"
+          },
+          "name": "Relationship_LedgerAllocateKeyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Accrual schemes"
+    },
+    {
+      "dataTypeName": "LedgerAllocateKeyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerAccrualId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerNumberSequence",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerAccrualPeriodLength",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerAccrualPeriodType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerAccrualPostingDate",
+      "extendsDataType": "integer"
+    }
+  ]
+}

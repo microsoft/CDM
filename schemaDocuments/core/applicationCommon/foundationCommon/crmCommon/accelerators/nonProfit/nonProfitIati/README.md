@@ -1,6 +1,7 @@
 
 # nonProfitIati
 
+CDM Solution for the 'NONPROFITIATI' CDS Solution  
 
 ## Entities
 
@@ -18,7 +19,7 @@
 |[DeliveryFrameworkContact](DeliveryFrameworkContact.cdm.json)|Contact information for the Delivery Framework.|
 |[DeliveryFrameworkDescription](DeliveryFrameworkDescription.cdm.json)|A longer, human-readable description containing a meaningful description of the delivery framework|
 |[Designation](Designation.cdm.json)|An area to which funds may be allocated, including a GL-relevant accounting code.  Designations are the way a donor instructs an organization about how their donation should be spent or earmarked.|
-|[DesignationPlan](DesignationPlan.cdm.json)||
+|[DesignationPlan](DesignationPlan.cdm.json)|A line item attached to a Pledge, Payment Schedule, or Campaign indicating how associated payments should be designated.|
 |[Dimension](Dimension.cdm.json)|A category used for dis-aggregating the result by gender, age, etc|
 |[Disbursement](Disbursement.cdm.json)|A Disbursement represents an Award disbursement to an individual or organizational awardee.  A Disbursement is related to a specific Award and Budget.|
 |[DisbursementDistribution](DisbursementDistribution.cdm.json)|Disbursement Distribution represents the Framework(s) - i.e. Program, Project, Initiative - that contribute to funding an Award Disbursement.|
@@ -47,7 +48,7 @@
 |[Opportunity](Opportunity.cdm.json)|An opportunity represents prospective, pending and closed "deals" or gifts.  This entity allows nonprofit organizations to track their efforts to build relationships with prospective donors.|
 |[ParticipatingOrganization](ParticipatingOrganization.cdm.json)|Organization involved with the delivery framework|
 |[PaymentMethod](PaymentMethod.cdm.json)|Payment Method is a placeholder entity for customizations that may be supported by an application.|
-|[PaymentSchedule](PaymentSchedule.cdm.json)||
+|[PaymentSchedule](PaymentSchedule.cdm.json)|A gift transaction can be a one-time payment or a recurring payment (ie, monthly/sustainer giving). In addition, it can be a pledge (ie, promise) of a future payment or a current/received payment.|
 |[PlannedGiving](PlannedGiving.cdm.json)|A planned gift is a gift made during a donor's lifetime or at the time of their death that involves their estate and/or tax planning.|
 |[PolicyMarker](PolicyMarker.cdm.json)|A policy or theme addressed by the Delivery Framework.|
 |[RecipientCountry](RecipientCountry.cdm.json)|The country that will benefit from this delivery framework|

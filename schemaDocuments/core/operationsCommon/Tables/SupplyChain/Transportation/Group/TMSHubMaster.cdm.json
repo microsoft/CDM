@@ -1,0 +1,260 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsLocation.cdm.json"
+    },
+    {
+      "corpusPath": "TMSHubType.cdm.json"
+    },
+    {
+      "corpusPath": "TMSRateMaster.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSHubMaster",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompanyName",
+          "dataType": "TMSCompanyName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Contact",
+          "dataType": "TMSContact",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EffectiveUTCDateTimeFrom",
+          "dataType": "TMSEffectiveUTCDateTimeFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EffectiveUTCDateTimeTo",
+          "dataType": "TMSEffectiveUTCDateTimeTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Email",
+          "dataType": "TMSEmail",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Fax",
+          "dataType": "TMSFax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HubMasterCode",
+          "dataType": "TMSHubMasterCode",
+          "description": ""
+        },
+        {
+          "name": "HubTypeCode",
+          "dataType": "TMSHubTypeCode",
+          "description": ""
+        },
+        {
+          "name": "Location",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Phone",
+          "dataType": "TMSPhone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RateMasterCode",
+          "dataType": "TMSRateMasterCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorCode",
+          "dataType": "TMSVendorCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorInvoiceCode",
+          "dataType": "TMSVendorInvoiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_Location_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSHubType"
+          },
+          "name": "Relationship_TMSHubTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRateMaster"
+          },
+          "name": "Relationship_TMSRateMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableInvoiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Hub masters"
+    },
+    {
+      "dataTypeName": "TMSCompanyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSContact",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSEffectiveUTCDateTimeFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSEffectiveUTCDateTimeTo",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSEmail",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSFax",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSHubMasterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSHubTypeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TMSName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSPhone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRateMasterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSVendorCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSVendorInvoiceCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

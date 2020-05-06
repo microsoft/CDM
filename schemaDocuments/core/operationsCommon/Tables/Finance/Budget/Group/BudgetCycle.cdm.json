@@ -1,0 +1,106 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetCycleTimeSpan.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Reference/FiscalCalendarPeriod.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetCycle",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BudgetCycleTimeSpan",
+          "dataType": "RefRecId",
+          "displayName": "Budget cycle time span",
+          "description": ""
+        },
+        {
+          "name": "EndFiscalCalendarPeriod",
+          "dataType": "RefRecId",
+          "displayName": "Ending period",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "BudgetCycleName",
+          "description": ""
+        },
+        {
+          "name": "StartFiscalCalendarPeriod",
+          "dataType": "RefRecId",
+          "displayName": "Starting period",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetCycleTimeSpan"
+          },
+          "name": "Relationship_BudgetCycleTimeSpanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendarPeriod"
+          },
+          "name": "Relationship_EndFiscalCalendarPeriodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalCalendarPeriod"
+          },
+          "name": "Relationship_StartFiscalCalendarPeriodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget cycle"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetCycleName",
+      "extendsDataType": "string"
+    }
+  ]
+}

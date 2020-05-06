@@ -1,0 +1,93 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Main/PurchReqAuthorizationOrigination.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchPurchaseRequisitionMaintainDelegationEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Originator",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Requisitioner",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PreparerPersonnelNumber",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "RequisitionerPersonnelNumber",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "AuthorizationLevel",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "HasAdministratorGrantedPermission",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PurchReqAuthorizationOrigination"
+          },
+          "name": "BackingTable_PurchReqAuthorizationOriginationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase requisition maintenance delegations"
+    }
+  ]
+}

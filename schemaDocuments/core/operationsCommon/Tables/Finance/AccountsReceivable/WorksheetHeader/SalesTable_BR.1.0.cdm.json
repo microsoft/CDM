@@ -1,0 +1,255 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Group/CFPSTable_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustFineSetup_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustInterestSetup_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Parameter/FiscalDocumentType_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceJour.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/SalesPurchOperationType_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesTable_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CFPSId_BR",
+          "dataType": "CFPSId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustFinalUser_BR",
+          "dataType": "CustVendFinalUser_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FineCode_BR",
+          "dataType": "CustFineCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentType_BR",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterestCode_BR",
+          "dataType": "CustInterestCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceRefRecID_BR",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Invoice reference",
+          "description": ""
+        },
+        {
+          "name": "SalesPurchOperationType_BR",
+          "dataType": "SalesPurchOperationTypeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Sales order",
+          "description": ""
+        },
+        {
+          "name": "ServiceCodeOnDlvAddress_BR",
+          "dataType": "TaxServiceCodeOnDlvAddress_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxServiceCode_BR",
+          "dataType": "TaxServiceCodeId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PresenceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CFPSTable_BR"
+          },
+          "name": "Relationship_CFPSTable_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustFineSetup_BR"
+          },
+          "name": "Relationship_CustFineSetup_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInterestSetup_BR"
+          },
+          "name": "Relationship_CustInterestSetup_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentType_BR"
+          },
+          "name": "Relationship_FiscalDocumentType_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceJour"
+          },
+          "name": "Relationship_InvoiceRefRecID_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesPurchOperationType_BR"
+          },
+          "name": "Relationship_SalesPurchOperationType_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales order header information for Brazil"
+    },
+    {
+      "dataTypeName": "CFPSId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendFinalUser_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustFineCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustInterestCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesPurchOperationTypeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeOnDlvAddress_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeId_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

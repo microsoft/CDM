@@ -1,0 +1,145 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/EPWebSiteParameters.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EPGlobalParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "HomepageSiteId",
+          "dataType": "HomepageSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultRoleCenter",
+          "dataType": "WebUrlItemName",
+          "isNullable": true,
+          "displayName": "Default role center",
+          "description": ""
+        },
+        {
+          "name": "DevelopmentSiteId",
+          "dataType": "WebSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EPInitialSearchResultDisplayCount",
+          "dataType": "EPInitialSearchResultDisplayCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EPOverflowSearchResultDisplayCount",
+          "dataType": "EPOverflowSearchResultDisplayCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ListPageRowsDisplayed",
+          "dataType": "ListPageRowsDisplayed",
+          "isNullable": true,
+          "displayName": "Number of rows to display in list pages",
+          "description": ""
+        },
+        {
+          "name": "SearchServerUrl",
+          "dataType": "WebSiteURL",
+          "isNullable": true,
+          "displayName": "Search server URL",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EPWebSiteParameters"
+          },
+          "name": "Relationship_EPWebSiteParametersDevelopmentSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EPWebSiteParameters"
+          },
+          "name": "Relationship_EPWebSiteParametersHomepageSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Enterprise Portal global parameters"
+    },
+    {
+      "dataTypeName": "HomepageSiteId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WebUrlItemName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WebSiteId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "EPInitialSearchResultDisplayCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EPOverflowSearchResultDisplayCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ListPageRowsDisplayed",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WebSiteURL",
+      "extendsDataType": "string"
+    }
+  ]
+}

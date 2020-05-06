@@ -1,0 +1,159 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "VendPackingSlipJour.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPackingSlipVersion",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingDate",
+          "dataType": "AccountingDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostLedgerVoucher",
+          "dataType": "InventPurchReceiptVoucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyLedgerVoucher",
+          "dataType": "InterCompanyVoucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InternalPackingSlipId",
+          "dataType": "PurchInternalPackingSlipId",
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "PurchDeliveredQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendPackingSlipJour",
+          "dataType": "VendPackingSlipJourRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "VersionDateTime",
+          "dataType": "VersioningTimeStamp",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Volume",
+          "dataType": "Volume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "VendPackingSlipJour"
+          },
+          "name": "Relationship_VendPackingSlipJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor product receipt versions"
+    },
+    {
+      "dataTypeName": "AccountingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventPurchReceiptVoucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyVoucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchInternalPackingSlipId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchDeliveredQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendPackingSlipJourRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VersioningTimeStamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

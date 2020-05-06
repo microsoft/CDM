@@ -1,0 +1,80 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Group/PCClass.cdm.json"
+    },
+    {
+      "corpusPath": "PCComponentControl.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCComponentControlRootComponent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ComponentControl",
+          "dataType": "RefRecId",
+          "displayName": "Component control",
+          "description": ""
+        },
+        {
+          "name": "RootComponent",
+          "dataType": "RefRecId",
+          "displayName": "Root component",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PCClass"
+          },
+          "name": "Relationship_PCClassRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCComponentControl"
+          },
+          "name": "Relationship_PCComponentControlRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Root component UI definition"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,270 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventSite.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CostingVersion",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowCost",
+          "dataType": "InventPriceAllowCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowPurch",
+          "dataType": "InventPriceAllowPurch",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowSales",
+          "dataType": "InventPriceAllowSales",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BlockActivation",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Block activation",
+          "description": ""
+        },
+        {
+          "name": "Blocked",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Block",
+          "description": ""
+        },
+        {
+          "name": "BOMCalcExplosionMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMCalcFallBack",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMCalcRestrict",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Restrict calculation",
+          "description": ""
+        },
+        {
+          "name": "BOMCalcRun",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Production",
+          "description": ""
+        },
+        {
+          "name": "BOMCostPriceModel",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMCostProfitSet",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMFallBackVersion",
+          "dataType": "CostingVersionId",
+          "isNullable": true,
+          "displayName": "Fallback costing version",
+          "description": ""
+        },
+        {
+          "name": "CostingType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDate",
+          "dataType": "CostingVersionFromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastActivation",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last activation",
+          "description": ""
+        },
+        {
+          "name": "LastUpdate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last update",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceAllocateMarkup",
+          "dataType": "PriceAllocateMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchCalcRun",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Purchase order",
+          "description": ""
+        },
+        {
+          "name": "PurchPriceModel",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RecordRestrict",
+          "dataType": "InventPriceRecRestrict",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundOffCalculation",
+          "dataType": "InventPriceRoundOff",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionId",
+          "dataType": "CostingVersionId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_InventSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Costing versions"
+    },
+    {
+      "dataTypeName": "InventPriceAllowCost",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventPriceAllowPurch",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventPriceAllowSales",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CostingVersionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostingVersionFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceAllocateMarkup",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventPriceRecRestrict",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventPriceRoundOff",
+      "extendsDataType": "integer"
+    }
+  ]
+}

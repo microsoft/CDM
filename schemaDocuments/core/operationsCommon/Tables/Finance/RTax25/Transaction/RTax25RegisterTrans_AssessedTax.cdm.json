@@ -1,0 +1,509 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/PaymentOrderBudgetReceiptClassTable_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetLine/RTax25RegisterJournalTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25RegisterTrans_AssessedTax",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowanceRateReduction",
+          "dataType": "RAssetTaxAllowanceId",
+          "isNullable": true,
+          "displayName": "Allowance by reduction of rate",
+          "description": ""
+        },
+        {
+          "name": "AllowanceTaxExemption",
+          "dataType": "RAssetTaxAllowanceId",
+          "isNullable": true,
+          "displayName": "Exemption from tax",
+          "description": ""
+        },
+        {
+          "name": "AllowanceTaxReduction",
+          "dataType": "RAssetTaxAllowanceId",
+          "isNullable": true,
+          "displayName": "Allowance by reduction of tax",
+          "description": ""
+        },
+        {
+          "name": "AssetKind",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Asset kind",
+          "description": ""
+        },
+        {
+          "name": "AverageCost",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Average cost",
+          "description": ""
+        },
+        {
+          "name": "BlockType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line type",
+          "description": ""
+        },
+        {
+          "name": "BranchId",
+          "dataType": "SeparateDivisionId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BudgetRevenueCode",
+          "dataType": "PaymentOrderBudgetReceiptClassCode_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CadastralNum",
+          "dataType": "LandCadastralNum_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CadastralValue",
+          "dataType": "CadastralValue_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Corrected",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected",
+          "description": ""
+        },
+        {
+          "name": "CostChangeFactor",
+          "dataType": "RAssetTaxAccountingFactor",
+          "isNullable": true,
+          "displayName": "Cost change factor",
+          "description": ""
+        },
+        {
+          "name": "CostChangePeriod",
+          "dataType": "Months",
+          "isNullable": true,
+          "displayName": "Cost change period",
+          "description": ""
+        },
+        {
+          "name": "DistributedPropertyShare",
+          "dataType": "RAssetSection",
+          "isNullable": true,
+          "displayName": "Distributed property share",
+          "description": ""
+        },
+        {
+          "name": "Factor",
+          "dataType": "RAssetSection",
+          "isNullable": true,
+          "displayName": "Factor",
+          "description": ""
+        },
+        {
+          "name": "JournalTransRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDescription",
+          "dataType": "RTax25Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInput",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manual data input",
+          "description": ""
+        },
+        {
+          "name": "NetBookValueTotal",
+          "dataType": "RAssetNetBookValue",
+          "isNullable": true,
+          "displayName": "Net book value (total)",
+          "description": ""
+        },
+        {
+          "name": "NonTaxableAvgCost",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Average cost of exempt property",
+          "description": ""
+        },
+        {
+          "name": "NonTaxableCadastralValue",
+          "dataType": "CadastralValue_RU",
+          "isNullable": true,
+          "displayName": "Exempt cadastral value",
+          "description": ""
+        },
+        {
+          "name": "OutsideAmount",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Tax amount paid outside Russia",
+          "description": ""
+        },
+        {
+          "name": "OwnedShare",
+          "dataType": "RAssetSection",
+          "isNullable": true,
+          "displayName": "Owned share",
+          "description": ""
+        },
+        {
+          "name": "OwnershipPeriod",
+          "dataType": "Months",
+          "isNullable": true,
+          "displayName": "Ownership period",
+          "description": ""
+        },
+        {
+          "name": "OwnershipFactor",
+          "dataType": "RAssetTaxAccountingFactor",
+          "isNullable": true,
+          "displayName": "Ownership factor",
+          "description": ""
+        },
+        {
+          "name": "PriorAdvPaymentAmount",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Prior period’s advance payment amount",
+          "description": ""
+        },
+        {
+          "name": "ProfitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RailwayAsset",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Railway asset",
+          "description": ""
+        },
+        {
+          "name": "RailwayFactor",
+          "dataType": "Factor",
+          "isNullable": true,
+          "displayName": "Railway factor",
+          "description": ""
+        },
+        {
+          "name": "RCOAD",
+          "dataType": "OKATO_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoomCadastralNum",
+          "dataType": "RoomCadastralNum_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxCode",
+          "dataType": "RAssetRegisterTaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Section",
+          "dataType": "RAssetSection",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "RAssetNetBookValue",
+          "isNullable": true,
+          "displayName": "Advance payment amount/Tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxAuthority",
+          "dataType": "TaxAuthority",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBase",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Tax base",
+          "description": ""
+        },
+        {
+          "name": "TaxReductionAmount",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Allowance amount by reduction of tax",
+          "description": ""
+        },
+        {
+          "name": "TaxValue",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "Tax rate",
+          "description": ""
+        },
+        {
+          "name": "TotalNetBookValue",
+          "dataType": "RAssetAmount",
+          "isNullable": true,
+          "displayName": "Total net book value",
+          "description": ""
+        },
+        {
+          "name": "RefLineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "displayName": "Reference row",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PaymentOrderBudgetReceiptClassTable_RU"
+          },
+          "name": "Relationship_PaymentOrderBudgetReceiptClassTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTrans"
+          },
+          "name": "Relationship_RTax25RegisterJournalTransRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax register line"
+    },
+    {
+      "dataTypeName": "RAssetTaxAllowanceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RAssetAssessedAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SeparateDivisionId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymentOrderBudgetReceiptClassCode_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LandCadastralNum_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CadastralValue_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RAssetTaxAccountingFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Months",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RAssetSection",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25RegisterLineNum64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetNetBookValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Factor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "OKATO_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RoomCadastralNum_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetRegisterTaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAuthority",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RAssetAmount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

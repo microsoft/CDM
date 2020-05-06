@@ -1,0 +1,188 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustInvoiceTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PdsCustRebateGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PdsItemRebateGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PdsRebateProgramTMATable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PdsRebateCustInvoiceTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustInvoiceTransRecId",
+          "dataType": "CustInvoiceTransRecId",
+          "description": ""
+        },
+        {
+          "name": "SalesLineCreatedDate",
+          "dataType": "CreationDate",
+          "description": ""
+        },
+        {
+          "name": "SalesLinePdsExcludeFromRebate",
+          "dataType": "PdsExcludeFromRebate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesLinePdsItemRebateGroupId",
+          "dataType": "PdsItemRebateGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesLineReceiptDateRequested",
+          "dataType": "SalesReceiptDateRequested",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesLineShippingDateRequested",
+          "dataType": "SalesShippingDateRequested",
+          "description": ""
+        },
+        {
+          "name": "SalesTablePdsCustRebateGroupId",
+          "dataType": "PdsCustRebateGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTablePdsRebateProgramTMAGroup",
+          "dataType": "PdsRebateProgramTMAGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceTrans"
+          },
+          "name": "Relationship_CustInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsCustRebateGroup"
+          },
+          "name": "Relationship_PdsCustRebateGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsItemRebateGroup"
+          },
+          "name": "Relationship_PdsItemRebateGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsRebateProgramTMATable"
+          },
+          "name": "Relationship_PdsRebateProgramTMATableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer invoice rebate lines"
+    },
+    {
+      "dataTypeName": "CustInvoiceTransRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CreationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsExcludeFromRebate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsItemRebateGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesReceiptDateRequested",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SalesShippingDateRequested",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsCustRebateGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsRebateProgramTMAGroup",
+      "extendsDataType": "string"
+    }
+  ]
+}

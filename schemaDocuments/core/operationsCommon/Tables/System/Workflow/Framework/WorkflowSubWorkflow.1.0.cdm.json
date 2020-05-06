@@ -1,0 +1,175 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WorkflowParallelBranchTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowVersionTable.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkflowSubWorkflow",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DocumentKeyField",
+          "dataType": "WorkflowSubWorkflowDocumentKeyField",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentKeyTable",
+          "dataType": "WorkflowSubWorkflowDocumentTableName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ElementId",
+          "dataType": "WorkflowSubWorkflowId",
+          "description": ""
+        },
+        {
+          "name": "ElementName",
+          "dataType": "WorkflowLineItemWorkflowElementName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ElementType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "LineItemType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "WorkflowConfigurationElementName",
+          "description": ""
+        },
+        {
+          "name": "ParallelBranchTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaitForComplete",
+          "dataType": "WorkflowSubWorkflowWaitForComplete",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line item workflow",
+          "description": ""
+        },
+        {
+          "name": "WorkflowVersionTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowParallelBranchTable"
+          },
+          "name": "Relationship_WorkflowParallelBranchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowTable"
+          },
+          "name": "Relationship_WorkflowTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowVersionTable"
+          },
+          "name": "Relationship_WorkflowVersionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Subworkflows"
+    },
+    {
+      "dataTypeName": "WorkflowSubWorkflowDocumentKeyField",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowSubWorkflowDocumentTableName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowSubWorkflowId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowLineItemWorkflowElementName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationElementName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WorkflowSubWorkflowWaitForComplete",
+      "extendsDataType": "integer"
+    }
+  ]
+}

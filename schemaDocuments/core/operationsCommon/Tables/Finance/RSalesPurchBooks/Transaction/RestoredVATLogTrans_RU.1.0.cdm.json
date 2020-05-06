@@ -1,0 +1,306 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetHeader/FactureJour_RU.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/WorksheetHeader/RestoredVATLogTable_RU.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PurchBookVATProcessLogTrans_RU.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RestoredVATLogTrans_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountName",
+          "dataType": "VendName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Vendor name",
+          "description": ""
+        },
+        {
+          "name": "AccountNum",
+          "dataType": "VendAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Delivery date",
+          "description": ""
+        },
+        {
+          "name": "FacturedAmounts",
+          "dataType": "BookAmounts_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureDate",
+          "dataType": "FactureDate_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureExternalId",
+          "dataType": "FactureExternalId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureId",
+          "dataType": "FactureId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactureModule",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Include",
+          "dataType": "IncludeIntoCalc_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceRecId",
+          "dataType": "VendTransRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessLogTransRecId",
+          "dataType": "PurchBookLogTransRefRecId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReducedAsset",
+          "dataType": "TaxAmountAssetVAT10_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReducedDirect",
+          "dataType": "TaxAmountDirectVAT10_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReducedIndirect",
+          "dataType": "TaxAmountIndirectVAT10_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxStandardAsset",
+          "dataType": "TaxAmountAssetVAT20_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxStandardDirect",
+          "dataType": "TaxAmountDirectVAT20_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxStandardIndirect",
+          "dataType": "TaxAmountIndirectVAT20_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FactureJour_RU"
+          },
+          "name": "Relationship_FactureJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RestoredVATLogTable_RU"
+          },
+          "name": "Relationship_LogTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchBookVATProcessLogTrans_RU"
+          },
+          "name": "Relationship_PurchBookVATProcessLogTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "VAT restoring journal specification"
+    },
+    {
+      "dataTypeName": "VendName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BookAmounts_RU",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "FactureDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FactureExternalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FactureId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IncludeIntoCalc_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchBookLogTransRefRecId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAmountAssetVAT10_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountDirectVAT10_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountIndirectVAT10_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountAssetVAT20_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountDirectVAT20_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountIndirectVAT20_RU",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,0 +1,296 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/WorksheetHeader/AlcoholDeclarationJournalTable_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/WorksheetLine/AlcoholDeclarationJournalTransBranch_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/Parameter/AlcoholProductionType_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Group/Branches_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AlcoholDeclarationTransMovement_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AlcoholDeclarationType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "AlcoholProductionTypeId",
+          "dataType": "AlcoholProductionTypeId_RU",
+          "description": ""
+        },
+        {
+          "name": "BranchId",
+          "dataType": "BranchId_RU",
+          "description": ""
+        },
+        {
+          "name": "ExportSalesQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "For export",
+          "description": ""
+        },
+        {
+          "name": "ImportPurchQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "From import",
+          "description": ""
+        },
+        {
+          "name": "InternalTransferIssueQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Moving within the same organization",
+          "description": ""
+        },
+        {
+          "name": "InternalTransferReceiptQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Moving within the same organization",
+          "description": ""
+        },
+        {
+          "name": "JournalId",
+          "dataType": "AlcoholDeclarationJournalId_RU",
+          "description": ""
+        },
+        {
+          "name": "ManufacturerId",
+          "dataType": "AlcoholManufacturerId_RU",
+          "description": ""
+        },
+        {
+          "name": "ManufacturerPurchQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "From the manufacturers",
+          "description": ""
+        },
+        {
+          "name": "OtherIssueQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Other issue transactions",
+          "description": ""
+        },
+        {
+          "name": "OtherRecieptQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Other receipt",
+          "description": ""
+        },
+        {
+          "name": "PeriodEndQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Quantity at end of reporting period",
+          "description": ""
+        },
+        {
+          "name": "PeriodStartQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Quantity at start of reporting period",
+          "description": ""
+        },
+        {
+          "name": "PurchReturnQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Production return",
+          "description": ""
+        },
+        {
+          "name": "RetailSalesQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "To the retail trade organizations",
+          "description": ""
+        },
+        {
+          "name": "SalesReturnQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Return to vendors",
+          "description": ""
+        },
+        {
+          "name": "TotalIssueQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Total issue transactions",
+          "description": ""
+        },
+        {
+          "name": "TotalPurchQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Total purchases",
+          "description": ""
+        },
+        {
+          "name": "TotalReceiptQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Total receipt",
+          "description": ""
+        },
+        {
+          "name": "TotalSalesQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Total sales",
+          "description": ""
+        },
+        {
+          "name": "WholesalePurchQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "From the wholesale trade organizations",
+          "description": ""
+        },
+        {
+          "name": "WholesaleSalesQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "To the wholesale trade organizations",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AlcoholDeclarationJournalTable_RU"
+          },
+          "name": "Relationship_AlcoholDeclarationJournalTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AlcoholDeclarationJournalTransBranch_RU"
+          },
+          "name": "Relationship_AlcoholDeclarationJournalTransBranch_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_AlcoholManufacturer_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AlcoholProductionType_RU"
+          },
+          "name": "Relationship_AlcoholProductionType_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Branches_RU"
+          },
+          "name": "Relationship_Branches_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Alcohol declaration lines - movement"
+    },
+    {
+      "dataTypeName": "AlcoholProductionTypeId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BranchId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AlcoholDeclarationJournalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AlcoholManufacturerId_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventBatch.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/PdsDispositionMaster.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSInventBatchReceiptDetails",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExpDate",
+          "dataType": "InventBatchExpDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventBatchId",
+          "dataType": "InventBatchId",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "PdsBatchDispositionCode",
+          "dataType": "PdsBatchDispositionCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCountryOfOrigin1",
+          "dataType": "PdsCountryOfOrigin1",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCountryOfOrigin2",
+          "dataType": "PdsCountryOfOrigin2",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsPotencyBaseValue",
+          "dataType": "PDSBaseAttributeValues",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsUseVendBatchDate",
+          "dataType": "PdsUseVendBatchDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsUseVendBatchExp",
+          "dataType": "PdsUseVendBatchExp",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsVendBatchDate",
+          "dataType": "PdsVendBatchDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsVendBatchId",
+          "dataType": "PdsVendBatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsVendExpiryDate",
+          "dataType": "PdsVendExpiryDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiptId",
+          "dataType": "WHSReceiptId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventBatch"
+          },
+          "name": "Relationship_InventBatchRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_PdsCountryOfOrigin1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_PdsCountryOfOrigin2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsDispositionMaster"
+          },
+          "name": "Relationship_PdsDispositionMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Inventory batch receipt details"
+    },
+    {
+      "dataTypeName": "InventBatchExpDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventBatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsBatchDispositionCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCountryOfOrigin1",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCountryOfOrigin2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PDSBaseAttributeValues",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsUseVendBatchDate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsUseVendBatchExp",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsVendBatchDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsVendBatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsVendExpiryDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSReceiptId",
+      "extendsDataType": "string"
+    }
+  ]
+}

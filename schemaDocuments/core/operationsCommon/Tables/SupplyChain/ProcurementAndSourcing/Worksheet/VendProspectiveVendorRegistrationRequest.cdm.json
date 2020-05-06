@@ -1,0 +1,203 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Transaction/SysUserRequest.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendProspectiveVendorRegistrationRequest",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FirstName",
+          "dataType": "FirstName",
+          "description": ""
+        },
+        {
+          "name": "LastName",
+          "dataType": "LastName",
+          "description": ""
+        },
+        {
+          "name": "MiddleName",
+          "dataType": "MiddleName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "LanguageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Email",
+          "dataType": "Email",
+          "description": ""
+        },
+        {
+          "name": "CompanyName",
+          "dataType": "CompanyName",
+          "description": ""
+        },
+        {
+          "name": "OrganizationNumber",
+          "dataType": "DirOrganizationNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrganizationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Organization type",
+          "description": ""
+        },
+        {
+          "name": "BusinessLine",
+          "dataType": "VendProspectiveVendorRegistrationRequestBusinessLine",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BusinessJustification",
+          "dataType": "VendProspectiveVendorRegistrationRequestBusinessJustification",
+          "description": ""
+        },
+        {
+          "name": "SubmittedDate",
+          "dataType": "UserRequestSubmittedDateTime",
+          "description": ""
+        },
+        {
+          "name": "ProcessedDate",
+          "dataType": "UserRequestProcessedDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestState",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "UserRequestId",
+          "dataType": "SysUserRequestID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestCompany",
+          "dataType": "DataAreaId",
+          "displayName": "Legal entity",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysUserRequest"
+          },
+          "name": "Relationship_VendorPortalUserRequestRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Prospective vendor registration request"
+    },
+    {
+      "dataTypeName": "FirstName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LastName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MiddleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Email",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DirOrganizationNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendProspectiveVendorRegistrationRequestBusinessLine",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendProspectiveVendorRegistrationRequestBusinessJustification",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserRequestSubmittedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UserRequestProcessedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SysUserRequestID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    }
+  ]
+}

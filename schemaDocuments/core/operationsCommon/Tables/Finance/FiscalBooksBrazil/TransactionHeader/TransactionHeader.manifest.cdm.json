@@ -1,0 +1,60 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "manifestName": "TransactionHeader",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "FBProductionHeader_BR",
+      "entityPath": "FBProductionHeader_BR.cdm.json/FBProductionHeader_BR"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "RetailFiscalDocumentModel2_BR",
+      "entityPath": "RetailFiscalDocumentModel2_BR.cdm.json/RetailFiscalDocumentModel2_BR"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "FBProductionHeader_BR.cdm.json/FBProductionHeader_BR",
+      "fromEntityAttribute": "Relationship_BOMTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/BOMTable.cdm.json/BOMTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "FBProductionHeader_BR.cdm.json/FBProductionHeader_BR",
+      "fromEntityAttribute": "Relationship_FiscalEstablishment_BRRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalEstablishment_BR.cdm.json/FiscalEstablishment_BR",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "FBProductionHeader_BR.cdm.json/FBProductionHeader_BR",
+      "fromEntityAttribute": "Relationship_InventTableRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json/InventTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FBBookingPeriodProduction_BR.cdm.json/FBBookingPeriodProduction_BR",
+      "fromEntityAttribute": "Relationship_FBProductionHeaderRelationshipId",
+      "toEntity": "FBProductionHeader_BR.cdm.json/FBProductionHeader_BR",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/TransactionLine/FBProductionLine_BR.cdm.json/FBProductionLine_BR",
+      "fromEntityAttribute": "Relationship_FBProductionHeader_BRRelationshipId",
+      "toEntity": "FBProductionHeader_BR.cdm.json/FBProductionHeader_BR",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/TransactionLine/FBProductionBOMLine_BR.cdm.json/FBProductionBOMLine_BR",
+      "fromEntityAttribute": "Relationship_FBProductionHeader_BRRelationshipId",
+      "toEntity": "FBProductionHeader_BR.cdm.json/FBProductionHeader_BR",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "RetailFiscalDocumentModel2_BR.cdm.json/RetailFiscalDocumentModel2_BR",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    }
+  ]
+}

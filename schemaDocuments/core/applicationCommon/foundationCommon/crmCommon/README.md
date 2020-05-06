@@ -1,6 +1,7 @@
 
 # crmCommon
 
+CDM standard entities  
 
 ## Sub-folders
 

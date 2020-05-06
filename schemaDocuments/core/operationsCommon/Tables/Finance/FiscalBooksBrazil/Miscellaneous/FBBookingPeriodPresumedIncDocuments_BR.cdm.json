@@ -1,0 +1,210 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FBBookingPeriod_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FiscalDocument_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FiscalDocumentLine_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBBookingPeriodPresumedIncDocuments_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FBBookingPeriod_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocument_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentLine_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductName",
+          "dataType": "EcoResProductName_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountICMS",
+          "dataType": "ICMSTaxAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountICMSST",
+          "dataType": "ICMSSTTaxAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountICMSST",
+          "dataType": "ICMSSTTaxBaseAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxRateICMSST",
+          "dataType": "ICMSSTTaxValue_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Unit",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsReturn",
+          "dataType": "FBFiscalDocumentReturn_BR",
+          "isNullable": true,
+          "displayName": "@FiscalBooks_SpedFiscal:IsReturnFD",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FBBookingPeriod_BR"
+          },
+          "name": "Relationship_FBBookingPeriod_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocument_BR"
+          },
+          "name": "Relationship_FiscalDocument_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentLine_BR"
+          },
+          "name": "Relationship_FiscalDocumentLine_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Incoming fiscal documents used for presumed taxes"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ItemIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResProductName_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ICMSTaxAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ICMSSTTaxAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ICMSSTTaxBaseAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ICMSSTTaxValue_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBFiscalDocumentReturn_BR",
+      "extendsDataType": "integer"
+    }
+  ]
+}

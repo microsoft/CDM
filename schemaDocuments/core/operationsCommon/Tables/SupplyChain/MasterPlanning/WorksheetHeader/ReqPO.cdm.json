@@ -1,0 +1,675 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/BOMTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventBuyerGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventItemGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/ReqPlanVersion.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/WorksheetLine/ReqRoute.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/InventTransferTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/RouteTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Group/VendGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqPO",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BOMRouteCreated",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalendarDays",
+          "dataType": "CalendarDays",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostAmount",
+          "dataType": "CostAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CovInventDimId",
+          "dataType": "ReqCovInventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntvMth",
+          "dataType": "IntvMth",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntvQr",
+          "dataType": "IntvQr",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntvWk",
+          "dataType": "IntvWk",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsDerivedDirectly",
+          "dataType": "ReqIsDerivedDirectly",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsForecastPurch",
+          "dataType": "ReqIsForecastPurch",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemBomId",
+          "dataType": "BOMId",
+          "isNullable": true,
+          "displayName": "BOM number",
+          "description": ""
+        },
+        {
+          "name": "ItemBuyerGroupId",
+          "dataType": "ItemBuyerGroupId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemGroupId",
+          "dataType": "ItemGroupId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdInventoried",
+          "description": ""
+        },
+        {
+          "name": "ItemRouteId",
+          "dataType": "RouteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LeadTime",
+          "dataType": "LeadTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWReqQty",
+          "dataType": "PdsCWReqQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlanVersion",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PmfBulkOrd",
+          "dataType": "PmfBulkOrd",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfPlanningItemId",
+          "dataType": "PmfPlanningItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PMFSequenced",
+          "dataType": "PMFSequenced",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfYieldPct",
+          "dataType": "PmfYieldPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Product",
+          "dataType": "EcoResProductRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchId",
+          "dataType": "PurchId",
+          "isNullable": true,
+          "displayName": "Purchase order number",
+          "description": ""
+        },
+        {
+          "name": "PurchQty",
+          "dataType": "PurchQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchUnit",
+          "dataType": "PurchUnit",
+          "isNullable": true,
+          "displayName": "Purchase unit",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "ReqQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefId",
+          "dataType": "InventTransRefId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqDate",
+          "dataType": "ReqDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqDateDlv",
+          "dataType": "ReqDateDlv",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqDateOrder",
+          "dataType": "ReqDateOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqTime",
+          "dataType": "ReqTime",
+          "isNullable": true,
+          "displayName": "Time",
+          "description": ""
+        },
+        {
+          "name": "ReqTimeOrder",
+          "dataType": "ReqTimeOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteJobsUpdated",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Route jobs",
+          "description": ""
+        },
+        {
+          "name": "SchedFromDate",
+          "dataType": "SchedFromDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedToDate",
+          "dataType": "SchedToDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransferId",
+          "dataType": "InventTransferIdRequested",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendGroupId",
+          "dataType": "VendGroupId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendId",
+          "dataType": "ItemPrimaryVendId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMTable"
+          },
+          "name": "Relationship_BOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_EcoResProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventBuyerGroup"
+          },
+          "name": "Relationship_InventBuyerGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemGroup"
+          },
+          "name": "Relationship_InventItemGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_PmfPlanningItemRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanVersion"
+          },
+          "name": "Relationship_ReqPlanVersionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqRoute"
+          },
+          "name": "Relationship_ReqRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqTrans"
+          },
+          "name": "Relationship_ReqTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferTable"
+          },
+          "name": "Relationship_RequestedInventTransferTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteTable"
+          },
+          "name": "Relationship_RouteTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendGroup"
+          },
+          "name": "Relationship_VendGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Planned order"
+    },
+    {
+      "dataTypeName": "CalendarDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CostAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReqCovInventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntvMth",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "IntvQr",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "IntvWk",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqIsDerivedDirectly",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqIsForecastPurch",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemBuyerGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemIdInventoried",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RouteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LeadTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsCWReqQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PmfBulkOrd",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PmfPlanningItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PMFSequenced",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PmfYieldPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EcoResProductRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchUnit",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ReqDateDlv",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ReqDateOrder",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ReqTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "ReqTimeOrder",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "SchedFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SchedToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventTransferIdRequested",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemPrimaryVendId",
+      "extendsDataType": "string"
+    }
+  ]
+}

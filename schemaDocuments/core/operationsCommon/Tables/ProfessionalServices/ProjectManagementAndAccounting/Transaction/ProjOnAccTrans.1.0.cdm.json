@@ -1,0 +1,424 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/WorksheetLine/ForecastSales.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Miscellaneous/PSAContractLineItems.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Transaction/TaxServiceTariff.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdItemGroupHeading_TH.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxServiceCode_BR.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjOnAccTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityNumber",
+          "dataType": "ProjActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyId",
+          "dataType": "ProjSalesCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description255",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsMilestoneComplete",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Mark as complete",
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjID",
+          "dataType": "ProjId",
+          "description": ""
+        },
+        {
+          "name": "PSAContractLineNum",
+          "dataType": "PSAContractLineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAIsOnAccount",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Is on account",
+          "description": ""
+        },
+        {
+          "name": "PSAProjProgressInvoice",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Progress Invoice",
+          "description": ""
+        },
+        {
+          "name": "PSARefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSARefRecIdBudgetTrans",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSARefTableIdBudgetTrans",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "ProjQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroupId",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroupId",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxServiceCodeId_BR",
+          "dataType": "TaxServiceCodeId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdItemGroupHeading_TH",
+          "dataType": "TaxWithholdItemGroupId_TH",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalSalesAmountCur",
+          "dataType": "ProjTotalSalesAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionOrigin",
+          "dataType": "ProjTransactionOrigin",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "ProjTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "ProjOnAccTransId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AdjRefTransId",
+          "dataType": "ProjOnAccTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Adjustment reference ID",
+          "description": ""
+        },
+        {
+          "name": "TransIdRef",
+          "dataType": "ProjOnAccTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reference ID",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ForecastSales"
+          },
+          "name": "Relationship_ForecastSalesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PSAContractLineItems"
+          },
+          "name": "Relationship_PSAContractLineItemsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxServiceTariff"
+          },
+          "name": "Relationship_TaxServiceTariffRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdItemGroupHeading_TH"
+          },
+          "name": "Relationship_TaxWithholdItemGroupHeading_THRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxServiceCode_BR"
+          },
+          "name": "Relationship_TaxServiceCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "On-account"
+    },
+    {
+      "dataTypeName": "ProjActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjSalesCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSAContractLineNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdItemGroupId_TH",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjTotalSalesAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjTransactionOrigin",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjOnAccTransId",
+      "extendsDataType": "string"
+    }
+  ]
+}

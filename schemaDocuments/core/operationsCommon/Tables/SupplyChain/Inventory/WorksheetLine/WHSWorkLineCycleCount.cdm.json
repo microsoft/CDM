@@ -1,0 +1,268 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "WHSWorkLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSWorkTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventCountingReasonCode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWorkLineCycleCount",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "WorkId",
+          "dataType": "WHSWorkId",
+          "description": ""
+        },
+        {
+          "name": "AcceptReject",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustmentWorkId",
+          "dataType": "WHSAdjustmentWorkId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CycleCountCounted",
+          "dataType": "WHSCycleCountCounted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CycleCountReconcile",
+          "dataType": "WHSCycleCountReconcile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "description": ""
+        },
+        {
+          "name": "QtyCounted",
+          "dataType": "WHSQtyCounted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyExpected",
+          "dataType": "WHSQtyExpected",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountingReasonCode",
+          "dataType": "InventCountingReasonCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CapturedWeight",
+          "dataType": "WHSCapturedWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpectedWeight",
+          "dataType": "WHSExpectedWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocationLicensePlatePosition",
+          "dataType": "WHSLocationLicensePlatePosition",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkLine"
+          },
+          "name": "Relationship_WHSWorkLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkTable"
+          },
+          "name": "Relationship_WHSWorkTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkTable"
+          },
+          "name": "Relationship_WHSWorkTableAdjustRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventCountingReasonCode"
+          },
+          "name": "Relationship_InventCountingReasonCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Cycle Count Work"
+    },
+    {
+      "dataTypeName": "WHSWorkId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSAdjustmentWorkId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSCycleCountCounted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSCycleCountReconcile",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSQtyCounted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSQtyExpected",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventCountingReasonCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSCapturedWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSExpectedWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLocationLicensePlatePosition",
+      "extendsDataType": "integer"
+    }
+  ]
+}

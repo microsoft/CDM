@@ -1,0 +1,176 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Transaction/OfficialsTrans_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RDeferralsCountingJournal",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CloseDeferrals",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Closed",
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "EndDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Counting end date",
+          "description": ""
+        },
+        {
+          "name": "JournalName",
+          "dataType": "LedgerJournalNameId",
+          "description": ""
+        },
+        {
+          "name": "JournalNum",
+          "dataType": "LedgerJournalId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "OffSessionId",
+          "dataType": "OffSessionId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderDate",
+          "dataType": "DocumentDate",
+          "displayName": "Resolution date",
+          "description": ""
+        },
+        {
+          "name": "OrderNum",
+          "dataType": "DocumentNum",
+          "displayName": "Resolution number",
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "StartDate",
+          "displayName": "Counting start date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OfficialsTrans_RU"
+          },
+          "name": "Relationship_OfficialsTrans_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deferrals counting journal"
+    },
+    {
+      "dataTypeName": "EndDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OffSessionId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

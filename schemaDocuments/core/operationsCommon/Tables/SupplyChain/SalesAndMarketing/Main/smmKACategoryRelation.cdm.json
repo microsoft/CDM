@@ -1,0 +1,107 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "smmEncyclopediaItems.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmKACategoryRelation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdjustmentSuccess",
+          "dataType": "smmKAAdjustmentSuccess",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustmentTried",
+          "dataType": "smmKAAdjustmentTried",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "smmEncyclopediaItemId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "smmEncyclopediaItems"
+          },
+          "name": "Relationship_smmEncyclopediaItemsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Knowledge article category relationship"
+    },
+    {
+      "dataTypeName": "smmKAAdjustmentSuccess",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmKAAdjustmentTried",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmEncyclopediaItemId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventTransOrigin.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventTransOriginAssemblyComponent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssemblyInventTransOrigin",
+          "dataType": "InventTransOriginId",
+          "displayName": "Assembly",
+          "description": ""
+        },
+        {
+          "name": "ComponentInventTransOrigin",
+          "dataType": "InventTransOriginId",
+          "displayName": "Component",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_AssemblyInventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Relationship between an assembled item and its components"
+    },
+    {
+      "dataTypeName": "InventTransOriginId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

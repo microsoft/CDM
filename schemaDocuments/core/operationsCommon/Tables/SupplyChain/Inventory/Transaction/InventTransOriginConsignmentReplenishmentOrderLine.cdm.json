@@ -1,0 +1,84 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventTransOrigin.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/ConsignmentReplenishmentOrderLine.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventTransOriginConsignmentReplenishmentOrderLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventTransOrigin",
+          "dataType": "InventTransOriginId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentOrderLine",
+          "dataType": "ConsignmentReplenishmentOrderLineRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ConsignmentReplenishmentOrderLine"
+          },
+          "name": "Relationship_ReplenishmentOrderLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Relationship between the Consignment replenishment order line and the inventory transactions originator"
+    },
+    {
+      "dataTypeName": "InventTransOriginId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ConsignmentReplenishmentOrderLineRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PCTableConstraintGlobalColumnDef.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PCTableConstraintRow.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResValue.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCTableConstraintCell",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TableConstraintColumnDefinition",
+          "dataType": "RefRecId",
+          "displayName": "Table constraint column reference",
+          "description": ""
+        },
+        {
+          "name": "TableConstraintRow",
+          "dataType": "RefRecId",
+          "displayName": "Table constraint row reference",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "RefRecId",
+          "displayName": "Value reference",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PCTableConstraintGlobalColumnDef"
+          },
+          "name": "Relationship_TableConstraintColumnRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCTableConstraintRow"
+          },
+          "name": "Relationship_TableConstraintRowRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResValue"
+          },
+          "name": "Relationship_ValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Table constraint cell"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BatchJob.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BatchJobHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AlertsProcessed",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BatchCreatedBy",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Created by",
+          "description": ""
+        },
+        {
+          "name": "BatchJobId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Batch job ID",
+          "description": ""
+        },
+        {
+          "name": "CanceledBy",
+          "dataType": "BatchCanceledBy",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Caption",
+          "dataType": "BatchCaption",
+          "isNullable": true,
+          "displayName": "Job description",
+          "description": ""
+        },
+        {
+          "name": "Company",
+          "dataType": "SelectableDataArea",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataPartition",
+          "dataType": "PartitionKey",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDateTime",
+          "dataType": "EndDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Finishing",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigStartDateTime",
+          "dataType": "StartDateTime",
+          "isNullable": true,
+          "displayName": "Scheduled start date/time",
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "StartDateTime",
+          "isNullable": true,
+          "displayName": "Actual start date/time",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutedBy",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Executed by",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BatchJob"
+          },
+          "name": "Relationship_BatchJobRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Batch jobs history"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BatchCanceledBy",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BatchCaption",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PartitionKey",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

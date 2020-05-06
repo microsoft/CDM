@@ -1,0 +1,161 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendVendorRequest",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RequestId",
+          "dataType": "VendRequestNumber",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RequestStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "VendorName",
+          "dataType": "VendName",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "SponsoredBy",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "displayName": "Requester name",
+          "description": ""
+        },
+        {
+          "name": "ReasonRef",
+          "dataType": "VendRequestReasonRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorPortalAccessAllowed",
+          "dataType": "VendVendorPortalAccessAllowed",
+          "description": ""
+        },
+        {
+          "name": "DateSubmitted",
+          "dataType": "VendVendorRequestSubmittedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateResolved",
+          "dataType": "VendVendorRequestResolvedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestEntityType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor requests"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendRequestNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendRequestReasonRef",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VendVendorPortalAccessAllowed",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendVendorRequestSubmittedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendVendorRequestResolvedDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

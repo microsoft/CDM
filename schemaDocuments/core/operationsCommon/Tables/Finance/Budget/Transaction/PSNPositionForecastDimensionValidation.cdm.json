@@ -1,0 +1,82 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/HcmPositionForecastScenario.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PSNPositionForecastDimensionValidation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LastValidatedBy",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Dimension validated by",
+          "description": ""
+        },
+        {
+          "name": "LastValidatedDateTime",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "displayName": "Dimension validated",
+          "description": ""
+        },
+        {
+          "name": "PositionForecastScenario",
+          "dataType": "HcmPositionForecastScenarioRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "HcmPositionForecastScenario"
+          },
+          "name": "Relationship_PositionForecastScenarioRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Forecast position validation"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "HcmPositionForecastScenarioRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendLedger",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Cancel",
+          "dataType": "CancelPosting",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimSettlementCtrlType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow empty dimension value",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "VendPostingProfile",
+          "description": ""
+        },
+        {
+          "name": "PostingProfileClose",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "displayName": "Close",
+          "description": ""
+        },
+        {
+          "name": "Settlement",
+          "dataType": "VendAutoSettlement",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor posting profile"
+    },
+    {
+      "dataTypeName": "CancelPosting",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAutoSettlement",
+      "extendsDataType": "integer"
+    }
+  ]
+}

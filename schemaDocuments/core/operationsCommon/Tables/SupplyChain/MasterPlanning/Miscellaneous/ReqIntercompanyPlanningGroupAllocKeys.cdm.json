@@ -1,0 +1,92 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ForecastItemAllocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/ReqIntercompanyPlanningGroupMember.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqIntercompanyPlanningGroupAllocKeys",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ForecastItemAllocationId",
+          "dataType": "ForecastItemAllocationId",
+          "description": ""
+        },
+        {
+          "name": "ForecastItemAllocationIdDataAreaId",
+          "dataType": "SelectableDataArea",
+          "description": ""
+        },
+        {
+          "name": "ReqIntercompanyPlanningGroupMember",
+          "dataType": "InterCompanyPlanningGroupMemberRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ForecastItemAllocation"
+          },
+          "name": "Relationship_ForecastItemAllocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqIntercompanyPlanningGroupMember"
+          },
+          "name": "Relationship_ReqIntercompanyPlanningGroupMemberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Intercompany planning group member allocation keys"
+    },
+    {
+      "dataTypeName": "ForecastItemAllocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InterCompanyPlanningGroupMemberRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

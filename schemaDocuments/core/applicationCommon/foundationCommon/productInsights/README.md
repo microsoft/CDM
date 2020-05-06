@@ -1,6 +1,7 @@
 
 # productInsights
 
+CDM schema documents for the Product Insights' solution  
 
 ## Entities
 

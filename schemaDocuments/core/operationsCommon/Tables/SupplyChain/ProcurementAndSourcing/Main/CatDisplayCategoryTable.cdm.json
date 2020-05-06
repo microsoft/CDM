@@ -1,0 +1,152 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CatDisplayCategorySharedInfo.cdm.json"
+    },
+    {
+      "corpusPath": "CatProcureCatalogTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatDisplayCategoryTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AncestorCategoryToCollapseTo",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Ancestor category to collapse to",
+          "description": ""
+        },
+        {
+          "name": "Catalog",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "IsDescriptiveDataSynchronized",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Map text",
+          "description": ""
+        },
+        {
+          "name": "IsHidden",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Hidden",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "description": ""
+        },
+        {
+          "name": "NestedSetLeft",
+          "dataType": "RealBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NestedSetRight",
+          "dataType": "RealBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParentCategory",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SharedData",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "TargetCategory",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Target navigation category",
+          "description": ""
+        },
+        {
+          "name": "TreeLevel",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UpdateType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CatDisplayCategorySharedInfo"
+          },
+          "name": "Relationship_CatDisplayCategorySharedInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CatProcureCatalogTable"
+          },
+          "name": "Relationship_CatProcureCatalogTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Navigation category"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RealBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    }
+  ]
+}

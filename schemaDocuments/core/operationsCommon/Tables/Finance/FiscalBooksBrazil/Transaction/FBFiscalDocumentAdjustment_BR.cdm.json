@@ -1,0 +1,300 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FBFiscalDocumentAdjustmentCodeICMS_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FBObservationCodeTable_BR.cdm.json"
+    },
+    {
+      "corpusPath": "FBTaxAssessment_BR.cdm.json"
+    },
+    {
+      "corpusPath": "FiscalDocumentTaxTrans_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FBGeneralAdjustmentCode_BR.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBFiscalDocumentAdjustment_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CancelTransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CancelVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ComplementaryDescription",
+          "dataType": "FBComplementaryDescription_BR",
+          "description": ""
+        },
+        {
+          "name": "CreatePayment",
+          "dataType": "FBAdjustmentCreatePayment_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FBFiscalDocumentAdjustmentCodeICMS_BR",
+          "dataType": "FBFiscalDocumentAdjustmentCodeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FBObservationCodeTable_BR",
+          "dataType": "FBObservationCodeRecId_BR",
+          "description": ""
+        },
+        {
+          "name": "FBTaxAssessment_BR",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentTaxTrans_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishmentId",
+          "dataType": "FBFiscalEstablishmentId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsCancelled",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Cancelled",
+          "description": ""
+        },
+        {
+          "name": "State",
+          "dataType": "LogisticsAddressStateId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "FBTaxAmount_BR",
+          "description": ""
+        },
+        {
+          "name": "TaxAmountOther",
+          "dataType": "FBTaxAmount_BR",
+          "isNullable": true,
+          "displayName": "Other tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmount",
+          "dataType": "FBTaxBaseAmount_BR",
+          "isNullable": true,
+          "displayName": "Base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxType_BR",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxValue",
+          "dataType": "FBTaxValue_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VoucherDataArea",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPovertyFund",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "FCP",
+          "description": ""
+        },
+        {
+          "name": "FBGeneralAdjustmentCode_BR",
+          "dataType": "FBGeneralAdjustmentCodeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "FBFiscalDocumentAdjustmentCodeICMS_BR"
+          },
+          "name": "Relationship_FBFiscalDocumentAdjustmentCodeICMS_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBObservationCodeTable_BR"
+          },
+          "name": "Relationship_FBObservationCodeTable_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBTaxAssessment_BR"
+          },
+          "name": "Relationship_FBTaxAssessment_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentTaxTrans_BR"
+          },
+          "name": "Relationship_FiscalDocumentTaxTrans_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBGeneralAdjustmentCode_BR"
+          },
+          "name": "Relationship_FBGeneralAdjustmentCode_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal document adjust/benefit/incentive"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBComplementaryDescription_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBAdjustmentCreatePayment_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FBFiscalDocumentAdjustmentCodeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FBObservationCodeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FBFiscalEstablishmentId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogisticsAddressStateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBTaxAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBTaxBaseAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBTaxValue_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBGeneralAdjustmentCodeRecId_BR",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

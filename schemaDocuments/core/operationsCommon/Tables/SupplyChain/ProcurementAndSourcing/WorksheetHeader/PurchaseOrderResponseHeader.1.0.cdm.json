@@ -1,0 +1,308 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PurchTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchaseOrderResponseHeader",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DlvMode",
+          "dataType": "VendDlvModeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchId",
+          "dataType": "PurchIdVendor",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "OrderAccount",
+          "dataType": "VendAccount",
+          "description": ""
+        },
+        {
+          "name": "DiscPercent",
+          "dataType": "PurchEndDiscPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymMode",
+          "dataType": "VendPaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "VendCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccount",
+          "dataType": "VendInvoiceAccount",
+          "description": ""
+        },
+        {
+          "name": "PurchStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTerm",
+          "dataType": "VendDlvTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EarliestDlvDate",
+          "dataType": "PurchLineDlvDate",
+          "isNullable": true,
+          "displayName": "Earliest requested delivery date",
+          "description": ""
+        },
+        {
+          "name": "ConfirmedDlv",
+          "dataType": "PurchLineDlvDate",
+          "isNullable": true,
+          "displayName": "Confirmed delivery date",
+          "description": ""
+        },
+        {
+          "name": "Payment",
+          "dataType": "VendPaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponseId",
+          "dataType": "PurchaseOrderResponseId",
+          "isNullable": true,
+          "displayName": "Response Id",
+          "description": ""
+        },
+        {
+          "name": "VendorRef",
+          "dataType": "VendRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsumptionState",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeTable"
+          },
+          "name": "Relationship_VendPaymModeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_OrderVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_InvoiceVendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_LogisticsPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase order response"
+    },
+    {
+      "dataTypeName": "VendDlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchIdVendor",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchEndDiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendPaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendDlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchLineDlvDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendPaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchaseOrderResponseId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendRef",
+      "extendsDataType": "string"
+    }
+  ]
+}

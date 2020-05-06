@@ -1,0 +1,168 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "MeasurementSourceSystem.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/EMPAShared/Reference/SharedCategory.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MeasurementActivity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityId",
+          "dataType": "MeasurementActivityId",
+          "description": ""
+        },
+        {
+          "name": "ActivityType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyId",
+          "dataType": "CompanyId",
+          "isNullable": true,
+          "displayName": "Company",
+          "description": ""
+        },
+        {
+          "name": "ParentActivity",
+          "dataType": "MeasurementActivityRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RootActivity",
+          "dataType": "MeasurementActivityRecId",
+          "isNullable": true,
+          "displayName": "Root activity",
+          "description": ""
+        },
+        {
+          "name": "SourceSystem",
+          "dataType": "MeasurementSourceSystemRecId",
+          "description": ""
+        },
+        {
+          "name": "TimeEntryEnabledTo",
+          "dataType": "ValidToDateTime",
+          "isNullable": true,
+          "displayName": "Valid to",
+          "description": ""
+        },
+        {
+          "name": "TimeEntryEnabledFrom",
+          "dataType": "ValidFromDateTime",
+          "isNullable": true,
+          "displayName": "Valid from",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Category",
+          "dataType": "SharedCategoryRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Manager",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "MeasurementSourceSystem"
+          },
+          "name": "Relationship_SourceSystemRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SharedCategory"
+          },
+          "name": "Relationship_ActivityCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Activity"
+    },
+    {
+      "dataTypeName": "MeasurementActivityId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MeasurementActivityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "MeasurementSourceSystemRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ValidToDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SharedCategoryRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

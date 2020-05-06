@@ -1,0 +1,175 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/ProdParmUpdate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProdParmCostEstimation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoUpdate",
+          "dataType": "ProdAutoUpdate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndJob",
+          "dataType": "ProdEndJob",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExecutedDateTime",
+          "dataType": "DateTimeExecuted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ProdParmId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ProdId",
+          "dataType": "ProdId",
+          "description": ""
+        },
+        {
+          "name": "ProfitSet",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "References",
+          "dataType": "ProdUpdateRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefProduction",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reference",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProdParmUpdate"
+          },
+          "name": "Relationship_ProdParmUpdateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Estimation"
+    },
+    {
+      "dataTypeName": "ProdAutoUpdate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProdEndJob",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DateTimeExecuted",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdUpdateRef",
+      "extendsDataType": "integer"
+    }
+  ]
+}

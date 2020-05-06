@@ -1,0 +1,186 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailFiscalDocumentModel2_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConsumerCNPJCPFNumber",
+          "dataType": "CNPJCPFNum_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentAccountNum",
+          "dataType": "FiscalDocumentAccountNumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentDate",
+          "dataType": "FiscalDocumentDate_BR",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentNumber",
+          "dataType": "FiscalDocumentNumber_BR",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentSeries",
+          "dataType": "FiscalDocumentSeries_BR",
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "RetailConnDistributionLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounterFromOrigin",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoreId",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "TerminalId",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "TotalAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalDiscountAmount",
+          "dataType": "DiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalSurchargeAmount",
+          "dataType": "RetailSurchargeAmount_BR",
+          "isNullable": true,
+          "displayName": "Total surcharge amount",
+          "description": ""
+        },
+        {
+          "name": "TransactionId",
+          "dataType": "RetailTransactionId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal receipt payment transactions"
+    },
+    {
+      "dataTypeName": "CNPJCPFNum_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentAccountNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentDate_BR",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FiscalDocumentNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentSeries_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailConnDistributionLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailSurchargeAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

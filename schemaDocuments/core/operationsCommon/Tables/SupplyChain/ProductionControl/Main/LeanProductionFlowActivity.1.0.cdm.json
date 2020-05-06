@@ -1,0 +1,134 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/PlanActivity.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/WrkCtrResourceGroup.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LeanProductionFlowActivity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CycleTime",
+          "dataType": "LeanCycleTimeInUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FeederBridge",
+          "dataType": "LeanFeederBridge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PickUpSemiFinished",
+          "dataType": "LeanPickUpSemiFinished",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlanActivity",
+          "dataType": "PlanActivityRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiveSemiFinished",
+          "dataType": "LeanReceiveSemiFinished",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegisterScrap",
+          "dataType": "LeanRegisterScrap",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WrkCtrResourceGroup",
+          "dataType": "WrkCtrResourceGroupRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PlanActivity"
+          },
+          "name": "Relationship_PlanActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrResourceGroup"
+          },
+          "name": "Relationship_WrkCtrResourceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Production flow activities"
+    },
+    {
+      "dataTypeName": "LeanCycleTimeInUnit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LeanFeederBridge",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LeanPickUpSemiFinished",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PlanActivityRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanReceiveSemiFinished",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LeanRegisterScrap",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WrkCtrResourceGroupRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

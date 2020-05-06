@@ -1,0 +1,618 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BankAccountStatement.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BankChequeTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BankDeposit.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankTransType.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankCentralBankPurpose.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankAccountTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "AccountId",
+          "dataType": "CompanyBankAccountId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "AccountingCurrencyAmountCorrect_RU",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountStatement",
+          "dataType": "BankAccountStatementNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountStatementDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Bank statement date",
+          "description": ""
+        },
+        {
+          "name": "AcknowledgementDate",
+          "dataType": "AcknowledgementDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountCorrect",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Correction amount",
+          "description": ""
+        },
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountMST",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankPaymentRegistrationNum_LV",
+          "dataType": "LvBankPaymentRegistrationNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankTransAmountCur",
+          "dataType": "BankTransAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankTransCurrencyCode",
+          "dataType": "BankTransCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankTransType",
+          "dataType": "BankTransactionType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Cancel",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Cancellation",
+          "description": ""
+        },
+        {
+          "name": "CancelPending",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Pending cancellation",
+          "description": ""
+        },
+        {
+          "name": "CentralBankPurposeCode_LV",
+          "dataType": "BankCentralBankPurposeCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CentralBankPurposeText_LV",
+          "dataType": "BankCentralBankPurposeText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChequeNum",
+          "dataType": "BankChequeNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrespondentCountry_LV",
+          "dataType": "LVCorrespondentCountry",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepositNum",
+          "dataType": "BankDepositNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Included",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Cleared",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerTransType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Ledger transaction type",
+          "description": ""
+        },
+        {
+          "name": "Manual",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "New",
+          "description": ""
+        },
+        {
+          "name": "PaymentMode",
+          "dataType": "PaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymReference",
+          "dataType": "PaymReference",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReasonRefRecID",
+          "dataType": "ReasonRefRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Reconciled",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reconciled",
+          "description": ""
+        },
+        {
+          "name": "RefRecId_RU",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reference record ID",
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyAmount_RU",
+          "dataType": "AmountMSTSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyAmountCorrect_RU",
+          "dataType": "AmountMSTSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Txt",
+          "dataType": "TransactionTextLarge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "displayName": "Voucher number",
+          "description": ""
+        },
+        {
+          "name": "AmountReportingCurrency",
+          "dataType": "AmountMSTSecondary",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountStatement"
+          },
+          "name": "Relationship_BankAccountStatementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankChequeTable"
+          },
+          "name": "Relationship_BankChequeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankDeposit"
+          },
+          "name": "Relationship_BankDepositRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankTransType"
+          },
+          "name": "Relationship_BankTransTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankCentralBankPurpose"
+          },
+          "name": "Relationship_CentralBankPurposeCode_LVRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_CorrespondentCountry_LVRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_BankTransCurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_Currency_CurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank transactions"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankAccountStatementNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AcknowledgementDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LvBankPaymentRegistrationNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankTransAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankTransCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankTransactionType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankCentralBankPurposeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankCentralBankPurposeText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankChequeNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LVCorrespondentCountry",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BankDepositNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymReference",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReasonRefRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountMSTSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransactionTextLarge",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

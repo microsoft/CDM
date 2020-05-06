@@ -1,0 +1,636 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjAdjustmentCreateInProcess",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityNumber",
+          "dataType": "ProjActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustCorrection",
+          "dataType": "LedgerCorrection",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Adjustment of project transactions - correction",
+          "description": ""
+        },
+        {
+          "name": "AdjustmentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AdjustOrig",
+          "dataType": "ProjAdjustOrig",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssessableValue_IN",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Assessable value",
+          "description": ""
+        },
+        {
+          "name": "CategoryId",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyId",
+          "dataType": "ProjSalesCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyIdCost",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Cost price currency",
+          "description": ""
+        },
+        {
+          "name": "CustomsTariffCodeTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Customs tariff code",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DirectSettlement_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DSA_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "DSA",
+          "description": ""
+        },
+        {
+          "name": "ExciseRecordType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseTariffCodes_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Excise tariff code",
+          "description": ""
+        },
+        {
+          "name": "ExciseType_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemAdjustVersion",
+          "dataType": "ProjItemAdjustVersion",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdSmall",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LinePropertyId",
+          "dataType": "ProjLinePropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaximumRetailPrice_IN",
+          "dataType": "MaximumRetailPrice_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Module",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginCost",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackingSlipId",
+          "dataType": "PackingSlipId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostalAddress_IN",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjAdjustRefId",
+          "dataType": "ProjAdjustRefId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjIdentId",
+          "dataType": "ProjItemId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjIdentResource",
+          "dataType": "ResourceRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAIndirectComponentGroup",
+          "dataType": "PSAIndirectComponentGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAProjOrigTransId",
+          "dataType": "PSAProjOrigTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAWrkCtrId",
+          "dataType": "PSAWrkCtrId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "ProjQtyCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyToBeInvoiced",
+          "dataType": "ProjQtyCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Resource",
+          "dataType": "ResourceRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResourceCategory",
+          "dataType": "ResourceCategoryRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxFormTypes_IN",
+          "dataType": "SalesTaxFormTypesRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesUnit",
+          "dataType": "SalesUnit",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCodeTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Service code",
+          "description": ""
+        },
+        {
+          "name": "SMABasePrice",
+          "dataType": "SMABasePrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SMAEnddate",
+          "dataType": "SMAEnddate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SMAIndex",
+          "dataType": "SMAIndex",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SMAStartDate",
+          "dataType": "SMAStartDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SMASubscriptionId",
+          "dataType": "SMASubscriptionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SMASubscriptionPeriodType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxgroupId",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInformation_IN",
+          "dataType": "TaxInformationRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInventVATCommodityCodeId",
+          "dataType": "TaxInventVATCommodityCodeId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroupId",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TCSGroup_IN",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TCS group",
+          "description": ""
+        },
+        {
+          "name": "TDSGroup_IN",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TDS group",
+          "description": ""
+        },
+        {
+          "name": "TotalCostAmountCur",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalSalesAmountCur",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Transdate",
+          "dataType": "ProjTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransID",
+          "dataType": "ProjCostTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "txt",
+          "dataType": "Description255",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FundingSource",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessId",
+          "dataType": "guid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project adjustments to create"
+    },
+    {
+      "dataTypeName": "ProjActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerCorrection",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjAdjustOrig",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjSalesCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjItemAdjustVersion",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemIdSmall",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjLinePropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MaximumRetailPrice_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PackingSlipId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjAdjustRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ResourceRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PSAIndirectComponentGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSAProjOrigTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSAWrkCtrId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjQtyCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ResourceCategoryRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SalesTaxFormTypesRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SalesUnit",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMABasePrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SMAEnddate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SMAIndex",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SMAStartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SMASubscriptionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxInformationRefRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxInventVATCommodityCodeId_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjCostTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

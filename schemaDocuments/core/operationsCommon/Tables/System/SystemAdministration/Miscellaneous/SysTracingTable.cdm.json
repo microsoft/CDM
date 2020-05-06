@@ -1,0 +1,97 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysTracingTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "User",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Traced by",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Trace name",
+          "description": ""
+        },
+        {
+          "name": "UploadInfo",
+          "dataType": "binary",
+          "isNullable": true,
+          "displayName": "Trace information",
+          "description": ""
+        },
+        {
+          "name": "StartTime",
+          "dataType": "date",
+          "isNullable": true,
+          "displayName": "Trace started",
+          "description": ""
+        },
+        {
+          "name": "StopTime",
+          "dataType": "date",
+          "isNullable": true,
+          "displayName": "Trace finished",
+          "description": ""
+        },
+        {
+          "name": "UploadResultClass",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Upload class type",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    }
+  ]
+}

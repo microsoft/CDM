@@ -1,0 +1,166 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/TransactionLine/VendInvoiceInfoLine.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SourceDocumentLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateDate",
+          "dataType": "AccountingDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsFinal",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParentSourceDocumentLine",
+          "dataType": "SourceDocumentLineRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "SourceDocumentHeaderRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRelationType",
+          "dataType": "RefTableId",
+          "description": ""
+        },
+        {
+          "name": "StateContainer",
+          "dataType": "SourceDocumentLineStateContainer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TypeEnumName",
+          "dataType": "EnumName",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TypeEnumValue",
+          "dataType": "SourceDocumentTypeEnumValue",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TermQuantity",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DraftVersion",
+          "dataType": "RecVersion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceInfoLine"
+          },
+          "name": "Relationship_VendInvoiceInfoLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Source document line"
+    },
+    {
+      "dataTypeName": "AccountingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SourceDocumentLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SourceDocumentHeaderRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SourceDocumentLineStateContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "EnumName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SourceDocumentTypeEnumValue",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RecVersion",
+      "extendsDataType": "integer"
+    }
+  ]
+}

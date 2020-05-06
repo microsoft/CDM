@@ -1,0 +1,90 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetGroupGlobal.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetGroupGlobal",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Fixed asset group",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "description": ""
+        },
+        {
+          "name": "HasQualifiers",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Has qualifiers?",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "AssetRuleName",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AssetGroupGlobal"
+          },
+          "name": "Relationship_AssetGroupGlobalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Business rules for fixed assets determination"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetRuleName",
+      "extendsDataType": "string"
+    }
+  ]
+}

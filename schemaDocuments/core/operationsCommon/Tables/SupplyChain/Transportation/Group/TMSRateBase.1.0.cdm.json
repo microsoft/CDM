@@ -1,0 +1,163 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TMSBreakMaster.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TMSRateMaster.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSRateBase",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BreakMasterCode",
+          "dataType": "TMSBreakMasterCode",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "MaximumCharge",
+          "dataType": "TMSMaximumCharge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinimumCharge",
+          "dataType": "TMSMinimumCharge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RateBaseCode",
+          "dataType": "TMSRateBaseCode",
+          "description": ""
+        },
+        {
+          "name": "RateMasterCode",
+          "dataType": "TMSRateMasterCode",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSBreakMaster"
+          },
+          "name": "Relationship_TMSBreakMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRateMaster"
+          },
+          "name": "Relationship_TMSRateMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Rate base"
+    },
+    {
+      "dataTypeName": "TMSBreakMasterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSMaximumCharge",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSMinimumCharge",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRateBaseCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRateMasterCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

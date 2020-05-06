@@ -1,0 +1,101 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResAttributeType.cdm.json"
+    },
+    {
+      "corpusPath": "PCTableConstraintDefinition.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCTableConstraintColumnDefinition",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AttributeType",
+          "dataType": "RefRecId",
+          "displayName": "Domain",
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PCTableConstraintColumnName",
+          "description": ""
+        },
+        {
+          "name": "TableConstraintDefinition",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Table constraint definition",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttributeType"
+          },
+          "name": "Relationship_AttributeTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCTableConstraintDefinition"
+          },
+          "name": "Relationship_TableConstraintDefinitionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Table constraint column"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PCTableConstraintColumnName",
+      "extendsDataType": "string"
+    }
+  ]
+}

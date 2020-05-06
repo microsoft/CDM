@@ -1,0 +1,89 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DimensionAttributeValue.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DimensionAttributeValueTotallingCriteria",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DimensionAttributeValue",
+          "dataType": "RefRecId",
+          "displayName": "Dimension code",
+          "description": ""
+        },
+        {
+          "name": "FromValue",
+          "dataType": "DimensionFromValue",
+          "isNullable": true,
+          "displayName": "From value",
+          "description": ""
+        },
+        {
+          "name": "InvertTotalSign",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Invert sign",
+          "description": ""
+        },
+        {
+          "name": "ToValue",
+          "dataType": "DimensionToValue",
+          "isNullable": true,
+          "displayName": "To value",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValue"
+          },
+          "name": "Relationship_DimensionAttributeValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "From value"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionFromValue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionToValue",
+      "extendsDataType": "string"
+    }
+  ]
+}

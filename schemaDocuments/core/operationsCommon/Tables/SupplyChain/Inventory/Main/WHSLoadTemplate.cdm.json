@@ -1,0 +1,210 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Group/TMSEquipment.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSLoadTemplate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EquipmentCode",
+          "dataType": "TMSEquipmentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadDepth",
+          "dataType": "WHSLoadDepth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadFloorStack",
+          "dataType": "WHSLoadFloorStack",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadHeight",
+          "dataType": "WHSLoadHeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadMaxVolume",
+          "dataType": "WHSLoadVolume",
+          "isNullable": true,
+          "displayName": "Max. allowed load volume",
+          "description": ""
+        },
+        {
+          "name": "LoadMaxWeight",
+          "dataType": "WHSLoadWeight",
+          "isNullable": true,
+          "displayName": "Max. allowed load weight",
+          "description": ""
+        },
+        {
+          "name": "LoadTemplateId",
+          "dataType": "WHSLoadTemplateId",
+          "description": ""
+        },
+        {
+          "name": "LoadWidth",
+          "dataType": "WHSLoadWidth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxFreightPieces",
+          "dataType": "TMSMaxFreightPieces",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxGrossWeight",
+          "dataType": "WHSMaxGrossWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundTripReq",
+          "dataType": "TMSRoundTripReq",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowLoadSplitShipConfirm",
+          "dataType": "WHSAllowLoadSplitShipConfirm",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxQuantity",
+          "dataType": "WHSLoadTemplateMaxQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxUnit",
+          "dataType": "WHSLoadTemplateMaxUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TMSEquipment"
+          },
+          "name": "Relationship_TMSEquipmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Load templates"
+    },
+    {
+      "dataTypeName": "TMSEquipmentCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoadDepth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLoadFloorStack",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSLoadHeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLoadVolume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLoadWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLoadTemplateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLoadWidth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSMaxFreightPieces",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSMaxGrossWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSRoundTripReq",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSAllowLoadSplitShipConfirm",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSLoadTemplateMaxQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLoadTemplateMaxUnit",
+      "extendsDataType": "string"
+    }
+  ]
+}

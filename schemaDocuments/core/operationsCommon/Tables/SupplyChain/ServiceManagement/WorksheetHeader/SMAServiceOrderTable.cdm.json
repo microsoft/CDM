@@ -1,0 +1,439 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/ContactPerson.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.cdm.json"
+    },
+    {
+      "corpusPath": "SMAAgreementTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMAServiceLevelAgreementTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMAServiceObjectRelation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Main/SMAServiceTaskRelation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/Group/SMAStageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SMAServiceOrderTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityNumber",
+          "dataType": "smmActivityId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivityTypeId",
+          "dataType": "smmActivityTypeId",
+          "isNullable": true,
+          "displayName": "Default line activity type",
+          "description": ""
+        },
+        {
+          "name": "AddressRefRecId",
+          "dataType": "AddressRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AddressRefTableId",
+          "dataType": "AddressRefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AgreementId",
+          "dataType": "SMAAgreementId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalendarConflict",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Calendar conflict",
+          "description": ""
+        },
+        {
+          "name": "CertifiedPayroll",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Certified payroll",
+          "description": ""
+        },
+        {
+          "name": "Compliance",
+          "dataType": "SMAServiceLevelAgreementCompliance",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonId",
+          "dataType": "ContactPersonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncomingWebOrder",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Incoming",
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Priority",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Progress",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceAddressName",
+          "dataType": "LogisticsServiceName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceDateTime",
+          "dataType": "SMAPreferredServiceDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLevelAgreement",
+          "dataType": "SMAServiceLevelAgreementId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLevelAgreementStatus",
+          "dataType": "SMAServiceOrderSLAStatus",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceOrderId",
+          "dataType": "SMAServiceOrderId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ServicePostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SignOff",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Sign off",
+          "description": ""
+        },
+        {
+          "name": "SignOffDateTime",
+          "dataType": "SMASignOffDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StageId",
+          "dataType": "SMAStageId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "WorkerPreferredTechnician",
+          "dataType": "SMAWorkerPreferredTechnician",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkerResponsible",
+          "dataType": "SMAWorkerServiceResponsible",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ContactPerson"
+          },
+          "name": "Relationship_ContactPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_ServicePostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAAgreementTable"
+          },
+          "name": "Relationship_SMAAgreementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceLevelAgreementTable"
+          },
+          "name": "Relationship_SMAServiceLevelAgreementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceObjectRelation"
+          },
+          "name": "Relationship_SMAServiceObjectRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceTaskRelation"
+          },
+          "name": "Relationship_SMAServiceTaskRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAStageTable"
+          },
+          "name": "Relationship_SMAStageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Service orders"
+    },
+    {
+      "dataTypeName": "smmActivityId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmActivityTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AddressRefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SMAAgreementId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SMAServiceLevelAgreementCompliance",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ContactPersonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsServiceName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAPreferredServiceDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SMAServiceLevelAgreementId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAServiceOrderSLAStatus",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SMAServiceOrderId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SMASignOffDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SMAStageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SMAWorkerPreferredTechnician",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SMAWorkerServiceResponsible",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

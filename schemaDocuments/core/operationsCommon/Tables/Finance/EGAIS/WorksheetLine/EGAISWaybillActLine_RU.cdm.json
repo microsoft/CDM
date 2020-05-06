@@ -1,0 +1,111 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/EGAIS/WorksheetHeader/EGAISWaybillActJour_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EGAISWaybillActLine_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Identity",
+          "dataType": "EGAISIdentity_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InformBRegId",
+          "dataType": "EGAISInformBRegId_RU",
+          "isReadOnly": true,
+          "displayName": "Certificate B",
+          "description": ""
+        },
+        {
+          "name": "RealQty",
+          "dataType": "Qty",
+          "isReadOnly": true,
+          "displayName": "Actual quantity",
+          "description": ""
+        },
+        {
+          "name": "WaybillActJour",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EGAISWaybillActJour_RU"
+          },
+          "name": "Relationship_EGAISWaybillActHeader_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "EGAIS disagreement statement journal lines"
+    },
+    {
+      "dataTypeName": "EGAISIdentity_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EGAISInformBRegId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

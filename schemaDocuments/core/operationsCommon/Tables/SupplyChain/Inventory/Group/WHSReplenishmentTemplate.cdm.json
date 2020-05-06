@@ -1,0 +1,110 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSReplenishmentTemplate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishTemplateId",
+          "dataType": "WHSReplenishTemplateId",
+          "description": ""
+        },
+        {
+          "name": "UseWorkForWaveReplen",
+          "dataType": "WHSUseWorkForWaveReplen",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WaveStepCode",
+          "dataType": "WHSWaveStepCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CancelReplenWhenDemandCanceled",
+          "dataType": "WHSCancelReplenWhenDemandCanceled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Replenishment templates"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSReplenishTemplateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSUseWorkForWaveReplen",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSWaveStepCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSCancelReplenWhenDemandCanceled",
+      "extendsDataType": "integer"
+    }
+  ]
+}

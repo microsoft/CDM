@@ -1,0 +1,111 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CustInvoiceTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustInvoiceTrans_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustInvoiceTrans",
+          "dataType": "CustInvoiceTransRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ICMSSTCollectionPaymentMode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ICMSSTCollectionPaymentNumber",
+          "dataType": "ICMSSTCollectionPaymentNumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RespWithholdoingICMSST",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NfeVbcstretVicmsstretTagsReported",
+          "dataType": "FBNfeVbcstretVicmsstretTagsReported_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceTrans"
+          },
+          "name": "Relationship_CustInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer invoice line information for Brazil"
+    },
+    {
+      "dataTypeName": "CustInvoiceTransRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ICMSSTCollectionPaymentNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBNfeVbcstretVicmsstretTagsReported_BR",
+      "extendsDataType": "integer"
+    }
+  ]
+}

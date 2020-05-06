@@ -1,0 +1,324 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailFiscalDocument_BR.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailFiscalDocumentLine_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApproximateTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Approximate tax amount",
+          "description": ""
+        },
+        {
+          "name": "CFOP",
+          "dataType": "SalesPurchCFOPId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Channel",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "ItemFreeTxt",
+          "displayName": "Description",
+          "description": ""
+        },
+        {
+          "name": "FiscalClassification",
+          "dataType": "TaxFiscalClassificationId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GlobalTradeItemNumber",
+          "dataType": "GlobalTradeItemNumber",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAmount",
+          "dataType": "LineAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDiscount",
+          "dataType": "SalesSumLineDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "UnitQty",
+          "isNullable": true,
+          "displayName": "Quantity",
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounterFromOrigin",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCode",
+          "dataType": "TaxServiceCodeId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "store",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "TaxationOrigin",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "terminal",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "transactionId",
+          "dataType": "RetailTransactionId",
+          "description": ""
+        },
+        {
+          "name": "Unit",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitPrice",
+          "dataType": "PriceCur",
+          "isNullable": true,
+          "displayName": "Unit price",
+          "description": ""
+        },
+        {
+          "name": "LineId",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginalLineDiscount",
+          "dataType": "SalesSumLineDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CNPJManufacturer",
+          "dataType": "CNPJMan_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BenefitCode",
+          "dataType": "FBFiscalDocumentTaxSpedAdjustmentCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScaleIndicator",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxSubstitutionCode",
+          "dataType": "TaxSubstitutionCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentNumber",
+          "dataType": "FiscalDocumentNumber_BR",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentSeries",
+          "dataType": "FiscalDocumentSeries_BR",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailFiscalDocument_BR"
+          },
+          "name": "Relationship_RetailFiscalDocument_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail Fiscal Document Line"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesPurchCFOPId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ItemFreeTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxFiscalClassificationId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "GlobalTradeItemNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesSumLineDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxServiceCodeId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CNPJMan_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBFiscalDocumentTaxSpedAdjustmentCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxSubstitutionCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentSeries_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

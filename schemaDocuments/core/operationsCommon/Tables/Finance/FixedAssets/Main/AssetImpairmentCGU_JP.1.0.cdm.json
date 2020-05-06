@@ -1,0 +1,142 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetImpairmentCGUGroup_JP.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetImpairmentCGU_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CGUGroup",
+          "dataType": "RefRecId",
+          "displayName": "CGU group",
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAllocBasis",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Name",
+          "description": ""
+        },
+        {
+          "name": "Number",
+          "dataType": "AssetImpairmentCGUName_JP",
+          "description": ""
+        },
+        {
+          "name": "RecoverableAmount",
+          "dataType": "AssetRecoverableAmount_JP",
+          "isNullable": true,
+          "displayName": "Recoverable value",
+          "description": ""
+        },
+        {
+          "name": "RecoverableAmtLastUpdatedDate",
+          "dataType": "AssetTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UndiscountedCashFlow",
+          "dataType": "AssetUndiscountedCashFlow_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UndiscountedCashFlowLastUpdatedDate",
+          "dataType": "AssetTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetImpairmentCGUGroup_JP"
+          },
+          "name": "Relationship_CGUGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Cash generating unit"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetImpairmentCGUName_JP",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetRecoverableAmount_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetUndiscountedCashFlow_JP",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

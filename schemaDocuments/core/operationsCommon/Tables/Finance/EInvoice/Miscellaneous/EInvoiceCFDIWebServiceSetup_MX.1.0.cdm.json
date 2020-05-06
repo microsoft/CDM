@@ -1,0 +1,106 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EInvoiceCFDIPACTable_MX.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EInvoiceCFDIWebServiceSetup_MX",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Environment",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "PACAccount",
+          "dataType": "EInvoiceCFDIPACAccount_MX",
+          "description": ""
+        },
+        {
+          "name": "URL",
+          "dataType": "URL",
+          "description": ""
+        },
+        {
+          "name": "WebService",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "WebServiceMethod",
+          "dataType": "EInvoiceCFDIWebServiceMethod_MX",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EInvoiceCFDIPACTable_MX"
+          },
+          "name": "Relationship_PACTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "PAC web services"
+    },
+    {
+      "dataTypeName": "EInvoiceCFDIPACAccount_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "URL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EInvoiceCFDIWebServiceMethod_MX",
+      "extendsDataType": "string"
+    }
+  ]
+}

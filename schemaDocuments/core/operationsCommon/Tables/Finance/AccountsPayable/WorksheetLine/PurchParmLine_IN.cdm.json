@@ -1,0 +1,245 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/InventSiteGateEntryLine_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchParmLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustomsBillOfEntryNumberTable_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustomsImportInvoiceNumberTable_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustomsInvoiceRegnTrans_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchParmLine_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssessableValueAccountingCurrency",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Assessable value in the accounting currency",
+          "description": ""
+        },
+        {
+          "name": "InventSiteGateEntryLine",
+          "dataType": "InventSiteGateEntryLineRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchParmLine",
+          "dataType": "PurchParmLineRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AcceptedQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Accepted",
+          "description": ""
+        },
+        {
+          "name": "AssessableValueTransactionCurrency",
+          "dataType": "PurchLineAmount",
+          "isNullable": true,
+          "displayName": "Assessable value",
+          "description": ""
+        },
+        {
+          "name": "CustomsBillOfEntryNumberTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Bill of entry",
+          "description": ""
+        },
+        {
+          "name": "CustomsImportInvoiceNumberTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Import invoice number",
+          "description": ""
+        },
+        {
+          "name": "CustomsInvoiceRegnRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaximumRetailPrice",
+          "dataType": "MaximumRetailPrice_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceivedQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Received",
+          "description": ""
+        },
+        {
+          "name": "RejectedQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "displayName": "Rejected",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventSiteGateEntryLine_IN"
+          },
+          "name": "Relationship_InventSiteGateEntryLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchParmLine"
+          },
+          "name": "Relationship_PurchParmLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustomsBillOfEntryNumberTable_IN"
+          },
+          "name": "Relationship_CustomsBillOfEntryNumberTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustomsImportInvoiceNumberTable_IN"
+          },
+          "name": "Relationship_CustomsImportInvoiceNumberTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustomsInvoiceRegnTrans_IN"
+          },
+          "name": "Relationship_CustomsInvoiceRegnTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase parm line information for India"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventSiteGateEntryLineRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchParmLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLineAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MaximumRetailPrice_IN",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

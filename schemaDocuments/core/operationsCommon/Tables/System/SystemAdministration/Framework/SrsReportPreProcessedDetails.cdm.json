@@ -1,0 +1,83 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SrsReportPreProcessedDetails",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IsPreviewData",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Is Preview Data",
+          "description": ""
+        },
+        {
+          "name": "RdpName",
+          "dataType": "ClassName",
+          "isNullable": true,
+          "displayName": "Report data provider class name",
+          "description": ""
+        },
+        {
+          "name": "TempDBNames",
+          "dataType": "SRSPreProcessedTempDBNames",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pre-Processed report details"
+    },
+    {
+      "dataTypeName": "ClassName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SRSPreProcessedTempDBNames",
+      "extendsDataType": "binary"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "GeneralJournalEntry.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerVoucherType_CN.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "GeneralJournalEntry_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "GeneralJournalEntry",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucherType_CN",
+          "dataType": "LedgerVoucherTypeRefRecId_CN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Reversed_CN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Reversed journal",
+          "description": ""
+        },
+        {
+          "name": "Voucher_CN",
+          "dataType": "Voucher_CN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsExtemporaneousType_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Extemporaneous type",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "GeneralJournalEntry"
+          },
+          "name": "Relationship_GeneralJournalEntryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerVoucherType_CN"
+          },
+          "name": "Relationship_LedgerVoucherType_CNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "General journal country specific header"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerVoucherTypeRefRecId_CN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Voucher_CN",
+      "extendsDataType": "string"
+    }
+  ]
+}

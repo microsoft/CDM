@@ -1,6 +1,7 @@
 
 # foundationCommon
 
+CDM standard entities  
 
 ## Sub-folders
 

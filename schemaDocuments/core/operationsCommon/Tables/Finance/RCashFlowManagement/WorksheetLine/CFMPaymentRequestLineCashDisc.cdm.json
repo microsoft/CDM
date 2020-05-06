@@ -1,0 +1,90 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CFMPaymentRequestCashDisc.cdm.json"
+    },
+    {
+      "corpusPath": "CFMPaymentRequestLine.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CFMPaymentRequestLineCashDisc",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CashDiscAmount",
+          "dataType": "CFMCashDiscPositiveAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CFMPaymentRequestCashDisc",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CFMPaymentRequestLine",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestCashDisc"
+          },
+          "name": "Relationship_CFMPaymentRequestCashDiscRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestLine"
+          },
+          "name": "Relationship_CFMPaymentRequestLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Сash discounts of payment request line "
+    },
+    {
+      "dataTypeName": "CFMCashDiscPositiveAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

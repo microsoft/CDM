@@ -1,6 +1,7 @@
 
 # higherEducation
 
+CDM Solution for the 'HIGHEREDUCATION' CDS Solution  
 
 ## Entities
 

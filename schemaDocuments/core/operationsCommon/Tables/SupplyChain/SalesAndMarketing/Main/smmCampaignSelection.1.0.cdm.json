@@ -1,0 +1,346 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmCampaignQuery.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "ContactPerson.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "smmBusRelTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "smmCampaignTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/smmLeadTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "smmOpportunityTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmQuotationCompetitorGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmCampaignSelection",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityNumber",
+          "dataType": "smmActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AnswerFrequency",
+          "dataType": "smmCampaignAnswerFrequency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BroadcastType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BusRelMainRespWorker",
+          "dataType": "smmBusRelAccResponsibleWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CampaignId",
+          "dataType": "smmCampaignId",
+          "description": ""
+        },
+        {
+          "name": "CampaignResponse",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonId",
+          "dataType": "ContactPersonId",
+          "description": ""
+        },
+        {
+          "name": "DistributionDate",
+          "dataType": "smmCampaignBroadcastDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FollowUpRespWorker",
+          "dataType": "CrmWorkerRecId",
+          "isNullable": true,
+          "displayName": "Owner",
+          "description": ""
+        },
+        {
+          "name": "KMVirtualNetworkAnswerTableId",
+          "dataType": "KMVirtualNetworkAnswerTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NameId",
+          "dataType": "smmCampaignQueryName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfTargets",
+          "dataType": "smmCampaignNumOfTargets",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Party",
+          "dataType": "DirPartyRecId",
+          "displayName": "Contact for",
+          "description": ""
+        },
+        {
+          "name": "PlannedDate",
+          "dataType": "smmCampaignPlannedDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Responded",
+          "dataType": "smmCampaignResponded",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SysCheckParameter",
+          "dataType": "smmCampaignSysCheckParameter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "smmCampaignQuery"
+          },
+          "name": "Relationship_CampaignQueryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ContactPerson"
+          },
+          "name": "Relationship_ContactPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTable_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelTable"
+          },
+          "name": "Relationship_smmBusRelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmCampaignTable"
+          },
+          "name": "Relationship_smmCampaignTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmLeadTable"
+          },
+          "name": "Relationship_smmLeadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmOpportunityTable"
+          },
+          "name": "Relationship_smmOpportunityTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmQuotationCompetitorGroup"
+          },
+          "name": "Relationship_smmQuotationCompetitorGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Campaign selections"
+    },
+    {
+      "dataTypeName": "smmActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmCampaignAnswerFrequency",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmBusRelAccResponsibleWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmCampaignId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ContactPersonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmCampaignBroadcastDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CrmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "KMVirtualNetworkAnswerTableId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmCampaignQueryName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmCampaignNumOfTargets",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DirPartyRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmCampaignPlannedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "smmCampaignResponded",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmCampaignSysCheckParameter",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,273 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/PlTaxDueTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjInvoiceTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "ProjProposalJour.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjInvoiceParmTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoNumbering_LT",
+          "dataType": "LtDocRegister",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BatchAdministration",
+          "dataType": "BatchAdministration",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate_W",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "errorText",
+          "dataType": "LogText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccount",
+          "dataType": "CustAccount",
+          "displayName": "Invoice account",
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "InvoiceDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Narration_BR",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Narration",
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "description": ""
+        },
+        {
+          "name": "ParmJobStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostponeVAT",
+          "dataType": "CzPostponeVAT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjInvoiceId_LT",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjInvoiceProjId",
+          "dataType": "ProjInvoiceProjId",
+          "description": ""
+        },
+        {
+          "name": "ProposalId",
+          "dataType": "ProjProposalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesDate_CZ",
+          "dataType": "CzSalesDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Storno",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Credit correction",
+          "description": ""
+        },
+        {
+          "name": "TaxPeriodPaymentCode_PL",
+          "dataType": "PlTaxPeriodPaymentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VatDueDate_W",
+          "dataType": "VatDueDate_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlTaxDueTable"
+          },
+          "name": "Relationship_PlTaxDueTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjInvoiceTable"
+          },
+          "name": "Relationship_ProjInvoiceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjProposalJour"
+          },
+          "name": "Relationship_ProjProposalJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Invoice posting"
+    },
+    {
+      "dataTypeName": "LtDocRegister",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BatchAdministration",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LogText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CzPostponeVAT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjInvoiceProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjProposalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CzSalesDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PlTaxPeriodPaymentCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VatDueDate_W",
+      "extendsDataType": "date"
+    }
+  ]
+}

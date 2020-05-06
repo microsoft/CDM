@@ -1,0 +1,270 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Group/EmplLedger_RU.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCash/Main/RCashTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EmplParameters_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdvanceDefaultUser",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Set default advance holder",
+          "description": ""
+        },
+        {
+          "name": "AdvanceHolderSorted",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Advance holder sorting",
+          "description": ""
+        },
+        {
+          "name": "AllowDebitOpenBalance",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Issue when balance is open",
+          "description": ""
+        },
+        {
+          "name": "AutoSettle",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Automatic settlement",
+          "description": ""
+        },
+        {
+          "name": "BankCloseACType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankCloseJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankCloseLedgerDimension",
+          "dataType": "DimensionDynamicDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashCloseAccount",
+          "dataType": "RCashAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashCloseJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimSettlementCtrlType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayCloseCostTypeAdd",
+          "dataType": "RPayCostType",
+          "isNullable": true,
+          "displayName": "Income",
+          "description": ""
+        },
+        {
+          "name": "PayCloseCostTypeDeduct",
+          "dataType": "RPayCostType",
+          "isNullable": true,
+          "displayName": "Retention",
+          "description": ""
+        },
+        {
+          "name": "PayCloseLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Payroll account",
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "EmplPostingProfile_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfileSettlement",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Settlement by profile",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_BankCloseLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_BankJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_CashJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EmplLedger_RU"
+          },
+          "name": "Relationship_EmplLedger_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_PayCloseLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RCashTable"
+          },
+          "name": "Relationship_RCashTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Table of setup Cash operations"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDynamicDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RCashAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RPayCostType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EmplPostingProfile_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

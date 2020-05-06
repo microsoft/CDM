@@ -1,0 +1,120 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmSalesUnit.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmResponsibilityGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmResponsibilitiesTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "HierarchyId",
+          "dataType": "HierarchyIdBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HierarchyType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResponsibilityId",
+          "dataType": "smmResponsibilityId",
+          "isNullable": true,
+          "displayName": "Responsibilities",
+          "description": ""
+        },
+        {
+          "name": "SalesUnitId",
+          "dataType": "smmSalesUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "smmSalesUnit"
+          },
+          "name": "Relationship_smmSalesUnitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmResponsibilityGroup"
+          },
+          "name": "Relationship_smmResponsibilityGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Responsibilities"
+    },
+    {
+      "dataTypeName": "HierarchyIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmResponsibilityId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmSalesUnitId",
+      "extendsDataType": "string"
+    }
+  ]
+}

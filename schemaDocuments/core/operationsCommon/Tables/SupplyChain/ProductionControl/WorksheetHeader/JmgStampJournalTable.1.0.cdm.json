@@ -1,0 +1,524 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgEmployee.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/JmgGroupApprove.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/JmgGroupCalc.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayAgreementTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgProfileTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgStampJournalTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Approved",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Approved",
+          "description": ""
+        },
+        {
+          "name": "ApprovedByWorker",
+          "dataType": "JmgWorkerRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Approved by",
+          "description": ""
+        },
+        {
+          "name": "ApproveGroupId",
+          "dataType": "JmgGroupApproveId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Calculated",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Calculated",
+          "description": ""
+        },
+        {
+          "name": "CalculatedByWorker",
+          "dataType": "JmgWorkerRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Calculated by",
+          "description": ""
+        },
+        {
+          "name": "CalculateGroupId",
+          "dataType": "JmgGroupCalcId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContainsError",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Error",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DropClockInCorrection",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Drop tolerance at clock-in",
+          "description": ""
+        },
+        {
+          "name": "DropClockOutCorrection",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Drop tolerance at clock-out",
+          "description": ""
+        },
+        {
+          "name": "FlexProfile",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Flex allowed",
+          "description": ""
+        },
+        {
+          "name": "Locked",
+          "dataType": "Locked",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Log",
+          "dataType": "LogText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "nonPaidBreakSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NormFlexSec",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NormSec",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "paidBreakSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayAbsenceSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Absence time",
+          "description": ""
+        },
+        {
+          "name": "PayAgreement",
+          "dataType": "JmgPayAgreement",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayEnd",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "End time",
+          "description": ""
+        },
+        {
+          "name": "PayEndDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "displayName": "Pay end",
+          "description": ""
+        },
+        {
+          "name": "PayFlexAddSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayFlexBalanceSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayFlexCorrectionSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayFlexSubSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayIllegalAbsenceSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Illegal absence",
+          "description": ""
+        },
+        {
+          "name": "PayLegalAbsenceSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Legal absence",
+          "description": ""
+        },
+        {
+          "name": "PayOverTimeSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Pay overtime",
+          "description": ""
+        },
+        {
+          "name": "PaySeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Pay time",
+          "description": ""
+        },
+        {
+          "name": "PayStart",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "Start time",
+          "description": ""
+        },
+        {
+          "name": "PayStartDate",
+          "dataType": "StartDate",
+          "isNullable": true,
+          "displayName": "Pay start",
+          "description": ""
+        },
+        {
+          "name": "Profile",
+          "dataType": "JmgProfileId",
+          "description": ""
+        },
+        {
+          "name": "ProfileDate",
+          "dataType": "JmgDate",
+          "description": ""
+        },
+        {
+          "name": "ProfileEnd",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "Profile end time",
+          "description": ""
+        },
+        {
+          "name": "ProfileEndDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "displayName": "Profile end",
+          "description": ""
+        },
+        {
+          "name": "ProfileManual",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Override profile",
+          "description": ""
+        },
+        {
+          "name": "ProfileSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Time",
+          "description": ""
+        },
+        {
+          "name": "ProfileStart",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "Profile start time",
+          "description": ""
+        },
+        {
+          "name": "ProfileStartDate",
+          "dataType": "StartDate",
+          "isNullable": true,
+          "displayName": "24-hour period start",
+          "description": ""
+        },
+        {
+          "name": "Transferred",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Transferred",
+          "description": ""
+        },
+        {
+          "name": "TransferredByWorker",
+          "dataType": "JmgWorkerRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Transferred by",
+          "description": ""
+        },
+        {
+          "name": "WorkEnd",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "End time",
+          "description": ""
+        },
+        {
+          "name": "WorkEndDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "displayName": "Work end",
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "JmgWorkerRecId",
+          "description": ""
+        },
+        {
+          "name": "WorkflowStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Working time",
+          "description": ""
+        },
+        {
+          "name": "WorkSecondsNotAllocated",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Net time before allocation",
+          "description": ""
+        },
+        {
+          "name": "WorkStart",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "Start time",
+          "description": ""
+        },
+        {
+          "name": "WorkStartDate",
+          "dataType": "StartDate",
+          "isNullable": true,
+          "displayName": "Work start",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgEmployee"
+          },
+          "name": "Relationship_JmgEmployeeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgGroupApprove"
+          },
+          "name": "Relationship_JmgGroupApproveRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgGroupCalc"
+          },
+          "name": "Relationship_JmgGroupCalcRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayAgreementTable"
+          },
+          "name": "Relationship_JmgPayAgreementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgProfileTable"
+          },
+          "name": "Relationship_JmgProfileTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Day's total"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgGroupApproveId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgGroupCalcId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Locked",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgPayAgreement",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

@@ -1,0 +1,239 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgProfileTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgProfileTypeTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgIpcActivity.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgProfileSpec",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DayId",
+          "dataType": "JmgDayId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDay",
+          "dataType": "JmgRelDayNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndTime",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "End",
+          "description": ""
+        },
+        {
+          "name": "EventCode",
+          "dataType": "JmgEventCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Profile",
+          "dataType": "JmgProfileId",
+          "description": ""
+        },
+        {
+          "name": "ProfileType",
+          "dataType": "JmgProfileTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SecondaryProfileType",
+          "dataType": "JmgProfileTypeRecId",
+          "isNullable": true,
+          "displayName": "Secondary",
+          "description": ""
+        },
+        {
+          "name": "StartDay",
+          "dataType": "JmgRelDayNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartTime",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "Start",
+          "description": ""
+        },
+        {
+          "name": "ToleranceAfter",
+          "dataType": "JmgToleranceAfterEnd",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToleranceAfterStart",
+          "dataType": "JmgToleranceAfterStart",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToleranceBefore",
+          "dataType": "JmgToleranceBeforeStart",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToleranceBeforeEnd",
+          "dataType": "JmgToleranceBeforeEnd",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgProfileTable"
+          },
+          "name": "Relationship_JmgProfileTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgProfileTypeTable"
+          },
+          "name": "Relationship_JmgProfileTypeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgProfileTypeTable"
+          },
+          "name": "Relationship_JmgProfileTypeTable_SecondaryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgIpcActivity"
+          },
+          "name": "Relationship_SwitchJmgIpcActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Profile timetable"
+    },
+    {
+      "dataTypeName": "JmgDayId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgRelDayNo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "JmgEventCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgProfileTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgToleranceAfterEnd",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgToleranceAfterStart",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgToleranceBeforeStart",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgToleranceBeforeEnd",
+      "extendsDataType": "integer"
+    }
+  ]
+}

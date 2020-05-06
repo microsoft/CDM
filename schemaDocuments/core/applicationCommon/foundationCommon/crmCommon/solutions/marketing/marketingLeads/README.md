@@ -1,6 +1,7 @@
 
 # marketingLeads
 
+CDM standard entities  
 
 ## Entities
 

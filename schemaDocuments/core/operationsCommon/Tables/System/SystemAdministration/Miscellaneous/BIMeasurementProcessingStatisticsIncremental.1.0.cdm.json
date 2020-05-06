@@ -1,0 +1,86 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BIMeasurement.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BIMeasurementProcessingStatisticsIncremental",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BIMeasurement",
+          "dataType": "RefRecId",
+          "displayName": "Measurement",
+          "description": ""
+        },
+        {
+          "name": "Outcome",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "@BIMeasurementProcessingStatisticsIncremental",
+          "description": ""
+        },
+        {
+          "name": "LastProcessed",
+          "dataType": "date",
+          "isNullable": true,
+          "displayName": "@BIMeasurementProcessingStatisticsIncremental",
+          "description": ""
+        },
+        {
+          "name": "MaximumDuration",
+          "dataType": "decimal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastDuration",
+          "dataType": "decimal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BIMeasurement"
+          },
+          "name": "Relationship_BIMeasurementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

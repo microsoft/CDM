@@ -1,0 +1,454 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Group/RAssetSubGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetLine/RTax25RegisterJournalTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25RegisterTrans_TangibleAssetInfo",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AcquisitionDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Acquisition date",
+          "description": ""
+        },
+        {
+          "name": "AdjCost",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "Original cost adjustment",
+          "description": ""
+        },
+        {
+          "name": "AssetId",
+          "dataType": "RAssetId",
+          "isNullable": true,
+          "displayName": "Inventory number",
+          "description": ""
+        },
+        {
+          "name": "AssetName",
+          "dataType": "RAssetName",
+          "isNullable": true,
+          "displayName": "Object name",
+          "description": ""
+        },
+        {
+          "name": "BlockType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line type",
+          "description": ""
+        },
+        {
+          "name": "Corrected",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected",
+          "description": ""
+        },
+        {
+          "name": "DeprGroup",
+          "dataType": "RAssetGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeprInterruption",
+          "dataType": "Months",
+          "isNullable": true,
+          "displayName": "Depreciation interruption (months)",
+          "description": ""
+        },
+        {
+          "name": "DeprMethod",
+          "dataType": "RTax25NotesLine",
+          "isNullable": true,
+          "displayName": "Depreciation method",
+          "description": ""
+        },
+        {
+          "name": "DeprPeriod",
+          "dataType": "Months",
+          "isNullable": true,
+          "displayName": "Original cost depreciation period",
+          "description": ""
+        },
+        {
+          "name": "DeprStartDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Depreciation start date",
+          "description": ""
+        },
+        {
+          "name": "DeprSum",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "Depreciation sum",
+          "description": ""
+        },
+        {
+          "name": "DisposalDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Taking out date of accounting",
+          "description": ""
+        },
+        {
+          "name": "DisposalType",
+          "dataType": "RTax25NotesLine",
+          "isNullable": true,
+          "displayName": "Taking out base",
+          "description": ""
+        },
+        {
+          "name": "DocDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Starting date of depreciation stopping",
+          "description": ""
+        },
+        {
+          "name": "DocNumber",
+          "dataType": "RTax25NotesLine",
+          "isNullable": true,
+          "displayName": "Depreciation stopping base",
+          "description": ""
+        },
+        {
+          "name": "Factor",
+          "dataType": "RTax25PercentShow",
+          "isNullable": true,
+          "displayName": "Special factor using",
+          "description": ""
+        },
+        {
+          "name": "FactorStartDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Special factor start date",
+          "description": ""
+        },
+        {
+          "name": "InitialCost",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "Initial cost",
+          "description": ""
+        },
+        {
+          "name": "JournalTransRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDescription",
+          "dataType": "RTax25Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInput",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manual data input",
+          "description": ""
+        },
+        {
+          "name": "Months",
+          "dataType": "Months",
+          "isNullable": true,
+          "displayName": "Useful life (months)",
+          "description": ""
+        },
+        {
+          "name": "ObservationDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Using asset direction observation date",
+          "description": ""
+        },
+        {
+          "name": "OriginalCost",
+          "dataType": "RTax25AmountMSTDisplay",
+          "isNullable": true,
+          "displayName": "Asset original cost",
+          "description": ""
+        },
+        {
+          "name": "ProfitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetDocDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Depreciation stopping last date",
+          "description": ""
+        },
+        {
+          "name": "RetDocNumber",
+          "dataType": "RTax25NotesLine",
+          "isNullable": true,
+          "displayName": "Depreciation stopping interruption base",
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sign",
+          "dataType": "RTax25NotesLine",
+          "isNullable": true,
+          "displayName": "Depreciation stopping sign",
+          "description": ""
+        },
+        {
+          "name": "SubGroup",
+          "dataType": "RAssetSubGroupId",
+          "isNullable": true,
+          "displayName": "Subgroup",
+          "description": ""
+        },
+        {
+          "name": "UseForProduct",
+          "dataType": "Num",
+          "isNullable": true,
+          "displayName": "Asset group membership using for production",
+          "description": ""
+        },
+        {
+          "name": "UsefulLife",
+          "dataType": "RAssetLifeTime",
+          "isNullable": true,
+          "displayName": "Useful life",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetGroup"
+          },
+          "name": "Relationship_RAssetGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetSubGroup"
+          },
+          "name": "Relationship_RAssetSubGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableAssetIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTrans"
+          },
+          "name": "Relationship_RTax25RegisterJournalTransRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax register line"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RTax25AmountMSTDisplay",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RAssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Months",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25NotesLine",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25PercentShow",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25RegisterLineNum64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RAssetSubGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Num",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetLifeTime",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetBonus.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetGroupInformation_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountMst",
+          "dataType": "AssetAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetGroup",
+          "dataType": "AssetGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BonusId",
+          "dataType": "AssetBonusId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsumptionQty",
+          "dataType": "AssetConsumption",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Reclassification",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReserveTransferDone",
+          "dataType": "AssetReserveTransferDone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevaluationAmount",
+          "dataType": "AssetRevaluationAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevaluationDone",
+          "dataType": "AssetRevaluationDone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RevaluationTrans",
+          "dataType": "AssetRevaluationTrans",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "AssetTransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Txt",
+          "dataType": "LedgerJournalTransTxt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBonus"
+          },
+          "name": "Relationship_AssetBonus_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetGroup"
+          },
+          "name": "Relationship_AssetGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset group/depreciation book"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetBonusId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetConsumption",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetReserveTransferDone",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetRevaluationAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetRevaluationDone",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetRevaluationTrans",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerJournalTransTxt",
+      "extendsDataType": "string"
+    }
+  ]
+}

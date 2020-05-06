@@ -1,0 +1,97 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Group/WorkCalendarTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/Workflow/Main/SysPolicyRule.cdm.json",
+      "moniker": "base_SysPolicyRule"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TSPolicyRule",
+      "extendsEntity": "base_SysPolicyRule/SysPolicyRule",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompanyId",
+          "dataType": "CompanyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxCalendar",
+          "dataType": "CalendarId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinCalendar",
+          "dataType": "CalendarId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TSAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WorkCalendarTable"
+          },
+          "name": "Relationship_MaxCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkCalendarTable"
+          },
+          "name": "Relationship_MinCalendarRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Timesheet policies"
+    },
+    {
+      "dataTypeName": "CompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CalendarId",
+      "extendsDataType": "string"
+    }
+  ]
+}

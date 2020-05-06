@@ -1,0 +1,117 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PlanActivityTime.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PlanActivityTimeComponent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IsValueAddedTime",
+          "dataType": "IsValueAddedTime",
+          "isNullable": true,
+          "displayName": "Value adding",
+          "description": ""
+        },
+        {
+          "name": "PlanActivityTime",
+          "dataType": "PlanActivityTimeRefRecId",
+          "description": ""
+        },
+        {
+          "name": "QuantityUnitOfMeasure",
+          "dataType": "RefRecId",
+          "displayName": "Unit",
+          "description": ""
+        },
+        {
+          "name": "Time",
+          "dataType": "ActivityTime",
+          "displayName": "Time",
+          "description": ""
+        },
+        {
+          "name": "TimeRelatedQuantity",
+          "dataType": "ActivityTimeQuantity",
+          "displayName": "Per quantity",
+          "description": ""
+        },
+        {
+          "name": "TimeType",
+          "dataType": "ActivityTimeType",
+          "isNullable": true,
+          "displayName": "Time type",
+          "description": ""
+        },
+        {
+          "name": "TimeUnitOfMeasure",
+          "dataType": "RefRecId",
+          "displayName": "Time unit",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PlanActivityTime"
+          },
+          "name": "Relationship_PlanActivityTimeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Plan activity time components"
+    },
+    {
+      "dataTypeName": "IsValueAddedTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PlanActivityTimeRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ActivityTime",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ActivityTimeQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ActivityTimeType",
+      "extendsDataType": "integer"
+    }
+  ]
+}

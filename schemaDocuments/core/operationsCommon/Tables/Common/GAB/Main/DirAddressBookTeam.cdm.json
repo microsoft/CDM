@@ -1,0 +1,84 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/DirAddressBook.cdm.json"
+    },
+    {
+      "corpusPath": "OMTeam.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DirAddressBookTeam",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AddressBook",
+          "dataType": "DirAddressBookRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Team",
+          "dataType": "OMTeamRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirAddressBook"
+          },
+          "name": "Relationship_DirAddressBook_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMTeam"
+          },
+          "name": "Relationship_OMTeam_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Address book and team association"
+    },
+    {
+      "dataTypeName": "DirAddressBookRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "OMTeamRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PayrollAccrual.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollAccrualRate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Accrual",
+          "dataType": "PayrollAccrualRecId",
+          "description": ""
+        },
+        {
+          "name": "CarryForwardLimit",
+          "dataType": "PayrollAccrualCarryForward",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EmploymentMonths",
+          "dataType": "PayrollAccrualEmploymentMonth",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HourlyRate",
+          "dataType": "PayrollAccrualHourlyRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaximumLimit",
+          "dataType": "PayrollAccrualMaximumLimit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MinimumLimit",
+          "dataType": "PayrollAccrualMinimumLimit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollAccrual"
+          },
+          "name": "Relationship_PayrollAccrualRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Benefit accrual rate"
+    },
+    {
+      "dataTypeName": "PayrollAccrualRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollAccrualCarryForward",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PayrollAccrualEmploymentMonth",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PayrollAccrualHourlyRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PayrollAccrualMaximumLimit",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PayrollAccrualMinimumLimit",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

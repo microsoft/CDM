@@ -1,0 +1,334 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/WHSWorkPool.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWorkTemplateTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoExecute",
+          "dataType": "WHSAutoExecute",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BatchAllocationStrategy",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultWorkPriority",
+          "dataType": "WHSWorkPriority",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxQty",
+          "dataType": "WHSMaxQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxUnitId",
+          "dataType": "WHSMaxUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxVolume",
+          "dataType": "WHSMaxVolume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxWeight",
+          "dataType": "WHSMaxWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsePackingQty",
+          "dataType": "WHSUsePackingQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkPoolId",
+          "dataType": "WHSWorkPoolId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTemplateCode",
+          "dataType": "WHSWorkTemplateCode",
+          "description": ""
+        },
+        {
+          "name": "WorkTemplateDesc",
+          "dataType": "WHSWorkTemplateDesc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTemplateErrorText",
+          "dataType": "WHSWorkTemplateErrorText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTemplatePriority",
+          "dataType": "WHSWorkTemplatePriority",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTemplateQuery",
+          "dataType": "WHSWorkTemplateQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTemplateValid",
+          "dataType": "WHSWorkTemplateValid",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkTransType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "MaxEstimatedPickTime",
+          "dataType": "WHSMaxEstimatedPickTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxPickLines",
+          "dataType": "WHSMaxPickLines",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxQtyWorkHeader",
+          "dataType": "WHSMaxQtyWorkHeader",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxVolumeWorkHeader",
+          "dataType": "WHSMaxVolumeWorkHeader",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxWeightWorkHeader",
+          "dataType": "WHSMaxWeightWorkHeader",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentDependentWorkBlockingPolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LicensePlateLabelBuildConfig",
+          "dataType": "WHSLicensePlateLabelBuildConfigRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_InventSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkPool"
+          },
+          "name": "Relationship_WHSWorkPoolRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Work templates"
+    },
+    {
+      "dataTypeName": "WHSAutoExecute",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSWorkPriority",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSMaxQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSMaxUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSMaxVolume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSMaxWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSUsePackingQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSWorkPoolId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkTemplateCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkTemplateDesc",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkTemplateErrorText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkTemplatePriority",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSWorkTemplateQuery",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSWorkTemplateValid",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSMaxEstimatedPickTime",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSMaxPickLines",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSMaxQtyWorkHeader",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSMaxVolumeWorkHeader",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSMaxWeightWorkHeader",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLicensePlateLabelBuildConfigRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

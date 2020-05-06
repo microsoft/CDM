@@ -1,0 +1,752 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlan.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/TransactionHeader/ReqProcessList.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ReqPlanId",
+          "dataType": "ReqPlanId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Cancelled",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Canceled",
+          "description": ""
+        },
+        {
+          "name": "CapacityConflictsCount",
+          "dataType": "WrkCtrSchedulerCapacityConflicts",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Comment",
+          "dataType": "ReqComment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompleteUpdate",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Complete update",
+          "description": ""
+        },
+        {
+          "name": "CopyDateTime",
+          "dataType": "CopyDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CopyReqPlanId",
+          "dataType": "ReqPlanId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Copied plan",
+          "description": ""
+        },
+        {
+          "name": "EndDateTime",
+          "dataType": "EndDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Log",
+          "dataType": "InfologData",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxChildThreads",
+          "dataType": "ReqProcessNumThreadsRequested",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRNumofContinuity",
+          "dataType": "MCRNumofContinuity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfAutoFirm",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of auto-firmed orders",
+          "description": ""
+        },
+        {
+          "name": "NumOfAutoFirmSingleThreadedRetry",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of single threaded auto-firmed orders",
+          "description": ""
+        },
+        {
+          "name": "NumOfBOMLine",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of BOM lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfBOMPlannedOrder",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of planned production orders",
+          "description": ""
+        },
+        {
+          "name": "NumOfChanges",
+          "dataType": "ReqNumOfChanges",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfDeadLockRetry",
+          "dataType": "ReqRetryCount",
+          "isNullable": true,
+          "displayName": "Deadlocks",
+          "description": ""
+        },
+        {
+          "name": "NumOfInventJournal",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of inventory journal lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfInventOnhand",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of on-hand inventories",
+          "description": ""
+        },
+        {
+          "name": "NumOfItemPlannedOrder",
+          "dataType": "ReqNumOfTrans",
+          "isNullable": true,
+          "displayName": "Number of planned purchase orders",
+          "description": ""
+        },
+        {
+          "name": "NumOfItems",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of items",
+          "description": ""
+        },
+        {
+          "name": "NumOfKanban",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of kanbans",
+          "description": ""
+        },
+        {
+          "name": "NumOfKanbanDecrease",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of kanbans which can be decreased",
+          "description": ""
+        },
+        {
+          "name": "NumOfKanbanDecreasePct",
+          "dataType": "Percent",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "in percent",
+          "description": ""
+        },
+        {
+          "name": "NumOfKanbanLine",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of kanban lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfLevels",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of levels",
+          "description": ""
+        },
+        {
+          "name": "NumOfPlannedIntercompanyDemand",
+          "dataType": "ReqNumOfTrans",
+          "isNullable": true,
+          "displayName": "Number of planned intercompany demand",
+          "description": ""
+        },
+        {
+          "name": "NumOfPlannedKanban",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of planned kanbans",
+          "description": ""
+        },
+        {
+          "name": "NumOfPlannedKanbanLine",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of planned kanban lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfProdLine",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of production lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfProduction",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of productions",
+          "description": ""
+        },
+        {
+          "name": "NumOfProductionDecrease",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of production orders which can be decreased",
+          "description": ""
+        },
+        {
+          "name": "NumOfProductionDecreasePct",
+          "dataType": "Percent",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "in percent",
+          "description": ""
+        },
+        {
+          "name": "NumOfPurchForecast",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of supply forecast lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfPurchLine",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of purchase lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfPurchLineDecrease",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of purchase lines which can be decreased",
+          "description": ""
+        },
+        {
+          "name": "NumOfPurchLineDecreasePct",
+          "dataType": "Percent",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "in percent",
+          "description": ""
+        },
+        {
+          "name": "NumOfSalesForecast",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of demand forecast lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfSalesLine",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of order lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfSalesLineFuture",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of delayed order lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfSalesLineFuturePct",
+          "dataType": "Percent",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "in percent",
+          "description": ""
+        },
+        {
+          "name": "NumOfSmmQuotationLine",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of quotation lines",
+          "description": ""
+        },
+        {
+          "name": "NumOfTransferPlannedOrder",
+          "dataType": "ReqNumOfTrans",
+          "isNullable": true,
+          "displayName": "Number of planned transfers",
+          "description": ""
+        },
+        {
+          "name": "NumOfUpdConflictRetry",
+          "dataType": "ReqRetryCount",
+          "isNullable": true,
+          "displayName": "Update conflicts",
+          "description": ""
+        },
+        {
+          "name": "NumOfPeggingOptimizationAttempts",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfPeggingOptimizationSuccessfulAttempts",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfPeggingOptimizationSwaps",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessId",
+          "dataType": "ReqProcessId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqCalcUpdate",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqLogId",
+          "dataType": "ReqLogId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "StartDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TimeAction",
+          "dataType": "TimeHour24",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Action message",
+          "description": ""
+        },
+        {
+          "name": "TimeAutoFirm",
+          "dataType": "TimeHour24",
+          "isNullable": true,
+          "displayName": "Auto-firming",
+          "description": ""
+        },
+        {
+          "name": "TimeCopy",
+          "dataType": "TimeHour24",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Copy plan",
+          "description": ""
+        },
+        {
+          "name": "TimeCoverage",
+          "dataType": "TimeHour24",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Coverage",
+          "description": ""
+        },
+        {
+          "name": "TimeFinalization",
+          "dataType": "TimeHour24",
+          "isNullable": true,
+          "displayName": "Finalization",
+          "description": ""
+        },
+        {
+          "name": "TimeFutures",
+          "dataType": "TimeHour24",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Delays",
+          "description": ""
+        },
+        {
+          "name": "TimePeggingOptimization",
+          "dataType": "TimeHour24",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Pegging optimization time",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsPeggingOptimization",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TimeUpdate",
+          "dataType": "TimeHour24",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Update",
+          "description": ""
+        },
+        {
+          "name": "UsedChildThreads",
+          "dataType": "ReqProcessNumThreadsUsed",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsedTodaysdate",
+          "dataType": "TodaysDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfConsignmentReplenishmentOrder",
+          "dataType": "ReqNumOfTrans",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Number of consignment replenishment order lines",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsCoverageInitLevel",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Initialize level",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsCoverageCoverage",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Coverage calculation",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsCoverageCoCoverage",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Co-product coverage",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsCoveragePartitionOrders",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Partition orders",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsCoverageScheduleResources",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Schedule resources",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsCoverageFinalizeLevel",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Finalize level",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsFuturesInitLevel",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Initialize level",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsFuturesFuturesIssues",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Calculate delayed issues",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsFuturesPartitionOrders",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Partition orders",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsFuturesScheduleResources",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Schedule resources",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsAutoFirmingPartitionOrders",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Partition orders",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsAutoFirmingScheduleResources",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Schedule resources",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsAutoFirmingFinalizeLevel",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Finalize level",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsAutoFirmingFinishedScheduling",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Finished scheduling",
+          "description": ""
+        },
+        {
+          "name": "MillisecondsPlanFinalizationBatchExpiryCalculation",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Batch expiry calculation",
+          "description": ""
+        },
+        {
+          "name": "NumOfUnhandledErrorRetry",
+          "dataType": "ReqRetryCount",
+          "isNullable": true,
+          "displayName": "Unhandled exception",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlan"
+          },
+          "name": "Relationship_CopiedReqPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlan"
+          },
+          "name": "Relationship_ReqPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqProcessList"
+          },
+          "name": "Relationship_ReqProcessListRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "History"
+    },
+    {
+      "dataTypeName": "ReqPlanId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WrkCtrSchedulerCapacityConflicts",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqComment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CopyDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InfologData",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "ReqProcessNumThreadsRequested",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRNumofContinuity",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqNumOfTrans",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqNumOfChanges",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqRetryCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReqProcessId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqLogId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "StartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TimeHour24",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "ReqProcessNumThreadsUsed",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TodaysDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

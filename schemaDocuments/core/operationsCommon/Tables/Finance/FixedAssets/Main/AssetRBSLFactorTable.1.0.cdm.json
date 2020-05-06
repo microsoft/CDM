@@ -1,0 +1,102 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetRBSLFactorTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetRBSLFactor",
+          "dataType": "AssetRBSLFactor",
+          "description": ""
+        },
+        {
+          "name": "AssetRBSLFromDate",
+          "dataType": "AssetRBSLFromDate",
+          "description": ""
+        },
+        {
+          "name": "AssetServiceLife",
+          "dataType": "AssetServiceLifeYears",
+          "description": ""
+        },
+        {
+          "name": "AssetServiceLifeMonths",
+          "dataType": "AssetServiceLifeMonths",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Months",
+          "dataType": "Months",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "RB/SL factors"
+    },
+    {
+      "dataTypeName": "AssetRBSLFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetRBSLFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetServiceLifeYears",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetServiceLifeMonths",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Months",
+      "extendsDataType": "integer"
+    }
+  ]
+}

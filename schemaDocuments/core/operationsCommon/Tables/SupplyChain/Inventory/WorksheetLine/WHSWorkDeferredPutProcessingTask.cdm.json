@@ -1,0 +1,277 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSWorkTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSWorkUser.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSLicensePlate.cdm.json"
+    },
+    {
+      "corpusPath": "WHSWorkLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WMSLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWorkDeferredPutProcessingTask",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "WorkId",
+          "dataType": "WHSWorkId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "WorkUserId",
+          "dataType": "WHSUserId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PutWMSLocationId",
+          "dataType": "WMSLocationId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "WorkLineNumber",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "WorkPutFlow",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceLicensePlateId",
+          "dataType": "WHSLicensePlateId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TargetLicensePlateId",
+          "dataType": "WHSTargetLicensePlateId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "HandleByLicensePlate",
+          "dataType": "WHSHandleByLP",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkInventLocationId",
+          "dataType": "InventLocationId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "WHSWorkDeferredProcessingTaskStartDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompletionDateTime",
+          "dataType": "WHSWorkDeferredProcessingTaskCompletionDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkLineRecVersion",
+          "dataType": "RecVersion",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkTable"
+          },
+          "name": "Relationship_WorkTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkUser"
+          },
+          "name": "Relationship_WorkUserRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLicensePlate"
+          },
+          "name": "Relationship_TargetLicensePlateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLicensePlate"
+          },
+          "name": "Relationship_SourceLicensePlateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkLine"
+          },
+          "name": "Relationship_PutWorkLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_PutLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deferred put operation processing tasks"
+    },
+    {
+      "dataTypeName": "WHSWorkId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSLicensePlateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSTargetLicensePlateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSHandleByLP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSWorkDeferredProcessingTaskStartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSWorkDeferredProcessingTaskCompletionDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RecVersion",
+      "extendsDataType": "integer"
+    }
+  ]
+}

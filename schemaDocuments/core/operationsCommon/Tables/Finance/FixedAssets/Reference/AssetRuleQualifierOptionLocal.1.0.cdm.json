@@ -1,0 +1,112 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "AssetRuleQualifierLocal.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetRuleQualifierOptionLocal",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetGroupDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetGroupId",
+          "dataType": "AssetGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetRuleQualifierLocal",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "DefaultText",
+          "dataType": "Description",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "AssetRuleQualifierOptionName",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AssetGroup"
+          },
+          "name": "Relationship_AssetGroupIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetRuleQualifierLocal"
+          },
+          "name": "Relationship_AssetRuleQualifierLocalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Asset acquisition rules qualifier options - local"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetRuleQualifierOptionName",
+      "extendsDataType": "string"
+    }
+  ]
+}

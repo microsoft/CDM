@@ -1,0 +1,121 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LedgerChartOfAccounts.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerAccountRenameTable_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BlockAccount",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Lock",
+          "description": ""
+        },
+        {
+          "name": "ChartOfAccounts",
+          "dataType": "LedgerChartOfAccountsRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromAccount",
+          "dataType": "AccountNum",
+          "isReadOnly": true,
+          "displayName": "Source account",
+          "description": ""
+        },
+        {
+          "name": "ProcessStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TempAccount",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToAccount",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "displayName": "Destination account",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerChartOfAccounts"
+          },
+          "name": "Relationship_LedgerChartOfAccountsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger accounts renaming table"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerChartOfAccountsRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AccountNum",
+      "extendsDataType": "string"
+    }
+  ]
+}

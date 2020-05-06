@@ -1,0 +1,153 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxAuthorityAddress.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TaxRegistrationType.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxRegistrationTypeApplicabilityRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryRegionId",
+          "dataType": "TaxRegistrationTypeCountryId",
+          "description": ""
+        },
+        {
+          "name": "Format",
+          "dataType": "TaxRegistrationFormat",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsPrimaryAddressRestricted",
+          "dataType": "TaxRegistrationPrimaryAddressRestricted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsRegistrationNumberUnique",
+          "dataType": "TaxRegistrationTypeUnique",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsRegistrationNumberUpdateable",
+          "dataType": "TaxRegistrationTypeUpdateable",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PartyTypeRestriction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxRegistrationAuthority",
+          "dataType": "TaxAuthority",
+          "isNullable": true,
+          "displayName": "Tax authority",
+          "description": ""
+        },
+        {
+          "name": "TaxRegistrationType",
+          "dataType": "TaxRegistrationTypeId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxAuthorityAddress"
+          },
+          "name": "Relationship_TaxAuthorityAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationType"
+          },
+          "name": "Relationship_TaxRegstrationTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax registration types rules"
+    },
+    {
+      "dataTypeName": "TaxRegistrationTypeCountryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRegistrationFormat",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRegistrationPrimaryAddressRestricted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxRegistrationTypeUnique",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxRegistrationTypeUpdateable",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxAuthority",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRegistrationTypeId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

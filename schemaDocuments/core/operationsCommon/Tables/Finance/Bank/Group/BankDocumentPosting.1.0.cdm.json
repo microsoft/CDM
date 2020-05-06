@@ -1,0 +1,192 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BankDocumentFacilityGroup.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankDocumentFacilityType.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankDocumentPosting",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountCode",
+          "dataType": "BankDocumentAccountCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankDocumentFacilityGroup",
+          "dataType": "BankDocumentFacilityGroupRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankDocumentFacilityType",
+          "dataType": "BankDocumentFacilityTypeRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankLGLiquidationLedgerDimension",
+          "dataType": "DimensionDynamicAccount",
+          "isNullable": true,
+          "displayName": "Liquidation account",
+          "description": ""
+        },
+        {
+          "name": "MarginLedgerDimension",
+          "dataType": "DimensionDynamicAccount",
+          "isNullable": true,
+          "displayName": "Margin account",
+          "description": ""
+        },
+        {
+          "name": "MiscChargesLedgerDimension",
+          "dataType": "DimensionDynamicAccount",
+          "isNullable": true,
+          "displayName": "Charges account",
+          "description": ""
+        },
+        {
+          "name": "SettleLedgerDimension",
+          "dataType": "DimensionDynamicAccount",
+          "isNullable": true,
+          "displayName": "Settle account",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankDocumentFacilityGroup"
+          },
+          "name": "Relationship_BankDocumentFacilityGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankDocumentFacilityType"
+          },
+          "name": "Relationship_BankDocumentFacilityTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_BankLGLiquidationLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_MarginLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_MiscChargesLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_SettleLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bank posting profiles"
+    },
+    {
+      "dataTypeName": "BankDocumentAccountCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankDocumentFacilityGroupRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BankDocumentFacilityTypeRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionDynamicAccount",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

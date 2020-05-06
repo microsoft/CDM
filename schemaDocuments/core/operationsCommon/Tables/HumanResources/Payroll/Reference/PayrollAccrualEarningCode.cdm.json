@@ -1,0 +1,68 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PayrollAccrual.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollAccrualEarningCode",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Accrual",
+          "dataType": "PayrollAccrualRecId",
+          "description": ""
+        },
+        {
+          "name": "EarningCode",
+          "dataType": "PayrollEarningCodeRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollAccrual"
+          },
+          "name": "Relationship_PayrollAccrualRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Benefit accrual earning code"
+    },
+    {
+      "dataTypeName": "PayrollAccrualRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PayrollEarningCodeRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Transaction/AssetTrans.cdm.json"
+    },
+    {
+      "corpusPath": "FBCIAPAssessment_BR.cdm.json"
+    },
+    {
+      "corpusPath": "FBCIAPAssetTable_BR.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBCIAPAssetTrans_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FBCIAPAssessment_BR",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "CIAP assessment",
+          "description": ""
+        },
+        {
+          "name": "FBCIAPAssetTable_BR",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ICMSAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ICMS",
+          "description": ""
+        },
+        {
+          "name": "ICMSDiffAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ICMS-DIF",
+          "description": ""
+        },
+        {
+          "name": "ICMSFreightAmount",
+          "dataType": "FBCIAPICMSFreightAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ICMSSTAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ICMS-ST",
+          "description": ""
+        },
+        {
+          "name": "InstallmentAmount",
+          "dataType": "FBCIAPInstallmentAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstallmentNum",
+          "dataType": "ICMSCreditInstallments_BR",
+          "isNullable": true,
+          "displayName": "Installment number",
+          "description": ""
+        },
+        {
+          "name": "OrigAssetTrans",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "TransType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTrans"
+          },
+          "name": "Relationship_AssetTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBCIAPAssessment_BR"
+          },
+          "name": "Relationship_FBCIAPAssessment_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBCIAPAssetTable_BR"
+          },
+          "name": "Relationship_FBCIAPAssetTable_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "CIAP Fixed asset transactions"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBCIAPICMSFreightAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBCIAPInstallmentAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ICMSCreditInstallments_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

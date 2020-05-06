@@ -1,0 +1,107 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSRFMenuItemTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSSystemDirectedWorkSequenceQuery",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "QueryDescription",
+          "dataType": "WHSSystemDirectedQueryDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedQueryRun",
+          "dataType": "PackedQueryRun",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MenuItemName",
+          "dataType": "WHSMenuItemName",
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "WHSSeqNum",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSRFMenuItemTable"
+          },
+          "name": "Relationship_WHSRFMenuItemTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "System Directed Work Sequence Query"
+    },
+    {
+      "dataTypeName": "WHSSystemDirectedQueryDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PackedQueryRun",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSMenuItemName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSSeqNum",
+      "extendsDataType": "integer"
+    }
+  ]
+}

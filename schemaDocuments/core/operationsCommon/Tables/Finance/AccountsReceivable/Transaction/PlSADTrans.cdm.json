@@ -1,0 +1,219 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/PlSADRateGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/PlSADTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PlSADTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADBaseAmount",
+          "dataType": "PlSADBaseAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADDutyAmount1",
+          "dataType": "PlSADDutyAmount1",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADDutyAmount2",
+          "dataType": "PlSADDutyAmount2",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADLineNo",
+          "dataType": "PlSADLineNo",
+          "description": ""
+        },
+        {
+          "name": "SADNumberCode",
+          "dataType": "PlSADNumberCode",
+          "description": ""
+        },
+        {
+          "name": "SADRateCode",
+          "dataType": "PlSADRateCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADTransAmount",
+          "dataType": "PlSADTransAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransAndMiscCharg",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlSADRateGroup"
+          },
+          "name": "Relationship_PlSADRateGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlSADTable"
+          },
+          "name": "Relationship_PlSADTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Lines to SAD document"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PlSADBaseAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlSADDutyAmount1",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlSADDutyAmount2",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlSADLineNo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PlSADNumberCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlSADRateCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlSADTransAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

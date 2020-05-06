@@ -1,0 +1,203 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CustomCorrectionTable_RU.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CustomJournalTable_RU.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustomJournalCharge_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Amount",
+          "dataType": "CustomChargeAmount_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ChargeType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CorrectionJournalId",
+          "dataType": "CustomCorrectionJournalId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Customs value correction ID",
+          "description": ""
+        },
+        {
+          "name": "CustomJournalId",
+          "dataType": "CustomJournalId_RU",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "EscortCount",
+          "dataType": "CustomChargeEscortCount_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EscortDistance",
+          "dataType": "CustomChargeEscortDistance_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginatingDocument",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StoragePeriod",
+          "dataType": "CustomChargeStoragePeriod_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StorageWeight",
+          "dataType": "ItemGrossWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "displayName": "Rate",
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustomCorrectionTable_RU"
+          },
+          "name": "Relationship_CustomCorrectionTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustomJournalTable_RU"
+          },
+          "name": "Relationship_CustomJournalTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Calculation of customs fees for storage and escort"
+    },
+    {
+      "dataTypeName": "CustomChargeAmount_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustomCorrectionJournalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustomJournalId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustomChargeEscortCount_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustomChargeEscortDistance_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustomChargeStoragePeriod_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ItemGrossWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

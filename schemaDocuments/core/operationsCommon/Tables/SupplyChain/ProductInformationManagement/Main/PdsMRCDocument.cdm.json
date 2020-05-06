@@ -1,0 +1,315 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BOM.cdm.json"
+    },
+    {
+      "corpusPath": "BOMTable.cdm.json"
+    },
+    {
+      "corpusPath": "InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PdsMRCDocument",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Active",
+          "dataType": "PdsMRCActive",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ApprovalDate",
+          "dataType": "PdsMRCApprovalDate",
+          "description": ""
+        },
+        {
+          "name": "Approver",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Approval source",
+          "description": ""
+        },
+        {
+          "name": "BOMID",
+          "dataType": "PdsMRCBOMId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountryId",
+          "dataType": "AddressCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Document",
+          "dataType": "PdsMRCDocumentName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentId",
+          "dataType": "PdsMRCDocumentId",
+          "description": ""
+        },
+        {
+          "name": "EffectiveDate",
+          "dataType": "PdsMRCEffectiveDate",
+          "description": ""
+        },
+        {
+          "name": "ExpiryDate",
+          "dataType": "PdsMRCExpiryDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Language",
+          "dataType": "PdsMRCLanguageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MajorVersion",
+          "dataType": "PdsMRCMajorVersion",
+          "description": ""
+        },
+        {
+          "name": "MinorVersion",
+          "dataType": "PdsMRCMinorVersion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModificationReason",
+          "dataType": "PdsMRCModificationReason",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOM"
+          },
+          "name": "Relationship_BOMIdRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BOMTable"
+          },
+          "name": "Relationship_BOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableLookupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesLineRelationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Safety data sheet"
+    },
+    {
+      "dataTypeName": "PdsMRCActive",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsMRCApprovalDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsMRCBOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsMRCDocumentName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsMRCDocumentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsMRCEffectiveDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsMRCExpiryDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsMRCLanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsMRCMajorVersion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsMRCMinorVersion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsMRCModificationReason",
+      "extendsDataType": "string"
+    }
+  ]
+}

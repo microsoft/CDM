@@ -1,0 +1,874 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Miscellaneous/TaxInformation_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxRegistrationNumbers_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/SalesTaxFormTypes_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdRegNumbers_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdCountryRegionToRemittance_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdNatureOfRemittance_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Main/ExciseTariffCodes_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustomsTariffCodeTable_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Main/ServiceCodeTable_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Miscellaneous/TaxInventVATCommodityCode_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Parameter/VATSchedule_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/HSNCodeTable_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Main/ServiceAccountingCodeTable_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Miscellaneous/TaxRegistration.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxRateType.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TransTaxInformation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompanyLocation",
+          "dataType": "LogisticsLocationRecId",
+          "description": ""
+        },
+        {
+          "name": "TaxInformation",
+          "dataType": "TaxInformationRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATTIN",
+          "dataType": "TaxRegistrationNumberRecId_IN",
+          "isNullable": true,
+          "displayName": "Tax Identification Number (TIN)",
+          "description": ""
+        },
+        {
+          "name": "VATGoodsType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATNonRecoverablePercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Non recoverable pct.",
+          "description": ""
+        },
+        {
+          "name": "SalesTaxRegistrationNumber",
+          "dataType": "TaxRegistrationNumberRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxFormTypes",
+          "dataType": "SalesTaxFormTypesRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdTAN",
+          "dataType": "TaxWithholdRegNumberRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdSoftwareDeclReceived",
+          "dataType": "SoftwareDeclReceived_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdNatureOfRemittance",
+          "dataType": "TaxWitholdNatureOfRemittanceRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAcknowledgementNumber",
+          "dataType": "TaxWithholdAcknowledgementNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdCountryRegionToRemittance",
+          "dataType": "TaxWithholdCountryToRemitRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseECCRegistrationNumber",
+          "dataType": "TaxRegistrationNumberRecId_IN",
+          "isNullable": true,
+          "displayName": "ECC number",
+          "description": ""
+        },
+        {
+          "name": "ExciseTariffCodes",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Excise tariff code",
+          "description": ""
+        },
+        {
+          "name": "ExciseDirectSettlement",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseConsignment",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Consignment",
+          "description": ""
+        },
+        {
+          "name": "ExciseDSA",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "DSA",
+          "description": ""
+        },
+        {
+          "name": "ExciseCENVATCreditAvailed",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "CENVAT credit availed",
+          "description": ""
+        },
+        {
+          "name": "CustomsIECRegistrationNumber",
+          "dataType": "TaxRegistrationNumberRecId_IN",
+          "isNullable": true,
+          "displayName": "IEC number",
+          "description": ""
+        },
+        {
+          "name": "CustomsTariffCode",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Customs tariff code",
+          "description": ""
+        },
+        {
+          "name": "ServiceTaxRegistrationNumber",
+          "dataType": "TaxRegistrationNumberRecId_IN",
+          "isNullable": true,
+          "displayName": "STC number",
+          "description": ""
+        },
+        {
+          "name": "ServiceCode",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Service code",
+          "description": ""
+        },
+        {
+          "name": "ServiceTaxGTAServiceCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceTaxIsRecoverable",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Recoverable/Expense on tax settlement",
+          "description": ""
+        },
+        {
+          "name": "VATCommodityCode",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "VAT commodity code",
+          "description": ""
+        },
+        {
+          "name": "ExciseIsScrap",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Is scrap",
+          "description": ""
+        },
+        {
+          "name": "ExciseRecordType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdNatureOfAssessee",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomsTariffDirection",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceTaxConsignmentNoteNum",
+          "dataType": "ConsignmentNum_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExciseDisposalType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATSchedule",
+          "dataType": "VATScheduleRecId_IN",
+          "isNullable": true,
+          "displayName": "VAT Schedule",
+          "description": ""
+        },
+        {
+          "name": "CSTSchedule",
+          "dataType": "VATScheduleRecId_IN",
+          "isNullable": true,
+          "displayName": "CST Schedule",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerLocation",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerTaxInformation",
+          "dataType": "TaxInformationRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Exempt",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Exempt",
+          "description": ""
+        },
+        {
+          "name": "Exim",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "EXIM",
+          "description": ""
+        },
+        {
+          "name": "HSNCodeTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "HSN codes",
+          "description": ""
+        },
+        {
+          "name": "ITCCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NonBusinessUsagePercentage",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Non-Business Usage %",
+          "description": ""
+        },
+        {
+          "name": "ServiceAccountingCodeTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Service accounting codes",
+          "description": ""
+        },
+        {
+          "name": "ServiceCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorLocation",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorTaxInformation",
+          "dataType": "TaxInformationRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GSTIN",
+          "dataType": "TaxRegistrationNumberRecId_IN",
+          "isNullable": true,
+          "displayName": "GSTIN/GDI/UID",
+          "description": ""
+        },
+        {
+          "name": "InclTax",
+          "dataType": "InclTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HeadingTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HeadingRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParentRelation",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginRelation",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransitDocumentType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxID",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "displayName": "Tax registration number",
+          "description": ""
+        },
+        {
+          "name": "BankLocation",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankTaxInformation",
+          "dataType": "TaxInformationRefRecId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ApplyGSTTDS",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Apply GST TDS",
+          "description": ""
+        },
+        {
+          "name": "ApplyGSTTCS",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Apply GST TCS",
+          "description": ""
+        },
+        {
+          "name": "NonGST",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Non-GST",
+          "description": ""
+        },
+        {
+          "name": "TaxRateType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Tax rate type",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_CompanyLocation_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxInformation_IN"
+          },
+          "name": "Relationship_TaxInformationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_TINRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_SalesTaxRegistrationNumberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTaxFormTypes_IN"
+          },
+          "name": "Relationship_SalesTaxFormTypes_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdRegNumbers_IN"
+          },
+          "name": "Relationship_TANRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdCountryRegionToRemittance_IN"
+          },
+          "name": "Relationship_TaxWithholdCountryRegionToRemittance_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdNatureOfRemittance_IN"
+          },
+          "name": "Relationship_TaxWithholdNatureOfRemittance_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_ECCNumberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExciseTariffCodes_IN"
+          },
+          "name": "Relationship_ExciseTariffCodes_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_CustomIECRegistrationNumberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustomsTariffCodeTable_IN"
+          },
+          "name": "Relationship_CustomsTariffCodeTable_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_STCRegistrationNumberTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ServiceCodeTable_IN"
+          },
+          "name": "Relationship_ServiceCodeTable_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxInventVATCommodityCode_IN"
+          },
+          "name": "Relationship_TaxInventVATCommodityCode_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VATSchedule_IN"
+          },
+          "name": "Relationship_CSTScheduleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VATSchedule_IN"
+          },
+          "name": "Relationship_VATScheduleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_CustomerLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxInformation_IN"
+          },
+          "name": "Relationship_CustomerTaxInformationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_VendorLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxInformation_IN"
+          },
+          "name": "Relationship_VendorTaxInformationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HSNCodeTable_IN"
+          },
+          "name": "Relationship_HSNCodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ServiceAccountingCodeTable_IN"
+          },
+          "name": "Relationship_ServiceAccountingCodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_GSTINRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistration"
+          },
+          "name": "Relationship_TaxIDRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_BankLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxInformation_IN"
+          },
+          "name": "Relationship_BankTaxInformationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRateType"
+          },
+          "name": "Relationship_TaxRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transaction tax information"
+    },
+    {
+      "dataTypeName": "LogisticsLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxInformationRefRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxRegistrationNumberRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesTaxFormTypesRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdRegNumberRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SoftwareDeclReceived_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxWitholdNatureOfRemittanceRefRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdAcknowledgementNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdCountryToRemitRefRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ConsignmentNum_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATScheduleRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InclTax",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

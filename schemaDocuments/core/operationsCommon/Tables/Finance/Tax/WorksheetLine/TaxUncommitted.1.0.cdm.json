@@ -1,0 +1,1170 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetLine/CustInvoiceLine.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/CustInvoiceTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/PlTaxDueTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionLine/SourceDocumentLine.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Transaction/TrvExpTrans.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RSalesPurchBooks/Group/VATOperationCodeTable_RU.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxUncommitted",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "SourceCurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Addressing_PL",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalculationDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Company",
+          "dataType": "SelectableDataArea",
+          "isNullable": true,
+          "displayName": "Legal entity for intercompany tax posting",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustVendName_PL",
+          "dataType": "PlCustVendName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate_PL",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EUROTriangulation",
+          "dataType": "EUROTriangulation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateSourceBaseAmountRegulated",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Adjusted amount origin (VAT exchange rate)",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateSourceRegulateAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Adjusted sales tax amount (VAT exchange rate)",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Sales tax amount (VAT exchange rate)",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateTaxBaseAmount",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Amount origin (VAT exchange rate)",
+          "description": ""
+        },
+        {
+          "name": "ExchRate",
+          "dataType": "ExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRateSecond",
+          "dataType": "ExchrateSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExemptTax",
+          "dataType": "TaxExemptTax",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalValue_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GSTHSTTaxType_CA",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HeadingRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HeadingTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncludedInPrice_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Included tax",
+          "description": ""
+        },
+        {
+          "name": "IntracomVAT",
+          "dataType": "TaxIntracomVAT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventProfileType_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceId",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsDeleted",
+          "dataType": "VersioningIsDeleted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsOffset",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension_IN",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerDimensionRev_IN",
+          "dataType": "LedgerDimensionAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInsertedTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Manually created sales tax",
+          "description": ""
+        },
+        {
+          "name": "NegativeTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffsetLedgerDimension_RU",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "displayName": "Corr. account",
+          "description": ""
+        },
+        {
+          "name": "OperationLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OperationPostingType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile_RU",
+          "dataType": "PostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostponeVAT",
+          "dataType": "CzPostponeVAT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Prepayment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prepayment journal voucher",
+          "description": ""
+        },
+        {
+          "name": "EmptyTaxBaseForOutgoingTax_W",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Empty tax base for outgoing tax",
+          "description": ""
+        },
+        {
+          "name": "Source",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceBaseAmountCur",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceBaseAmountCurCalculated",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceBaseAmountCurRaw",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Base amount",
+          "description": ""
+        },
+        {
+          "name": "SourceBaseAmountCurRegulated",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Adjusted amount origin",
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentLine",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceExemptBaseAmount_BR",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Exempt base amount",
+          "description": ""
+        },
+        {
+          "name": "SourceExemptBaseAmountMST_BR",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceExemptTaxAmountMST_BR",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceOtherBaseAmount_BR",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Other base amount",
+          "description": ""
+        },
+        {
+          "name": "SourceOtherBaseAmountMST_BR",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceOtherBaseTaxAmount_BR",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "displayName": "Other tax amount",
+          "description": ""
+        },
+        {
+          "name": "SourceOtherTaxAmountMST_BR",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRegulateAmountCur",
+          "dataType": "TaxRegulationAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTaxAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "displayName": "Source amount currency",
+          "description": ""
+        },
+        {
+          "name": "SourceTaxAmountCurReal",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountRep",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxationCode_BR",
+          "dataType": "TaxationCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxationCodeAdj_BR",
+          "dataType": "TaxationCode_BR",
+          "isNullable": true,
+          "displayName": "Adjusted taxation code",
+          "description": ""
+        },
+        {
+          "name": "TaxationOrigin_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAutogenerated",
+          "dataType": "TaxAutoGenerated",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmount",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountCur",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountRep",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountOrig",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Base original",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountRaw",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseQty",
+          "dataType": "TaxQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxCodeCombinationId",
+          "dataType": "TaxCodeCombinationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDirection",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInCostPrice",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "displayName": "Nondeductible sales tax",
+          "description": ""
+        },
+        {
+          "name": "TaxInCostPriceCur",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInCostPriceRep",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInCostPriceMST",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInCostPriceRegulated",
+          "dataType": "TaxRegulationAmountCur",
+          "isNullable": true,
+          "displayName": "Adjusted nondeductible sales tax",
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxLimitReached",
+          "dataType": "TaxLimitReached",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxOffsetUseTaxLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxOrigin",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPeriodPaymentCode_PL",
+          "dataType": "PlTaxPeriodPaymentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReceivableLongTerm_BR",
+          "dataType": "TaxReceivableLongTerm_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReductionPct_BR",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "Tax reduction pct",
+          "description": ""
+        },
+        {
+          "name": "TaxReports",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxSalesOffsetLedgerDimension_BR",
+          "dataType": "LedgerDimensionAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxSubstitution_BR",
+          "dataType": "TaxSubstitution_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxType_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxType_MX",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Txt",
+          "dataType": "TransactionTextLarge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnrealizedTax",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Unrealized tax",
+          "description": ""
+        },
+        {
+          "name": "VatDueDate_W",
+          "dataType": "VatDueDate_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATNum_PL",
+          "dataType": "VATNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATOperationCode_RU",
+          "dataType": "VATOperationCode_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATTaxAgentVendAccount_RU",
+          "dataType": "VATTaxAgentVendAccount_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Warning",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithoutTaxTrans_RU",
+          "dataType": "WithoutTaxTrans_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReverseCharge_W",
+          "dataType": "TaxReverseCharge",
+          "isNullable": true,
+          "displayName": "Reverse charge",
+          "description": ""
+        },
+        {
+          "name": "ReverseChargeApplies_UK",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyExchRateSecondary",
+          "dataType": "ReportingCurrencyExchRateSecondary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingCurrencyExchRate",
+          "dataType": "ReportingCurrencyExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceLine"
+          },
+          "name": "Relationship_CustInvoiceLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustInvoiceTable"
+          },
+          "name": "Relationship_CustInvoiceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimension_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRev_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_OffsetLedgerDimension_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_OperationLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlTaxDueTable"
+          },
+          "name": "Relationship_PlTaxDueTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentLine"
+          },
+          "name": "Relationship_SourceDocumentLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_TaxCurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_TaxOffsetUseTaxLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_TaxSalesOffsetLedgerDimension_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_TransactionCurrencyCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvExpTrans"
+          },
+          "name": "Relationship_TrvExpTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VATOperationCodeTable_RU"
+          },
+          "name": "Relationship_VATOperationCodeTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VATTaxAgemtVendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Uncommitted sales tax"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Addressing",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlCustVendName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EUROTriangulation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExchrateSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxExemptTax",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxIntracomVAT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VersioningIsDeleted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CzPostponeVAT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxBaseCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxRegulationAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxationCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAutoGenerated",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxCodeCombinationId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxLimitReached",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PlTaxPeriodPaymentCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxReceivableLongTerm_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxSubstitution_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransactionTextLarge",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VatDueDate_W",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VATNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATOperationCode_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATTaxAgentVendAccount_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WithoutTaxTrans_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxReverseCharge",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReportingCurrencyExchRateSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReportingCurrencyExchRate",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

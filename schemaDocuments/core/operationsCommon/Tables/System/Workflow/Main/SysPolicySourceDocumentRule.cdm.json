@@ -1,0 +1,72 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysPolicyRule.cdm.json",
+      "moniker": "base_SysPolicyRule"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysPolicySourceDocumentRule",
+      "extendsEntity": "base_SysPolicyRule/SysPolicyRule",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DuplicateSinceDays",
+          "dataType": "Integer",
+          "isNullable": true,
+          "displayName": "Additional days to evaluate for duplicates",
+          "description": ""
+        },
+        {
+          "name": "QueryPacked",
+          "dataType": "SysPolicyPackedQuery",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SamplePercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Sampling percentage",
+          "description": ""
+        }
+      ],
+      "displayName": "Policy source document rule"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SysPolicyPackedQuery",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

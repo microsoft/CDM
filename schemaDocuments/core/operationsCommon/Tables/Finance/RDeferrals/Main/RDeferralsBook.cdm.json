@@ -1,0 +1,326 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "RDeferralsBookTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Group/RDeferralsGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Parameter/RDeferralsLedger.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Parameter/RDeferralsProfile.cdm.json"
+    },
+    {
+      "corpusPath": "RDeferralsTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Transaction/RDeferralsTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RDeferralsBook",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeferralsAmount",
+          "dataType": "RDeferralsAmount",
+          "description": ""
+        },
+        {
+          "name": "DeferralsBookId",
+          "dataType": "RDeferralsBookId",
+          "description": ""
+        },
+        {
+          "name": "DeferralsGroupId",
+          "dataType": "RDeferralsGroupId",
+          "description": ""
+        },
+        {
+          "name": "DeferralsId",
+          "dataType": "RDeferralsId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DeferralsProfile",
+          "dataType": "RDeferralsProfileId",
+          "description": ""
+        },
+        {
+          "name": "Depreciate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Lock",
+          "description": ""
+        },
+        {
+          "name": "EndDeferralsDate",
+          "dataType": "RDeferralsEndDate",
+          "description": ""
+        },
+        {
+          "name": "LastDeferralsDate",
+          "dataType": "RDeferralsLastDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LifeTime",
+          "dataType": "RDeferralsLifeTime",
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "RDeferralsPostingProfile",
+          "description": ""
+        },
+        {
+          "name": "RetirementDate",
+          "dataType": "RDeferralsRetirementDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RPayWriteOffsetLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDeferralsDate",
+          "dataType": "RDeferralsStartDate",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsBookTable"
+          },
+          "name": "Relationship_RDeferralsBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsGroup"
+          },
+          "name": "Relationship_RDeferralsGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsLedger"
+          },
+          "name": "Relationship_RDeferralsLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsProfile"
+          },
+          "name": "Relationship_RDeferralsProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsTable"
+          },
+          "name": "Relationship_RDeferralsTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsTrans"
+          },
+          "name": "Relationship_RDeferralsTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_RPayWriteOffsetLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deferrals models"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RDeferralsAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RDeferralsBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsEndDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RDeferralsLastDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RDeferralsLifeTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RDeferralsPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsRetirementDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RDeferralsStartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

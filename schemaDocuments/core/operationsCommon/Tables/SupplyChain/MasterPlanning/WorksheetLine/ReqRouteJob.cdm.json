@@ -1,0 +1,312 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/ReqPlanVersion.cdm.json"
+    },
+    {
+      "corpusPath": "ReqRoute.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/WrkCtrProperty.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqRouteJob",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CalcTimeHours",
+          "dataType": "RouteJobCalcTimeHours",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "SchedFromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromTime",
+          "dataType": "SchedFromTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobControl",
+          "dataType": "ProdJobControl",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Link",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LinkType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumPrimary",
+          "dataType": "RouteJobNumPrimary",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumSecondary",
+          "dataType": "RouteJobNumSecondary",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumType",
+          "dataType": "RouteJobNumType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OprNum",
+          "dataType": "OprNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OprPriority",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlanVersion",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PropertyId",
+          "dataType": "PropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOId",
+          "dataType": "ReqPOId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedCancelled",
+          "dataType": "Cancelled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SchedTimeHours",
+          "dataType": "RouteJobSchedTimeHours",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "SchedToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToTime",
+          "dataType": "SchedToTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WrkCtrId",
+          "dataType": "WrkCtrId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanVersion"
+          },
+          "name": "Relationship_ReqPlanVersionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqRoute"
+          },
+          "name": "Relationship_ReqRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqTrans"
+          },
+          "name": "Relationship_ReqTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_ResourceWrkCtrTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrProperty"
+          },
+          "name": "Relationship_WrkCtrPropertyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Requirement job"
+    },
+    {
+      "dataTypeName": "RouteJobCalcTimeHours",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SchedFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SchedFromTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "ProdJobControl",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RouteJobNumPrimary",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RouteJobNumSecondary",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RouteJobNumType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "OprNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqPOId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Cancelled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RouteJobSchedTimeHours",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SchedToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SchedToTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "WrkCtrId",
+      "extendsDataType": "string"
+    }
+  ]
+}

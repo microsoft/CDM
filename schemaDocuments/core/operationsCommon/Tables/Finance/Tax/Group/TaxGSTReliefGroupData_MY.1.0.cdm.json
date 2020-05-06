@@ -1,0 +1,102 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Reference/TaxGSTReliefCategory_MY.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "TaxGSTReliefGroupHeading_MY.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxGSTReliefGroupData_MY",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaxGSTReliefCategory_MY",
+          "dataType": "TaxGSTReliefCategoryRecId_MY",
+          "description": ""
+        },
+        {
+          "name": "TaxGSTReliefGroupHeading_MY",
+          "dataType": "TaxGSTReliefGroupRecId_MY",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGSTReliefCategory_MY"
+          },
+          "name": "Relationship_TaxGSTReliefCategory_MYRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGSTReliefGroupHeading_MY"
+          },
+          "name": "Relationship_TaxGSTReliefGroupHeading_MYRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "GST relief group"
+    },
+    {
+      "dataTypeName": "TaxGSTReliefCategoryRecId_MY",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxGSTReliefGroupRecId_MY",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

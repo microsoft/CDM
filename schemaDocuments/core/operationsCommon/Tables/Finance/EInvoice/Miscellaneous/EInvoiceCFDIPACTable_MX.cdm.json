@@ -1,0 +1,84 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EInvoiceCFDIPACTable_MX",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "EInvoiceCFDIPACAccount_MX",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "EInvoiceCFDIPACName_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFC",
+          "dataType": "Rfc_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "PAC"
+    },
+    {
+      "dataTypeName": "EInvoiceCFDIPACAccount_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EInvoiceCFDIPACName_MX",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Rfc_MX",
+      "extendsDataType": "string"
+    }
+  ]
+}

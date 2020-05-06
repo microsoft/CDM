@@ -1,0 +1,116 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "SysEmailSystemTable.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysEmailMessageSystemTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EmailId",
+          "dataType": "SysEmailSystemId",
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "LanguageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LayoutType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Mail",
+          "dataType": "SysEmailContents",
+          "isNullable": true,
+          "displayName": "Email",
+          "description": ""
+        },
+        {
+          "name": "Subject",
+          "dataType": "SysEmailSubject",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "XSLTMail",
+          "dataType": "SysEmailContents",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysEmailSystemTable"
+          },
+          "name": "Relationship_SysEmailSystemTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "System email messages"
+    },
+    {
+      "dataTypeName": "SysEmailSystemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailContents",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailSubject",
+      "extendsDataType": "string"
+    }
+  ]
+}

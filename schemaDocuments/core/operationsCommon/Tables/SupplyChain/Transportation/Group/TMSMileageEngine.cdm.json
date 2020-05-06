@@ -1,0 +1,103 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSMileageEngine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Default",
+          "dataType": "TMSDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EngineAssembly",
+          "dataType": "TMSEngineAssembly",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EngineType",
+          "dataType": "TMSEngineType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MileageEngineCode",
+          "dataType": "TMSMileageEngineCode",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TMSName",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Mileage engine"
+    },
+    {
+      "dataTypeName": "TMSDefault",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSEngineAssembly",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSEngineType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSMileageEngineCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSName",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 
 # nonProfitForSales
 
+CDM Solution for the 'NONPROFITFORSALES' CDS Solution  
 
 ## Entities
 

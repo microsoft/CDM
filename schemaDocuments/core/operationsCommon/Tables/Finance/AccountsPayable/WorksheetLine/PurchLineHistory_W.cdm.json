@@ -1,0 +1,223 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Group/MarkupTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Transaction/PurchLineHistory.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendInvoiceTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchLineHistory_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CountryRegionName_RU",
+          "dataType": "CustInvoiceCountryName_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeviationQty_RU",
+          "dataType": "PurchDeviationQty_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceGTDId_RU",
+          "dataType": "CustFreeInvoiceGTDId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupCode_RU",
+          "dataType": "MarkupCodeVend_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile_RU",
+          "dataType": "VendPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceAgreementDate_RU",
+          "dataType": "PriceAgreementDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchLineHistory",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "RefReturnInvoiceTrans_W",
+          "dataType": "RefReturnInvoiceTrans_W",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceDate_MY",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Original invoice date",
+          "description": ""
+        },
+        {
+          "name": "RefInvoiceID_MY",
+          "dataType": "InvoiceId",
+          "isNullable": true,
+          "displayName": "Original invoice number",
+          "description": ""
+        },
+        {
+          "name": "WithholdingTypeCode_MX",
+          "dataType": "CFDIWithholdingTypeCode_MX",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "MarkupTable"
+          },
+          "name": "Relationship_MarkupCodeVendRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLineHistory"
+          },
+          "name": "Relationship_PurchLineHistoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceTrans"
+          },
+          "name": "Relationship_VendInvoiceTrans_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendLedger_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase order line information history for countries"
+    },
+    {
+      "dataTypeName": "CustInvoiceCountryName_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchDeviationQty_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustFreeInvoiceGTDId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MarkupCodeVend_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceAgreementDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefReturnInvoiceTrans_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CFDIWithholdingTypeCode_MX",
+      "extendsDataType": "string"
+    }
+  ]
+}

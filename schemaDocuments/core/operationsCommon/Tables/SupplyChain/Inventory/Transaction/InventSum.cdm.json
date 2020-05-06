@@ -1,0 +1,896 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/InventJournalTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/InventTransferLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/ProdBOM.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetLine/ProdJournalBOM.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Transaction/ReqTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventSum",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Arrived",
+          "dataType": "InventQtyArrived",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AvailOrdered",
+          "dataType": "InventQtyAvailOrdered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AvailPhysical",
+          "dataType": "InventQtyAvailPhysical",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Closed",
+          "dataType": "InventSumClosed",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClosedQty",
+          "dataType": "InventSumClosed",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "No open quantities",
+          "description": ""
+        },
+        {
+          "name": "Deducted",
+          "dataType": "InventQtyDeducted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LastUpdDateExpected",
+          "dataType": "DateExpected",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastUpdDatePhysical",
+          "dataType": "DatePhysical",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnOrder",
+          "dataType": "InventQtyOnOrder",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ordered",
+          "dataType": "InventQtyOrdered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWArrived",
+          "dataType": "PdsCWArrived",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWAvailOrdered",
+          "dataType": "PdsCWAvailOrdered",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWAvailPhysical",
+          "dataType": "PdsCWAvailPhysical",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWDeducted",
+          "dataType": "PdsCWDeducted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWOnOrder",
+          "dataType": "PdsCWOnOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWOrdered",
+          "dataType": "PdsCWOrdered",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWPhysicalInvent",
+          "dataType": "PdsCWPhysicalInvent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWPicked",
+          "dataType": "PdsCWPicked",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWPostedQty",
+          "dataType": "PdsCWPostedQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQuotationIssue",
+          "dataType": "PdsCWQuotationIssue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQuotationReceipt",
+          "dataType": "PdsCWQuotationReceipt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWReceived",
+          "dataType": "PdsCWReceived",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWRegistered",
+          "dataType": "PdsCWRegistered",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWReservOrdered",
+          "dataType": "PdsCWReservOrdered",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWReservPhysical",
+          "dataType": "PdsCWReservPhysical",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhysicalInvent",
+          "dataType": "InventQtyPhysicalOnhand",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhysicalValue",
+          "dataType": "CostAmountPhysical",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhysicalValueSecCur_RU",
+          "dataType": "CostAmountPhysicalSecCur_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Picked",
+          "dataType": "InventQtyPicked",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedQty",
+          "dataType": "InventQtyPosted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedValue",
+          "dataType": "CostAmountPosted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostedValueSecCur_RU",
+          "dataType": "CostAmountPostedSecCur_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuotationIssue",
+          "dataType": "InventQtyQuotationIssue",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuotationReceipt",
+          "dataType": "InventQtyQuotationReceipt",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Received",
+          "dataType": "InventQtyReceived",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Registered",
+          "dataType": "InventQtyRegistered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReservOrdered",
+          "dataType": "InventQtyReservOrdered",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReservPhysical",
+          "dataType": "InventQtyReservPhysical",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsExcludedFromInventoryValue",
+          "dataType": "InventIsExcludedFromInventoryValue",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "configId",
+          "dataType": "EcoResItemConfigurationName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventBatchId",
+          "dataType": "InventBatchId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventColorId",
+          "dataType": "EcoResItemColorName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventGtdId_RU",
+          "dataType": "InventGTDId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventOwnerId_RU",
+          "dataType": "InventOwnerId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventProfileId_RU",
+          "dataType": "InventProfileId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSerialId",
+          "dataType": "InventSerialId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSizeId",
+          "dataType": "EcoResItemSizeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventStatusId",
+          "dataType": "WHSInventStatusId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventStyleId",
+          "dataType": "EcoResItemStyleName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventVersionId",
+          "dataType": "EcoResVersionName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LicensePlateId",
+          "dataType": "WHSLicensePlateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "wMSLocationId",
+          "dataType": "WMSLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension1",
+          "dataType": "InventDimension1",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension2",
+          "dataType": "InventDimension2",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension3",
+          "dataType": "InventDimension3",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension4",
+          "dataType": "InventDimension4",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension5",
+          "dataType": "InventDimension5",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension6",
+          "dataType": "InventDimension6",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension7",
+          "dataType": "InventDimension7",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension8",
+          "dataType": "InventDimension8",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension9",
+          "dataType": "InventDimension9",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension10",
+          "dataType": "InventDimension10",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension11",
+          "dataType": "InventDimension11",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimension12",
+          "dataType": "InventDimension12",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventJournalTrans"
+          },
+          "name": "Relationship_InventJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferLine"
+          },
+          "name": "Relationship_InventTransferLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdBOM"
+          },
+          "name": "Relationship_ProdBOMRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdJournalBOM"
+          },
+          "name": "Relationship_ProdJournalBOMRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqTrans"
+          },
+          "name": "Relationship_ReqTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesOrderLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "On-hand inventory"
+    },
+    {
+      "dataTypeName": "InventQtyArrived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyAvailOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyAvailPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventSumClosed",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventQtyDeducted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DateExpected",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DatePhysical",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventQtyOnOrder",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWArrived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWAvailOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWAvailPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWDeducted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWOnOrder",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWPhysicalInvent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWPicked",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWPostedQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQuotationIssue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWQuotationReceipt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWReceived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWRegistered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWReservOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWReservPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyPhysicalOnhand",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountPhysicalSecCur_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyPicked",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyPosted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountPosted",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountPostedSecCur_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyQuotationIssue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyQuotationReceipt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyReceived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyRegistered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyReservOrdered",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyReservPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventIsExcludedFromInventoryValue",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EcoResItemConfigurationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventBatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemColorName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventGTDId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventOwnerId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventProfileId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSerialId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemSizeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSInventStatusId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemStyleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResVersionName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSLicensePlateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension1",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension2",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension3",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension4",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension5",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension6",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension7",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension8",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension9",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventDimension10",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimension11",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimension12",
+      "extendsDataType": "string"
+    }
+  ]
+}

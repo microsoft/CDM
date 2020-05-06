@@ -1,0 +1,63 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResColor.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductVariantDimensionValue.cdm.json",
+      "moniker": "base_EcoResProductVariantDimensionValue"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductVariantColor",
+      "extendsEntity": "base_EcoResProductVariantDimensionValue/EcoResProductVariantDimensionValue",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Color",
+          "dataType": "EcoResColorRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResColor"
+          },
+          "name": "Relationship_EcoResColorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Product variants colors"
+    },
+    {
+      "dataTypeName": "EcoResColorRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

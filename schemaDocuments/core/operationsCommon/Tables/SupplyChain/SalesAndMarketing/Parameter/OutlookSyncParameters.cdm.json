@@ -1,0 +1,111 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "OutlookSyncParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OutlookContactDeleteAction",
+          "dataType": "smmOutlookContactDeleteActions",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OutlookDefaultSyncPrinciple",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Default synchronization type",
+          "description": ""
+        },
+        {
+          "name": "OutlookMaxSynchronizationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allowed synchronization type for contacts",
+          "description": ""
+        },
+        {
+          "name": "OutlookSyncPrinciple",
+          "dataType": "smmOutlookSynchronizationPrinciple",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeServerUrl",
+          "dataType": "URL",
+          "isNullable": true,
+          "displayName": "Exchange Web Services URL",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Microsoft Outlook synchronization parameters"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmOutlookContactDeleteActions",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "smmOutlookSynchronizationPrinciple",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "URL",
+      "extendsDataType": "string"
+    }
+  ]
+}

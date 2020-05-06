@@ -1,0 +1,114 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Reference/CustCollectionsPool.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyRelationship.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CustCollectionsAgent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowShowAllPools",
+          "dataType": "CustCollectionsAgentAllowShowAllPools",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultCustomerPool",
+          "dataType": "CustCollectionsPoolId",
+          "isNullable": true,
+          "displayName": "Default pool",
+          "description": ""
+        },
+        {
+          "name": "DirPartyRelationship",
+          "dataType": "CustCollectionsTeamRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustCollectionsPool"
+          },
+          "name": "Relationship_CustCollectionsPoolRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyRelationship"
+          },
+          "name": "Relationship_DirPartyRelationshipRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Collections agent"
+    },
+    {
+      "dataTypeName": "CustCollectionsAgentAllowShowAllPools",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CustCollectionsPoolId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustCollectionsTeamRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

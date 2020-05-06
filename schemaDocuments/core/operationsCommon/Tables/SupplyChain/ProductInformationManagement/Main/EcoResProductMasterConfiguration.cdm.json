@@ -1,0 +1,115 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Group/EcoResProductDimensionAttribute.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductMaster.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResConfiguration.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductMasterDimensionValue.cdm.json",
+      "moniker": "base_EcoResProductMasterDimensionValue"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductMasterConfiguration",
+      "extendsEntity": "base_EcoResProductMasterDimensionValue/EcoResProductMasterDimensionValue",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConfigProductDimensionAttribute",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ConfigProductMaster",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Configuration",
+          "dataType": "EcoResConfigurationRecId",
+          "description": ""
+        },
+        {
+          "name": "PmfConfigUnitId",
+          "dataType": "PmfConfigUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductDimensionAttribute"
+          },
+          "name": "Relationship_ConfigEcoResProductDimensionAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductMaster"
+          },
+          "name": "Relationship_ConfigEcoResProductMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResConfiguration"
+          },
+          "name": "Relationship_EcoResConfigurationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Configurations assigned to product masters"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResConfigurationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PmfConfigUnitId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankCentralBankPurpose.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankPaymBalanceSurvey.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankPaymBalanceSurveyPaymCodes",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankCentralBankPurposeCode",
+          "dataType": "BankCentralBankPurposeCode",
+          "description": ""
+        },
+        {
+          "name": "BankPaymBalanceSurvey",
+          "dataType": "PaymBalanceSurveyCodeRecId",
+          "description": ""
+        },
+        {
+          "name": "IncludePayment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Include payment",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankCentralBankPurpose"
+          },
+          "name": "Relationship_BankCentralBankPurposeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankPaymBalanceSurvey"
+          },
+          "name": "Relationship_BankPaymBalanceSurveyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Survey codes and purpose codes"
+    },
+    {
+      "dataTypeName": "BankCentralBankPurposeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymBalanceSurveyCodeRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

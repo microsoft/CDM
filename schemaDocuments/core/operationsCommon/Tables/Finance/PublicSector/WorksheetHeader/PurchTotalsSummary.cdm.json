@@ -1,0 +1,199 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchTotalsSummary",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CashDiscount",
+          "dataType": "VendCashDiscAmount",
+          "isNullable": true,
+          "displayName": "Cash discount",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "VendCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Discounts",
+          "dataType": "PurchEndDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsValid",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDiscount",
+          "dataType": "PurchSumLineDiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MiscCharges",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetLines",
+          "dataType": "PurchLineAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OtherCharges",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchId",
+          "dataType": "PurchIdBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundOff",
+          "dataType": "RoundOff",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTax",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Total amount",
+          "description": ""
+        },
+        {
+          "name": "UseTax",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Purchase order totals"
+    },
+    {
+      "dataTypeName": "VendCashDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchEndDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchSumLineDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchLineAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PurchIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RoundOff",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

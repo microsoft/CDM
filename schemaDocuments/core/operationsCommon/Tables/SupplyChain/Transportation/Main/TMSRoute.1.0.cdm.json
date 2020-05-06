@@ -1,0 +1,327 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Group/TMSRouteConfig.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Group/TMSRouteGuide.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Group/TMSRouteSchedule.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSLoadTemplate.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSRoute",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApptUTCDateTime",
+          "dataType": "TMSApptUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DeliveryUTCDateTime",
+          "dataType": "TMSDeliveryUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "TMSDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Manual",
+          "dataType": "TMSManual",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "displayName": "Route guide",
+          "description": ""
+        },
+        {
+          "name": "RouteCode",
+          "dataType": "TMSRouteCode",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "RouteConfigCode",
+          "dataType": "TMSRouteConfigCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteGuideRecId",
+          "dataType": "TMSRouteGuideRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoutePlanName",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "displayName": "Route plan",
+          "description": ""
+        },
+        {
+          "name": "RouteStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipUTCDateTime",
+          "dataType": "TMSShipUTCDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationOrderNum",
+          "dataType": "TMSTransportationOrderNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteSchedule",
+          "dataType": "TMSRouteScheduleRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MilkrunRoute",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadTemplateId",
+          "dataType": "WHSLoadTemplateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_InventSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteConfig"
+          },
+          "name": "Relationship_TMSRouteConfigRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteGuide"
+          },
+          "name": "Relationship_TMSRouteGuideRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteSchedule"
+          },
+          "name": "Relationship_TMSRouteScheduleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadTemplate"
+          },
+          "name": "Relationship_WHSLoadTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route"
+    },
+    {
+      "dataTypeName": "TMSApptUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSDeliveryUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSManual",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteConfigCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteGuideRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TMSShipUTCDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSTransportationOrderNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteScheduleRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSLoadTemplateId",
+      "extendsDataType": "string"
+    }
+  ]
+}

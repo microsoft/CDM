@@ -1,0 +1,203 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "TrvLocations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvPerDiems",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Currency",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DateFrom",
+          "dataType": "TrvDateFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateTo",
+          "dataType": "TrvDateTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HotelAllowance",
+          "dataType": "TrvPerDiemAmountCur",
+          "isNullable": true,
+          "displayName": "Hotel",
+          "description": ""
+        },
+        {
+          "name": "Location",
+          "dataType": "TrvLocation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TrvLocations",
+          "dataType": "RefRecId",
+          "displayName": "Location",
+          "description": ""
+        },
+        {
+          "name": "MealAllowance",
+          "dataType": "TrvPerDiemAmountCur",
+          "isNullable": true,
+          "displayName": "Meals",
+          "description": ""
+        },
+        {
+          "name": "OtherAllowance",
+          "dataType": "TrvPerDiemAmountCur",
+          "isNullable": true,
+          "displayName": "Other",
+          "description": ""
+        },
+        {
+          "name": "DeductBreakf",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Reduction in percentage for breakfast",
+          "description": ""
+        },
+        {
+          "name": "DeductDinner",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Reduction in percentage for dinner",
+          "description": ""
+        },
+        {
+          "name": "DeductLunch",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Reduction in percentage for lunch",
+          "description": ""
+        },
+        {
+          "name": "DeductOneMeal",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Percentage reduction for 1 meal",
+          "description": ""
+        },
+        {
+          "name": "DeductThreeOrMoreMeals",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Percentage reduction for 3 or more meals",
+          "description": ""
+        },
+        {
+          "name": "DeductTwoMeals",
+          "dataType": "TrvRealBasePositive",
+          "isNullable": true,
+          "displayName": "Percentage reduction for 2 meals",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvLocations"
+          },
+          "name": "Relationship_TrvLocationsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Per diems"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvDateFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TrvDateTo",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TrvPerDiemAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TrvLocation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TrvRealBasePositive",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

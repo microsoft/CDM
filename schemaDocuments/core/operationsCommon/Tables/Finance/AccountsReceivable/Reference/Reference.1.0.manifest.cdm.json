@@ -1,0 +1,81 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "manifestName": "Reference",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "CustCollectionsPool",
+      "entityPath": "CustCollectionsPool.1.0.cdm.json/CustCollectionsPool"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "CustCollectionsAgentPool",
+      "entityPath": "CustCollectionsAgentPool.1.0.cdm.json/CustCollectionsAgentPool"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "CustVendAifPaymTable",
+      "entityPath": "CustVendAifPaymTable.1.0.cdm.json/CustVendAifPaymTable"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "CustInterestWaiveLimit",
+      "entityPath": "CustInterestWaiveLimit.1.0.cdm.json/CustInterestWaiveLimit"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "CustLedgerTransTypeMapping",
+      "entityPath": "CustLedgerTransTypeMapping.1.0.cdm.json/CustLedgerTransTypeMapping"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "CustCollectionsPool.1.0.cdm.json/CustCollectionsPool",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustCollectionsAgent.1.0.cdm.json/CustCollectionsAgent",
+      "fromEntityAttribute": "Relationship_CustCollectionsPoolRelationshipId",
+      "toEntity": "CustCollectionsPool.1.0.cdm.json/CustCollectionsPool",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustCollectionsAgentPool.1.0.cdm.json/CustCollectionsAgentPool",
+      "fromEntityAttribute": "Relationship_CustomerPoolRelationshipId",
+      "toEntity": "CustCollectionsPool.1.0.cdm.json/CustCollectionsPool",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustCollectionsAgentPool.1.0.cdm.json/CustCollectionsAgentPool",
+      "fromEntityAttribute": "Relationship_CollectionsAgentRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustCollectionsAgent.1.0.cdm.json/CustCollectionsAgent",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustCollectionsAgentPool.1.0.cdm.json/CustCollectionsAgentPool",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "/core/operationsCommon/Tables/Finance/Bank/Reference/CustVendPaymProcessingData.1.0.cdm.json/CustVendPaymProcessingData",
+      "fromEntityAttribute": "Relationship_CustVendAifPaymTableRelationshipId",
+      "toEntity": "CustVendAifPaymTable.1.0.cdm.json/CustVendAifPaymTable",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustInterestWaiveLimit.1.0.cdm.json/CustInterestWaiveLimit",
+      "fromEntityAttribute": "Relationship_CurrencyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.0.cdm.json/Currency",
+      "toEntityAttribute": "RecId"
+    },
+    {
+      "fromEntity": "CustInterestWaiveLimit.1.0.cdm.json/CustInterestWaiveLimit",
+      "fromEntityAttribute": "Relationship_CompanyRelationshipId",
+      "toEntity": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json/CompanyInfo",
+      "toEntityAttribute": "RecId"
+    }
+  ]
+}

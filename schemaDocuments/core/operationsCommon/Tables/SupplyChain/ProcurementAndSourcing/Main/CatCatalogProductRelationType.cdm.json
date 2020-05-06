@@ -1,0 +1,90 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CatProcureCatalogTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProductRelationType.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatCatalogProductRelationType",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Catalog",
+          "dataType": "RefRecId",
+          "displayName": "Catalog record ID",
+          "description": ""
+        },
+        {
+          "name": "DisplayOrder",
+          "dataType": "Integer",
+          "displayName": "Display order",
+          "description": ""
+        },
+        {
+          "name": "ProductRelationType",
+          "dataType": "RefRecId",
+          "displayName": "Product relation type record ID",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CatProcureCatalogTable"
+          },
+          "name": "Relationship_CatProcureCatalogTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductRelationType"
+          },
+          "name": "Relationship_EcoResProductRelationTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Manually hidden products in the navigation categories"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    }
+  ]
+}

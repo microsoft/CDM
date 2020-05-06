@@ -1,0 +1,78 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/TransactionLine/GeneralJournalAccountEntry.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerEntryJournalizing",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "GeneralJournalAccountEntry",
+          "dataType": "GeneralJournalAccountEntryRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Journal",
+          "dataType": "LedgerJournalizeNum",
+          "description": ""
+        },
+        {
+          "name": "SequenceNumber",
+          "dataType": "LedgerJournalizeSeqNum",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "GeneralJournalAccountEntry"
+          },
+          "name": "Relationship_GeneralJournalAccountEntryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger entry journalizing"
+    },
+    {
+      "dataTypeName": "GeneralJournalAccountEntryRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerJournalizeNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerJournalizeSeqNum",
+      "extendsDataType": "integer"
+    }
+  ]
+}

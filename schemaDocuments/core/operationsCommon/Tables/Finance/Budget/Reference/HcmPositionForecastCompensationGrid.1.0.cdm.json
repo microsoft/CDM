@@ -1,0 +1,115 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "HcmPositionForecastCompGroupRefPoint.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HcmPositionForecastCompensationGrid",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Amount",
+          "dataType": "HcmPositionForecastAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompensationGroupRefPointId",
+          "dataType": "HcmPositionForecastCompGroupRefPtRecId",
+          "description": ""
+        },
+        {
+          "name": "CompensationLevel",
+          "dataType": "HcmCompensationLevelRecId",
+          "description": ""
+        },
+        {
+          "name": "RefPointId",
+          "dataType": "HRCCompRefPointId",
+          "description": ""
+        },
+        {
+          "name": "RefPointSetupId",
+          "dataType": "HRCCompRefPointSetupId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "HcmPositionForecastCompGroupRefPoint"
+          },
+          "name": "Relationship_HcmPositionForecastCompGroupRefPointRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Compensation grid"
+    },
+    {
+      "dataTypeName": "HcmPositionForecastAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "HcmPositionForecastCompGroupRefPtRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HcmCompensationLevelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HRCCompRefPointId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HRCCompRefPointSetupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

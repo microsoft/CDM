@@ -1,0 +1,1331 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CashDisc.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustDirectDebitMandate.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustLedger.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvMode.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Intrastat/Group/IntrastatPort.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerPostingJournal.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymDay.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymSched.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjGroup.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjInvoiceTable.cdm.json"
+    },
+    {
+      "corpusPath": "ProjProposalJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Miscellaneous/TaxInformation_IN.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/WorksheetHeader/TransportationDocument.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/ContactPerson.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Miscellaneous/CustIntentLetter_IT.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjInvoiceJour",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OrderAccount",
+          "dataType": "CustAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Order account",
+          "description": ""
+        },
+        {
+          "name": "CashDisc",
+          "dataType": "ProjCashDiscAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscCode",
+          "dataType": "ProjCashDiscCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscDate",
+          "dataType": "ProjCashDiscDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashDiscPercent",
+          "dataType": "DiscPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostValue",
+          "dataType": "CostAmountProject",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyId",
+          "dataType": "ProjSalesCurrencyCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryName",
+          "dataType": "CompanyName",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Delivery name",
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DirectDebitMandate",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvMode",
+          "dataType": "CustDlvModeId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTerm",
+          "dataType": "CustDlvTermId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate_W",
+          "dataType": "DocumentDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EInvoiceAccountCode",
+          "dataType": "EInvoiceAccountCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EInvoiceLineSpecific",
+          "dataType": "EInvoiceLineSpecific",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDisc",
+          "dataType": "DiscAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Total discount",
+          "description": ""
+        },
+        {
+          "name": "EnterpriseNumber",
+          "dataType": "TaxEnterpriseNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EUSalesList",
+          "dataType": "ListDispatchId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRate",
+          "dataType": "ExchRate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Rate",
+          "description": ""
+        },
+        {
+          "name": "ExchrateSecondary",
+          "dataType": "ExchrateSecondary",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GiroType",
+          "dataType": "PaymentStubProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterCompanyPosted",
+          "dataType": "InterCompanyPosted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatAddValue_LV",
+          "dataType": "LvIntrastatAddValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatDispatchId",
+          "dataType": "IntrastatDispatchId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccount",
+          "dataType": "CustInvoiceAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceAmount",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Invoice amount",
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceNumberingCode_LT",
+          "dataType": "NumberSequenceCode",
+          "isNullable": true,
+          "displayName": "Invoice numbering code",
+          "description": ""
+        },
+        {
+          "name": "InvoiceRoundOff",
+          "dataType": "RoundOff",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "ProjLanguageId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucher",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ListCodeId",
+          "dataType": "ListcodeId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Narration_BR",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Narration",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceGroupId",
+          "dataType": "NumberSequenceGroupId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnAccountAmount",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "On-account",
+          "description": ""
+        },
+        {
+          "name": "ParmId",
+          "dataType": "ParmId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymDayId",
+          "dataType": "CustPaymDayId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Payment",
+          "dataType": "ProjPaymCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentSched",
+          "dataType": "PaymSchedId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymId",
+          "dataType": "PaymId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Port",
+          "dataType": "IntrastatPortId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingJournalId",
+          "dataType": "LedgerPostingJournalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "CustPostingProfile",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PrintedOriginals",
+          "dataType": "PrintedOriginals",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjGroupId",
+          "dataType": "ProjGroupId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjInvoiceId",
+          "dataType": "ProjInvoiceId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ProjInvoiceProjId",
+          "dataType": "ProjInvoiceProjId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjInvoiceType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProposalId",
+          "dataType": "ProjProposalId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAEndDateMaxInvoiceId",
+          "dataType": "ProjInvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSAInvoiceFormats",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "qty",
+          "dataType": "SalesQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Quantity",
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef",
+          "dataType": "ReasonTableRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesDate_CZ",
+          "dataType": "CzSalesDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesOrderbalance",
+          "dataType": "AmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Sales subtotal amount",
+          "description": ""
+        },
+        {
+          "name": "SMASpecIndexCalc",
+          "dataType": "SMASpecIndexCalc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SumLineDisc",
+          "dataType": "DiscAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line discount",
+          "description": ""
+        },
+        {
+          "name": "SumMarkup",
+          "dataType": "MarkupSumSales",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SumTax",
+          "dataType": "TaxAmountCur",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Sales tax",
+          "description": ""
+        },
+        {
+          "name": "TaxGroupId",
+          "dataType": "ProjTaxGroup",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInformation_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPrintOnInvoice",
+          "dataType": "TaxPrintOnInvoice",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxSpecifyByLine",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Specified",
+          "description": ""
+        },
+        {
+          "name": "TaxSpecifyTotal",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Specified",
+          "description": ""
+        },
+        {
+          "name": "TransportationDocument",
+          "dataType": "TransportationDocumentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Triangulation",
+          "dataType": "EUROTriangulation",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATNum",
+          "dataType": "VATNumJournal",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Volume",
+          "dataType": "Volume",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VoucherNumberSequenceTable",
+          "dataType": "ProjVoucherNumberSequenceTable",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WhoIsAuthor_LT",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceType_MY",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "GST invoice type",
+          "description": ""
+        },
+        {
+          "name": "NoteType_MY",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonId_NO",
+          "dataType": "ContactPersonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustPurchaseOrder_NO",
+          "dataType": "CustPurchaseOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustRef_NO",
+          "dataType": "CustRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackedExtensions",
+          "dataType": "SysExtensionSerializerPackedContainer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SentElectronically",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Sent electronically",
+          "description": ""
+        },
+        {
+          "name": "IsProforma",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Proforma",
+          "description": ""
+        },
+        {
+          "name": "IntentLetterToDate_IT",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntentLetterId_IT",
+          "dataType": "IntentLetterId_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntentLetterInternalId_IT",
+          "dataType": "IntentLetterInternalId_IT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntentLetterFromDate_IT",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CashDisc"
+          },
+          "name": "Relationship_CashDiscRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustDirectDebitMandate"
+          },
+          "name": "Relationship_CustDirectDebitMandateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustLedger"
+          },
+          "name": "Relationship_CustLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTable_OrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryPostalAddress_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvMode"
+          },
+          "name": "Relationship_DlvModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "IntrastatPort"
+          },
+          "name": "Relationship_IntrastatPortRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTable1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerPostingJournal"
+          },
+          "name": "Relationship_LedgerPostingJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceGroup"
+          },
+          "name": "Relationship_NumberSequenceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymDay"
+          },
+          "name": "Relationship_PaymDayRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymSched"
+          },
+          "name": "Relationship_PaymSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjGroup"
+          },
+          "name": "Relationship_ProjGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjInvoiceTable"
+          },
+          "name": "Relationship_ProjInvoiceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjProposalJour"
+          },
+          "name": "Relationship_ProjProposalJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxInformation_IN"
+          },
+          "name": "Relationship_TaxInformation_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TransportationDocument"
+          },
+          "name": "Relationship_TransportationDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ContactPerson"
+          },
+          "name": "Relationship_ContactPerson_NORelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustIntentLetter_IT"
+          },
+          "name": "Relationship_CustIntentLetter_ITRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project invoice"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCashDiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjCashDiscCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCashDiscDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmountProject",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjSalesCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CompanyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustDlvModeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustDlvTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EInvoiceAccountCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EInvoiceLineSpecific",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxEnterpriseNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ListDispatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExchrateSecondary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PaymentStubProjId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InterCompanyPosted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LvIntrastatAddValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "IntrastatDispatchId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustInvoiceAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "NumberSequenceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RoundOff",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjLanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ListcodeId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NumberSequenceGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPaymDayId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPaymCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymSchedId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntrastatPortId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerPostingJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PrintedOriginals",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjInvoiceProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjProposalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReasonTableRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CzSalesDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SMASpecIndexCalc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MarkupSumSales",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjTaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxPrintOnInvoice",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransportationDocumentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EUROTriangulation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VATNumJournal",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Volume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjVoucherNumberSequenceTable",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ContactPersonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustPurchaseOrder",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustRef",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysExtensionSerializerPackedContainer",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "IntentLetterId_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "IntentLetterInternalId_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    }
+  ]
+}
