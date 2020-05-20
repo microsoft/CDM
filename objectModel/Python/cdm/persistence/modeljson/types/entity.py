@@ -16,7 +16,7 @@ class Entity(DataObject):
     def __init__(self):
         super().__init__()
 
-        self.type = ''  # type: str
+        self.type = None  # type: str
         self.lastChildFileModifiedTime = None  # type: datetime
         self.lastFileModifiedTime = None  # type: datetime
         self.lastFileStatusCheckTime = None  # type: datetime

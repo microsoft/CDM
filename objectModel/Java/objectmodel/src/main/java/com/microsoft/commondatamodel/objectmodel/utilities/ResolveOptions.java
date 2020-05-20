@@ -30,7 +30,7 @@ public class ResolveOptions {
    * Tracks the number of entity attributes that have been travered when collecting resolved traits
    * or attributes. prevents run away loops.
    */
-  private int relationshipDepth;
+  private Integer relationshipDepth;
   /**
    * When references get copied, use previous resolution results if available (for use with copy
    * method).
@@ -158,7 +158,7 @@ public class ResolveOptions {
    * to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  public void setRelationshipDepth(final int relationshipDepth) {
+  public void setRelationshipDepth(final Integer relationshipDepth) {
     this.relationshipDepth = relationshipDepth;
   }
 
@@ -198,7 +198,7 @@ public class ResolveOptions {
    * to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  public int getRelationshipDepth() {
+  public Integer getRelationshipDepth() {
     return relationshipDepth;
   }
 

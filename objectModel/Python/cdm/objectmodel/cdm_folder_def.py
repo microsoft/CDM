@@ -4,7 +4,7 @@
 from typing import Dict, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import logger
+from cdm.utilities import logger, Errors
 
 from .cdm_container_def import CdmContainerDefinition
 from .cdm_document_collection import CdmDocumentCollection
@@ -73,7 +73,10 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         return False
 
     def validate(self) -> bool:
-        return bool(self.name)
+        if not bool(self.name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            return False
+        return True
 
     def get_name(self) -> str:
         """ Gets the name of the folder."""

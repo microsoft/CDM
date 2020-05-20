@@ -53,10 +53,11 @@ public class CdmEntityDefinitionResolutionTest {
   private static final String TXT = ".txt";
   private static final String CDM = "cdm";
 
-  /**
-   * The path of the SchemaDocs project.
-   */
   private static final Logger LOGGER = LoggerFactory.getLogger(CdmEntityDefinitionResolutionTest.class);
+
+  /**
+   * The path between TestDataPath and TestName.
+   */
   private static final String TESTS_SUBPATH = new File(new File(CDM, "resolution"), "entityresolution").toString();
 
   /**
@@ -292,6 +293,30 @@ public class CdmEntityDefinitionResolutionTest {
   }
 
   /**
+   * Test that "is.linkedEntity.name" and "is.linkedEntity.identifier" traits are set when "selectedTypeAttribute" and "foreignKeyAttribute"
+   * are present in the entity's resolution guidance.
+   */
+  @Test
+  public void testSettingTraitsForResolutionGuidanceAttributes() throws InterruptedException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testSettingTraitsForResolutionGuidanceAttributes", null);
+    CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Customer.cdm.json/Customer").join();
+
+    // Resolve with default directives to get "is.linkedEntity.name" trait.
+    ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), null);
+    CdmEntityDefinition resolvedEntity = entity.createResolvedEntityAsync("resolved", resOpt).join();
+
+    Assert.assertEquals(resolvedEntity.getAttributes().get(1).getAppliedTraits().get(6).getNamedReference(), "is.linkedEntity.name");
+
+    // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
+    Set<String> directives = new LinkedHashSet<>();
+    directives.add("referenceOnly");
+    resOpt = new ResolveOptions(entity.getInDocument(), new AttributeResolutionDirectiveSet(directives));
+    resolvedEntity = entity.createResolvedEntityAsync("resolved2", resOpt).join();
+
+    Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(7).getNamedReference(), "is.linkedEntity.identifier");
+  }
+
+  /**
    * Function used to test resolving an environment. Writes a helper function used
    * for debugging. Asserts the result matches the expected result stored in a
    * file.
@@ -322,7 +347,6 @@ public class CdmEntityDefinitionResolutionTest {
    * change often.
    */
   @Test
-  @Ignore
   public void testResolveTestCorpus() throws Exception {
     Assert.assertTrue((Files.isDirectory(Paths.get(TestHelper.SCHEMA_DOCS_ROOT))), "SchemaDocsRoot not found!!!");
 
@@ -332,7 +356,7 @@ public class CdmEntityDefinitionResolutionTest {
     final StorageAdapter adapter = new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT);
     cdmCorpus.getStorage().mount(LOCAL, adapter);
     final CdmManifestDefinition manifest = cdmCorpus
-        .<CdmManifestDefinition>fetchObjectAsync("local:/standards.manifest.cdm.json").get();
+        .<CdmManifestDefinition>fetchObjectAsync(TestHelper.CDM_STANDARDS_SCHEMA_PATH).get();
     final AttributeResolutionDirectiveSet directives = new AttributeResolutionDirectiveSet(
         new LinkedHashSet<>(Arrays.asList(NORMALIZED, REFERENCE_ONLY)));
     final String allResolved = listAllResolved(cdmCorpus, directives, manifest, new StringSpewCatcher()).get();

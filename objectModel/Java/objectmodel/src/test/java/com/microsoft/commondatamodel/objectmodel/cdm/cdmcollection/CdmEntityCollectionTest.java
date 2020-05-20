@@ -15,6 +15,8 @@ import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.logging.log4j.Level;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -100,7 +102,7 @@ public class CdmEntityCollectionTest {
   public void testManifestCannotAddEntityDefinitionWithoutCreatingDocument() {
     // Use try-with-resources to ensure that interceptLog is removed after the test to not interrupt
     // with other tests.
-    try (final InterceptLog interceptLog = new InterceptLog(CdmEntityCollection.class)) {
+    try (final InterceptLog interceptLog = new InterceptLog(Logger.class)) {
       final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
       cdmCorpus.getStorage().setDefaultNamespace("local");
 

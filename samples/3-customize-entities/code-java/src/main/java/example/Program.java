@@ -6,6 +6,7 @@ package example;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
@@ -39,14 +40,14 @@ public class Program {
     // public standards.
     String pathFromExeToExampleRoot = "../../";
 
-    // Mount is as a local device.
+    // Mount it as a local adapter.
     cdmCorpus.getStorage().mount(
         "local",
-        new LocalAdapter(pathFromExeToExampleRoot + "3-customize-entities"));
+        new LocalAdapter(pathFromExeToExampleRoot + "3-customize-entities/sample-data"));
     cdmCorpus.getStorage().setDefaultNamespace("local");
     // local is our default. So any paths that start out navigating without a device tag will assume local.
 
-    // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there.
+    // Mount it as the 'cdm' adapter, not the default so must use "cdm:/folder" to get there.
     cdmCorpus.getStorage().mount(
         "cdm",
         new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));

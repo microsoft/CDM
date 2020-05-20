@@ -11,6 +11,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     /// <summary>
     /// The type attribute persistence.
@@ -23,7 +24,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             // Do a conversion between CDM data format and model.json data type.
             attribute.DataFormat = DataTypeFromData(obj.DataType);
 
-            attribute.Description = obj.Description;
+            if (!string.IsNullOrWhiteSpace(obj.Description))
+                attribute.Description = obj.Description;
 
             if (obj.IsHidden == true)
             {
@@ -45,11 +47,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             {
                 Name = instance.Name,
                 DataType = DataTypeToData(instance.DataFormat),
-                Description = instance.GetProperty("description"),
-                Traits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options),
+                Description = instance.GetProperty("description")
             };
 
-            await Utils.ProcessAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);
+            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
 

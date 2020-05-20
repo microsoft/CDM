@@ -14,7 +14,7 @@ import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import {
     ConstantEntity,
     Entity,
-    EntityReference
+    EntityReferenceDefinition
 } from './types';
 import * as utils from './utils';
 
@@ -23,7 +23,7 @@ function isConstantEntity(object: Entity | ConstantEntity): object is ConstantEn
 }
 
 export class EntityReferencePersistence extends cdmObjectRefPersistence {
-    public static fromData(ctx: CdmCorpusContext, object: string | EntityReference): CdmEntityReference {
+    public static fromData(ctx: CdmCorpusContext, object: string | EntityReferenceDefinition): CdmEntityReference {
         if (!object) { return; }
         let simpleReference: boolean = true;
         let entity: string | CdmEntityDefinition | CdmConstantEntityDefinition;

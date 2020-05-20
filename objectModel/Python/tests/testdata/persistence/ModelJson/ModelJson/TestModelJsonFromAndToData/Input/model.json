@@ -20,6 +20,11 @@
         "queryId": "77ea2dfa-b868-4527-a6ee-c1da01a3b4c3",
         "queryName": "Customers",
         "loadEnabled": true
+      },
+      "Companies": {
+        "queryId": "2239aac1-6776-4a43-b71a-61948198605f",
+        "queryName": "Companies",
+        "loadEnabled": true
       }
     },
     "document": "section Section1;\r\nshared Customers = let\r\n  Source = OData.Feed(\"https://services.odata.org/V2/Northwind/Northwind.svc\"),\r\n  Navigation = Source{[Name = \"Customers\", Signature = \"table\"]}[Data],\r\n  #\"Remove columns\" = Table.RemoveColumns(Navigation, Table.ColumnsOfType(Navigation, {type table, type record, type list, type nullable binary, type binary, type function}))\r\nin\r\n  #\"Remove columns\";\r\n"
@@ -41,7 +46,7 @@
     {
       "$type": "LocalEntity",
       "name": "Customers",
-      "description": "",
+      "description": "Description of the Customers entity",
       "pbi:refreshPolicy": {
         "$type": "FullRefreshPolicy",
         "location": "Customers.csv"
@@ -66,20 +71,64 @@
           "dataType": "string"
         },
         {
-          "name": "CompanyName",
+          "name": "FkCompanyId",
           "dataType": "string"
         },
         {
           "name": "ContactName",
-          "dataType": "string"
+          "dataType": "string",
+          "description": "Description of the ContactName attribute"
         },
         {
           "name": "ContactTitle",
-          "dataType": "string"
+          "dataType": "string",
+          "cdm:traits": [
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "name": "localizedDisplayText",
+                  "value": {
+                    "entityReference": {
+                      "entityShape": "localizedTable",
+                      "constantValues": [
+                        [
+                          "en",
+                          "Description of the ContactTitle attribute"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "Address",
-          "dataType": "string"
+          "dataType": "string",
+          "description":  "Description of the Address attribute as property",
+          "cdm:traits": [
+            {
+              "traitReference": "is.localized.describedAs",
+              "arguments": [
+                {
+                  "name": "localizedDisplayText",
+                  "value": {
+                    "entityReference": {
+                      "entityShape": "localizedTable",
+                      "constantValues": [
+                        [
+                          "en",
+                          "Description of the Address attribute as trait"
+                        ]
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
         },
         {
           "name": "City",
@@ -120,6 +169,34 @@
           "name": "2016"
         }
       ]
+    },
+    {
+      "$type": "LocalEntity",
+      "name": "Companies",
+      "description": "Description of the Companies entity",
+      "attributes": [
+        {
+          "name": "CompanyId",
+          "dataType": "string"
+        },
+        {
+          "name": "CompanyName",
+          "dataType": "string"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "$type": "SingleKeyRelationship",
+      "fromAttribute": {
+        "entityName": "Customers",
+        "attributeName": "FkCompanyId"
+      },
+      "toAttribute": {
+        "entityName": "Companies",
+        "attributeName": "CompanyId"
+      }
     }
   ],
   "referenceModels": [

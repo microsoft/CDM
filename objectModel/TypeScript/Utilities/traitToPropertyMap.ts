@@ -34,11 +34,28 @@ const traitToListOfProperties: Map<string, string[]> =
         ['is.constrained', ['maximumValue', 'minimumValue', 'maximumLength']]
     ]);
 
+const dataFormatTraitNames: string[] = [
+    'is.dataFormat.integer',
+    'is.dataFormat.small',
+    'is.dataFormat.big',
+    'is.dataFormat.floatingPoint',
+    'is.dataFormat.guid',
+    'is.dataFormat.character',
+    'is.dataFormat.array',
+    'is.dataFormat.byte',
+    'is.dataFormat.time',
+    'is.dataFormat.date',
+    'is.dataFormat.timeOffset',
+    'is.dataFormat.boolean',
+    'is.dataFormat.numeric.shaped',
+    'means.content.text.JSON'
+];
+
 /**
  * @internal
  * attribute and entity traits that are represented as properties
- * this entire class is gross. it is a different abstraction level than all of the rest of this om. 
- * however, it does make it easier to work with the consumption object model so ... i will hold my nose. 
+ * this entire class is gross. it is a different abstraction level than all of the rest of this om.
+ * however, it does make it easier to work with the consumption object model so ... i will hold my nose.
  */
 export class traitToPropertyMap {
     private host: CdmObject;
@@ -141,7 +158,7 @@ export class traitToPropertyMap {
                 return parseInt(this.fetchTraitReferenceArgumentValue(this.fetchTraitReference('is.CDS.ordered', fromProperty), 'ordinal') as string, 10);
             case 'isPrimaryKey':
                 if (this.host instanceof CdmTypeAttributeDefinition) {
-                    const typeAttribute: CdmTypeAttributeDefinition = this.host as CdmTypeAttributeDefinition;
+                    const typeAttribute: CdmTypeAttributeDefinition = this.host;
                     if (!fromProperty && typeAttribute.purpose && typeAttribute.purpose.namedReference === 'identifiedBy') {
                         return true;
                     }
@@ -213,8 +230,10 @@ export class traitToPropertyMap {
      * @internal
      */
     public dataFormatToTraits(dataFormat: cdmDataFormat): void {
-        // if this is going to be called many times, then need to remove any dataformat traits that are left behind.
-        // but ... probably not. in fact, this is probably never used because data formats come from data type which is not an attribute
+        // reset the current dataFormat
+        for (const traitName of dataFormatTraitNames) {
+            this.removeTrait(traitName);
+        }
         switch (dataFormat) {
             case cdmDataFormat.int16:
                 this.fetchOrCreateTrait('is.dataFormat.integer', true);
@@ -222,7 +241,6 @@ export class traitToPropertyMap {
                 break;
             case cdmDataFormat.int32:
                 this.fetchOrCreateTrait('is.dataFormat.integer', true);
-                this.fetchOrCreateTrait('is.dataFormat.small', true);
                 break;
             case cdmDataFormat.int64:
                 this.fetchOrCreateTrait('is.dataFormat.integer', true);
@@ -237,15 +255,22 @@ export class traitToPropertyMap {
                 break;
             case cdmDataFormat.guid:
                 this.fetchOrCreateTrait('is.dataFormat.guid', true);
-            case cdmDataFormat.string:
+                this.fetchOrCreateTrait('is.dataFormat.character', true);
                 this.fetchOrCreateTrait('is.dataFormat.array', true);
+                break;
+            case cdmDataFormat.string:
+                this.fetchOrCreateTrait('is.dataFormat.character', true);
+                this.fetchOrCreateTrait('is.dataFormat.array', true);
+                break;
             case cdmDataFormat.char:
                 this.fetchOrCreateTrait('is.dataFormat.character', true);
                 this.fetchOrCreateTrait('is.dataFormat.big', true);
                 break;
             case cdmDataFormat.byte:
                 this.fetchOrCreateTrait('is.dataFormat.byte', true);
+                break;
             case cdmDataFormat.binary:
+                this.fetchOrCreateTrait('is.dataFormat.byte', true);
                 this.fetchOrCreateTrait('is.dataFormat.array', true);
                 break;
             case cdmDataFormat.time:
@@ -272,6 +297,7 @@ export class traitToPropertyMap {
             case cdmDataFormat.json:
                 this.fetchOrCreateTrait('is.dataFormat.array', true);
                 this.fetchOrCreateTrait('means.content.text.JSON', true);
+                break;
             default:
         }
     }
@@ -391,11 +417,9 @@ export class traitToPropertyMap {
         }
         if (isInteger && isBig) {
             baseType = cdmDataFormat.int64;
-        }
-        if (isInteger && isSmall) {
+        } else if (isInteger && isSmall) {
             baseType = cdmDataFormat.int16;
-        }
-        if (isInteger) {
+        } else if (isInteger) {
             baseType = cdmDataFormat.int32;
         }
 
@@ -426,7 +450,7 @@ export class traitToPropertyMap {
      * @internal
      */
     public updateTraitArgument(traitName: string, argName: string, value: ArgumentValue): void {
-        let trait: CdmTraitReference = this.fetchOrCreateTrait(traitName, false);
+        const trait: CdmTraitReference = this.fetchOrCreateTrait(traitName, false);
 
         const args: CdmCollection<CdmArgumentDefinition> = trait.arguments;
         if (!args || !args.length) {
@@ -592,13 +616,13 @@ export class traitToPropertyMap {
                                     const row: any = {};
                                     const rawRow: string[] = rawValues[i];
                                     if (rawRow.length === 2 || (lookup && rawRow.length === 4) || (corr && rawRow.length === 5)) {
-                                        row.languageTag = rawRow[0];
-                                        row.displayText = rawRow[1];
+                                        row.languageTag = rawRow[0] !== undefined ? rawRow[0] : null;
+                                        row.displayText = rawRow[1] !== undefined ? rawRow[1] : null;
                                         if (lookup || corr) {
-                                            row.attributeValue = rawRow[2];
-                                            row.displayOrder = rawRow[3];
+                                            row.attributeValue = rawRow[2] !== undefined ? rawRow[2] : null;
+                                            row.displayOrder = rawRow[3] !== undefined ? rawRow[3] : null;
                                             if (corr) {
-                                                row.correlatedValue = rawRow[4];
+                                                row.correlatedValue = rawRow[4] !== undefined ? rawRow[4] : null;
                                             }
                                         }
                                     }

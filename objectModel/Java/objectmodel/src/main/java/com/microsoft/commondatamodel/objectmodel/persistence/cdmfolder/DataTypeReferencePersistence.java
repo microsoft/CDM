@@ -12,14 +12,12 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Dat
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.io.IOException;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DataTypeReferencePersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DataTypeReferencePersistence.class);
-
   public static CdmDataTypeReference fromData(final CdmCorpusContext ctx, final JsonNode obj) {
         if (obj == null) {
             return null;
@@ -27,7 +25,7 @@ public class DataTypeReferencePersistence {
 
         boolean simpleReference = true;
         Object dataType = null;
-    List<CdmTraitReference> appliedTraits = null;
+        List<CdmTraitReference> appliedTraits = null;
 
         if (obj.isValueNode())
            dataType = obj;
@@ -39,11 +37,16 @@ public class DataTypeReferencePersistence {
                 try {
                     dataType = DataTypePersistence.fromData(ctx, JMapper.MAP.treeToValue(obj.get("dataTypeReference"), DataType.class));
                 } catch (final IOException ex) {
-                  LOGGER.error("There was an error while trying to convert from JSON to DataTypeRef. Reason: '{}'", ex.getLocalizedMessage());
+                    Logger.error(
+                        DataTypeReferencePersistence.class.getSimpleName(),
+                        ctx,
+                        Logger.format("There was an error while trying to convert from JSON to DataTypeRef. Reason: '{0}'", ex.getLocalizedMessage()),
+                        "fromData"
+                    );
                 }
         }
 
-    final CdmDataTypeReference dataTypeReference = ctx.getCorpus().makeRef(CdmObjectType.DataTypeRef, dataType, simpleReference);
+        final CdmDataTypeReference dataTypeReference = ctx.getCorpus().makeRef(CdmObjectType.DataTypeRef, dataType, simpleReference);
 
         if (!obj.isValueNode())
             appliedTraits = Utils.createTraitReferenceList(ctx, obj.get("appliedTraits"));

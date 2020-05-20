@@ -18,7 +18,7 @@ import {
     DataType,
     DataTypeReference,
     Entity,
-    EntityReference,
+    EntityReferenceDefinition,
     Purpose,
     PurposeReference,
     Trait,
@@ -61,20 +61,26 @@ export class cdmObjectRefPersistence {
         switch (instance.objectType) {
             case cdmObjectType.attributeGroupRef:
                 (copy as AttributeGroupReference).attributeGroupReference = refTo as string | AttributeGroup;
-                break;
+
+                return copy;
             case cdmObjectType.dataTypeRef:
                 (copy as DataTypeReference).dataTypeReference = refTo as string | DataType;
-                break;
+
+                return copy;
             case cdmObjectType.entityRef:
-                (copy as EntityReference).entityReference = refTo as string | Entity;
-                break;
+                (copy as EntityReferenceDefinition).entityReference = refTo as string | Entity;
+
+                return copy;
             case cdmObjectType.purposeRef:
                 (copy as PurposeReference).purposeReference = refTo as string | Purpose;
-                break;
+
+                return copy;
             case cdmObjectType.traitRef:
                 const traitRef: TraitReference = copy as TraitReference;
                 traitRef.traitReference = refTo as string | Trait;
                 traitRef.arguments = copyDataUtils.arrayCopyData<Argument>(resOpt, (instance as CdmTraitReference).arguments, options);
+
+                return traitRef;
             default:
                 return undefined;
         }

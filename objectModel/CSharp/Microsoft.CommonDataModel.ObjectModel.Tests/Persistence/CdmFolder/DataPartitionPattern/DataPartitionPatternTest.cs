@@ -4,8 +4,6 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 {
     using System.IO;
-    using System.Threading.Tasks;
-
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
@@ -46,31 +44,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.AreEqual(pattern.Parameters[1], "testParam2");
             Assert.AreEqual(pattern.SpecializedSchema, "test special schema");
             Assert.AreEqual(pattern.ExhibitsTraits.Count, 1);
-        }
-
-        /// <summary>
-        /// Testing that error is handled when partition pattern contains a folder that does not exist
-        /// </summary>
-        [TestMethod]
-        public async Task TestPatternWithNonExistingFolder()
-        {
-            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestPatternWithNonExistingFolder");
-            var content = TestHelper.GetInputFileContent(testsSubpath, "TestPatternWithNonExistingFolder", "entities.manifest.cdm.json");
-            var cdmManifest = ManifestPersistence.FromObject(new ResolveContext(corpus, null), "entities", "local", "/", JsonConvert.DeserializeObject<ManifestContent>(content));
-            int errorLogged = 0;
-            corpus.SetEventCallback(new EventCallback { Invoke = (CdmStatusLevel statusLevel, string message) =>
-            {
-                if (message.Contains("The folder location 'local:/testLocation' described by a partition pattern does not exist"))
-                {
-                    errorLogged++;
-                }
-            }
-            }, CdmStatusLevel.Warning);
-            await cdmManifest.FileStatusCheckAsync();
-            Assert.AreEqual(1, errorLogged);
-            Assert.AreEqual(cdmManifest.Entities[0].DataPartitions.Count, 0);
-            // make sure the last check time is still being set
-            Assert.IsNotNull(cdmManifest.Entities[0].DataPartitionPatterns[0].LastFileStatusCheckTime);
         }
     }
 }

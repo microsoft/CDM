@@ -10,6 +10,7 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
     Logger,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -32,7 +33,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             this.objectType = cdmObjectType.constantEntityDef;
-            this.constantEntityName = constantEntityName
+            this.constantEntityName = constantEntityName;
         }
         // return p.measure(bodyCode);
     }
@@ -51,7 +52,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
                 copy.ctx = this.ctx;
                 copy.constantEntityName = this.constantEntityName;
             }
-            
+
             copy.entityShape = <CdmEntityReference>this.entityShape.copy(resOpt);
             copy.constantValues = this.constantValues; // is a deep copy needed?
             this.copyDef(resOpt, copy);
@@ -69,8 +70,17 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
                 const entityName: string = (pathSplit.length > 0) ? pathSplit[0] : ``;
                 Logger.warning(this.constantEntityName, this.ctx, `constant entity '${entityName}' defined without a constant value.'`);
             }
+            if (this.entityShape === undefined) {
+                Logger.error(
+                    CdmConstantEntityDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['entityShape']),
+                    this.validate.name);
 
-            return this.entityShape ? true : false;
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

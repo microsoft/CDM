@@ -23,7 +23,8 @@ class DataPartitionPersistence:
                         local_extension_trait_def_list: List['CdmTraitDefinition'], document_folder: 'CdmFolderDefinition') \
             -> Optional['CdmDataPartitionDefinition']:
         data_partition = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, data.name if data.get('name') else None)
-        data_partition.description = data.get('description')
+        if data.get('description') and not data.get('description').isspace():
+            data_partition.description = data.get('description')
         data_partition.location = ctx.corpus.storage.create_relative_corpus_path(ctx.corpus.storage.adapter_path_to_corpus_path(data.location), document_folder)
 
         if not data_partition.location:
@@ -78,7 +79,7 @@ class DataPartitionPersistence:
 
         # filter description since it is mapped to a property
         exhibits_traits = filter(lambda t: t.named_reference != 'is.localized.describedAs', instance.exhibits_traits)
-        await utils.process_annotations_to_data(instance.ctx, result, exhibits_traits)
+        await utils.process_traits_and_annotations_to_data(instance.ctx, result, exhibits_traits)
 
         t2pm = TraitToPropertyMap(instance)
 

@@ -4,7 +4,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object import CdmObject
 from .cdm_object_simple import CdmObjectSimple
@@ -36,6 +36,8 @@ class CdmParameterDefinition(CdmObjectSimple):
         # Internal
 
         self._declared_path = None  # type: Optional[str]
+
+        self._TAG = CdmParameterDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -69,7 +71,10 @@ class CdmParameterDefinition(CdmObjectSimple):
         return copy
 
     def validate(self) -> bool:
-        return bool(self.name)
+        if not bool(self.name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

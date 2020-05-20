@@ -18,15 +18,13 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Par
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class LocalEntityDeclarationPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(LocalEntityDeclarationPersistence.class);
-
   public static CompletableFuture<CdmEntityDeclarationDefinition> fromData(
       final CdmCorpusContext ctx,
       final CdmFolderDefinition documentFolder,
@@ -40,7 +38,7 @@ public class LocalEntityDeclarationPersistence {
     return DocumentPersistence.fromData(ctx, obj, extensionTraitDefList, localExtensionTraitDefList)
         .thenCompose(entityDoc -> {
           if (entityDoc == null) {
-            LOGGER.error("There was an error while trying to fetch the entity doc from local entity declaration persistence.");
+            Logger.error(LocalEntityDeclarationPersistence.class.getSimpleName(), ctx, "There was an error while trying to fetch the entity doc from local entity declaration persistence.");
             return CompletableFuture.completedFuture(null);
           }
 
@@ -89,8 +87,7 @@ public class LocalEntityDeclarationPersistence {
               if (cdmPartition != null) {
                 localEntity.getDataPartitions().add(cdmPartition);
               } else {
-                LOGGER.error("There was an error while trying to fetch the entity doc from local entity declaration persistence.");
-
+                Logger.error(LocalEntityDeclarationPersistence.class.getSimpleName(), ctx, "There was an error while trying to fetch the entity doc from local entity declaration persistence.");
                 return CompletableFuture.completedFuture(null);
               }
             }
@@ -115,7 +112,9 @@ public class LocalEntityDeclarationPersistence {
             final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
             final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
 
-            localEntity.setDescription(instance.getExplanation());
+            if (localEntity.getDescription() == null) {
+                localEntity.setDescription(instance.getExplanation());
+            }
             localEntity.setLastChildFileModifiedTime(instance.getLastChildFileModifiedTime());
             localEntity.setLastFileModifiedTime(instance.getLastFileModifiedTime());
             localEntity.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());
@@ -142,7 +141,7 @@ public class LocalEntityDeclarationPersistence {
                 if (partition != null) {
                   localEntity.getPartitions().add(partition);
                 } else {
-                  LOGGER.error("There was an error while trying to convert cdm data partition to model.json partition.");
+                  Logger.error(LocalEntityDeclarationPersistence.class.getSimpleName(), instance.getCtx(), "There was an error while trying to convert cdm data partition to model.json partition.");
                   return CompletableFuture.completedFuture(null);
                 }
               }

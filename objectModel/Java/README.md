@@ -1,5 +1,10 @@
 # Build
-The build requires presence of schema docs folder placed on the same level as this folder. This will ensure build script can access foundation files which need to be bundled with the library. Please refer to objectmodel/pom.xml file, resources section, for exact name of the folder.
+The build requires presence of schema docs folder, which will ensure build script can access foundation files for bundling them in the library. Please refer to objectmodel/pom.xml file, resources section, for exact location of the folder.
+
+To build CDM library packages with all 3rd-party dependencies bundled, use following command:
+```
+mvn clean package -P build-with-dependencies 
+```
 
 Some objectmodel project tests that require ADLS credentials are skipped by default. You can run these tests with the following commands:
 ```

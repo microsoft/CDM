@@ -5,10 +5,11 @@ from typing import Optional, TYPE_CHECKING
 import json
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger
 
 from .cdm_object import CdmObject
 from .cdm_object_simple import CdmObjectSimple
+from cdm.utilities.errors import Errors
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentValue, CdmCorpusContext, CdmParameterDefinition
@@ -33,6 +34,8 @@ class CdmArgumentDefinition(CdmObjectSimple):
         self._resolved_parameter = None
         self._declared_path = None  # Optional[str]
         self._unresolved_value = None  # type: Optional[CdmArgumentValue]
+
+        self._TAG = CdmArgumentDefinition.__name__
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -68,7 +71,10 @@ class CdmArgumentDefinition(CdmObjectSimple):
         self.value = value
 
     def validate(self) -> bool:
-        return self.value is not None
+        if self.value is None:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['value']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

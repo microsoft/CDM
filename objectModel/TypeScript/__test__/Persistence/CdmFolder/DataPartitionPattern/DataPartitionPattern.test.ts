@@ -11,7 +11,6 @@ import {
 } from '../../../../internal';
 import { CdmFolder } from '../../../../Persistence';
 import { testHelper } from '../../../testHelper';
-import { cdmStatusLevel } from '../../../../Cdm/cdmStatusLevel';
 
 describe('Persistence.CdmFolder.DataPartitionPattern', () => {
     /// <summary>
@@ -57,35 +56,5 @@ describe('Persistence.CdmFolder.DataPartitionPattern', () => {
             .toBe('test special schema');
         expect(pattern.exhibitsTraits.length)
             .toBe(1);
-    });
-
-    /**
-     * Testing that error is handled when partition pattern contains a folder that does not exist
-     */
-    it('TestPatternWithNonExistingFolder', async(done) => {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath);
-        const content: string = testHelper.getInputFileContent(testsSubpath, 'TestPatternWithNonExistingFolder', 'entities.manifest.cdm.json');
-        const cdmManifest: CdmManifestDefinition = CdmFolder.ManifestPersistence.fromObject(
-            new resolveContext(corpus, undefined),
-            'entities',
-            'local',
-            '/',
-            JSON.parse(content));
-        let errorLogged: number = 0;
-        corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            if (message.indexOf('The folder location \'local:/testLocation\' described by a partition pattern does not exist') !== -1) {
-                errorLogged++;
-            }
-        }, cdmStatusLevel.warning);
-        await cdmManifest.fileStatusCheckAsync();
-        expect(errorLogged)
-            .toBe(1);
-        expect(cdmManifest.entities.allItems[0].dataPartitions.length)
-            .toBe(0);
-        // make sure the last check time is still being set
-        expect(cdmManifest.entities.allItems[0].dataPartitionPatterns.allItems[0].lastFileStatusCheckTime)
-            .not
-            .toBeUndefined();
-        done();
     });
 });

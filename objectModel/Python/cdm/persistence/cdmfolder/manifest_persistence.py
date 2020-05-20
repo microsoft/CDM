@@ -142,7 +142,7 @@ class ManifestPersistence:
         manifest.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
         manifest.entities = copy_data_utils._array_copy_data(res_opt, instance.entities, options)
         manifest.subManifests = copy_data_utils._array_copy_data(res_opt, instance.sub_manifests, options)
-        manifest.imports = [ImportPersistence.to_data(importDoc, res_opt, options) for importDoc in instance.imports]
-        manifest.relationships = [E2ERelationshipPersistence.to_data(relationship, res_opt, options) for relationship in instance.relationships]
+        manifest.imports = copy_data_utils._array_copy_data(res_opt, instance.imports, options)
+        manifest.relationships = copy_data_utils._array_copy_data(res_opt, instance.relationships, options)
 
         return manifest

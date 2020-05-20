@@ -303,7 +303,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.Name);
+            if (string.IsNullOrWhiteSpace(this.Name))
+            {
+                Logger.Error(nameof(CdmDocumentDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Name" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />
@@ -386,6 +391,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (this.NeedsIndexing)
             {
+                if (this.Folder == null)
+                {
+                    Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Document '{this.Name}' is not in a folder", nameof(IndexIfNeeded));
+                    return false;
+                }
                 // make the corpus internal machinery pay attention to this document for this call
                 CdmCorpusDefinition corpus = (this.Folder as CdmFolderDefinition).Corpus;
 

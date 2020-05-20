@@ -40,7 +40,7 @@ namespace create_manifest
             // Configure storage adapters to point at the target local manifest location and at the fake public standards
             string pathFromExeToExampleRoot = "../../../../../../";
 
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest"));
+            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest/sample-data"));
             cdmCorpus.Storage.DefaultNamespace = "local"; // local is our default. so any paths that start out navigating without a device tag will assume local
 
             // Fake cdm, normaly use the github adapter

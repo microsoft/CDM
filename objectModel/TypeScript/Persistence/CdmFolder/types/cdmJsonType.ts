@@ -16,7 +16,7 @@ import {
     Entity,
     EntityAttribute,
     EntityDeclarationDefinition,
-    EntityReference,
+    EntityReferenceDefinition,
     Folder,
     Import,
     ManifestDeclaration,
@@ -44,7 +44,7 @@ export type CdmJsonType = (
     DocumentContent |
     Entity |
     EntityAttribute |
-    EntityReference |
+    EntityReferenceDefinition |
     ManifestDeclaration |
     Folder |
     ManifestDeclaration |

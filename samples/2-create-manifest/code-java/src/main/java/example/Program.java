@@ -36,7 +36,7 @@ public class Program {
     String pathFromExeToExampleRoot = "../../";
 
     // Register it as the 'local' device.
-    StorageAdapter localAdapter = new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest");
+    StorageAdapter localAdapter = new LocalAdapter(pathFromExeToExampleRoot + "2-create-manifest/sample-data");
     cdmCorpus.getStorage().mount("local", localAdapter);
     // Local is our default. So any paths that start out navigating without a device tag will assume local.
     cdmCorpus.getStorage().setDefaultNamespace("local");

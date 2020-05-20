@@ -12,4 +12,4 @@ class FileFormatSettings(JObject):
     def __init__(self):
         super().__init__()
 
-        self.type = ''  # type: str
+        self.type = None  # type: str

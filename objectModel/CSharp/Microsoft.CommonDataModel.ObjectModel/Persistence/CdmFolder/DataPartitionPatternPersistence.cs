@@ -18,6 +18,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         {
             var newPattern = ctx.Corpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, (string)obj["name"]);
             newPattern.RootLocation = (string)obj["rootLocation"];
+
+            if (obj["globPattern"] != null)
+            {
+                newPattern.GlobPattern = (string)obj["globPattern"];
+            }
+
             if (obj["regularExpression"] != null)
             {
                 newPattern.RegularExpression = (string)obj["regularExpression"];
@@ -65,6 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 LastFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastFileModifiedTime),
                 Explanation = instance.Explanation,
                 RootLocation = instance.RootLocation,
+                GlobPattern = instance.GlobPattern,
                 RegularExpression = instance.RegularExpression.ToString(),
                 Parameters = instance.Parameters,
                 SpecializedSchema = instance.SpecializedSchema,

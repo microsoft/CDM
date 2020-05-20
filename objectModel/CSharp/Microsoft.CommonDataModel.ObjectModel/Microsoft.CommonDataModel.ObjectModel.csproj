@@ -2,21 +2,35 @@
 
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0;net45;net462</TargetFrameworks>
-    <Version>1.0.0</Version>
-    <Authors>Microsoft</Authors>
+    <version>1.0.5</version>
     <Description>The CSharp implementation of the Microsoft Common Data Model Object Model.</Description>
-    <Copyright>Copyright Microsoft 2020</Copyright>
+
+    <Authors>Microsoft Corporation</Authors>
+    <Copyright>Copyright (c) Microsoft Corporation. All rights reserved.</Copyright>
     <Platforms>AnyCPU;x64</Platforms>
-    <RepositoryUrl>https://commondatamodel.visualstudio.com/CDM/_git/CDM.ObjectModel.CSharp</RepositoryUrl>
+    <RepositoryUrl>https://commondatamodel.visualstudio.com/CDM/_git/CDM.ObjectModel</RepositoryUrl>
     <PackageProjectUrl>https://commondatamodel.visualstudio.com/CDM</PackageProjectUrl>
+
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
-    <PackageReference Include="Microsoft.Net.Http" Version="2.2.29" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="NLog" Version="4.6.7" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net462' ">
+    <PackageReference Include="Microsoft.CSharp" Version="4.6.2" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="Microsoft.CSharp" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' != 'netstandard2.0'">
+    <PackageReference Include="Microsoft.Net.Http" Version="2.2.29" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,8 +46,8 @@
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.7.cdm.json" />
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.8.cdm.json" />
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.8.1.cdm.json" />
-    <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.9.0.cdm.json" />
-    <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.9.1.cdm.json" />
+    <EmbeddedResource Remove="..\..\..\schemaDocuments\*.0.9.cdm.json" />
+    <EmbeddedResource Remove="..\..\..\schemaDocuments\*.1.0.cdm.json" />
     <EmbeddedResource Remove="..\..\..\schemaDocuments\*.manifest.cdm.json" />
 
   </ItemGroup>

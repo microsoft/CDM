@@ -204,6 +204,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             VerifyRelationships(manifest, expectedRels);
         }
 
+        /// <summary>
+        /// Test relationships are generated correctly when the document name and entity name do not match
+        /// </summary>
+        [TestMethod]
+        public async Task TestRelationshipsEntityAndDocumentNameDifferent()
+        {
+            var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestRelationshipsEntityAndDocumentNameDifferent", "expectedRels.json")).ToObject<List<E2ERelationship>>();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipsEntityAndDocumentNameDifferent");
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
+
+            await corpus.CalculateEntityGraphAsync(manifest);
+            await manifest.PopulateManifestRelationshipsAsync();
+
+            // check that each relationship has been created correctly
+            VerifyRelationships(manifest, expectedRels);
+        }
+
         private static void VerifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships)
         {
             Assert.AreEqual(manifest.Relationships.Count, expectedRelationships.Count);

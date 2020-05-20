@@ -14,10 +14,15 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CdmException;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class CdmTraitDefinition extends CdmObjectDefinitionBase {
@@ -306,7 +311,11 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.traitName);
+    if (StringUtils.isNullOrTrimEmpty(this.traitName)) {
+      Logger.error(CdmTraitDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("traitName"))));
+      return false;
+    }
+    return true;
   }
 
   /**

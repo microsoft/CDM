@@ -3,6 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -12,9 +15,11 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
 
@@ -129,7 +134,11 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.attributeGroupName);
+    if (StringUtils.isNullOrTrimEmpty(this.attributeGroupName)) {
+      Logger.error(CdmAttributeGroupDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("attributeGroupName"))));
+      return false;
+    }
+    return true;
   }
 
   /**

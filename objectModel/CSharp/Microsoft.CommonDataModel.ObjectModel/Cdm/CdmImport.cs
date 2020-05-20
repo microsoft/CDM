@@ -6,7 +6,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
 
     public class CdmImport : CdmObjectSimple
     {
@@ -79,7 +81,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.CorpusPath);
+            if (string.IsNullOrWhiteSpace(this.CorpusPath))
+            {
+                Logger.Error(nameof(CdmImport), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "CorpusPath" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         [Obsolete("InstanceFromData is deprecated. Please use the Persistence Layer instead.")]

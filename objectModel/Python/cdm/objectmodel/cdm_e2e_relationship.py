@@ -4,7 +4,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -22,6 +22,8 @@ class CdmE2ERelationship(CdmObjectDefinition):
         self.from_entity_attribute = None  # type: Optional[str]
         self.to_entity = None  # type: Optional[str]
         self.to_entity_attribute = None  # type: Optional[str]
+
+        self._TAG = CdmE2ERelationship.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -53,7 +55,20 @@ class CdmE2ERelationship(CdmObjectDefinition):
         return False
 
     def validate(self) -> bool:
-        return bool(self.from_entity and self.from_entity_attribute and self.to_entity and self.to_entity_attribute)
+        missing_fields = []
+        if not bool(self.from_entity):
+            missing_fields.append('from_entity')
+        if not bool(self.from_entity_attribute):
+            missing_fields.append('from_entity_attribute')
+        if not bool(self.to_entity):
+            missing_fields.append('to_entity')
+        if not bool(self.to_entity_attribute):
+            missing_fields.append('to_entity_attribute')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

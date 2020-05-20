@@ -6,7 +6,7 @@ import os
 import sys
 from typing import cast
 
-sys.path.append('../../objectModel/Python')
+sys.path.append('../../../objectModel/Python')
 
 from cdm.enums import CdmObjectType, CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition, CdmLocalEntityDeclarationDefinition, CdmEntityDefinition, CdmManifestDefinition
@@ -22,10 +22,10 @@ async def main():
     cdm_corpus.ctx.report_at_level = CdmStatusLevel.ERROR
 
     print('Configure storage adapters')
-    cdm_corpus.storage.mount('local', LocalAdapter(root=os.path.join(ROOT_PATH, '..')))
+    cdm_corpus.storage.mount('local', LocalAdapter(root=os.path.join(ROOT_PATH, '../sample-data')))
 
     # Local is our default. So any paths that start out navigating without a device tag will assume local.
-    cdm_corpus.default_namespace = 'local'
+    cdm_corpus.storage.default_namespace = 'local'
 
     # Fake cdm, normally use the github adapter.
     cdm_corpus.storage.mount('cdm', LocalAdapter(root=os.path.join(ROOT_PATH, '../../example-public-standards')))

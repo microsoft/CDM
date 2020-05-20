@@ -8,11 +8,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System;
-    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Net.Http;
     using System.Threading.Tasks;
 
+    [Obsolete("Please use the CdmStandardsAdapter instead.")]
     public class GithubAdapter : NetworkAdapter, StorageAdapter
     {
         private static string ghHost = "raw.githubusercontent.com";

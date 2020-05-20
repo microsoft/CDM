@@ -11,17 +11,15 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Sin
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The relationship persistence.
  */
 public class RelationshipPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(RelationshipPersistence.class);
-
   public static CompletableFuture<CdmE2ERelationship> fromData(
       final CdmCorpusContext ctx,
       final SingleKeyRelationship obj,
@@ -35,15 +33,19 @@ public class RelationshipPersistence {
     }*/
 
     if (!entityPathByName.containsKey(obj.getFromAttribute().getEntityName())) {
-      LOGGER.warn(
-          "Relationship's source entity '{}' is not defined.",
-          obj.getFromAttribute().getEntityName());
+      Logger.warning(
+          RelationshipPersistence.class.getSimpleName(),
+          ctx,
+          Logger.format("Relationship's source entity '{0}' is not defined.", obj.getFromAttribute().getEntityName())
+      );
       return CompletableFuture.completedFuture(null);
     }
     if (!entityPathByName.containsKey(obj.getToAttribute().getEntityName())) {
-      LOGGER.warn(
-          "Relationship's source entity '{}' is not defined.",
-          obj.getToAttribute().getEntityName());
+      Logger.warning(
+          RelationshipPersistence.class.getSimpleName(),
+          ctx,
+          Logger.format("Relationship's source entity '{0}' is not defined.", obj.getToAttribute().getEntityName())
+      );
       return CompletableFuture.completedFuture(null);
     }
 
@@ -82,7 +84,7 @@ public class RelationshipPersistence {
     result.setFromAttribute(fromAttribute);
     result.setToAttribute(toAttribute);
 
-    return Utils.processAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits())
+    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits())
         .thenApply(v -> result);
   }
 

@@ -64,7 +64,7 @@ class JObject(OrderedDict):
             value = self[original_key]
 
             # Remove ignored and null-value attributes
-            if (self.__json_ignored is not None and original_key in self.__json_ignored) or value is None or value == '' or original_key.startswith('_'):
+            if (self.__json_ignored is not None and original_key in self.__json_ignored) or value is None or original_key.startswith('_'):
                 continue
 
             # Rename attributes
@@ -81,9 +81,6 @@ class JObject(OrderedDict):
                 value.json_sort(self.__json_sorted)
                 state[renamed_key] = value.__getstate__()
             elif isinstance(value, list):
-                if not value:
-                    # don't save empty lists
-                    continue
                 new_list = []
                 for item in value:
                     if isinstance(item, JObject):

@@ -14,6 +14,8 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ent
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,7 +56,10 @@ public class EntityPersistence {
         Utils.createAttributeList(ctx, obj.get("hasAttributes"), entity.getEntityName()));
     entity.setSourceName(obj.has("sourceName") ? obj.get("sourceName").asText() : null);
     entity.setDisplayName(obj.has("displayName") ? obj.get("displayName").asText() : null);
-    entity.setDescription(obj.has("description") ? obj.get("description").asText() : null);
+    if (obj.has("description")) {
+        String descriptionText = obj.get("description").asText();
+        entity.setDescription(!StringUtils.isNullOrTrimEmpty(descriptionText) ? descriptionText: null);
+    }
     entity.setVersion(obj.has("version") ? obj.get("version").asText() : null);
     entity.setCdmSchemas(obj.has("cdmSchemas")
         ? null

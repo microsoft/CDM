@@ -5,7 +5,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
 
     public class CdmArgumentDefinition : CdmObjectSimple
     {
@@ -80,7 +82,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     // Value is a string or JValue
                     copy.Value = (string)this.Value;
-                }    
+                }
             }
             copy.ResolvedParameter = this.ResolvedParameter;
             copy.Explanation = this.Explanation;
@@ -90,7 +92,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return this.Value != null ? true : false;
+            if (this.Value == null)
+            {
+                Logger.Error(nameof(CdmArgumentDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Value" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         internal CdmParameterDefinition GetParameterDef()
@@ -134,7 +141,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string tag = "";
             dynamic val = this.Value;
             if (val != null)
-            { 
+            {
                 if (this.Value is CdmObject)
                 {
                     tag = (string)val.Id;

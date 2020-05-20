@@ -6,7 +6,9 @@ using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
 {
@@ -69,6 +71,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities
             Assert.AreEqual("Fax", property["displayText"]);
             Assert.IsNull(property["attributeValue"]);
             Assert.IsNull(property["displayOrder"]);
+        }
+
+        /// <summary>
+        /// Test setting and getting of data format
+        /// </summary>
+        [TestMethod]
+        public void TestDataFormat()
+        {
+            var corpus = new CdmCorpusDefinition();
+            var att = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "att");
+
+            var arr = Enum.GetValues(typeof(CdmDataFormat)).Cast<CdmDataFormat>();
+            foreach (var format in arr)
+            {
+                att.DataFormat = format;
+                Assert.AreEqual(att.DataFormat, format);
+            }
         }
     }
 }

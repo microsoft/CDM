@@ -28,6 +28,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public string RootLocation { get; set; }
 
         /// <summary>
+        /// Gets or sets the glob pattern string to use for searching partitions.
+        /// </summary>
+        public string GlobPattern { get; set; }
+
+        /// <summary>
         /// Gets or sets the regular expression string to use for searching partitions.
         /// </summary>
         public string RegularExpression { get; set; }

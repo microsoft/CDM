@@ -11,7 +11,7 @@ import {
 } from '../../internal';
 import {
     ConstantEntity,
-    EntityReference
+    EntityReferenceDefinition
 } from './types';
 
 export class ConstantEntityPersistence {
@@ -33,7 +33,7 @@ export class ConstantEntityPersistence {
         return {
             explanation: instance.explanation,
             constantEntityName: instance.constantEntityName,
-            entityShape: instance.entityShape ? instance.entityShape.copyData(resOpt, options) as (string | EntityReference) : undefined,
+            entityShape: instance.entityShape ? instance.entityShape.copyData(resOpt, options) as (string | EntityReferenceDefinition) : undefined,
             constantValues: instance.constantValues
         };
     }

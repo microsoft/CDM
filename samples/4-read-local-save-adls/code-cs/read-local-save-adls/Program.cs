@@ -27,7 +27,7 @@ namespace read_local_save_adls
 
     class Program
     {
-        const string modelJsonRoot = @"../../../../../";
+        const string modelJsonRoot = @"../../../../../sample-data/";
 
         static async Task Main(string[] args)
         {

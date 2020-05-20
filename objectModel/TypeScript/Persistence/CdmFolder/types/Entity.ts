@@ -6,7 +6,7 @@ import {
     AttributeGroupReference,
     AttributeResolutionGuidance,
     EntityAttribute,
-    EntityReference,
+    EntityReferenceDefinition,
     TraitReference,
     TypeAttribute
 } from '.';
@@ -14,7 +14,7 @@ import {
 export abstract class Entity {
     public explanation?: string;
     public entityName: string;
-    public extendsEntity?: string | EntityReference;
+    public extendsEntity?: string | EntityReferenceDefinition;
     public extendsEntityResolutionGuidance: AttributeResolutionGuidance;
     public exhibitsTraits?: (string | TraitReference)[];
     public attributeContext?: AttributeContext;

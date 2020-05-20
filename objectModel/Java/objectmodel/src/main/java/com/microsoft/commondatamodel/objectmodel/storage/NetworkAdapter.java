@@ -99,7 +99,8 @@ public abstract class NetworkAdapter implements StorageAdapter {
    */
   CdmHttpRequest setUpCdmRequest(final String path, final Map<String, String> headers, final String method) {
     final CdmHttpRequest cdmHttpRequest = new CdmHttpRequest(path, numberOfRetries);
-    cdmHttpRequest.setHeaders(headers);
+    final Map<String, String> internalHeaders = headers != null ? headers : new LinkedHashMap<>();
+    cdmHttpRequest.setHeaders(internalHeaders);
     cdmHttpRequest.setTimeout(this.timeout);
     cdmHttpRequest.setMaximumTimeout(this.maximumTimeout);
     cdmHttpRequest.setNumberOfRetries(this.numberOfRetries);

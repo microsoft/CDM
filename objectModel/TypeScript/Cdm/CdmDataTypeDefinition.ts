@@ -8,6 +8,8 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
@@ -67,7 +69,17 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.dataTypeName ? true : false;
+            if (!this.dataTypeName) {
+                Logger.error(
+                    CdmDataTypeDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['dataTypeName']),
+                    this.validate.name);
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

@@ -39,7 +39,7 @@ class NetworkAdapter:
     def _set_up_cdm_request(self, path: str, headers: Dict, method: str) -> 'CdmHttpRequest':
         request = CdmHttpRequest(path)
 
-        request.headers = headers
+        request.headers = headers or {}
         request.method = method
         request.timeout = self.timeout
         request.maximum_timeout = self.maximum_timeout

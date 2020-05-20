@@ -14,7 +14,7 @@ import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeResolutionGuidance,
     EntityAttribute,
-    EntityReference,
+    EntityReferenceDefinition,
     PurposeReference,
     TraitReference
 } from './types';
@@ -39,8 +39,8 @@ export class EntityAttributePersistence {
         return entityAttribute;
     }
     public static toData(instance: CdmEntityAttributeDefinition, resOpt: resolveOptions, options: copyOptions): EntityAttribute {
-        let entity: (string | EntityReference);
-        entity = instance.entity ? instance.entity.copyData(resOpt, options) as (string | EntityReference) : undefined;
+        let entity: (string | EntityReferenceDefinition);
+        entity = instance.entity ? instance.entity.copyData(resOpt, options) as (string | EntityReferenceDefinition) : undefined;
 
         return {
             explanation: instance.explanation,

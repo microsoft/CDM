@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -30,7 +31,10 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
       final CdmObject owner,
       final CdmObjectType defaultType) {
     this.ctx = ctx;
-    this.allItems = new ArrayList<>();
+    // Use a synchronized list here to make this thread-safe, as we can occasionally run into a scenario where multiple
+    // threads add items to this list at the same time (before the list is able to resize), which causes an ArrayIndexOutOfBoundsException
+    // to be thrown.
+    this.allItems = Collections.synchronizedList(new ArrayList<>());
     this.defaultType = defaultType;
     this.owner = owner;
   }

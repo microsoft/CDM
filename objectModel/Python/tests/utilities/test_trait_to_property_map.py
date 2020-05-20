@@ -3,7 +3,7 @@
 
 import unittest
 
-from cdm.enums import CdmDataFormat
+from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmTypeAttributeDefinition
 from cdm.utilities import TraitToPropertyMap
 
@@ -51,3 +51,11 @@ class TraitToPropertyMapTests(unittest.TestCase):
         self.assertEqual('Fax', result[0].get('displayText'))
         self.assertIsNone(result[0].get('attributeValue'))
         self.assertIsNone(result[0].get('displayOrder'))
+
+    def test_data_format(self):
+        corpus = CdmCorpusDefinition()
+        att = corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, 'att')
+
+        for format in CdmDataFormat:
+            att.dataFormat = format
+            self.assertEqual(att.dataFormat, format)

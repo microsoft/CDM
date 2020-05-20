@@ -12,6 +12,7 @@ import {
 } from '../internal';
 import { Logger } from '../Utilities/Logging/Logger';
 import { ADLSAdapter } from './ADLSAdapter';
+import { CdmStandardsAdapter } from './CdmStandardsAdapter';
 import { RemoteAdapter } from './RemoteAdapter';
 import { ResourceAdapter } from './ResourceAdapter';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
@@ -46,6 +47,7 @@ export class StorageManager {
         this.namespaceFolders = new Map<string, CdmFolderDefinition>();
         this.systemDefinedNamespaces = new Set<string>();
         this.registeredAdapterTypes = new Map<string, any>([
+            ['cdm-standards', CdmStandardsAdapter.prototype],
             ['local', LocalAdapter.prototype],
             ['adls', ADLSAdapter.prototype],
             ['remote', RemoteAdapter.prototype],
@@ -54,7 +56,7 @@ export class StorageManager {
 
         // set up default adapters
         this.mount('local', new LocalAdapter(process.cwd()));
-        this.mount('cdm', new GithubAdapter());
+        this.mount('cdm', new CdmStandardsAdapter());
 
         this.systemDefinedNamespaces.add('local');
         this.systemDefinedNamespaces.add('cdm');

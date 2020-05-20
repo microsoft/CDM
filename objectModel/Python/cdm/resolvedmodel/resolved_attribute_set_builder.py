@@ -136,7 +136,7 @@ class ResolvedAttributeSetBuilder:
 
     def apply_traits(self, arc: 'AttributeResolutionContext') -> None:
         if self.ras and arc and arc.traits_to_apply:
-            self.take_reference(self.ras.apply_traits(arc.traits_to_apply, arc.res_guide, arc.actions_modify))
+            self.take_reference(self.ras.apply_traits(arc.traits_to_apply, arc.res_opt, arc.res_guide, arc.actions_modify))
 
     def generate_applier_attributes(self, arc: 'AttributeResolutionContext', apply_traits_to_new: bool) -> None:
         if not arc or not arc.applier_caps:
@@ -176,10 +176,10 @@ class ResolvedAttributeSetBuilder:
                     # make a quick look up of avoid names
                     avoid = set(selects_some_avoid_names)  # type: Set[str]
 
-                    for name in resolved_set:
+                    for resolved_attribute in resolved_set:
                         # only take the ones not in avoid the list given
-                        if name not in avoid:
-                            take_set.append(name)
+                        if resolved_attribute._resolved_name not in avoid:
+                            take_set.append(resolved_attribute)
 
                 # replace the guts of the resolvedAttributeSet with this
                 self.ras.alter_set_order_and_scope(take_set)

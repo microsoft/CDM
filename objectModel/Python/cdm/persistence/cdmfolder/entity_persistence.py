@@ -34,7 +34,7 @@ class EntityPersistence:
         if data.get('displayName'):
             entity.display_name = data.displayName
 
-        if data.get('description'):
+        if data.get('description') and not data.get('description').isspace():
             entity.description = data.description
 
         if data.get('version'):

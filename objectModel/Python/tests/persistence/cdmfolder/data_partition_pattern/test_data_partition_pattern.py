@@ -34,16 +34,4 @@ class DataPartitionPatternTest(unittest.TestCase):
         self.assertEqual(pattern.parameters[1], "testParam2")
         self.assertEqual(pattern.specialized_schema, "test special schema")
         self.assertEqual(len(pattern.exhibits_traits), 1)
-
-    @async_test
-    async def test_pattern_with_non_existing_folder(self):
-        corpus = TestHelper.get_local_corpus(self.test_subpath, "test_pattern_with_non_existing_folder")
-        content = TestHelper.get_input_file_content(self.test_subpath, "test_pattern_with_non_existing_folder", "entities.manifest.cdm.json")
-        manifest_content = ManifestContent()
-        manifest_content.decode(content)
-
-        cdmManifest = ManifestPersistence.from_object(CdmCorpusContext(corpus, None), "entities", "local", "/", manifest_content)
-        await cdmManifest.file_status_check_async()
-        self.assertEqual(len(cdmManifest.entities[0].data_partitions), 0)
-        # make sure the last check time is still being set
-        self.assertIsNotNone(cdmManifest.entities[0].data_partition_patterns[0].last_file_status_check_time)
+    

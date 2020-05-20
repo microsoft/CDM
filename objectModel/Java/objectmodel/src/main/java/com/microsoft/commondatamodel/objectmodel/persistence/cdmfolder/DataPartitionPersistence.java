@@ -64,10 +64,12 @@ public class DataPartitionPersistence {
     public static DataPartition toData(final CdmDataPartitionDefinition instance, final ResolveOptions resOpt, final CopyOptions options) {
         final List<KeyValuePair<String, String>> argumentsCopy = new ArrayList<>();
 
-        for (final Map.Entry<String, List<String>> argumentList : instance.getArguments().entrySet()) {
-            argumentList.getValue().forEach(
-                    argumentValue -> argumentsCopy.add(new KeyValuePair<>(argumentList.getKey(), argumentValue))
-            );
+        if (instance.getArguments() != null) {
+            for (final Map.Entry<String, List<String>> argumentList : instance.getArguments().entrySet()) {
+                argumentList.getValue().forEach(
+                        argumentValue -> argumentsCopy.add(new KeyValuePair<>(argumentList.getKey(), argumentValue))
+                );
+            }
         }
 
         final DataPartition result = new DataPartition();
@@ -77,7 +79,7 @@ public class DataPartitionPersistence {
         result.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());
         result.setLastFileModifiedTime(instance.getLastFileModifiedTime());
         result.setExhibitsTraits(exhibitsTraitsToData(instance.getExhibitsTraits(), resOpt, options));
-        result.setArguments(argumentsCopy);
+        result.setArguments(argumentsCopy.size() > 0 ? argumentsCopy : null);
         result.setSpecializedSchema(instance.getSpecializedSchema());
 
         return result;

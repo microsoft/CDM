@@ -13,14 +13,16 @@ import {
     CdmEntityReference,
     cdmObjectType,
     cdmStatusLevel,
+    CdmTraitCollection,
     CdmTypeAttributeDefinition,
     resolveContext
 } from '../../../../internal';
 import { PersistenceLayer } from '../../../../Persistence';
 import { EntityPersistence } from '../../../../Persistence/CdmFolder/EntityPersistence';
 import { TypeAttributePersistence } from '../../../../Persistence/CdmFolder/TypeAttributePersistence';
-import { Argument, Entity, TraitReference, TypeAttribute } from '../../../../Persistence/CdmFolder/types';
+import { Argument, ConstantEntity, Entity, EntityReferenceDefinition, TraitReference, TypeAttribute } from '../../../../Persistence/CdmFolder/types';
 import { LocalAdapter } from '../../../../Storage';
+import { EventCallback } from '../../../../Utilities/EventCallback';
 import { testHelper } from '../../../testHelper';
 
 // tslint:disable-next-line: max-func-body-length
@@ -111,8 +113,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
      * Testing that 'isPrimaryKey' property is set to true when 'purpose' = 'identifiedBy'.
      */
     it('TestReadingIsPrimaryKeyConstructedFromPurpose', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestReadingIsPrimaryKeyConstructedFromPurpose');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestReadingIsPrimaryKeyConstructedFromPurpose');
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership.cdm.json/TeamMembership');
         const attributeGroupRef: CdmAttributeGroupReference = entity.attributes.allItems[0] as CdmAttributeGroupReference;
@@ -131,8 +132,21 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
      * Testing fromData and toData correctly handles all properties
      */
     it('TestPropertyPersistence', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestPropertyPersistence');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestPropertyPersistence');
+        corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
+        let functionWasCalled: boolean = false;
+        let functionParameter1: cdmStatusLevel = cdmStatusLevel.info;
+        let functionParameter2: string;
+        const callback: EventCallback = jest.fn(
+            (statusLevel: cdmStatusLevel, message1: string) => {
+                functionWasCalled = true;
+                if (statusLevel === cdmStatusLevel.error) {
+                    functionParameter1 = statusLevel;
+                    functionParameter2 = message1;
+                }
+            });
+        corpus.setEventCallback(callback);
+
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/PropertyEntity.cdm.json/PropertyEntity');
 
         // test loading properties
@@ -213,6 +227,19 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         expect(invalidValuesAttribute.maximumLength)
             .toBeUndefined();
 
+        // test loading values with empty default value list that should log error
+        const emptyDefaultValueAttribute: CdmTypeAttributeDefinition = entity.attributes.allItems[4] as CdmTypeAttributeDefinition;
+        expect(functionWasCalled)
+            .toBeTruthy();
+        expect(functionParameter1)
+            .toEqual(cdmStatusLevel.error);
+        expect(functionParameter2)
+            .toContain('Default value missing languageTag or displayText.');
+        expect(emptyDefaultValueAttribute.defaultValue)
+            .toBeUndefined();
+        // set the default value to an empty list for testing that it should be removed from the generated json.
+        emptyDefaultValueAttribute.defaultValue = [];
+
         const entityData: Entity = EntityPersistence.toData(entity, undefined, undefined);
 
         // test toData for properties
@@ -292,6 +319,11 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBeUndefined();
         expect(invalidValuesAttributeData.maximumLength)
             .toBeUndefined();
+
+        // test toData with empty default value list that should be written as null
+        const emptyDefaultValueAttributeData: TypeAttribute = entityData.hasAttributes[4] as TypeAttribute;
+        expect(emptyDefaultValueAttributeData.defaultValue)
+            .toBeUndefined();
         done();
     });
 
@@ -334,7 +366,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
 
         const argument : Argument = (result.appliedTraits[0] as TraitReference).arguments[0] as Argument;
         const constantValues : string[][] =
-            (((argument.value as CdmEntityReference).explicitReference) as CdmConstantEntityDefinition).constantValues;
+            (((argument.value as EntityReferenceDefinition).entityReference) as ConstantEntity).constantValues;
         expect(constantValues[0][0])
             .toBe('en');
         expect(constantValues[0][1])
@@ -349,4 +381,151 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
             .toBe('一些中文描述');
         done();
     });
+
+    /**
+     * Testing fromData and toData correctly handles all properties
+     */
+    it('TestDataFormatToTraitMappings', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestDataFormatToTraitMappings');
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Entity.cdm.json/Entity');
+
+        // Check that the traits we expect for each DataFormat are found in the type attribute's applied traits.
+
+        // DataFormat = Int16
+        const attributeA: CdmTypeAttributeDefinition = entity.attributes.allItems[0] as CdmTypeAttributeDefinition;
+        const aTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeA.appliedTraits);
+        expect(aTraitNamedReferences.has('is.dataFormat.integer'))
+            .toBeTruthy();
+        expect(aTraitNamedReferences.has('is.dataFormat.small'))
+            .toBeTruthy();
+
+        // DataFormat = Int32
+        const attributeB: CdmTypeAttributeDefinition = entity.attributes.allItems[1] as CdmTypeAttributeDefinition;
+        const bTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeB.appliedTraits);
+        expect(bTraitNamedReferences.has('is.dataFormat.integer'))
+            .toBeTruthy();
+
+        // DataFormat = Int64
+        const attributeC: CdmTypeAttributeDefinition = entity.attributes.allItems[2] as CdmTypeAttributeDefinition;
+        const cTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeC.appliedTraits);
+        expect(cTraitNamedReferences.has('is.dataFormat.integer'))
+            .toBeTruthy();
+        expect(cTraitNamedReferences.has('is.dataFormat.big'))
+            .toBeTruthy();
+
+        // DataFormat = Float
+        const attributeD: CdmTypeAttributeDefinition = entity.attributes.allItems[3] as CdmTypeAttributeDefinition;
+        const dTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeD.appliedTraits);
+        expect(dTraitNamedReferences.has('is.dataFormat.floatingPoint'))
+            .toBeTruthy();
+
+        // DataFormat = Double
+        const attributeE: CdmTypeAttributeDefinition = entity.attributes.allItems[4] as CdmTypeAttributeDefinition;
+        const eTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeE.appliedTraits);
+        expect(eTraitNamedReferences.has('is.dataFormat.floatingPoint'))
+            .toBeTruthy();
+        expect(eTraitNamedReferences.has('is.dataFormat.big'))
+            .toBeTruthy();
+
+        // DataFormat = Guid
+        const attributeF: CdmTypeAttributeDefinition = entity.attributes.allItems[5] as CdmTypeAttributeDefinition;
+        const fTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeF.appliedTraits);
+        expect(fTraitNamedReferences.has('is.dataFormat.guid'))
+            .toBeTruthy();
+        expect(fTraitNamedReferences.has('is.dataFormat.character'))
+            .toBeTruthy();
+        expect(fTraitNamedReferences.has('is.dataFormat.array'))
+            .toBeTruthy();
+
+        // DataFormat = String
+        const attributeG: CdmTypeAttributeDefinition = entity.attributes.allItems[6] as CdmTypeAttributeDefinition;
+        const gTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeG.appliedTraits);
+        expect(gTraitNamedReferences.has('is.dataFormat.character'))
+            .toBeTruthy();
+        expect(gTraitNamedReferences.has('is.dataFormat.array'))
+            .toBeTruthy();
+
+        // DataFormat = Char
+        const attributeH: CdmTypeAttributeDefinition = entity.attributes.allItems[7] as CdmTypeAttributeDefinition;
+        const hTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeH.appliedTraits);
+        expect(hTraitNamedReferences.has('is.dataFormat.character'))
+            .toBeTruthy();
+        expect(hTraitNamedReferences.has('is.dataFormat.big'))
+            .toBeTruthy();
+
+        // DataFormat = Byte
+        const attributeI: CdmTypeAttributeDefinition = entity.attributes.allItems[8] as CdmTypeAttributeDefinition;
+        const iTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeI.appliedTraits);
+        expect(iTraitNamedReferences.has('is.dataFormat.byte'))
+            .toBeTruthy();
+
+        // DataFormat = Binary
+        const attributeJ: CdmTypeAttributeDefinition = entity.attributes.allItems[9] as CdmTypeAttributeDefinition;
+        const jTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeJ.appliedTraits);
+        expect(jTraitNamedReferences.has('is.dataFormat.byte'))
+            .toBeTruthy();
+        expect(jTraitNamedReferences.has('is.dataFormat.array'))
+            .toBeTruthy();
+
+        // DataFormat = Time
+        const attributeK: CdmTypeAttributeDefinition = entity.attributes.allItems[10] as CdmTypeAttributeDefinition;
+        const kTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeK.appliedTraits);
+        expect(kTraitNamedReferences.has('is.dataFormat.time'))
+            .toBeTruthy();
+
+        // DataFormat = Date
+        const attributeL: CdmTypeAttributeDefinition = entity.attributes.allItems[11] as CdmTypeAttributeDefinition;
+        const lTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeL.appliedTraits);
+        expect(lTraitNamedReferences.has('is.dataFormat.date'))
+            .toBeTruthy();
+
+        // DataFormat = DateTime
+        const attributeM: CdmTypeAttributeDefinition = entity.attributes.allItems[12] as CdmTypeAttributeDefinition;
+        const mTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeM.appliedTraits);
+        expect(mTraitNamedReferences.has('is.dataFormat.time'))
+            .toBeTruthy();
+        expect(mTraitNamedReferences.has('is.dataFormat.date'))
+            .toBeTruthy();
+
+        // DataFormat = DateTimeOffset
+        const attributeN: CdmTypeAttributeDefinition = entity.attributes.allItems[13] as CdmTypeAttributeDefinition;
+        const nTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeN.appliedTraits);
+        expect(nTraitNamedReferences.has('is.dataFormat.time'))
+            .toBeTruthy();
+        expect(nTraitNamedReferences.has('is.dataFormat.date'))
+            .toBeTruthy();
+        expect(nTraitNamedReferences.has('is.dataFormat.timeOffset'))
+            .toBeTruthy();
+
+        // DataFormat = Boolean
+        const attributeO: CdmTypeAttributeDefinition = entity.attributes.allItems[14] as CdmTypeAttributeDefinition;
+        const oTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeO.appliedTraits);
+        expect(oTraitNamedReferences.has('is.dataFormat.boolean'))
+            .toBeTruthy();
+
+        // DataFormat = Decimal
+        const attributeP: CdmTypeAttributeDefinition = entity.attributes.allItems[15] as CdmTypeAttributeDefinition;
+        const pTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeP.appliedTraits);
+        expect(pTraitNamedReferences.has('is.dataFormat.numeric.shaped'))
+            .toBeTruthy();
+
+        // DataFormat = Json
+        const attributeQ: CdmTypeAttributeDefinition = entity.attributes.allItems[16] as CdmTypeAttributeDefinition;
+        const qTraitNamedReferences: Set<string> = fetchTraitNamedReferences(attributeQ.appliedTraits);
+        expect(qTraitNamedReferences.has('is.dataFormat.array'))
+            .toBeTruthy();
+        expect(qTraitNamedReferences.has('means.content.text.JSON'))
+            .toBeTruthy();
+
+        done();
+    });
+
+    function fetchTraitNamedReferences(traits: CdmTraitCollection) : Set<string> {
+        const namedReferences: Set<string> = new Set<string>();
+        traits.allItems.forEach((trait: CdmTraitReference) => {
+            namedReferences.add(trait.namedReference);
+        });
+
+        return namedReferences;
+    }
 });

@@ -82,7 +82,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.Name) && this.Entity != null;
+            List<string> missingFields = new List<string>();
+            if (string.IsNullOrWhiteSpace(this.Name))
+                missingFields.Add("Name");
+            if (this.Entity == null)
+                missingFields.Add("Entity");
+            if (missingFields.Count > 0)
+            {
+                Logger.Error(nameof(CdmEntityAttributeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />

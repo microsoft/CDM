@@ -11,23 +11,20 @@ import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.apache.commons.lang3.ObjectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmObjectDefinition, CdmFileStatus {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmManifestDefinition.class);
-
   private String manifestName;
   private CdmCollection<CdmManifestDeclarationDefinition> subManifests;
   private CdmEntityCollection entities;
@@ -147,7 +144,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       if (this.getImports() != null) {
         for (final CdmImport imp : this.getImports()) {
           if (!saveDirtyLinkAsync(imp.getCorpusPath(), options).join()) {
-            LOGGER.error("Failed saving imported document '{}'", imp.getCorpusPath());
+            Logger.error(
+                CdmManifestDefinition.class.getSimpleName(),
+                this.getCtx(),
+                Logger.format("Failed saving imported document '{0}'", imp.getCorpusPath()),
+                "saveLinkedDocumentsAsync"
+            );
             return false;
           }
         }
@@ -157,7 +159,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         for (final CdmEntityDeclarationDefinition def : this.getEntities()) {
           if (def.getObjectType() == CdmObjectType.LocalEntityDeclarationDef) {
             if (!saveDirtyLinkAsync(def.getEntityPath(), options).join()) {
-              LOGGER.error("Failed saving local entity schema document '{}'", def.getEntityPath());
+              Logger.error(
+                  CdmManifestDefinition.class.getSimpleName(),
+                  this.getCtx(),
+                  Logger.format("Failed saving local entity schema document '{0}'", def.getEntityPath()),
+                  "saveLinkedDocumentsAsync"
+              );
               return false;
             }
 
@@ -166,7 +173,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
               for (final CdmDataPartitionDefinition part : def.getDataPartitions()) {
                 if (part.getSpecializedSchema() != null) {
                   if (!saveDirtyLinkAsync(part.getSpecializedSchema(), options).join()) {
-                    LOGGER.error("Failed saving partition schema document '{}'", part.getSpecializedSchema());
+                    Logger.error(
+                        CdmManifestDefinition.class.getSimpleName(),
+                        this.getCtx(),
+                        Logger.format("Failed saving partition schema document '{0}'", part.getSpecializedSchema()),
+                        "saveLinkedDocumentsAsync"
+                    );
                     return false;
                   }
                 }
@@ -177,7 +189,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
               for (final CdmDataPartitionPatternDefinition part : def.getDataPartitionPatterns()) {
                 if (part.getSpecializedSchema() != null) {
                   if (!saveDirtyLinkAsync(part.getSpecializedSchema(), options).join()) {
-                    LOGGER.error("failed saving partition schema document '{}'", part.getSpecializedSchema());
+                    Logger.error(
+                        CdmManifestDefinition.class.getSimpleName(),
+                        this.getCtx(),
+                        Logger.format("failed saving partition schema document '{0}'", part.getSpecializedSchema()),
+                        "saveLinkedDocumentsAsync"
+                    );
                     return false;
                   }
                 }
@@ -189,7 +206,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       if (this.getSubManifests() != null) {
         for (final CdmManifestDeclarationDefinition sub : this.getSubManifests()) {
           if (!saveDirtyLinkAsync(sub.getDefinition(), options).join()) {
-            LOGGER.error("Failed saving sub-manifest document '{}'.", sub.getDefinition());
+            Logger.error(
+                CdmManifestDefinition.class.getSimpleName(),
+                this.getCtx(),
+                Logger.format("Failed saving sub-manifest document '{0}'.", sub.getDefinition()),
+                "saveLinkedDocumentsAsync"
+            );
             return false;
           }
         }
@@ -202,7 +224,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     return CompletableFuture.supplyAsync(() -> {
       final CdmObject objAt = this.getCtx().getCorpus().fetchObjectAsync(relative, this).join();
       if (objAt == null) {
-        LOGGER.error("Invalid corpus path '{}'", relative);
+        Logger.error(
+            CdmManifestDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("Invalid corpus path '{0}'", relative),
+            "saveDirtyLinkAsync"
+        );
         return false;
       }
 
@@ -211,7 +238,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         if (docImp.isDirty()) {
           // save it with the same name
           if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
-            LOGGER.error("Failed saving document '{}'", docImp.getName());
+            Logger.error(
+                CdmManifestDefinition.class.getSimpleName(),
+                this.getCtx(),
+                Logger.format("Failed saving document '{0}'", docImp.getName()),
+                "saveDirtyLinkAsync"
+            );
             return false;
           }
         }
@@ -461,6 +493,16 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       return CompletableFuture.completedFuture(null);
     }
 
+    if (this.getFolder() == null) {
+      Logger.error(
+          CdmManifestDefinition.class.getSimpleName(),
+          this.getCtx(),
+          Logger.format("Cannot resolve the manifest '{0}' because it has not been added to a folder.", this.manifestName),
+          "createResolvedManifestAsync"
+      );
+      return CompletableFuture.completedFuture(null);
+    }
+
     if (null == newEntityDocumentNameFormat) {
       newEntityDocumentNameFormat = "{f}resolved/{n}.cdm.json";
     } else if (newEntityDocumentNameFormat.isEmpty()) { // For backwards compatibility.
@@ -487,7 +529,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
           .getCorpus()
           .<CdmFolderDefinition>fetchObjectAsync(newFolderPath).join();
       if (resolvedManifestFolder == null) {
-        LOGGER.error("New folder for manifest not found {}", newFolderPath);
+        Logger.error(
+            CdmManifestDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("New folder for manifest not found {0}", newFolderPath),
+            "createResolvedManifestAsync"
+        );
         return CompletableFuture.completedFuture(null);
       }
       newManifestName = newManifestName.substring(resolvedManifestPathSplit);
@@ -495,7 +542,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       resolvedManifestFolder = (CdmFolderDefinition) this.getOwner();
     }
 
-    LOGGER.debug("Resolving manifest '{}'", sourceManifestPath);
+    Logger.debug(
+        CdmManifestDefinition.class.getSimpleName(),
+        this.getCtx(),
+        Logger.format("Resolving manifest '{0}'", sourceManifestPath),
+        "createResolvedManifestAsync"
+    );
 
     // Using the references present in the resolved entities, get an entity.
     // Create an imports doc with all the necessary resolved entity references and then resolve it.
@@ -512,7 +564,17 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       for (final CdmEntityDeclarationDefinition entity : this.getEntities()) {
         final CdmEntityDefinition entDef = this.getEntityFromReferenceAsync(entity, this).join();
         if (null == entDef) {
-          LOGGER.error("Unable to get entity from reference");
+          Logger.error(CdmManifestDefinition.class.getSimpleName(), this.getCtx(), "Unable to get entity from reference", "createResolvedManifestAsync");
+          return null;
+        }
+
+        if (entDef.getInDocument().getFolder() == null) {
+          Logger.error(
+              CdmManifestDefinition.class.getSimpleName(),
+              this.getCtx(),
+              Logger.format("The document containing the entity '{0}' is not in a folder", entDef.getEntityName()),
+              "createResolvedManifestAsync"
+          );
           return null;
         }
 
@@ -541,7 +603,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         final CdmFolderDefinition folder =
             this.getCtx().getCorpus().<CdmFolderDefinition>fetchObjectAsync(newDocumentPath).join();
         if (null == folder) {
-          LOGGER.error("New folder not found '{}'", newDocumentPath);
+          Logger.error(
+              CdmManifestDefinition.class.getSimpleName(),
+              this.getCtx(),
+              Logger.format("New folder not found '{0}'", newDocumentPath),
+              "createResolvedManifestAsync"
+          );
           return null;
         }
 
@@ -549,7 +616,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         AttributeResolutionDirectiveSet withDirectives = 
           directives != null ? directives : this.getCtx().getCorpus().getDefaultResolutionDirectives();
         final ResolveOptions resOpt = new ResolveOptions(entDef.getInDocument(), withDirectives != null ? withDirectives.copy() : null);
-        LOGGER.debug("    resolving entity {} to document {}", sourceEntityFullPath, newDocumentFullPath);
+        Logger.debug(
+            CdmManifestDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("    resolving entity {0} to document {1}", sourceEntityFullPath, newDocumentFullPath),
+            "createResolvedManifestAsync"
+        );
 
         final CdmEntityDefinition resolvedEntity = entDef
             .createResolvedEntityAsync(entDef.getEntityName(), resOpt, folder, newDocumentName).join();
@@ -577,7 +649,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         this.getCtx().getCorpus().resEntMap.put(this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument()), absoluteEntPath);
       }
 
-      LOGGER.debug("    calculating relationships");
+      Logger.debug(CdmManifestDefinition.class.getSimpleName(), this.getCtx(), "    calculating relationships", "createResolvedManifestAsync");
 
       // Calculate the entity graph for just this folio and any subManifests.
       this.getCtx().getCorpus().calculateEntityGraphAsync(resolvedManifest).join();
@@ -607,7 +679,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
           .join();
 
       if (null == result) {
-        LOGGER.error("Failed to resolve entity {}", entityPath);
+        Logger.error(
+            CdmManifestDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("Failed to resolve entity {0}", entityPath),
+            "getEntityFromReferenceAsync"
+        );
       }
       return result;
     });

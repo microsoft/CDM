@@ -13,4 +13,4 @@ class PurposeReference(JObject):
         super().__init__()
 
         self.purposeReference = None  # type: Union[str, Purpose]
-        self.appliedTraits = []  # type: List[Union[str, TraitReference]]
+        self.appliedTraits = None  # type: List[Union[str, TraitReference]]

@@ -28,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
@@ -186,9 +187,12 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
               .toInstant()
               .atOffset(ZoneOffset.UTC);
         }
-      } catch (CdmHttpRequestException ex) {
-        LOGGER.debug("ADLS file not found, skipping last modified time calculation for it.", ex);
+      // We're capturing CompletionException as this is of interest to us, it wraps any exception created inside
+      // the body of the executeRequest method.
+      } catch (CompletionException ex) {
+        LOGGER.debug("ADLS file not found, skipping last modified time calculation for it.", ex.getCause());
       }
+      
       return null;
     });
   }

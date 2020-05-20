@@ -17,16 +17,14 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Imp
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.LocalEntity;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DocumentPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentPersistence.class);
-
   public static CompletableFuture<CdmDocumentDefinition> fromData(
       final CdmCorpusContext ctx,
       final LocalEntity obj,
@@ -50,9 +48,7 @@ public class DocumentPersistence {
               localExtensionTraitDefList)
               .join();
       if (entity == null) {
-        LOGGER.error(
-            "There was an error while trying to convert a model.json entity to the CDM entity."
-        );
+        Logger.error(DocumentPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert a model.json entity to the CDM entity.");
         return null;
       }
 
@@ -113,14 +109,16 @@ public class DocumentPersistence {
                   });
                 }
               } else {
-                LOGGER.warn(
-                    "Entity '{}' is not inside a document or its owner is not a document.",
-                    ((CdmEntityDefinition) cdmEntity).getName());
+                Logger.warning(
+                    DocumentPersistence.class.getSimpleName(),
+                    ctx,
+                    Logger.format("Entity '{0}' is not inside a document or its owner is not a document.", ((CdmEntityDefinition) cdmEntity).getName())
+                );
               }
 
               return entity;
             } else {
-              LOGGER.error("There was an error while trying to fetch cdm entity doc.");
+              Logger.error(DocumentPersistence.class.getSimpleName(), ctx, "There was an error while trying to fetch cdm entity doc.");
               return null;
             }
           });

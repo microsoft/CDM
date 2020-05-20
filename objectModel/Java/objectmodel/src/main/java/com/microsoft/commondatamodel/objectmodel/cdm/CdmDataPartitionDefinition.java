@@ -223,14 +223,20 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     this.lastFileStatusCheckTime = value;
   }
 
+  /**
+   * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+   */
   @Override
   public OffsetDateTime getLastChildFileModifiedTime() {
-    return null;
+    throw new UnsupportedOperationException();
   }
 
+  /**
+   * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+   */
   @Override
   public void setLastChildFileModifiedTime(final OffsetDateTime time) {
-
+    throw new UnsupportedOperationException();
   }
 
   /**

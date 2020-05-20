@@ -3,13 +3,19 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
@@ -30,7 +36,11 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.dataTypeName);
+    if (StringUtils.isNullOrTrimEmpty(this.dataTypeName)) {
+      Logger.error(CdmDataTypeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("dataTypeName"))));
+      return false;
+    }
+    return true;
   }
 
   /**

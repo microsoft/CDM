@@ -3,6 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -14,9 +17,12 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityRef
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmTypeAttributeDefinition extends CdmAttribute {
   private CdmDataTypeReference dataType;
@@ -214,7 +220,11 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.getName());
+    if (StringUtils.isNullOrTrimEmpty(this.getName())) {
+      Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      return false;
+    }
+    return true;
   }
 
   @Override

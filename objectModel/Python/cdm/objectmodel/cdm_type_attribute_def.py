@@ -4,7 +4,7 @@
 from typing import Any, cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType
-from cdm.utilities import ResolveOptions, TraitToPropertyMap
+from cdm.utilities import ResolveOptions, TraitToPropertyMap, logger, Errors
 
 from .cdm_attribute_def import CdmAttribute
 
@@ -27,6 +27,8 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         # Internal
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
         self._attribute_count = 1
+
+        self._TAG = CdmTypeAttributeDefinition.__name__
 
     @property
     def object_type(self) -> CdmObjectType:
@@ -129,7 +131,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         return cast(str, self._trait_to_property_map._fetch_property_value('defaultValue'))
 
     @default_value.setter
-    def default_value(self, val: str) -> None:
+    def default_value(self, val: object) -> None:
         self._trait_to_property_map._update_property_value('defaultValue', val)
 
     @property
@@ -231,7 +233,10 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         return False
 
     def validate(self) -> bool:
-        return bool(self.name)
+        if not bool(self.name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

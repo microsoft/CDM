@@ -30,9 +30,12 @@ class EntityResolution(unittest.TestCase):
 
     @async_test
     async def test_resolve_test_corpus(self):
-        # only using cdm namespace, which is set to schema docs
-        corpus = TestHelper.get_local_corpus('', '')
-        manifest = await corpus.fetch_object_async('cdm:/standards.manifest.cdm.json')  # type: CdmManifestDefinition
+        self.assertTrue(os.path.exists(TestHelper.get_schema_docs_root()))
+
+        corpus = CdmCorpusDefinition()
+        corpus.ctx.report_at_level = CdmStatusLevel.WARNING
+        corpus.storage.mount('local', LocalAdapter(TestHelper.get_schema_docs_root()))
+        manifest = await corpus.fetch_object_async(TestHelper.cdm_standards_schema_path)  # type: CdmManifestDefinition
         directives = AttributeResolutionDirectiveSet({'referenceOnly', 'normalized'})
         all_resolved = await self.list_all_resolved(corpus, directives, manifest, StringSpewCatcher())
         self.assertNotEqual(all_resolved, '')
@@ -153,6 +156,28 @@ class EntityResolution(unittest.TestCase):
         # again there are 2 attributes grouped in an entity attribute
         # and 2 attributes grouped in an attribute group
         self.assertEqual(2, len(main_entity.attributes[2].explicit_reference.members))
+
+    @async_test
+    async def test_setting_traits_for_resolution_guidance_attributes(self):
+        '''
+        Test that "is.linkedEntity.name" and "is.linkedEntity.identifier" traits are set when "selectedTypeAttribute" and "foreignKeyAttribute"
+        are present in the entity's resolution guidance.
+        '''
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_setting_traits_for_resolution_guidance_attributes')  # type: CdmCorpusDefinition
+        entity = await corpus.fetch_object_async('local:/Customer.cdm.json/Customer')  # type: CdmEntityDefinition
+
+        # Resolve with default directives to get "is.linkedEntity.name" trait.
+        res_opt = ResolveOptions(wrt_doc=entity.in_document)
+        resolved_entity = await entity.create_resolved_entity_async('resolved', res_opt)
+
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[1].applied_traits[6].named_reference)
+
+        # Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
+        res_opt = ResolveOptions(wrt_doc=entity.in_document)
+        res_opt.directives = AttributeResolutionDirectiveSet({'referenceOnly'})
+        resolved_entity = await entity.create_resolved_entity_async('resolved2', res_opt)
+
+        self.assertEqual('is.linkedEntity.identifier', resolved_entity.attributes[0].applied_traits[7].named_reference)
 
     async def resolve_environment(self, test_name: str, environment: str) -> str:
         test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, test_name)

@@ -12,6 +12,6 @@ class SchemaEntityInfo(JObject):
     def __init__(self):
         super().__init__()
 
-        self.entityName = ''  # type: str
-        self.entityVersion = ''  # type: str
-        self.entityNamespace = ''  # type: str
+        self.entityName = None  # type: str
+        self.entityVersion = None  # type: str
+        self.entityNamespace = None  # type: str

@@ -202,7 +202,10 @@ export class ManifestPersistence {
         manifestContent.lastFileModifiedTime = timeUtils.getFormattedDateString(instance.lastFileModifiedTime);
         manifestContent.lastChildFileModifiedTime = timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime);
         manifestContent.explanation = instance.explanation;
-        manifestContent.exhibitsTraits = copyDataUtils.arrayCopyData<TraitReference>(resOpt, instance.exhibitsTraits, options);
+        manifestContent.exhibitsTraits = copyDataUtils.arrayCopyData<TraitReference>(
+            resOpt,
+            instance.exhibitsTraits.allItems,
+            options);
         manifestContent.entities = copyDataUtils.arrayCopyData<EntityDeclarationDefinition>(
             resOpt,
             instance.entities,
@@ -210,10 +213,13 @@ export class ManifestPersistence {
         );
 
         manifestContent.subManifests = copyDataUtils.arrayCopyData<ManifestDeclaration>(resOpt, instance.subManifests, options);
-        manifestContent.imports = [];
-        instance.imports.allItems.forEach((importDoc: CdmImport) => {
-            manifestContent.imports.push(ImportPersistence.toData(importDoc, new resolveOptions(), {}));
-        });
+
+        if (instance.imports && instance.imports.length > 0) {
+            manifestContent.imports = [];
+            instance.imports.allItems.forEach((importDoc: CdmImport) => {
+                manifestContent.imports.push(ImportPersistence.toData(importDoc, new resolveOptions(), {}));
+            });
+        }
 
         if (instance.relationships && instance.relationships.length > 0) {
             manifestContent.relationships = instance.relationships.allItems.map((relationship: CdmE2ERelationship) => {

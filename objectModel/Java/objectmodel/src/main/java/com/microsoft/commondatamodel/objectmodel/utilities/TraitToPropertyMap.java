@@ -21,6 +21,8 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -29,8 +31,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
@@ -38,10 +38,24 @@ import org.slf4j.LoggerFactory;
  */
 @Deprecated
 public class TraitToPropertyMap {
-  private static final Logger LOGGER = LoggerFactory.getLogger(TraitToPropertyMap.class);
-
   private CdmObject host;
   private static Map<CdmTraitName, List<CdmPropertyName>> TRAIT_TO_LIST_OF_PROPERTIES_MAP = new ConcurrentHashMap<>();
+  private static String[] dataFormatTraitNames =  {
+    "is.dataFormat.integer",
+    "is.dataFormat.small",
+    "is.dataFormat.big",
+    "is.dataFormat.floatingPoint",
+    "is.dataFormat.guid",
+    "is.dataFormat.character",
+    "is.dataFormat.array",
+    "is.dataFormat.byte",
+    "is.dataFormat.time",
+    "is.dataFormat.date",
+    "is.dataFormat.timeOffset",
+    "is.dataFormat.boolean",
+    "is.dataFormat.numeric.shaped",
+    "means.content.text.JSON"
+  };
 
   static {
     TRAIT_TO_LIST_OF_PROPERTIES_MAP.put(CdmTraitName.VERSION,
@@ -250,13 +264,17 @@ public class TraitToPropertyMap {
   }
 
   private void dataFormatToTraits(final String dataFormat) {
-    // if this is going to be called many times, then need to remove dynamic dataformat traits that are left behind.
-    // but ... probably not. in fact, this is probably never used because data formats come from data type which is not an attribute
+    // reset the current dataFormat
+    for (String traitName : dataFormatTraitNames) {
+      this.removeTrait(traitName);
+    }
     switch (CdmDataFormat.fromString(dataFormat)) {
       case Int16:
-      case Int32:
         this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
         this.fetchOrCreateTrait(CdmDataFormatTrait.SMALL, true);
+        break;
+      case Int32:
+        this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
         break;
       case Int64:
         this.fetchOrCreateTrait(CdmDataFormatTrait.INTEGER, true);
@@ -271,6 +289,8 @@ public class TraitToPropertyMap {
         break;
       case Guid:
         this.fetchOrCreateTrait(CdmDataFormatTrait.GUID, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER, true);
+        this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY, true);
         break;
       case String:
         this.fetchOrCreateTrait(CdmDataFormatTrait.CHARACTER, true);
@@ -284,6 +304,7 @@ public class TraitToPropertyMap {
         this.fetchOrCreateTrait(CdmDataFormatTrait.BYTE, true);
         break;
       case Binary:
+        this.fetchOrCreateTrait(CdmDataFormatTrait.BYTE, true);
         this.fetchOrCreateTrait(CdmDataFormatTrait.ARRAY, true);
         break;
       case Time:
@@ -673,10 +694,10 @@ public class TraitToPropertyMap {
       if (isInteger && isBig) {
         baseType = CdmDataFormat.Int64;
       }
-      if (isInteger && isSmall) {
+      else if (isInteger && isSmall) {
         baseType = CdmDataFormat.Int16;
       }
-      if (isInteger) {
+      else if (isInteger) {
         baseType = CdmDataFormat.Int32;
       }
     }
@@ -767,10 +788,10 @@ public class TraitToPropertyMap {
         newDefault = this.getCtx().getCorpus().makeRef(CdmObjectType.EntityRef, cEnt, false);
         this.updateTraitArgument(trait, "default", newDefault);
       } else {
-        LOGGER.error("Default value missing languageTag or displayText.");
+        Logger.error(TraitToPropertyMap.class.getSimpleName(), this.host.getCtx(), "Default value missing languageTag or displayText.");
       }
     } else {
-      LOGGER.error("Default value type not supported. Please use ArrayNode.");
+      Logger.error(TraitToPropertyMap.class.getSimpleName(), this.host.getCtx(), "Default value type not supported. Please use ArrayNode.");
     }
   }
 

@@ -17,7 +17,10 @@ class DataPartitionPatternPersistence:
         pattern = ctx.corpus.make_object(CdmObjectType.DATA_PARTITION_PATTERN_DEF, data.name if data.get('name') else None)
 
         pattern.root_location = data.rootLocation
-        pattern.regular_expression = data.regularExpression
+        if data.globPattern:
+            pattern.glob_pattern = data.globPattern
+        if data.regularExpression:
+            pattern.regular_expression = data.regularExpression
         pattern.parameters = data.get('parameters')
         pattern.explanation = data.explanation
         pattern.specialized_schema = data.specializedSchema
@@ -43,6 +46,7 @@ class DataPartitionPatternPersistence:
         data.lastFileModifiedTime = time_utils._get_formatted_date_string(instance.last_file_modified_time)
         data.explanation = instance.explanation
         data.rootLocation = instance.root_location
+        data.globPattern = instance.glob_pattern
         data.regularExpression = instance.regular_expression
         data.parameters = instance.parameters
         data.specializedSchema = instance.specialized_schema

@@ -13,7 +13,7 @@ class CsvFormatSettings(FileFormatSettings):
         super().__init__()
 
         self.columnHeaders = False  # type: bool
-        self.csvStyle = ''  # type: str
-        self.delimiter = ''  # type: str
-        self.quoteStyle = ''  # type: str
-        self.encoding = ''  # type: str
+        self.csvStyle = None  # type: str
+        self.delimiter = None  # type: str
+        self.quoteStyle = None  # type: str
+        self.encoding = None  # type: str

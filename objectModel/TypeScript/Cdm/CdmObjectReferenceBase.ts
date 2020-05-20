@@ -18,6 +18,7 @@ import {
     CdmObjectReference,
     cdmObjectType,
     CdmTraitCollection,
+    Errors,
     Logger,
     resolveContext,
     ResolvedAttribute,
@@ -247,7 +248,18 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return (this.namedReference || this.explicitReference) ? true : false;
+            if (!this.namedReference && !this.explicitReference) {
+                Logger.error(
+                    CdmObjectReferenceBase.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['namedReference', 'explicitReference'], true),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

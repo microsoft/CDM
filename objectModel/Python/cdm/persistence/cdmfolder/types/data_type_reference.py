@@ -13,4 +13,4 @@ class DataTypeReference(JObject):
         super().__init__()
 
         self.dataTypeReference = None  # type: Union[str, DataType]
-        self.appliedTraits = []  # type: List[Union[str, TraitReference]]
+        self.appliedTraits = None  # type: List[Union[str, TraitReference]]

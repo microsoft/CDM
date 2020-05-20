@@ -4,16 +4,15 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.List;
 import java.util.Objects;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * It extends {@link CdmCollection} and adds additional behaviors specific to entity collections.
  */
 public class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefinition> {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmEntityCollection.class);
 
   /**
    * Constructs a CdmEntityCollection by using parent constructor
@@ -48,8 +47,8 @@ public class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefin
     final CdmCorpusDefinition cdmCorpus = this.getCtx().getCorpus();
 
     if (entity.getOwner() == null) {
-      LOGGER.error("Expected entity to have an \"Owner\" document set. "
-          + "Cannot create entity declaration to add to manifest.");
+      String message = "Expected entity to have an \"Owner\" document set. Cannot create entity declaration to add to manifest.";
+      Logger.error(CdmEntityCollection.class.getSimpleName(), entity.getCtx(), message, "add");
       return null;
     }
 

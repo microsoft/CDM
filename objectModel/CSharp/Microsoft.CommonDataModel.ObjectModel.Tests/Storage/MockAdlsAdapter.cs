@@ -1,25 +1,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Storage
+namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 {
+    using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
+    using Microsoft.IdentityModel.Clients.ActiveDirectory;
     using System;
     using System.Collections.Generic;
     using System.Globalization;
     using System.Net.Http;
-    using System.Net.Http.Headers;
+    using System.Security.Cryptography;
     using System.Text;
     using System.Threading.Tasks;
-    using System.Net;
-
-    using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
-    using Microsoft.IdentityModel.Clients.ActiveDirectory;
-
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Serialization;
-    using System.Security.Cryptography;
-    using Microsoft.CommonDataModel.ObjectModel.Storage;
 
     public class MockADLSAdapter : NetworkAdapter, StorageAdapter
     {

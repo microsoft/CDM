@@ -43,7 +43,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             typeAttribute.SourceName = PropertyFromDataToString(obj["sourceName"]);
             typeAttribute.SourceOrdering = PropertyFromDataToInt(obj["sourceOrdering"]);
             typeAttribute.DisplayName = PropertyFromDataToString(obj["displayName"]);
-            typeAttribute.Description = PropertyFromDataToString(obj["description"]);
             typeAttribute.ValueConstrainedToList = PropertyFromDataToBool(obj["valueConstrainedToList"]);
             typeAttribute.MaximumLength = PropertyFromDataToInt(obj["maximumLength"]);
             typeAttribute.MaximumValue = PropertyFromDataToString(obj["maximumValue"]);
@@ -51,7 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             var dataFormat = PropertyFromDataToString(obj["dataFormat"]);
             if (dataFormat != null)
             {
-                bool success = Enum.TryParse(dataFormat, out CdmDataFormat cdmDataFormat);
+                bool success = Enum.TryParse(dataFormat, true, out CdmDataFormat cdmDataFormat);
                 if (success)
                 {
                     typeAttribute.DataFormat = cdmDataFormat;
@@ -113,7 +112,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             var defValue = instance.GetProperty("defaultValue");
             if (defValue is List<object>)
             {
-                obj.DefaultValue = JToken.FromObject(defValue);
+                obj.DefaultValue = defValue.Count > 0 ? JToken.FromObject(defValue) : null;
             }
             else
             {

@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReferenceBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.EntityPersistence;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
@@ -87,64 +88,38 @@ public class CdmEntityDefinitionTest {
    * are created during resolution (no inDocument propagation during resolution). This error appears when running copyData
    * with stringRefs = true in certain cases
    */
+  @Test
   public void testFromAndToDataWithElevatedTraits() throws InterruptedException, ExecutionException {
-    try (final InterceptLog interceptLog = new InterceptLog(CdmObjectReferenceBase.class, Level.WARN)) {
-      final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFromAndToDataWithElevatedTraits", null);
-      cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
-      final CdmEntityDefinition entity = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Account.cdm.json/Account").get();
-      CdmEntityDefinition resEntity = entity.createResolvedEntityAsync(String.format("%s_", entity.getEntityName())).get();
-      final CopyOptions copyOptions = new CopyOptions();
-      copyOptions.setIsStringRefs(true);
-      EntityPersistence.toData(resEntity, new ResolveOptions(resEntity), copyOptions);
-
-      interceptLog.verifyNumLogEvents(0);
-    }
+    final CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFromAndToDataWithElevatedTraits", null);
+    cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
+    cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      Assert.assertFalse(message.contains("unable to resolve an entity"));
+    }, CdmStatusLevel.Warning);
+    final CdmEntityDefinition entity = cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Account.cdm.json/Account").get();
+    CdmEntityDefinition resEntity = entity.createResolvedEntityAsync(String.format("%s_", entity.getEntityName())).get();
+    final CopyOptions copyOptions = new CopyOptions();
+    copyOptions.setIsStringRefs(true);
+    EntityPersistence.toData(resEntity, new ResolveOptions(resEntity), copyOptions);
   }
 
   /**
    * Testing that loading entities with missing references logs warnings when the resolve option shallowValidation = true.
    */
   @Test
-  public void testLoadingEntityWithShallowValidation() throws InterruptedException, ExecutionException {
-    // First, check all logs from CdmCorpusDefinition.
-    try (final InterceptLog interceptLog = new InterceptLog(CdmCorpusDefinition.class, Level.WARN)) {
-      CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
-      cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
-
-      // Load entity with shallowValidation = true.
-      cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity", null, true).join();
-      // Load resolved entity with shallowValidation = true.
-      cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/ResolvedEntity.cdm.json/ResolvedEntity", null, true).join();
-
-      Mockito.verify(interceptLog.getAppender(), Mockito.atLeast(1)).append(interceptLog.getLogEventCaptor().capture());
-
-      // Verify that messages regarding references not being resolved are logged as warnings.
-      for (LogEvent logEvent : interceptLog.getLogEventCaptor().getAllValues()) {
-        if (logEvent.getMessage().getFormattedMessage().contains("Unable to resolve the reference")) {
-          Assert.assertEquals(logEvent.getLevel(), Level.WARN);
-        }
+  public void testLoadingEntityWithShallowValidation() throws InterruptedException {
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
+    cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
+    cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      // When messages regarding references not being resolved or loaded are logged, check that they are warnings and not errors.
+      if (message.contains("Unable to resolve the reference") || message.contains("Could not read")) {
+        Assert.assertEquals(level, CdmStatusLevel.Warning);
       }
-    }
+    }, CdmStatusLevel.Warning);
 
-    // Now check all logs from PersistenceLayer.
-    try (final InterceptLog interceptLog = new InterceptLog(PersistenceLayer.class, Level.WARN)) {
-      CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
-      cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
-
-      // Load entity with shallowValidation = true.
-      cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity", null, true).join();
-      // Load resolved entity with shallowValidation = true.
-      cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/ResolvedEntity.cdm.json/ResolvedEntity", null, true).join();
-
-      Mockito.verify(interceptLog.getAppender(), Mockito.atLeast(1)).append(interceptLog.getLogEventCaptor().capture());
-
-      // Verify that messages regarding referenced documents not being loaded are logged as warnings.
-      for (LogEvent logEvent : interceptLog.getLogEventCaptor().getAllValues()) {
-        if (logEvent.getMessage().getFormattedMessage().contains("Could not read")) {
-          Assert.assertEquals(logEvent.getLevel(), Level.WARN);
-        }
-      }
-    }
+    // Load entity with shallowValidation = true.
+    cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity", null, true).join();
+    // Load resolved entity with shallowValidation = true.
+    cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/ResolvedEntity.cdm.json/ResolvedEntity", null, true).join();
   }
 
   /**
@@ -152,45 +127,19 @@ public class CdmEntityDefinitionTest {
    */
   @Test
   public void testLoadingEntityWithoutShallowValidation() throws InterruptedException, ExecutionException {
-    // First, check all logs from CdmCorpusDefinition.
-    try (final InterceptLog interceptLog = new InterceptLog(CdmCorpusDefinition.class, Level.WARN)) {
-      CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
-      cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
-
-      // Load entity with shallowValidation = false.
-      cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").join();
-      // Load resolved entity with shallowValidation = false.
-      cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/ResolvedEntity.cdm.json/ResolvedEntity").join();
-
-      Mockito.verify(interceptLog.getAppender(), Mockito.atLeast(1)).append(interceptLog.getLogEventCaptor().capture());
-
-      // Verify that messages regarding references not being resolved are logged as errors.
-      for (LogEvent logEvent : interceptLog.getLogEventCaptor().getAllValues()) {
-        if (logEvent.getMessage().getFormattedMessage().contains("Unable to resolve the reference")) {
-          Assert.assertEquals(logEvent.getLevel(), Level.ERROR);
-        }
+    CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
+    cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
+    cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
+      // When messages regarding references not being resolved or loaded are logged, check that they are errors.
+      if (message.contains("Unable to resolve the reference") || message.contains("Could not read")) {
+        Assert.assertEquals(level, CdmStatusLevel.Error);
       }
-    }
+    }, CdmStatusLevel.Warning);
 
-    // Now check all logs from PersistenceLayer.
-    try (final InterceptLog interceptLog = new InterceptLog(PersistenceLayer.class, Level.WARN)) {
-      CdmCorpusDefinition cdmCorpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLoadingEntityWithShallowValidation", null);
-      cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));
-
-      // Load entity with shallowValidation = false.
-      cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").join();
-      // Load resolved entity with shallowValidation = false.
-      cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/ResolvedEntity.cdm.json/ResolvedEntity").join();
-
-      Mockito.verify(interceptLog.getAppender(), Mockito.atLeast(1)).append(interceptLog.getLogEventCaptor().capture());
-
-      // Verify that messages regarding referenced documents not being loaded are logged as errors.
-      for (LogEvent logEvent : interceptLog.getLogEventCaptor().getAllValues()) {
-        if (logEvent.getMessage().getFormattedMessage().contains("Could not read")) {
-          Assert.assertEquals(logEvent.getLevel(), Level.ERROR);
-        }
-      }
-    }
+    // Load entity with shallowValidation = false.
+    cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").join();
+    // Load resolved entity with shallowValidation = false.
+    cdmCorpus.<CdmEntityDefinition>fetchObjectAsync("local:/ResolvedEntity.cdm.json/ResolvedEntity").join();
   }
 }
 

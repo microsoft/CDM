@@ -46,7 +46,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             var watch = Stopwatch.StartNew();
             cdmCorpus.Storage.Mount("local", new LocalAdapter(SchemaDocsRoot));
-            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/standards.manifest.cdm.json");
+            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>(TestHelper.CdmStandardSchemaPath);
             var directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
             await EntityResolutionTests.ListAllResolved(cdmCorpus, directives, manifest);
             watch.Stop();

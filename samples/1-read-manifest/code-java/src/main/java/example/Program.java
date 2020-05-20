@@ -51,7 +51,7 @@ public class Program {
 
     cdmCorpus.getStorage().mount(
         "local",
-        new LocalAdapter(pathFromExeToExampleRoot + "1-read-manifest"));
+        new LocalAdapter(pathFromExeToExampleRoot + "1-read-manifest/sample-data"));
 
     // 'local' is our default namespace.
     // Any paths that start navigating without a device tag (ex. 'cdm')

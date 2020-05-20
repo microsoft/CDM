@@ -3,10 +3,8 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
-    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System.Collections.Generic;
 
     public abstract class CdmObjectDefinitionBase : CdmObjectBase, CdmObjectDefinition
     {
@@ -21,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public CdmTraitCollection ExhibitsTraits { get; }
 
-        public CdmObjectDefinitionBase(CdmCorpusContext ctx)
+        public CdmObjectDefinitionBase(CdmCorpusContext ctx) 
             : base(ctx)
         {
             this.ExhibitsTraits = new CdmTraitCollection(this.Ctx, this);

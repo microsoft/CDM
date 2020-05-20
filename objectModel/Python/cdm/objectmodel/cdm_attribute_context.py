@@ -5,7 +5,7 @@ from typing import cast, List, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.resolvedmodel import ResolvedAttributeSet
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_collection import CdmCollection
 from .cdm_object import CdmObject
@@ -43,6 +43,8 @@ class CdmAttributeContext(CdmObjectDefinition):
         # Internal
 
         self._lowest_order = None  # type: Optional[int]
+
+        self._TAG = CdmAttributeContext.__name__
 
     @property
     def at_corpus_path(self) -> Optional[str]:
@@ -94,7 +96,7 @@ class CdmAttributeContext(CdmObjectDefinition):
             att_ctx_set.append(new_node)
 
         # add moniker if this is a reference
-        if moniker and new_node.definition and new_node.definition.named_reference and not new_node.definition.named_reference.startswith(moniker):
+        if moniker and new_node.definition and new_node.definition.named_reference:
             new_node.definition.named_reference = moniker + '/' + new_node.definition.named_reference
 
         # Now copy the children.
@@ -188,7 +190,16 @@ class CdmAttributeContext(CdmObjectDefinition):
         self.parent = parent_ref
 
     def validate(self) -> bool:
-        return bool(self.name) and bool(self.type)
+        missing_fields = []
+        if not bool(self.name):
+            missing_fields.append('name')
+        if not bool(self.type):
+            missing_fields.append('type')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

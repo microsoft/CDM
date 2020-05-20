@@ -66,10 +66,9 @@ describe('Cdm.Storage.StorageConfig', () => {
     });
 
     it('TestSystemAndResourceAdapters', async (done) => {
-        const path: string = testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestSystemAndResourceAdapters');
-
         // Create a corpus to load the config.
-        const cdmCorpus: CdmCorpusDefinition = getLocalCorpus(path);
+        const outputFolder: string = testHelper.getExpectedOutputFolderPath(testsSubpath, 'TestSystemAndResourceAdapters');
+        const cdmCorpus: CdmCorpusDefinition = getLocalCorpus(outputFolder);
         cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
 
         const differentCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
@@ -91,15 +90,15 @@ describe('Cdm.Storage.StorageConfig', () => {
 });
 
 function getLocalCorpus(testFilesInputRoot: string, testFilesOutputRoot?: string): CdmCorpusDefinition {
-    const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+    const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
 
-    cdmCorpus.storage.defaultNamespace = 'local';
+    corpus.storage.defaultNamespace = 'local';
 
-    cdmCorpus.storage.mount('local', new LocalAdapter(testFilesInputRoot));
+    corpus.storage.mount('local', new LocalAdapter(testFilesInputRoot));
 
-    if (testFilesOutputRoot) {
-        cdmCorpus.storage.mount('target', new LocalAdapter(testFilesOutputRoot));
+    if (testFilesOutputRoot !== undefined) {
+        corpus.storage.mount('target', new LocalAdapter(testFilesOutputRoot));
     }
 
-    return cdmCorpus;
+    return corpus;
 }

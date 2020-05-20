@@ -60,7 +60,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <summary>
         /// Log to DEBUG level.
         /// </summary>
-        /// <param name="tag">The tag, usually the class which is calling the method.</param>
+        /// <param name="tag">The tag, usually the class that is calling the method.</param>
         /// <param name="ctx">The CDM corpus context.</param>
         /// <param name="message">The message.</param>
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
@@ -72,7 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <summary>
         /// Log to INFO level.
         /// </summary>
-        /// <param name="tag">The tag, usually the class which is calling the method.</param>
+        /// <param name="tag">The tag, usually the class that is calling the method.</param>
         /// <param name="ctx">The CDM corpus context.</param>
         /// <param name="message">The message.</param>
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
@@ -84,7 +84,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <summary>
         /// Log to WARNING level.
         /// </summary>
-        /// <param name="tag">The tag, usually the class which is calling the method.</param>
+        /// <param name="tag">The tag, usually the class that is calling the method.</param>
         /// <param name="ctx">The CDM corpus context.</param>
         /// <param name="message">The message.</param>
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
@@ -96,7 +96,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <summary>
         /// Log to ERROR level.
         /// </summary>
-        /// <param name="tag">The tag, usually the class which is calling the method.</param>
+        /// <param name="tag">The tag, usually the class that is calling the method.</param>
         /// <param name="ctx">The CDM corpus context.</param>
         /// <param name="message">The message.</param>
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
@@ -108,16 +108,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <summary>
         /// Formats the message into a string.
         /// </summary>
-        /// <param name="tag">The tag, usually the class which is calling the method.</param>
+        /// <param name="tag">The tag, usually the class that is calling the method.</param>
         /// <param name="message">The message.</param>
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
-        /// <returns>A formated string.</returns>
+        /// <returns>A formatted string.</returns>
         private static string FormatMessage(string tag, string message, string path = null)
         {
             return (path != null) ? $"{tag} | {message} | {path}" :
                 $"{tag} | {message}";
         }
 
+        /// <summary>
+        /// Log to the specified status level by using the status event on the corpus context (if it exists) or the default status event.
+        /// </summary>
+        /// <param name="level">The status level to log to.</param>
+        /// <param name="ctx">The CDM corpus context.</param>
+        /// <param name="tag">The tag, usually the class that is calling the method.</param>
+        /// <param name="message">The message.</param>
+        /// <param name="path">The path, usually denotes the class and method calling this method.</param>
+        /// <param name="defaultStatusEvent">The default status event (log using the default logger).</param>
         private static void Log(CdmStatusLevel level, CdmCorpusContext ctx, string tag, string message, string path, Action<string> defaultStatusEvent)
         {
             if (level >= ctx.ReportAtLevel)

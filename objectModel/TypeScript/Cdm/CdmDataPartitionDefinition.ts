@@ -11,7 +11,6 @@ import {
     traitToPropertyMap,
     VisitCallback
 } from '../internal';
-import { KeyValPair } from '../Persistence/CdmFolder/types';
 import * as timeUtils from '../Utilities/timeUtils';
 
 /**
@@ -41,7 +40,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
     /**
      * @inheritdoc
      */
-    public arguments?: KeyValPair[];
+    public arguments?: Map<string, string[]>;
 
     /**
      * @inheritdoc
@@ -52,6 +51,20 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
      * @inheritdoc
      */
     public lastFileModifiedTime: Date;
+
+    /**
+     * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+     */
+    public get lastChildFileModifiedTime(): Date {
+        throw new Error('Not implemented');
+    }
+
+    /**
+     * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+     */
+    public set lastChildFileModifiedTime(time: Date) {
+        throw new Error('Not implemented');
+    }
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.dataPartitionDef;
@@ -72,7 +85,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
         super(ctx);
         this.name = name;
         this.objectType = cdmObjectType.dataPartitionDef;
-        this.arguments = [];
+        this.arguments = new Map();
         this.inferred = false;
         this.traitToPropertyMap = new traitToPropertyMap(this);
     }

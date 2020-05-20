@@ -5,6 +5,7 @@ from typing import List, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.utilities import TraitToPropertyMap, copy_data_utils
+from cdm.persistence.modeljson.utils import ignored_traits
 
 from . import extension_helper, utils
 from .types import Attribute
@@ -23,7 +24,9 @@ class TypeAttributePersistence:
 
         # Do a conversion between CDM data format and model.json data type.
         attribute.data_format = TypeAttributePersistence._data_type_from_data(data.dataType.lower())
-        attribute.description = data.get('description')
+
+        if data.get('description') and not data.get('description').isspace():
+            attribute.description = data.get('description')
 
         if data.get('isHidden'):
             is_hidden_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.hidden')
@@ -37,19 +40,14 @@ class TypeAttributePersistence:
 
     @staticmethod
     async def to_data(instance: 'CdmTypeAttributeDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions') -> 'Attribute':
-        applied_traits = \
-            [trait for trait in instance.applied_traits if not trait.is_from_property] \
-            if instance.applied_traits else None
         result = Attribute()
-
         result.name = instance.name
         description = instance._fetch_property('description')
         if description:
             result.description = description
         result.dataType = TypeAttributePersistence._data_type_to_data(instance.data_format)
-        result.traits = copy_data_utils._array_copy_data(res_opt, applied_traits, options)
 
-        await utils.process_annotations_to_data(instance.ctx, result, instance.applied_traits)
+        await utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.applied_traits)
 
         t2pm = TraitToPropertyMap(instance)
 

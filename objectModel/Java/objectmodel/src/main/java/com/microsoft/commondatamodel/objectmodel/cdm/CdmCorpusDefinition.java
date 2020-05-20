@@ -4,6 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -15,14 +16,8 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageManager;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.DocsResult;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 
-import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,14 +36,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.apache.commons.lang3.tuple.Pair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdmCorpusDefinition {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmCorpusDefinition.class);
-
   private static AtomicInteger nextId = new AtomicInteger(0);
   private final StorageManager storage;
   private final PersistenceLayer persistence;
@@ -100,7 +93,7 @@ public class CdmCorpusDefinition {
     this.objectCache = new LinkedHashMap<>();
     this.documentLibrary = new DocumentLibrary();
 
-    // the default for the default is to make entity attributes into foreign key references when they point at one other instance and 
+    // the default for the default is to make entity attributes into foreign key references when they point at one other instance and
     // to ignore the other entities when there are an array of them
     Set<String> directives = new LinkedHashSet<> ();
     directives.add("normalized");
@@ -258,7 +251,11 @@ public class CdmCorpusDefinition {
 
   private void checkPrimaryKeyAttributes(final CdmEntityDefinition resolvedEntity, final ResolveOptions resOpt) {
     if (resolvedEntity.fetchResolvedTraits(resOpt).find(resOpt, "is.identifiedBy") == null) {
-      LOGGER.warn("There is a primary key missing for the entry '{}'.", resolvedEntity.getName());
+      Logger.warning(
+          CdmCorpusDefinition.class.getSimpleName(),
+          this.ctx,
+          Logger.format("There is a primary key missing for the entry '{0}'.", resolvedEntity.getName())
+      );
     }
   }
 
@@ -561,9 +558,19 @@ public class CdmCorpusDefinition {
                           (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(missing, false, resOpt).join();
 
                   if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
-                    LOGGER.info("Resolved import for '{}' {}.", newDoc.getName(), doc.getAtCorpusPath());
+                    Logger.info(
+                        CdmCorpusDefinition.class.getSimpleName(),
+                        this.ctx,
+                        Logger.format("Resolved import for '{0}' {1}.", newDoc.getName(), doc.getAtCorpusPath()),
+                        doc.getAtCorpusPath()
+                    );
                   } else {
-                    LOGGER.warn("Unable to resolve import for '{}' {}.", missing, doc.getAtCorpusPath());
+                    Logger.warning(
+                        CdmCorpusDefinition.class.getSimpleName(),
+                        this.ctx,
+                        Logger.format("Unable to resolve import for '{0}' {1}.", missing, doc.getAtCorpusPath()),
+                        doc.getAtCorpusPath()
+                    );
                   }
                 }
               });
@@ -618,7 +625,12 @@ public class CdmCorpusDefinition {
       }
       if (preEnd == 0) {
         // absolute reference
-        LOGGER.error("no support for absolute references yet. fix '{}'", symbol);
+        Logger.error(
+            CdmCorpusDefinition.class.getSimpleName(),
+            ctx,
+            Logger.format("no support for absolute references yet. fix '{0}'", symbol),
+            ctx.getRelativePath()
+        );
         return null;
       }
       if (preEnd > 0) {
@@ -629,14 +641,19 @@ public class CdmCorpusDefinition {
 
         CdmDocumentDefinition tempMoniker = null;
         boolean usingWrtDoc = false;
-        if (fromDoc.getImportPriorities().getMonikerPriorityMap().containsKey(prefix)) {
-          tempMoniker = fromDoc.getImportPriorities().getMonikerPriorityMap()
-              .get(prefix);
+
+        if (fromDoc != null && fromDoc.getImportPriorities() != null && 
+            fromDoc.getImportPriorities().getMonikerPriorityMap() != null &&
+            fromDoc.getImportPriorities().getMonikerPriorityMap().containsKey(prefix)) {
           
-        } else if (wrtDoc.getImportPriorities().getMonikerPriorityMap().containsKey(prefix)) {
+          tempMoniker = fromDoc.getImportPriorities().getMonikerPriorityMap().get(prefix);
+
+        } else if (wrtDoc != null && wrtDoc.getImportPriorities() != null &&
+          wrtDoc.getImportPriorities().getMonikerPriorityMap() != null && 
+          wrtDoc.getImportPriorities().getMonikerPriorityMap().containsKey(prefix)) {
+          
           // if that didn't work, then see if the wrtDoc can find the moniker.
-          tempMoniker = wrtDoc.getImportPriorities().getMonikerPriorityMap()
-              .get(prefix);
+          tempMoniker = wrtDoc.getImportPriorities().getMonikerPriorityMap().get(prefix);
           usingWrtDoc = true;
         }
 
@@ -733,7 +750,7 @@ public class CdmCorpusDefinition {
       switch (expectedType) {
         case TraitRef: {
           if (found.getObjectType() != CdmObjectType.TraitDef) {
-            LOGGER.error("Expected type trait: '{}'", symbolDef);
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Expected type trait: '{0}'", symbolDef));
             found = null;
           }
 
@@ -742,7 +759,7 @@ public class CdmCorpusDefinition {
 
         case DataTypeRef: {
           if (found.getObjectType() != CdmObjectType.DataTypeDef) {
-            LOGGER.error("Expected type dataType: '{}'", symbolDef);
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Expected type dataType: '{0}'", symbolDef));
             found = null;
           }
 
@@ -751,7 +768,7 @@ public class CdmCorpusDefinition {
 
         case EntityRef: {
           if (found.getObjectType() != CdmObjectType.EntityDef) {
-            LOGGER.error("Expected type entity: '{}'", symbolDef);
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Expected type entity: '{0}'", symbolDef));
             found = null;
           }
 
@@ -760,7 +777,7 @@ public class CdmCorpusDefinition {
 
         case ParameterDef: {
           if (found.getObjectType() != CdmObjectType.ParameterDef) {
-            LOGGER.error("Expected type parameter: '{}'", symbolDef);
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Expected type parameter: '{0}'", symbolDef));
             found = null;
           }
 
@@ -769,7 +786,7 @@ public class CdmCorpusDefinition {
 
         case PurposeRef: {
           if (found.getObjectType() != CdmObjectType.PurposeDef) {
-            LOGGER.error("Expected type purpose: '{}'", symbolDef);
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Expected type purpose: '{0}'", symbolDef));
             found = null;
           }
 
@@ -778,7 +795,7 @@ public class CdmCorpusDefinition {
 
         case AttributeGroupRef: {
           if (found.getObjectType() != CdmObjectType.AttributeGroupDef) {
-            LOGGER.error("Expected type attributeGroup: '{}'", symbolDef);
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Expected type attributeGroup: '{0}'", symbolDef));
             found = null;
           }
 
@@ -826,7 +843,7 @@ public class CdmCorpusDefinition {
     if (docsNotIndexed.size() > 0) {      // Index any imports.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.getNeedsIndexing()) {
-          LOGGER.debug("index start: {}", doc.getAtCorpusPath());
+          Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("index start: {0}", doc.getAtCorpusPath()), "indexDocuments");
           doc.clearCaches();
           doc.getImportPriorities();
         }
@@ -869,7 +886,7 @@ public class CdmCorpusDefinition {
       // Finish up.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.getNeedsIndexing()) {
-          LOGGER.debug("index finish: {}", doc.getAtCorpusPath());
+          Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("index finish: {0}", doc.getAtCorpusPath()), "indexDocuments");
           this.finishDocumentResolve(doc);
         }
       }
@@ -898,8 +915,12 @@ public class CdmCorpusDefinition {
         final StorageAdapter namespaceAdapter = this.storage.fetchAdapter(nameSpace);
 
         if (namespaceFolder == null || namespaceAdapter == null) {
-          LOGGER.error("The namespace '{}' has not been registered, objectPath '{}'", nameSpace, objectPath);
-
+          Logger.error(
+              CdmCorpusDefinition.class.getSimpleName(),
+              this.ctx,
+              Logger.format("The namespace '{0}' has not been registered, objectPath '{1}'", nameSpace, objectPath),
+              "loadFolderOrDocumentAsync"
+          );
           return CompletableFuture.completedFuture(null);
         }
 
@@ -936,7 +957,7 @@ public class CdmCorpusDefinition {
    * @see #fetchObjectAsync(String, CdmObject)
    */
   public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(final String objectPath) {
-    return fetchObjectAsync(objectPath, null).thenApply(cdmObject -> (T) cdmObject);
+    return fetchObjectAsync(objectPath, null).thenApply(cdmObject -> cdmObject != null ? (T) cdmObject : null);
   }
 
   /**
@@ -953,7 +974,7 @@ public class CdmCorpusDefinition {
       final CdmObject cdmObject) {
     return
         fetchObjectAsync(objectPath, cdmObject, false, false)
-            .thenApply(fetchedCdmObject -> (T) fetchedCdmObject);
+            .thenApply(fetchedCdmObject -> fetchedCdmObject != null ? (T) fetchedCdmObject : null);
   }
 
   /**
@@ -973,7 +994,7 @@ public class CdmCorpusDefinition {
       final boolean shallowValidation) {
     return
         fetchObjectAsync(objectPath, cdmObject, false, shallowValidation)
-            .thenApply(fetchedCdmObject -> (T) fetchedCdmObject);
+            .thenApply(fetchedCdmObject -> fetchedCdmObject != null ? (T) fetchedCdmObject : null);
   }
 
   CompletableFuture<CdmObject> fetchObjectAsync(
@@ -996,7 +1017,7 @@ public class CdmCorpusDefinition {
       documentPath = absolutePath.substring(0, documentNameIndex);
     }
 
-    LOGGER.debug("request object: {}", objectPath);
+    Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("request object: {0}", objectPath), "fetchObjectAsync");
 
     final String finalDocumentPath = documentPath;
     final int finalDocumentNameIndex = documentNameIndex;
@@ -1027,7 +1048,12 @@ public class CdmCorpusDefinition {
 
         final CdmObject result = ((CdmDocumentDefinition) loadedCdmObject).fetchObjectFromDocumentPath(remainingObjectPath);
         if (null == result) {
-          LOGGER.error("Could not find symbol '{}' in document[{}]", remainingObjectPath, loadedCdmObject.getAtCorpusPath());
+          Logger.error(
+              CdmCorpusDefinition.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Could not find symbol '{0}' in document[{1}]", remainingObjectPath, loadedCdmObject.getAtCorpusPath()),
+              "fetchObjectAsync"
+          );
         }
 
         return CompletableFuture.completedFuture(result);
@@ -1035,6 +1061,16 @@ public class CdmCorpusDefinition {
 
       return CompletableFuture.completedFuture(null);
     });
+  }
+
+  public void setEventCallback(EventCallback status) {
+    setEventCallback(status, CdmStatusLevel.Info);
+  }
+
+  public void setEventCallback(EventCallback status, CdmStatusLevel reportAtLevel) {
+    ResolveContext ctx = (ResolveContext) this.ctx;
+    ctx.setStatusEvent(status);
+    ctx.setReportAtLevel(reportAtLevel);
   }
 
   private CompletableFuture<Void> visitManifestTreeAsync(
@@ -1150,7 +1186,7 @@ public class CdmCorpusDefinition {
             continue;
           }
           final CdmEntityDefinition resEntity;
-          // make options wrt this entity document and "relational" always 
+          // make options wrt this entity document and "relational" always
           Set<String> directives = new LinkedHashSet<> ();
           directives.add("normalized");
           directives.add("referenceOnly");
@@ -1167,16 +1203,7 @@ public class CdmCorpusDefinition {
 
           // find outgoing entity relationships using attribute context
           final ArrayList<CdmE2ERelationship> outgoingRelationships =
-              this.findOutgoingRelationships(resOpt, resEntity, resEntity.getAttributeContext());
-
-          // if the entity is a resolved entity, change the relationships to point to the resolved versions
-          if (isResolvedEntity && this.resEntMap != null) {
-            for (final CdmE2ERelationship rel : outgoingRelationships) {
-              if (this.resEntMap.containsKey(rel.getToEntity())) {
-                rel.setToEntity(this.resEntMap.get(rel.getToEntity()));
-              }
-            }
-          }
+              this.findOutgoingRelationships(resOpt, resEntity, resEntity.getAttributeContext(), isResolvedEntity);
 
           this.outgoingRelationships.put(entity, outgoingRelationships);
 
@@ -1230,13 +1257,22 @@ public class CdmCorpusDefinition {
       final ResolveOptions resOpt,
       final CdmEntityDefinition resEntity,
       final CdmAttributeContext attCtx) {
-    return findOutgoingRelationships(resOpt, resEntity, attCtx, null);
+    return findOutgoingRelationships(resOpt, resEntity, attCtx, false, null);
   }
 
   private ArrayList<CdmE2ERelationship> findOutgoingRelationships(
       final ResolveOptions resOpt,
       final CdmEntityDefinition resEntity,
       final CdmAttributeContext attCtx,
+      final boolean isResolvedEntity) {
+    return findOutgoingRelationships(resOpt, resEntity, attCtx, isResolvedEntity, null);
+  }
+
+  private ArrayList<CdmE2ERelationship> findOutgoingRelationships(
+      final ResolveOptions resOpt,
+      final CdmEntityDefinition resEntity,
+      final CdmAttributeContext attCtx,
+      final boolean isResolvedEntity,
       CdmAttributeContext generatedAttSetContext) {
     final ArrayList<CdmE2ERelationship> outRels = new ArrayList<>();
 
@@ -1286,19 +1322,31 @@ public class CdmCorpusDefinition {
                   .replace(child.getName() + "_", "");
 
               final CdmE2ERelationship newE2ERel = new CdmE2ERelationship(this.ctx, "");
-              newE2ERel.setFromEntity(
-                  this.storage.createAbsoluteCorpusPath(
-                      resEntity
-                          .getAtCorpusPath()
-                          .replace("wrtSelf_", ""),
-                      resEntity));
+
+              if (isResolvedEntity) {
+                newE2ERel.setFromEntity(resEntity.getAtCorpusPath());
+                if (this.resEntMap.containsKey(toEntity.getAtCorpusPath())) {
+                  newE2ERel.setToEntity(this.resEntMap.get(toEntity.getAtCorpusPath()));
+                } else {
+                  newE2ERel.setToEntity(toEntity.getAtCorpusPath());
+                }
+              } else {
+                // find the path of the unresolved entity using the attribute context of the resolved entity
+                CdmObjectReference refToLogicalEntity = resEntity.getAttributeContext().getDefinition();
+
+                CdmEntityDefinition unResolvedEntity = null;
+                if (refToLogicalEntity != null) {
+                  unResolvedEntity = refToLogicalEntity.<CdmEntityDefinition>fetchObjectDefinition(resOpt);
+                }
+                final CdmEntityDefinition selectedEntity = unResolvedEntity != null ? unResolvedEntity : resEntity;
+                final String selectedEntCorpusPath = unResolvedEntity != null ? unResolvedEntity.getAtCorpusPath() : resEntity.getAtCorpusPath().replace("wrtSelf_", "");
+
+                newE2ERel.setFromEntity(this.getStorage().createAbsoluteCorpusPath(selectedEntCorpusPath, selectedEntity));
+                newE2ERel.setToEntity(toEntity.getAtCorpusPath());
+              }
               newE2ERel.setFromEntityAttribute(fromAtt);
-              newE2ERel.setToEntity(this.storage.createAbsoluteCorpusPath(
-                  toEntity
-                      .getAtCorpusPath()
-                      .replace("wrtSelf_", ""),
-                  toEntity));
               newE2ERel.setToEntityAttribute(toAtt.get(0));
+
               outRels.add(newE2ERel);
             }
           }
@@ -1306,7 +1354,7 @@ public class CdmCorpusDefinition {
 
         // repeat the process on the child node
         final ArrayList<CdmE2ERelationship>
-            subOutRels = this.findOutgoingRelationships(resOpt, resEntity, child, newGenSet);
+            subOutRels = this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet);
         outRels.addAll(subOutRels);
       }
     }
@@ -1449,6 +1497,13 @@ public class CdmCorpusDefinition {
       CdmDataTypeDefinition dt = paramDef.getDataTypeRef().fetchObjectDefinition(resOpt);
       if (null == dt) {
         dt = paramDef.getDataTypeRef().fetchObjectDefinition(resOpt);
+        Logger.error(
+          CdmCorpusDefinition.class.getSimpleName(),
+          ctx,
+          Logger.format("parameter '{0}' has an unexpected dataType.", paramDef.getName()),
+          ctx.getRelativePath()
+        );
+        return null;
       }
 
       // Compare with passed in value or default for parameter.
@@ -1491,7 +1546,12 @@ public class CdmCorpusDefinition {
           }
 
           if (expectedTypes.size() == 0) {
-            LOGGER.error("CdmParameterDefinition '{}' has an unexpected data type.", paramDef.getName());
+            Logger.error(
+                CdmCorpusDefinition.class.getSimpleName(),
+                ctx,
+                Logger.format("CdmParameterDefinition '{0}' has an unexpected data type.", paramDef.getName()),
+                ctx.getRelativePath()
+            );
           }
 
           // If a string constant, resolve to an object ref.
@@ -1547,9 +1607,14 @@ public class CdmCorpusDefinition {
           }
 
           if (expectedTypes.indexOf(foundType) == -1) {
-            LOGGER.error("CdmParameterDefinition '{}' has the dataType of '{}' but the value '{}' doesn't resolve to a known '{}' reference", paramDef.getName(), expected, foundDesc, expected);
+            Logger.error(
+                CdmCorpusDefinition.class.getSimpleName(),
+                ctx,
+                Logger.format("CdmParameterDefinition '{0}' has the dataType of '{1}' but the value '{2}' doesn't resolve to a known '{3}' reference", paramDef.getName(), expected, foundDesc, expected),
+                currentDoc.getFolderPath() + ctx.getRelativePath()
+            );
           } else {
-            LOGGER.info("Resolved '{}'", foundDesc);
+            Logger.info(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Resolved '{0}'", foundDesc), ctx.getRelativePath());
           }
         }
       }
@@ -1567,7 +1632,7 @@ public class CdmCorpusDefinition {
       final CdmValidationStep nextStage) {
     final ResolveContext ctx = (ResolveContext) this.ctx;
 
-    LOGGER.debug(statusMessage);
+    Logger.debug(CdmCorpusDefinition.class.getSimpleName(), ctx, statusMessage);
 
     final MutableInt entityNesting = new MutableInt(0);
     for (final CdmDocumentDefinition doc : this.documentLibrary.listAllDocuments()) {
@@ -1594,17 +1659,17 @@ public class CdmCorpusDefinition {
     final AtomicInteger errorCount = new AtomicInteger();
     final VisitCallback preChildren = (iObject, path) -> {
       if (!iObject.validate()) {
-        LOGGER.error(
-            "Integrity check failed for folderPath: '{}', path: '{}'",
-            currentDoc.getFolderPath(),
-            path);
         errorCount.getAndIncrement();
       } else {
         iObject.setCtx(ctx);
       }
 
-      LOGGER.info("Checked, folderPath: '{}', path: '{}'", currentDoc.getFolderPath(), path);
-
+      Logger.info(
+          CdmCorpusDefinition.class.getSimpleName(),
+          ctx,
+          Logger.format("Checked, folderPath: '{0}', path: '{1}'", currentDoc.getFolderPath(), path),
+          currentDoc.getFolderPath() + path
+      );
       return false;
     };
 
@@ -1643,7 +1708,11 @@ public class CdmCorpusDefinition {
             corpusPath = corpusPathRoot + "/" + path;
           }
           if (currentDoc.internalDeclarations.containsKey(path)) {
-            LOGGER.error("Duplicate declaration for item: '{}'", corpusPath);
+            Logger.error(
+                CdmCorpusDefinition.class.getSimpleName(),
+                ctx,
+                Logger.format("Duplicate declaration for item: '{0}'", corpusPath)
+            );
 
             return false;
           }
@@ -1651,12 +1720,20 @@ public class CdmCorpusDefinition {
           currentDoc.internalDeclarations.putIfAbsent(path, (CdmObjectDefinitionBase) iObject);
 
           this.registerSymbol(path, currentDoc);
-          LOGGER.info("Declared: '{}'", corpusPath);
+          Logger.info(
+              CdmCorpusDefinition.class.getSimpleName(),
+              ctx,
+              Logger.format("Declared: '{0}'", corpusPath)
+          );
           break;
         }
 
         default: {
-          LOGGER.debug("ObjectType not recognized: '{}'", iObject.getObjectType().name());
+          Logger.debug(
+              CdmCorpusDefinition.class.getSimpleName(),
+              ctx,
+              Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name())
+          );
           break;
         }
       }
@@ -1688,17 +1765,28 @@ public class CdmCorpusDefinition {
             final CdmObjectDefinition resNew = objectRef.fetchObjectDefinition(resOpt);
 
             if (null == resNew) {
-              String message = MessageFormat.format("Unable to resolve the reference: ''{0}'' to a known object, folderPath: ''{1}'', path: ''{2}''", objectRef.getNamedReference(), currentDoc.getFolderPath(), path);
+              String message = Logger.format(
+                  "Unable to resolve the reference: '{0}' to a known object, folderPath: '{1}', path: '{2}'",
+                  objectRef.getNamedReference(),
+                  currentDoc.getFolderPath(),
+                  path
+              );
+              String messagePath = currentDoc.getFolderPath() + path;
               // It's okay if references can't be resolved when shallow validation is enabled.
               if (resOpt.getShallowValidation()) {
-                LOGGER.warn(message);
+                Logger.warning(CdmCorpusDefinition.class.getSimpleName(), ctx, message, messagePath);
               } else {
-                LOGGER.error(message);
+                Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, message, messagePath);
               }
 
               final CdmObjectDefinition debugRes = objectRef.fetchObjectDefinition(resOpt);
             } else {
-              LOGGER.info("Resolved folderPath: '{}', path: '{}'", currentDoc.getFolderPath() , path);
+              Logger.info(
+                  CdmCorpusDefinition.class.getSimpleName(),
+                  ctx,
+                  Logger.format("Resolved folderPath: '{0}', path: '{1}'", currentDoc.getFolderPath(), path),
+                  currentDoc.getFolderPath() + path
+              );
             }
           }
 
@@ -1706,7 +1794,11 @@ public class CdmCorpusDefinition {
         }
 
         default: {
-          LOGGER.debug("ObjectType not recognized: '{}'", iObject.getObjectType().name());
+          Logger.debug(
+              CdmCorpusDefinition.class.getSimpleName(),
+              ctx,
+              Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name())
+          );
           break;
         }
       }
@@ -1724,7 +1816,11 @@ public class CdmCorpusDefinition {
         }
 
         default: {
-          LOGGER.debug("ObjectType not recognized: '{}'", iObject.getObjectType().name());
+          Logger.debug(
+              CdmCorpusDefinition.class.getSimpleName(),
+              ctx,
+              Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name())
+          );
           break;
         }
       }
@@ -1743,7 +1839,7 @@ public class CdmCorpusDefinition {
 
     doc.getDefinitions().forEach(def -> {
       if (def.getObjectType() == CdmObjectType.EntityDef) {
-        LOGGER.debug("indexed: '{}'", def.getAtCorpusPath());
+        Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("indexed: '{0}'", def.getAtCorpusPath()));
       }
     });
   }
@@ -1883,10 +1979,13 @@ public class CdmCorpusDefinition {
               if (rt.getParameterValues().fetchParameter(iParam).isRequired()) {
                 found++;
                 if (rt.getParameterValues().fetchValue(iParam) == null) {
-                  LOGGER.error("no argument supplied for required parameter '{}' of trait '{}' on '{}'",
+                  String message = Logger.format(
+                      "no argument supplied for required parameter '{0}' of trait '{1}' on '{2}'",
                       rt.getParameterValues().fetchParameter(iParam).getName(),
                       rt.getTraitName(),
-                      obj.fetchObjectDefinition(resOpt).getName());
+                      obj.fetchObjectDefinition(resOpt).getName()
+                  );
+                  Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, message, currentDoc.getFolderPath() + ctx.getRelativePath());
                 } else {
                   resolved++;
                 }
@@ -1894,10 +1993,13 @@ public class CdmCorpusDefinition {
             }
           }
           if (found > 0 && found == resolved) {
-            LOGGER.info("found and resolved '{}' required parameters of trait '{}' on '{}'",
-                found,
-                rt.getTraitName(),
-                obj.fetchObjectDefinition(resOpt).getName());
+            String message = Logger.format(
+                "found and resolved '{0}' required parameters of trait '{1}' on '{2}'",
+                 found,
+                 rt.getTraitName(),
+                 obj.fetchObjectDefinition(resOpt).getName()
+            );
+            Logger.info(CdmCorpusDefinition.class.getSimpleName(), ctx, message, currentDoc.getFolderPath() + ctx.getRelativePath());
           }
         }
       }
@@ -1963,12 +2065,15 @@ public class CdmCorpusDefinition {
                 // If parameter type is entity, then the value should be an entity or ref to one
                 // same is true of 'dataType' data type.
                 aValue = this.constTypeCheck(resOpt, currentDoc, paramFound, aValue);
-                ((CdmArgumentDefinition) iObject).setValue(aValue);
+                if (aValue != null) {
+                  ((CdmArgumentDefinition) iObject).setValue(aValue);
+                }
               }
             }
           } catch (final Exception e) {
-            LOGGER.error(e.getLocalizedMessage());
-            LOGGER.error("Failed to resolve parameter on trait '{}'", ctx.getCurrentScope().getCurrentTrait() != null ? ctx.getCurrentScope().getCurrentTrait().getName() : null);
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, e.getLocalizedMessage(), path);
+            String message = Logger.format("Failed to resolve parameter on trait '{0}'", ctx.getCurrentScope().getCurrentTrait() != null ? ctx.getCurrentScope().getCurrentTrait().getName() : null);
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, message, currentDoc.getFolderPath() + path);
           }
 
           ctx.getCurrentScope().setCurrentParameter(ctx.getCurrentScope().getCurrentParameter() + 1);
@@ -1976,7 +2081,7 @@ public class CdmCorpusDefinition {
         }
 
         default: {
-          LOGGER.debug("ObjectType not recognized: '{}'", iObject.getObjectType().name());
+          Logger.debug(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name()));
           break;
         }
       }
@@ -1992,7 +2097,7 @@ public class CdmCorpusDefinition {
         }
 
         default: {
-          LOGGER.debug("ObjectType not recognized: '{}'", iObject.getObjectType().name());
+          Logger.debug(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("ObjectType not recognized: '{0}'", iObject.getObjectType().name()));
           break;
         }
       }
@@ -2005,7 +2110,7 @@ public class CdmCorpusDefinition {
     final ResolveContext ctx = (ResolveContext) this.ctx;
 
     // Cleanup References.
-    LOGGER.debug("Finishing...");
+    Logger.debug(CdmCorpusDefinition.class.getSimpleName(), ctx, "Finishing...");
 
     // Turn elevated traits back on, they are off by default and should work fully now that
     // everything is resolved.
@@ -2027,7 +2132,7 @@ public class CdmCorpusDefinition {
       return false;
     }
 
-    LOGGER.error(statusMessage);
+    Logger.error(CdmCorpusDefinition.class.getSimpleName(), this.ctx, statusMessage);
     return true;
   }
 
@@ -2078,7 +2183,12 @@ public class CdmCorpusDefinition {
           this.storage.fetchAdapter(((CdmContainerDefinition) currObject).getNamespace());
 
       if (adapter == null) {
-        LOGGER.error("Adapter not found for the Cdm object by ID " + currObject.getId() + ".");
+        Logger.error(
+            CdmCorpusDefinition.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Adapter not found for the Cdm object by ID {0}.", currObject.getId()),
+            "computeLastModifiedTimeFromObjectAsync"
+        );
         return null;
       }
 
@@ -2111,7 +2221,12 @@ public class CdmCorpusDefinition {
       final StorageAdapter adapter = this.storage.fetchAdapter(nameSpace);
 
       if (adapter == null) {
-        LOGGER.error("Adapter not found for the corpus path '{}'", corpusPath);
+        Logger.error(
+            CdmCorpusDefinition.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Adapter not found for the corpus path '{0}'", corpusPath),
+            "computeLastModifiedTimeFromPartitionPathAsync"
+        );
         return CompletableFuture.completedFuture(null);
       }
       return adapter.computeLastModifiedTimeAsync(corpusPath);

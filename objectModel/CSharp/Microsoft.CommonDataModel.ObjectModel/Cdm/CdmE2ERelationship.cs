@@ -3,7 +3,9 @@
 
 using Microsoft.CommonDataModel.ObjectModel.Enums;
 using Microsoft.CommonDataModel.ObjectModel.Utilities;
+using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 using System;
+using System.Collections.Generic;
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -96,8 +98,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.FromEntity) && !string.IsNullOrEmpty(this.FromEntityAttribute)
-                && !string.IsNullOrEmpty(this.ToEntity) && !string.IsNullOrEmpty(this.ToEntityAttribute);
+            List<string> missingFields = new List<string>();
+            if (string.IsNullOrWhiteSpace(this.FromEntity))
+                missingFields.Add("FromEntity");
+            if (string.IsNullOrWhiteSpace(this.FromEntityAttribute))
+                missingFields.Add("FromEntityAttribute");
+            if (string.IsNullOrWhiteSpace(this.ToEntity))
+                missingFields.Add("ToEntity");
+            if (string.IsNullOrWhiteSpace(this.ToEntityAttribute))
+                missingFields.Add("ToEntityAttribute");
+
+            if (missingFields.Count > 0)
+            {
+                Logger.Error(nameof(CdmE2ERelationship), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         [Obsolete]
@@ -125,17 +141,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 path = this.DeclaredPath;
             }
-
             if (preChildren != null && preChildren.Invoke(this, path))
             {
                 return false;
             }
-
             if (this.VisitDef(path, preChildren, postChildren))
             {
                 return true;
             }
-            
             if (postChildren != null && postChildren.Invoke(this, path))
             {
                 return true;

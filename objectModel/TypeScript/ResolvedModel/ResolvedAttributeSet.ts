@@ -263,6 +263,7 @@ export class ResolvedAttributeSet extends refCounted {
      */
     public applyTraits(
         traits: ResolvedTraitSet,
+        resOpt: resolveOptions,
         resGuide: CdmAttributeResolutionGuidance,
         actions: AttributeResolutionApplier[]): ResolvedAttributeSet {
         // let bodyCode = () =>
@@ -270,10 +271,10 @@ export class ResolvedAttributeSet extends refCounted {
             let rasResult: ResolvedAttributeSet = this;
             let rasApplied: ResolvedAttributeSet;
 
-            if (this.refCnt > 1 && rasResult.copyNeeded(traits, resGuide, actions)) {
+            if (this.refCnt > 1 && rasResult.copyNeeded(traits, resOpt, resGuide, actions)) {
                 rasResult = rasResult.copy();
             }
-            rasApplied = rasResult.apply(traits, resGuide, actions);
+            rasApplied = rasResult.apply(traits, resOpt, resGuide, actions);
 
             // now we are that
             rasResult.resolvedName2resolvedAttribute = rasApplied.resolvedName2resolvedAttribute;
@@ -289,6 +290,7 @@ export class ResolvedAttributeSet extends refCounted {
 
     public apply(
         traits: ResolvedTraitSet,
+        resOpt: resolveOptions,
         resGuide: CdmAttributeResolutionGuidance,
         actions: AttributeResolutionApplier[]): ResolvedAttributeSet {
         // let bodyCode = () =>
@@ -310,7 +312,7 @@ export class ResolvedAttributeSet extends refCounted {
                 const resAttTest: ResolvedAttribute = this.set[0];
                 for (const traitAction of actions) {
                     const ctx: applierContext = {
-                        resOpt: traits.resOpt,
+                        resOpt: resOpt,
                         resAttSource: resAttTest,
                         resGuide: resGuide
                     };
@@ -344,9 +346,11 @@ export class ResolvedAttributeSet extends refCounted {
                 if (subSet.set) {
                     if (makingCopy) {
                         resAtt = resAtt.copy();
+                        // making a copy of a subset (att group) also bring along the context tree for that whole group
+                        attCtxToMerge = resAtt.attCtx;
                     }
                     // the set contains another set. process those
-                    resAtt.target = subSet.apply(traits, resGuide, actions);
+                    resAtt.target = subSet.apply(traits, resOpt, resGuide, actions);
                 } else {
                     const rtsMerge: ResolvedTraitSet = resAtt.resolvedTraits.mergeSet(traits);
                     resAtt.resolvedTraits = rtsMerge;
@@ -671,7 +675,11 @@ export class ResolvedAttributeSet extends refCounted {
         // return p.measure(bodyCode);
     }
 
-    private copyNeeded(traits: ResolvedTraitSet, resGuide: CdmAttributeResolutionGuidance, actions: AttributeResolutionApplier[]): boolean {
+    private copyNeeded(
+        traits: ResolvedTraitSet,
+        resOpt: resolveOptions,
+        resGuide: CdmAttributeResolutionGuidance,
+        actions: AttributeResolutionApplier[]): boolean {
         // let bodyCode = () =>
         {
             if (!actions || actions.length === 0) {
@@ -684,7 +692,7 @@ export class ResolvedAttributeSet extends refCounted {
             for (let i: number = 0; i < l; i++) {
                 const resAtt: ResolvedAttribute = this.set[i];
                 for (const currentTraitAction of actions) {
-                    const ctx: applierContext = { resOpt: traits.resOpt, resAttSource: resAtt, resGuide: resGuide };
+                    const ctx: applierContext = { resOpt: resOpt, resAttSource: resAtt, resGuide: resGuide };
                     if (currentTraitAction.willAttributeModify(ctx)) {
                         return true;
                     }

@@ -1,11 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as fs from 'fs';
-import * as util from 'util';
 import {
     CdmCorpusDefinition,
-    CdmDataPartitionDefinition,
     CdmLocalEntityDeclarationDefinition,
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
@@ -199,120 +196,6 @@ describe('Persistence.CdmFolder.Manifest', () => {
         const maxTime: Date = timeUtils.maxTime(entity.lastFileModifiedTime, subManifest.lastFileModifiedTime);
         expect(timeUtils.getFormattedDateString(cdmManifest.lastChildFileModifiedTime))
             .toBe(timeUtils.getFormattedDateString(maxTime));
-        done();
-    });
-
-    /**
-     * Tests refreshing files that match the regular expression
-     */
-    it('TestRefreshDataPartitionPatterns', async (done) => {
-        const inputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestRefreshDataPartitionPatterns');
-
-        // get actual last modified time of pattern file
-        const actualLastModTime: Date = (await util.promisify(fs.stat)(inputPath)).mtime;
-
-        const cdmCorpus: CdmCorpusDefinition = testHelper.createCorpusForTest(testsSubpath, 'TestRefreshDataPartitionPatterns');
-        cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
-
-        const cdmManifest: CdmManifestDefinition =
-            await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');
-
-        const partitionEntity: CdmLocalEntityDeclarationDefinition =
-            cdmManifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
-        expect(partitionEntity.dataPartitions.length)
-            .toBe(1);
-
-        const timeBeforeLoad: Date = new Date();
-
-        await cdmManifest.fileStatusCheckAsync();
-
-        // file status check should check patterns and add two more partitions that match the pattern
-        // should not re-add already existing partitions
-        expect(partitionEntity.dataPartitions.length)
-            .toBe(8);
-
-        const partitionFromPattern: CdmDataPartitionDefinition = partitionEntity.dataPartitions.allItems[2];
-        expect(partitionFromPattern.location)
-            .toBe('partitions/someSubFolder/someSubPartition.csv');
-        expect(partitionFromPattern.specializedSchema)
-            .toBe('test special schema');
-
-        expect(partitionFromPattern.lastFileStatusCheckTime >= timeBeforeLoad)
-            .toBe(true);
-
-        // inherits the exhibited traits from pattern
-        expect(partitionFromPattern.exhibitsTraits.length)
-            .toBe(1);
-        expect(partitionFromPattern.exhibitsTraits.allItems[0].namedReference)
-            .toBe('is');
-
-        expect(partitionFromPattern.arguments.length)
-            .toBe(1);
-        expect(partitionFromPattern.arguments[0])
-            .toEqual({
-                name: 'testParam1',
-                value: '/someSubFolder/someSub'
-            });
-
-        // captures pattern in folder
-        const folderCapturePartition: CdmDataPartitionDefinition = partitionEntity.dataPartitions.allItems[3];
-        expect(folderCapturePartition.location)
-            .toBe('partitions/2018/folderCapture.csv');
-        expect(folderCapturePartition.arguments.length)
-            .toBe(1);
-        expect(folderCapturePartition.arguments[0])
-            .toEqual({
-                name: 'year',
-                value: '2018'
-            });
-
-        // multiple capture groups in folder
-        const multipleCapturePartition: CdmDataPartitionDefinition = partitionEntity.dataPartitions.allItems[4];
-        expect(multipleCapturePartition.location)
-            .toBe('partitions/2018/8/15/folderCapture.csv');
-        expect(multipleCapturePartition.arguments.length)
-            .toBe(3);
-        expect(multipleCapturePartition.arguments[0])
-            .toEqual({
-                name: 'year',
-                value: '2018'
-            });
-        expect(multipleCapturePartition.arguments[1])
-            .toEqual({
-                name: 'month',
-                value: '8'
-            });
-        expect(multipleCapturePartition.arguments[2])
-            .toEqual({
-                name: 'day',
-                value: '15'
-            });
-
-        // multiple captures in the same capture group
-        const multipleCaptureSameGroup: CdmDataPartitionDefinition = partitionEntity.dataPartitions.allItems[5];
-        expect(multipleCaptureSameGroup.location)
-            .toBe('partitions/2018/8/15/folderCaptureRepeatedGroup.csv');
-        expect(multipleCaptureSameGroup.arguments.length)
-            .toBe(1);
-        expect(multipleCaptureSameGroup.arguments[0])
-            .toEqual({
-                name: 'day',
-                value: '15'
-            });
-
-        // tests where there are more captures than parameters
-        const tooFewPartition: CdmDataPartitionDefinition = partitionEntity.dataPartitions.allItems[6];
-        expect(tooFewPartition.location)
-            .toBe('partitions/testTooFew.csv');
-        expect(tooFewPartition.arguments.length)
-            .toBe(0);
-
-        // tests where there are fewer captures than parameters
-        const tooManyPartition: CdmDataPartitionDefinition = partitionEntity.dataPartitions.allItems[7];
-        expect(tooManyPartition.location)
-            .toBe('partitions/testTooMany.csv');
-        expect(tooManyPartition.arguments.length)
-            .toBe(0);
         done();
     });
 

@@ -80,7 +80,9 @@ class LocalEntityDeclarationPersistence:
         if not entity:
             return None
 
-        entity.description = instance.explanation
+        if not entity.description:
+            entity.description = instance.explanation
+
         entity.lastFileStatusCheckTime = utils.get_formatted_date_string(instance.last_file_status_check_time)
         entity.lastFileModifiedTime = utils.get_formatted_date_string(instance.last_file_modified_time)
         entity.lastChildFileModifiedTime = utils.get_formatted_date_string(instance.last_child_file_modified_time)

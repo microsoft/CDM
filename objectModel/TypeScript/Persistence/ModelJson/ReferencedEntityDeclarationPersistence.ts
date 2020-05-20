@@ -18,7 +18,7 @@ import { ReferenceEntity, referenceEntityBaseProperties } from './types';
 import { Logger } from '../../Utilities/Logging/Logger';
 import * as timeUtils from '../../Utilities/timeUtils';
 import { processExtensionFromJson } from './ExtensionHelper';
-import { processAnnotationsFromData, processAnnotationsToData } from './utils';
+import { processAnnotationsFromData, processTraitsAndAnnotationsToData } from './utils';
 
 export class ReferencedEntityDeclarationPersistence {
     public static async fromData(
@@ -106,7 +106,7 @@ export class ReferencedEntityDeclarationPersistence {
             referenceEntity.isHidden = true;
         }
 
-        await processAnnotationsToData(instance.ctx, referenceEntity, instance.exhibitsTraits);
+        await processTraitsAndAnnotationsToData(instance.ctx, referenceEntity, instance.exhibitsTraits);
 
         if (propertiesTrait) {
             referenceEntity.modelId = propertiesTrait.arguments.allItems[0].value as string;

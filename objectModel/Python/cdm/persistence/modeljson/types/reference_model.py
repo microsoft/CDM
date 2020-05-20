@@ -12,5 +12,5 @@ class ReferenceModel(JObject):
     def __init__(self):
         super().__init__()
 
-        self.id = ''  # type: str
-        self.location = ''  # type: str
+        self.id = None  # type: str
+        self.location = None  # type: str

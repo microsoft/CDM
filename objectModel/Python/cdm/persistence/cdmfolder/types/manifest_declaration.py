@@ -10,11 +10,11 @@ class ManifestDeclaration(FileStatus):
     def __init__(self):
         super().__init__()
 
-        self.explanation = ''  # type: str
+        self.explanation = None  # type: str
         """The explanation."""
 
-        self.manifestName = ''  # type: str
+        self.manifestName = None  # type: str
         """The manifest name."""
 
-        self.definition = ''  # type: str
+        self.definition = None  # type: str
         """The corpus path to the definition of the sub folder."""

@@ -12,6 +12,8 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
@@ -96,7 +98,26 @@ export class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
      * @inheritdoc
      */
     public validate(): boolean {
-        return this.entityName && this.entityPath ? true : false;
+        const missingFields: string[] = [];
+        if (!this.entityName) {
+            missingFields.push('entityName');
+        }
+        if (!this.entityPath) {
+            missingFields.push('entityPath');
+        }
+
+        if (missingFields.length > 0) {
+            Logger.error(
+                CdmReferencedEntityDeclarationDefinition.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, missingFields),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**

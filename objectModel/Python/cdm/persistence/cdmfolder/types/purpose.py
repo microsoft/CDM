@@ -12,7 +12,7 @@ class Purpose(JObject):
     def __init__(self):
         super().__init__()
 
-        self.explanation = ''  # type: str
-        self.purposeName = ''  # type: str
+        self.explanation = None  # type: str
+        self.purposeName = None  # type: str
         self.extendsPurpose = None  # type: Union[str, PurposeReference]
-        self.exhibitsTraits = []  # type: List[Union[str, TraitReference]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]

@@ -10,10 +10,10 @@ class AttributeContext(JObject):
     def __init__(self):
         super().__init__()
 
-        self.explanation = ''  # type: str
-        self.type = ''  # type: str
-        self.name = ''  # type: str
-        self.parent = ''  # type: str
-        self.definition = ''  # type: str
-        self.appliedTraits = []  # type: Optional[List[str, TraitRefernce]]
-        self.contents = []  # type: Optional[List[str, AttributeContext]]
+        self.explanation = None  # type: str
+        self.type = None  # type: str
+        self.name = None  # type: str
+        self.parent = None  # type: str
+        self.definition = None  # type: str
+        self.appliedTraits = None  # type: Optional[List[str, TraitRefernce]]
+        self.contents = None  # type: Optional[List[str, AttributeContext]]

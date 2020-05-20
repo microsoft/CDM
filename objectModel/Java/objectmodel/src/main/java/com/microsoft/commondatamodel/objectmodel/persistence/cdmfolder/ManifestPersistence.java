@@ -24,17 +24,15 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Man
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ManifestPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ManifestPersistence.class);
-
   /**
    * Whether this persistence class has async methods.
    */
@@ -126,7 +124,7 @@ public class ManifestPersistence {
             } else if (EntityDeclaration.EntityDeclarationDefinitionType.ReferencedEntity.equals(type)) {
               entity = ReferencedEntityDeclarationPersistence.fromData(ctx, fullPath, entityNode);
             } else {
-              LOGGER.error("Couldn't find the type for entity declaration");
+              Logger.error(ManifestPersistence.class.getSimpleName(), ctx, "Couldn't find the type for entity declaration", "fromObject");
             }
           } else {
             if (entityNode.has("entitySchema")) {
@@ -139,7 +137,12 @@ public class ManifestPersistence {
           }
           manifest.getEntities().add(entity);
         } catch (final IOException ex) {
-          LOGGER.error("Failed to deserialize entity declaration. Reason: '{}'", ex.getLocalizedMessage());
+          Logger.error(
+              ManifestPersistence.class.getSimpleName(),
+              ctx,
+              Logger.format("Failed to deserialize entity declaration. Reason: '{0}'", ex.getLocalizedMessage()),
+              "fromObject"
+          );
         }
       }
     }
@@ -166,7 +169,12 @@ public class ManifestPersistence {
       ManifestContent dataObj = JMapper.MAP.readValue(jsonData, ManifestContent.class);
       return fromObject(ctx, docName, folder.getNamespace(), folder.getFolderPath(), dataObj);
     } catch (final Exception e) {
-      LOGGER.error("Could not convert '{}'. Reason '{}'.", docName, e.getLocalizedMessage());
+      Logger.error(
+          ManifestPersistence.class.getSimpleName(),
+          ctx,
+          Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage()),
+          "fromData"
+      );
       return null;
     }
   }
@@ -186,16 +194,7 @@ public class ManifestPersistence {
     manifestContent.setEntities(Utils.listCopyDataAsArrayNode(instance.getEntities().getAllItems(), resOpt, options));
     manifestContent.setSubManifests(Utils.listCopyDataAsCdmObject(instance.getSubManifests(), resOpt, options));
     manifestContent.setExplanation(instance.getExplanation());
-
-    if (instance.getExhibitsTraits() != null && instance.getExhibitsTraits().getCount() > 0) {
-      final List<CdmObject> traits = new ArrayList<>();
-      instance.getExhibitsTraits().forEach((CdmTraitReference trait) -> {
-        if (!trait.isFromProperty()) {
-          traits.add(trait);
-        }
-      });
-      manifestContent.setExhibitsTraits(Utils.listCopyDataAsArrayNode(traits, resOpt, options));
-    }
+    manifestContent.setExhibitsTraits(Utils.listCopyDataAsArrayNode(instance.getExhibitsTraits(), resOpt, options));
 
     if (instance.getRelationships() != null && instance.getRelationships().getCount() > 0) {
       manifestContent.setRelationships(

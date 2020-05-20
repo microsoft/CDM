@@ -538,7 +538,7 @@ export class CdmCorpusDefinition {
                     let usingWrtDoc: boolean = false;
                     if (fromDoc && fromDoc.importPriorities && fromDoc.importPriorities.monikerPriorityMap.has(prefix)) {
                         tempMonikerDoc = fromDoc.importPriorities.monikerPriorityMap.get(prefix);
-                    } else if (wrtDoc.importPriorities && wrtDoc.importPriorities.monikerPriorityMap.has(prefix)) {
+                    } else if (wrtDoc && wrtDoc.importPriorities && wrtDoc.importPriorities.monikerPriorityMap.has(prefix)) {
                         // if that didn't work, then see if the wrtDoc can find the moniker
                         tempMonikerDoc = wrtDoc.importPriorities.monikerPriorityMap.get(prefix);
                         usingWrtDoc = true;
@@ -1037,7 +1037,12 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public async _fetchObjectAsync(objectPath: string, obj: CdmObject, forceReload: boolean = false, shallowValidation: boolean = false): Promise<CdmObject> {
+    public async _fetchObjectAsync(
+        objectPath: string,
+        obj: CdmObject,
+        forceReload: boolean = false,
+        shallowValidation: boolean = false
+    ): Promise<CdmObject> {
         objectPath = this.storage.createAbsoluteCorpusPath(objectPath, obj);
 
         let documentPath: string = objectPath;
@@ -1208,12 +1213,6 @@ export class CdmCorpusDefinition {
                 '',
                 (iObject: CdmObject, path: string) => {
                     if (iObject.validate() === false) {
-                        Logger.error(
-                            CdmCorpusDefinition.name,
-                            ctx,
-                            `integrity check failed for : '${path}'`,
-                            currentDoc.folderPath + path
-                        );
                         errorCount++;
                     } else {
                         (iObject as CdmObjectBase).ctx = ctx;
@@ -1510,7 +1509,9 @@ export class CdmCorpusDefinition {
                                         // if parameter type is entity, then the value should be an entity or ref to one
                                         // same is true of 'dataType' dataType
                                         aValue = this.constTypeCheck(resOpt, currentDoc, paramFound, aValue);
-                                        (iObject as CdmArgumentDefinition).setValue(aValue);
+                                        if (aValue) {
+                                            (iObject as CdmArgumentDefinition).setValue(aValue);
+                                        }
                                     }
                                 }
                             } catch (e) {
@@ -1695,16 +1696,7 @@ export class CdmCorpusDefinition {
 
             // find outgoing entity relationships using attribute context
             const outgoingRelationships: CdmE2ERelationship[] =
-                this.findOutgoingRelationships(resOpt, resEntity, resEntity.attributeContext);
-
-            // if the entity is a resolved entity, change the relationships to point to the resolved versions
-            if (isResolvedEntity && this.resEntMap) {
-                for (const rel of outgoingRelationships) {
-                    if (this.resEntMap.has(rel.toEntity)) {
-                        rel.toEntity = this.resEntMap.get(rel.toEntity);
-                    }
-                }
-            }
+                this.findOutgoingRelationships(resOpt, resEntity, resEntity.attributeContext, isResolvedEntity);
 
             this.outgoingRelationships.set(entity, outgoingRelationships);
 
@@ -1742,6 +1734,7 @@ export class CdmCorpusDefinition {
         resOpt: resolveOptions,
         resEntity: CdmEntityDefinition,
         attCtx: CdmAttributeContext,
+        isResolvedEntity: boolean = false,
         generatedAttSetContext?: CdmAttributeContext): CdmE2ERelationship[] {
         const outRels: CdmE2ERelationship[] = [];
         if (attCtx && attCtx.contents) {
@@ -1797,11 +1790,31 @@ export class CdmCorpusDefinition {
                                 .replace(`${child.name}_`, '');
 
                             const newE2ERel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, '');
-                            newE2ERel.fromEntity =
-                                this.storage.createAbsoluteCorpusPath(resEntity.atCorpusPath.replace(/wrtSelf_/g, ''), resEntity);
+
+                            if (isResolvedEntity) {
+                                newE2ERel.fromEntity = resEntity.atCorpusPath;
+                                if (this.resEntMap.has(toEntity.atCorpusPath)) {
+                                    newE2ERel.toEntity = this.resEntMap.get(toEntity.atCorpusPath);
+                                } else {
+                                    newE2ERel.toEntity = toEntity.atCorpusPath;
+                                }
+                            } else {
+                                // find the path of the unresolved entity using the attribute context of the resolved entity
+                                const refToLogicalEntity: CdmObjectReference = resEntity.attributeContext.definition;
+
+                                let unResolvedEntity: CdmEntityDefinition;
+                                if (refToLogicalEntity) {
+                                    unResolvedEntity = refToLogicalEntity.fetchObjectDefinition(resOpt);
+                                }
+                                const selectedEntity: CdmEntityDefinition = unResolvedEntity !== undefined ? unResolvedEntity : resEntity;
+                                const selectedEntCorpusPath: string =
+                                    unResolvedEntity !== undefined ? unResolvedEntity.atCorpusPath : resEntity.atCorpusPath.replace('wrtSelf_', '');
+
+                                newE2ERel.fromEntity = this.storage.createAbsoluteCorpusPath(selectedEntCorpusPath, selectedEntity);
+                                newE2ERel.toEntity = toEntity.atCorpusPath;
+                            }
+
                             newE2ERel.fromEntityAttribute = fromAtt;
-                            newE2ERel.toEntity =
-                                this.storage.createAbsoluteCorpusPath(toEntity.atCorpusPath.replace(/wrtSelf_/g, ''), toEntity);
                             newE2ERel.toEntityAttribute = toAtt[0];
                             outRels.push(newE2ERel);
                         }
@@ -1810,7 +1823,7 @@ export class CdmCorpusDefinition {
 
                 // repeat the process on the child node
                 const subOutRels: CdmE2ERelationship[] =
-                    this.findOutgoingRelationships(resOpt, resEntity, child, newGenSet);
+                    this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet);
                 outRels.push.apply(outRels, subOutRels);
             }
         }

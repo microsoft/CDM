@@ -32,11 +32,11 @@ namespace customize_manifest
             // Configure storage adapters to point at the target local manifest location and at the fake public standards
             string pathFromExeToExampleRoot = "../../../../../../";
 
-            // Mount is as a local device.
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "3-customize-entities"));
+            // Mount it as local adapter.
+            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "3-customize-entities/sample-data"));
             cdmCorpus.Storage.DefaultNamespace = "local"; // local is our default. so any paths that start out navigating without a device tag will assume local
 
-            // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
+            // Mount it as the 'cdm' adapter, not the default so must use "cdm:/folder" to get there
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 
             // Example how to mount to the ADLS.
@@ -57,7 +57,7 @@ namespace customize_manifest
 
             // First we will make a new document right in the same folder as the manifest
             var docAbs = cdmCorpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, "MobileCareTeam.cdm.json");
-            
+
             // Import the cdm description of the original so the symbols will resolve
             docAbs.Imports.Add("cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/CareTeam.cdm.json", null);
 
@@ -107,9 +107,9 @@ namespace customize_manifest
             manifest.Entities.Add(entFlat);
 
             // This function will update all of the fileStatus times in the manifest
-            // await manifest.RefreshFileStatus();
+            // await manifest.RefreshAsync(null);
 
-            // Save the manifest along with linked definition files
+            // Save the manifest along with linked definition files.
             await manifest.SaveAsAsync("default-resolved.manifest.cdm.json", true);
         }
     }

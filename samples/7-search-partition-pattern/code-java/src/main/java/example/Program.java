@@ -40,16 +40,16 @@ public class Program {
     String pathFromExeToExampleRoot = "../../";
     String sampleEntityName = "Account";
 
-    // Mount is as a local device.
+    // Mount it as a local adapter.
     cdmCorpus.getStorage().mount(
         "local",
-        new LocalAdapter(pathFromExeToExampleRoot + "7-search-partition-pattern"));
+        new LocalAdapter(pathFromExeToExampleRoot + "7-search-partition-pattern/sample-data"));
     cdmCorpus.getStorage().setDefaultNamespace("local");
     // Local is our default.
     // So any paths that start out navigating without a device tag will assume local.
 
     // Fake cdm, normally use the github adapter.
-    // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there.
+    // Mount it as the 'cdm' adapter, not the default so must use "cdm:/folder" to get there.
     cdmCorpus.getStorage().mount(
         "cdm",
         new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
@@ -98,6 +98,8 @@ public class Program {
             false);
     dataPartitionPattern.setRootLocation("local:dataFiles");
     dataPartitionPattern.setRegularExpression("/(\\d{4})/(\\w+)/cohort(\\d+)\\.csv$");
+    // the line below demonstrates using "GlobPattern" which can be used instead of "RegularExpression"
+    // dataPartitionPattern.setGlobPattern("/*/cohort*.csv");
     System.out.println("    Assign regular expression of the data partition pattern to: "
         + dataPartitionPattern.getRegularExpression());
     System.out.println("    Assign root location of the data partition pattern to: "

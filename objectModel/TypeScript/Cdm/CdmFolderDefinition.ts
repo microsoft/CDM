@@ -11,6 +11,7 @@ import {
     CdmObjectDefinition,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
     Logger,
     ResolvedAttributeSet,
     ResolvedTraitSet,
@@ -97,7 +98,18 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @inheritdoc
      */
     public validate(): boolean {
-        return this.name ? true : false;
+        if (!this.name) {
+            Logger.error(
+                CdmFolderDefinition.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, ['name']),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**

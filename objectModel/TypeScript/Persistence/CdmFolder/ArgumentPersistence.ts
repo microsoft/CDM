@@ -49,6 +49,6 @@ export class ArgumentPersistence {
             return value;
         }
 
-        return { explanation: instance.explanation, name: instance.name, value: instance.value };
+        return { explanation: instance.explanation, name: instance.name, value: value };
     }
 }

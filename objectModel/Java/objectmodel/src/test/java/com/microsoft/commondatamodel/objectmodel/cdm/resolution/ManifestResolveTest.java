@@ -5,8 +5,13 @@ package com.microsoft.commondatamodel.objectmodel.cdm.resolution;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -53,4 +58,33 @@ public class ManifestResolveTest {
                        + "/electronicMedicalRecords/electronicMedicalRecords.manifest.cdm.json/Address",
                resolvedManifest.getEntities().get(1).getEntityPath());
    }
+
+    /**
+     * Test that resolving a manifest that hasn't been added to a folder doesn't throw any exceptions.
+     */
+    @Test
+    public void testResolvingManifestNotInFolder() {
+        try {
+            final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+            cdmCorpus.getStorage().mount("local", new LocalAdapter("C:\\path"));
+            cdmCorpus.getStorage().setDefaultNamespace("local");
+            cdmCorpus.setEventCallback((CdmStatusLevel level, String message) -> {
+                // We should see the following error message be logged. If not, fail.
+                if (!message.contains("Cannot resolve the manifest 'test' because it has not been added to a folder")) {
+                    Assert.fail();
+                }
+            }, CdmStatusLevel.Warning);
+
+            CdmManifestDefinition manifest = cdmCorpus.makeObject(CdmObjectType.ManifestDef, "test");
+            CdmEntityDefinition entity = cdmCorpus.makeObject(CdmObjectType.EntityDef, "entity");
+            CdmDocumentDefinition document = cdmCorpus.makeObject(CdmObjectType.DocumentDef, "entity" + CdmConstants.CDM_EXTENSION);
+            document.getDefinitions().add(entity);
+
+            // Don't add the document containing the entity to a folder either.
+            manifest.getEntities().add(entity);
+            manifest.createResolvedManifestAsync("resolved", null).join();
+        } catch (Exception e) {
+            Assert.fail("Exception should not be thrown when resolving a manifest that is not in a folder.");
+        }
+    }
 }

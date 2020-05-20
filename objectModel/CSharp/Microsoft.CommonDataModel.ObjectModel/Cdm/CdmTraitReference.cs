@@ -126,12 +126,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             const string kind = "rtsb";
-            ResolveContext ctx = this.Ctx as ResolveContext;
+            var ctx = this.Ctx as ResolveContext;
             // get referenced trait
-            CdmTraitDefinition trait = this.FetchObjectDefinition<CdmTraitDefinition>(resOpt) as CdmTraitDefinition;
+            var trait = this.FetchObjectDefinition<CdmTraitDefinition>(resOpt);
             ResolvedTraitSet rtsTrait = null;
             if (trait == null)
-                return ((CdmCorpusDefinition)ctx.Corpus).CreateEmptyResolvedTraitSet(resOpt);
+                return ctx.Corpus.CreateEmptyResolvedTraitSet(resOpt);
 
             // see if one is already cached
             // cache by name unless there are parameter
@@ -147,7 +147,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 cacheByName = !((bool)trait.ThisIsKnownToHaveParameters);
             }
 
-            string cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
+            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
             dynamic rtsResult = null;
             if (cacheTag != null)
                 ctx.Cache.TryGetValue(cacheTag, out rtsResult);
@@ -228,7 +228,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // cache was found
                 // get the SymbolSet for this cached object
                 string key = CdmCorpusDefinition.CreateCacheKeyFromObject(this, kind);
-                ((CdmCorpusDefinition)ctx.Corpus).DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
+                ctx.Corpus.DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
                 resOpt.SymbolRefSet = tempDocRefSet;
             }
 

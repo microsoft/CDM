@@ -5,6 +5,9 @@ import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Net
 import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
 
+/**
+ * @deprecated Please use the CdmStandardsAdapter instead.
+ */
 export class GithubAdapter extends NetworkAdapter implements StorageAdapter {
     private static readonly ghHost: string = 'raw.githubusercontent.com';
     private static readonly ghPath: string = '/Microsoft/CDM/master/schemaDocuments';

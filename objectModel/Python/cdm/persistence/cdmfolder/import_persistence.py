@@ -26,6 +26,7 @@ class ImportPersistence:
     def to_data(instance: CdmImport, res_opt: ResolveOptions, options: CopyOptions) -> Import:
         result = Import()
         result.corpusPath = instance.corpus_path
-        result.moniker = instance.moniker
+        if instance.moniker:
+            result.moniker = instance.moniker
 
         return result

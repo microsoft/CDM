@@ -7,7 +7,7 @@ import json
 import os
 from typing import List, Optional, Tuple, Set, TYPE_CHECKING
 
-from cdm.storage import GithubAdapter, LocalAdapter, ResourceAdapter
+from cdm.storage import CdmStandardsAdapter, LocalAdapter, ResourceAdapter
 from cdm.utilities import logger
 
 if TYPE_CHECKING:
@@ -25,6 +25,7 @@ class StorageManager:
         self._corpus = corpus
         self._namespace_folders = OrderedDict()  # type: Dict[str, CdmFolderDefinition]
         self._registered_adapter_types = {
+            'cdm-standards': 'CdmStandardsAdapter',
             'local': 'LocalAdapter',
             'adls': 'ADLSAdapter',
             'remote': 'RemoteAdapter',
@@ -36,7 +37,7 @@ class StorageManager:
 
         # set up default adapters.
         self.mount('local', LocalAdapter(root=os.getcwd()))
-        self.mount('cdm', GithubAdapter())
+        self.mount('cdm', CdmStandardsAdapter())
 
         self._system_defined_namespaces.add('local')
         self._system_defined_namespaces.add('cdm')

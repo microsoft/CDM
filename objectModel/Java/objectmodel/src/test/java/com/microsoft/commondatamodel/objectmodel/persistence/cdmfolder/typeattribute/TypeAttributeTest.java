@@ -13,13 +13,15 @@ import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.EntityPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.TypeAttributePersistence;
@@ -31,13 +33,17 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ent
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ConstantEntity;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import org.json.JSONException;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -172,6 +178,17 @@ public class TypeAttributeTest {
   public void testPropertyPersistence() throws InterruptedException, ExecutionException, JsonProcessingException {
     final ObjectMapper mapper = new ObjectMapper();
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestPropertyPersistence", null);
+
+    HashMap<String, String> functionParameters = new HashMap<>();
+    final EventCallback callback = (CdmStatusLevel statusLevel, String message1) -> {
+      functionParameters.put("functionWasCalled", "true");
+      if(statusLevel.equals(CdmStatusLevel.Error)) {
+        functionParameters.put("functionParameter1", statusLevel.toString());
+        functionParameters.put("functionParameter2", message1);
+      }
+    };
+    corpus.setEventCallback(callback);
+
     final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/PropertyEntity.cdm.json/PropertyEntity").get();
 
     // test loading properties
@@ -219,6 +236,15 @@ public class TypeAttributeTest {
     Assert.assertFalse(invalidValuesAttribute.fetchIsReadOnly());
     Assert.assertNull(invalidValuesAttribute.fetchMaximumLength());
 
+    // test loading values with empty default value list that should log error
+    final CdmTypeAttributeDefinition emptyDefaultValueAttribute = (CdmTypeAttributeDefinition)entity.getAttributes().get(4);
+    Assert.assertEquals(functionParameters.get("functionWasCalled"), "true");
+    Assert.assertEquals(functionParameters.get("functionParameter1"), CdmStatusLevel.Error.toString());
+    Assert.assertTrue(functionParameters.get("functionParameter2").contains("Default value missing languageTag or displayText."));
+    Assert.assertNull(emptyDefaultValueAttribute.fetchDefaultValue());
+    // set the default value to an empty list for testing that it should be removed from the generated json.
+    emptyDefaultValueAttribute.updateDefaultValue(new ArrayList());
+
     final Entity entityData = EntityPersistence.toData(entity, null, null);
 
     // test toData for properties
@@ -265,6 +291,9 @@ public class TypeAttributeTest {
     final TypeAttribute invalidValuesAttributeData = mapper.treeToValue(entityData.getAttributes().get(3), TypeAttribute.class);
     Assert.assertNull(invalidValuesAttributeData.getIsReadOnly());
     Assert.assertNull(invalidValuesAttributeData.getMaximumLength());
+
+    final TypeAttribute emptyDefaultValueAttributeData = mapper.treeToValue(entityData.getAttributes().get(4), TypeAttribute.class);
+    Assert.assertNull(emptyDefaultValueAttributeData.getDefaultValue());
   }
 
   /**
@@ -311,5 +340,121 @@ public class TypeAttributeTest {
     Assert.assertEquals(constantValues.get(1).get(1), "Opis na srpskom jeziku");
     Assert.assertEquals(constantValues.get(2).get(0), "cn");
     Assert.assertEquals(constantValues.get(2).get(1), "一些中文描述");
+  }
+
+  /**
+   * Testing that DataFormat to trait mappings are correct and that correct traits are added to the type attribute.
+   */
+  @Test
+  public void testDataFormatToTraitMappings() throws InterruptedException, ExecutionException {
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testDataFormatToTraitMappings", null);
+    final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").get();
+
+    // Check that the traits we expect for each DataFormat are found in the type attribute's applied traits.
+
+    // DataFormat = Int16
+    final CdmTypeAttributeDefinition attributeA = (CdmTypeAttributeDefinition) entity.getAttributes().get(0);
+    Set<String> aTraitNamedReferences = fetchTraitNamedReferences(attributeA.getAppliedTraits());
+    Assert.assertTrue(aTraitNamedReferences.contains("is.dataFormat.integer"));
+    Assert.assertTrue(aTraitNamedReferences.contains("is.dataFormat.small"));
+
+    // DataFormat = Int32
+    final CdmTypeAttributeDefinition attributeB = (CdmTypeAttributeDefinition) entity.getAttributes().get(1);
+    Set<String> bTraitNamedReferences = fetchTraitNamedReferences(attributeB.getAppliedTraits());
+    Assert.assertTrue(bTraitNamedReferences.contains("is.dataFormat.integer"));
+
+    // DataFormat = Int64
+    final CdmTypeAttributeDefinition attributeC = (CdmTypeAttributeDefinition) entity.getAttributes().get(2);
+    Set<String> cTraitNamedReferences = fetchTraitNamedReferences(attributeC.getAppliedTraits());
+    Assert.assertTrue(cTraitNamedReferences.contains("is.dataFormat.integer"));
+    Assert.assertTrue(cTraitNamedReferences.contains("is.dataFormat.big"));
+
+    // DataFormat = Float
+    final CdmTypeAttributeDefinition attributeD = (CdmTypeAttributeDefinition) entity.getAttributes().get(3);
+    Set<String> dTraitNamedReferences = fetchTraitNamedReferences(attributeD.getAppliedTraits());
+    Assert.assertTrue(dTraitNamedReferences.contains("is.dataFormat.floatingPoint"));
+
+    // DataFormat = Double
+    final CdmTypeAttributeDefinition attributeE = (CdmTypeAttributeDefinition) entity.getAttributes().get(4);
+    Set<String> eTraitNamedReferences = fetchTraitNamedReferences(attributeE.getAppliedTraits());
+    Assert.assertTrue(eTraitNamedReferences.contains("is.dataFormat.floatingPoint"));
+    Assert.assertTrue(eTraitNamedReferences.contains("is.dataFormat.big"));
+
+    // DataFormat = Guid
+    final CdmTypeAttributeDefinition attributeF = (CdmTypeAttributeDefinition) entity.getAttributes().get(5);
+    Set<String> fTraitNamedReferences = fetchTraitNamedReferences(attributeF.getAppliedTraits());
+    Assert.assertTrue(fTraitNamedReferences.contains("is.dataFormat.guid"));
+    Assert.assertTrue(fTraitNamedReferences.contains("is.dataFormat.character"));
+    Assert.assertTrue(fTraitNamedReferences.contains("is.dataFormat.array"));
+
+    // DataFormat = String
+    final CdmTypeAttributeDefinition attributeG = (CdmTypeAttributeDefinition) entity.getAttributes().get(6);
+    Set<String> gTraitNamedReferences = fetchTraitNamedReferences(attributeG.getAppliedTraits());
+    Assert.assertTrue(gTraitNamedReferences.contains("is.dataFormat.character"));
+    Assert.assertTrue(gTraitNamedReferences.contains("is.dataFormat.array"));
+
+    // DataFormat = Char
+    final CdmTypeAttributeDefinition attributeH = (CdmTypeAttributeDefinition) entity.getAttributes().get(7);
+    Set<String> hTraitNamedReferences = fetchTraitNamedReferences(attributeH.getAppliedTraits());
+    Assert.assertTrue(hTraitNamedReferences.contains("is.dataFormat.character"));
+    Assert.assertTrue(hTraitNamedReferences.contains("is.dataFormat.big"));
+
+    // DataFormat = Byte
+    final CdmTypeAttributeDefinition attributeI = (CdmTypeAttributeDefinition) entity.getAttributes().get(8);
+    Set<String> iTraitNamedReferences = fetchTraitNamedReferences(attributeI.getAppliedTraits());
+    Assert.assertTrue(iTraitNamedReferences.contains("is.dataFormat.byte"));
+
+    // DataFormat = Binary
+    final CdmTypeAttributeDefinition attributeJ = (CdmTypeAttributeDefinition) entity.getAttributes().get(9);
+    Set<String> jTraitNamedReferences = fetchTraitNamedReferences(attributeJ.getAppliedTraits());
+    Assert.assertTrue(jTraitNamedReferences.contains("is.dataFormat.byte"));
+    Assert.assertTrue(jTraitNamedReferences.contains("is.dataFormat.array"));
+
+    // DataFormat = Time
+    final CdmTypeAttributeDefinition attributeK = (CdmTypeAttributeDefinition) entity.getAttributes().get(10);
+    Set<String> kTraitNamedReferences = fetchTraitNamedReferences(attributeK.getAppliedTraits());
+    Assert.assertTrue(kTraitNamedReferences.contains("is.dataFormat.time"));
+
+    // DataFormat = Date
+    final CdmTypeAttributeDefinition attributeL = (CdmTypeAttributeDefinition) entity.getAttributes().get(11);
+    Set<String> lTraitNamedReferences = fetchTraitNamedReferences(attributeL.getAppliedTraits());
+    Assert.assertTrue(lTraitNamedReferences.contains("is.dataFormat.date"));
+
+    // DataFormat = DateTime
+    final CdmTypeAttributeDefinition attributeM = (CdmTypeAttributeDefinition) entity.getAttributes().get(12);
+    Set<String> mTraitNamedReferences = fetchTraitNamedReferences(attributeM.getAppliedTraits());
+    Assert.assertTrue(mTraitNamedReferences.contains("is.dataFormat.time"));
+    Assert.assertTrue(mTraitNamedReferences.contains("is.dataFormat.date"));
+
+    // DataFormat = DateTimeOffset
+    final CdmTypeAttributeDefinition attributeN = (CdmTypeAttributeDefinition) entity.getAttributes().get(13);
+    Set<String> nTraitNamedReferences = fetchTraitNamedReferences(attributeN.getAppliedTraits());
+    Assert.assertTrue(nTraitNamedReferences.contains("is.dataFormat.time"));
+    Assert.assertTrue(nTraitNamedReferences.contains("is.dataFormat.date"));
+    Assert.assertTrue(nTraitNamedReferences.contains("is.dataFormat.timeOffset"));
+
+    // DataFormat = Boolean
+    final CdmTypeAttributeDefinition attributeO = (CdmTypeAttributeDefinition) entity.getAttributes().get(14);
+    Set<String> oTraitNamedReferences = fetchTraitNamedReferences(attributeO.getAppliedTraits());
+    Assert.assertTrue(oTraitNamedReferences.contains("is.dataFormat.boolean"));
+
+    // DataFormat = Decimal
+    final CdmTypeAttributeDefinition attributeP = (CdmTypeAttributeDefinition) entity.getAttributes().get(15);
+    Set<String> pTraitNamedReferences = fetchTraitNamedReferences(attributeP.getAppliedTraits());
+    Assert.assertTrue(pTraitNamedReferences.contains("is.dataFormat.numeric.shaped"));
+
+    // DataFormat = Json
+    final CdmTypeAttributeDefinition attributeQ = (CdmTypeAttributeDefinition) entity.getAttributes().get(16);
+    Set<String> qTraitNamedReferences = fetchTraitNamedReferences(attributeQ.getAppliedTraits());
+    Assert.assertTrue(qTraitNamedReferences.contains("is.dataFormat.array"));
+    Assert.assertTrue(qTraitNamedReferences.contains("means.content.text.JSON"));
+  }
+
+  private Set<String> fetchTraitNamedReferences(CdmTraitCollection traits) {
+    Set<String> namedReferences = new HashSet<String>();
+    for (CdmTraitReference trait : traits) {
+      namedReferences.add(trait.getNamedReference());
+    }
+    return namedReferences;
   }
 }

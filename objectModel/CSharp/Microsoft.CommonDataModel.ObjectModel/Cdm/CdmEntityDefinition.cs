@@ -314,7 +314,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.EntityName);
+            if (string.IsNullOrWhiteSpace(this.EntityName))
+            {
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "EntityName" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />
@@ -658,19 +663,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     {
                         var refs = raCtx.Contents;
 
-                            // there might be more than one explanation for where and attribute came from when things get merges as they do
-
-                            // this won't work when I add the structured attributes to avoid name collisions
-                            string attRefPath = path + ra.ResolvedName;
+                        // there might be more than one explanation for where and attribute came from when things get merges as they do
+                        // this won't work when I add the structured attributes to avoid name collisions
+                        string attRefPath = path + ra.ResolvedName;
                         if ((ra.Target as CdmAttribute)?.GetType().GetMethod("GetObjectType") != null)
                         {
-                            var attRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmObjectType.AttributeRef, attRefPath, true);
-                            if (!attPath2Order.ContainsKey(attRef.NamedReference))
+                            if (!attPath2Order.ContainsKey(attRefPath))
                             {
-                                    // only need one explanation for this path to the insert order
-                                    attPath2Order.Add(attRef.NamedReference, ra.InsertOrder);
+                                var attRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmObjectType.AttributeRef, attRefPath, true);
+                                // only need one explanation for this path to the insert order
+                                attPath2Order.Add(attRef.NamedReference, ra.InsertOrder);
+                                refs.Add(attRef);
                             }
-                            refs.Add(attRef);
                         }
                         else
                         {
@@ -684,13 +688,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             pointContextAtResolvedAtts(ras, entName + "/hasAttributes/");
 
             // generated attribute structures may end up with 0 attributes after that. prune them
-            Func<dynamic, bool, bool> CleanSubGroup = null;
+            Func<CdmObject, bool, bool> CleanSubGroup = null;
             CleanSubGroup = (subItem, underGenerated) =>
             {
                 if (subItem.ObjectType == CdmObjectType.AttributeRef)
                 {
                     return true; // not empty
-                    }
+                }
                 CdmAttributeContext ac = subItem as CdmAttributeContext;
 
                 if (ac.Type == CdmAttributeContextType.GeneratedSet)
@@ -700,9 +704,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (ac.Contents == null || ac.Contents.Count == 0)
                 {
                     return false; // empty
-                    }
-                    // look at all children, make a set to remove
-                    List<CdmAttributeContext> toRemove = new List<CdmAttributeContext>();
+                }
+
+                // look at all children, make a set to remove
+                List<CdmAttributeContext> toRemove = new List<CdmAttributeContext>();
                 foreach (var subSub in ac.Contents)
                 {
                     if (CleanSubGroup(subSub, underGenerated) == false)
@@ -870,10 +875,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         rtsAtt.Set.ForEach(rt =>
                         {
                             if (rt.Trait.Ugly != true)
-                            { // don't mention your ugly traits
-                                    if (avoidSet?.Contains(rt.TraitName) != true)
-                                { // avoid the ones from the context
-                                        var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
+                            { 
+                                // don't mention your ugly traits
+                                if (avoidSet?.Contains(rt.TraitName) != true)
+                                { 
+                                    // avoid the ones from the context
+                                    var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
                                     (attGrp as CdmObjectDefinitionBase).ExhibitsTraits.Add(traitRef);
                                 }
                             }
@@ -1017,6 +1024,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // get a fresh ref
             entResolved = docRes.FetchObjectFromDocumentPath(entName) as CdmEntityDefinition;
+
+            this.Ctx.Corpus.resEntMap[this.AtCorpusPath] = entResolved.AtCorpusPath;
 
             return entResolved;
         }

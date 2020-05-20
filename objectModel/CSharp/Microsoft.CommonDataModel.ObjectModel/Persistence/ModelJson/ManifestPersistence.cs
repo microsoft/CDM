@@ -294,7 +294,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 }
             }
 
-            await Utils.ProcessAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             if (instance.Entities != null && instance.Entities.Count > 0)
             {

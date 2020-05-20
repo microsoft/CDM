@@ -3,12 +3,18 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
   public String purposeName;
@@ -93,7 +99,11 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.purposeName);
+    if (StringUtils.isNullOrTrimEmpty(this.purposeName)) {
+      Logger.error(CdmPurposeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("purposeName"))));
+      return false;
+    }
+    return true;
   }
 
   @Override

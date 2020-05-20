@@ -275,16 +275,17 @@ public class ResolvedAttributeSet extends RefCounted {
   ////////////////////////////////////////////////////////////////////////////////////////////////////
   ResolvedAttributeSet applyTraits(
       final ResolvedTraitSet traits,
+      final ResolveOptions resOpt,
       final CdmAttributeResolutionGuidance resGuide,
       final List<AttributeResolutionApplier> actions) {
     ResolvedAttributeSet rasResult = this;
     final ResolvedAttributeSet rasApplied;
 
-    if (refCnt > 1 && rasResult.copyNeeded(traits, resGuide, actions)) {
+    if (refCnt > 1 && rasResult.copyNeeded(traits, resOpt, resGuide, actions)) {
       rasResult = rasResult.copy();
     }
 
-    rasApplied = rasResult.apply(traits, resGuide, actions);
+    rasApplied = rasResult.apply(traits, resOpt, resGuide, actions);
 
     // now we are that
     rasResult.setResolvedName2resolvedAttribute(rasApplied.getResolvedName2resolvedAttribute());
@@ -296,7 +297,7 @@ public class ResolvedAttributeSet extends RefCounted {
     return rasResult;
   }
 
-  boolean copyNeeded(final ResolvedTraitSet traits, final CdmAttributeResolutionGuidance resGuide,
+  boolean copyNeeded(final ResolvedTraitSet traits, final ResolveOptions resOpt, final CdmAttributeResolutionGuidance resGuide,
                      final List<AttributeResolutionApplier> actions) {
     if (actions == null || actions.size() == 0) {
       return false;
@@ -306,7 +307,7 @@ public class ResolvedAttributeSet extends RefCounted {
     for (final ResolvedAttribute resAtt : set) {
       for (final AttributeResolutionApplier currentTraitAction : actions) {
         final ApplierContext ctx = new ApplierContext();
-        ctx.resOpt = traits.getResOpt();
+        ctx.resOpt = resOpt;
         ctx.resAttSource = resAtt;
         ctx.resGuide = resGuide;
 
@@ -321,6 +322,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
   ResolvedAttributeSet apply(
       final ResolvedTraitSet traits,
+      final ResolveOptions resOpt,
       final CdmAttributeResolutionGuidance resGuide,
       final List<AttributeResolutionApplier> actions) {
     if (traits == null && actions.size() == 0) {
@@ -343,7 +345,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
       for (final AttributeResolutionApplier traitAction : actions) {
         final ApplierContext ctx = new ApplierContext();
-        ctx.resOpt = traits.getResOpt();
+        ctx.resOpt = resOpt;
         ctx.resAttSource = resAttTest;
         ctx.resGuide = resGuide;
         if (traitAction.willAttributeModify.apply(ctx)) {
@@ -375,11 +377,13 @@ public class ResolvedAttributeSet extends RefCounted {
       if (resAtt.getTarget() instanceof ResolvedAttributeSet) {
         if (makingCopy) {
           resAtt = resAtt.copy();
+          // making a copy of a subset (att group) also bring along the context tree for that whole group
+          attCtxToMerge = resAtt.getAttCtx();
         }
 
         // the set contains another set. process those
         resAtt.setTarget(
-            ((ResolvedAttributeSet) resAtt.getTarget()).apply(traits, resGuide, actions)
+            ((ResolvedAttributeSet) resAtt.getTarget()).apply(traits, resOpt, resGuide, actions)
         );
       } else {
         final ResolvedTraitSet rtsMerge = resAtt.fetchResolvedTraits().mergeSet(traits);

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import cast, Dict, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, time_utils
+from cdm.utilities import ResolveOptions, time_utils, logger, Errors
 
 from .cdm_collection import CdmCollection
 from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
@@ -32,6 +32,8 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         # Internal
         self._data_partitions = CdmCollection(self.ctx, self, CdmObjectType.DATA_PARTITION_DEF)
         self._data_partition_patterns = CdmCollection(self.ctx, self, CdmObjectType.DATA_PARTITION_PATTERN_DEF)
+
+        self._TAG = CdmLocalEntityDeclarationDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -121,7 +123,10 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             await cast('CdmFileStatus', self.owner).report_most_recent_time_async(most_recent_at_this_level)
 
     def validate(self) -> bool:
-        return bool(self.entity_name)
+        if not bool(self.entity_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['entity_name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
