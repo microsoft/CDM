@@ -29,6 +29,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -39,11 +41,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ManifestPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ManifestPersistence.class);
   private static final String FOUNDATIONS = "cdm:/foundations.cdm.json";
 
   /**
@@ -162,7 +161,11 @@ public class ManifestPersistence {
         } else if ("ReferenceEntity".equals(type)) {
           final ReferenceEntity referenceEntity = (ReferenceEntity) element;
           if (!referenceModels.containsKey(referenceEntity.getModelId())) {
-            LOGGER.error("Model Id '{}' from '{}' not found in referenceModels.", referenceEntity.getModelId(), referenceEntity.getName());
+            Logger.error(
+                ManifestPersistence.class.getSimpleName(),
+                ctx,
+                Logger.format("Model Id '{0}' from '{1}' not found in referenceModels.", referenceEntity.getModelId(), referenceEntity.getName())
+            );
             return CompletableFuture.completedFuture(null);
           }
           entity = ReferencedEntityDeclarationPersistence
@@ -171,7 +174,7 @@ public class ManifestPersistence {
                   referenceEntity,
                   referenceModels.get(referenceEntity.getModelId())).join();
         } else {
-          LOGGER.error("There was an error while trying to parse entity type.");
+          Logger.error(ManifestPersistence.class.getSimpleName(), ctx, "There was an error while trying to parse entity type.");
         }
 
         if (entity != null) {
@@ -179,7 +182,7 @@ public class ManifestPersistence {
           manifest.getEntities().add(entity);
           entityPathByName.put(entity.getEntityName(), entity.getEntityPath());
         } else {
-          LOGGER.error("There was an error while trying to parse entity type.");
+          Logger.error(ManifestPersistence.class.getSimpleName(), ctx, "There was an error while trying to parse entity type.");
         }
       }
     }
@@ -191,7 +194,7 @@ public class ManifestPersistence {
         if (null != relationship) {
           manifest.getRelationships().add(relationship);
         } else {
-          LOGGER.error("There was an error while trying to convert model.json local entity to cdm local entity declaration.");
+          Logger.error(ManifestPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert model.json local entity to cdm local entity declaration.");
         }
       });
     }
@@ -232,7 +235,11 @@ public class ManifestPersistence {
         Model obj = JMapper.MAP.readValue(jsonData, Model.class);
         return fromObject(ctx, obj, folder).join();
       } catch (final Exception e) {
-        LOGGER.error("Could not convert '{}'. Reason '{}'.", docName, e.getLocalizedMessage());
+        Logger.error(
+            ManifestPersistence.class.getSimpleName(),
+            ctx,
+            Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage())
+        );
         return null;
       }
     });
@@ -323,7 +330,7 @@ public class ManifestPersistence {
         });
       }
 
-      Utils.processAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).join();
+      Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).join();
 
       if (instance.getEntities() != null && instance.getEntities().getCount() > 0) {
         final List<CompletableFuture<Void>> promises = new ArrayList<>();
@@ -353,7 +360,7 @@ public class ManifestPersistence {
                   );
 
               if (Strings.isNullOrEmpty(location)) {
-                LOGGER.error("Invalid entity path set in entity {}.", entity.getEntityName());
+                Logger.error(ManifestPersistence.class.getSimpleName(), instance.getCtx(), Logger.format("Invalid entity path set in entity {0}.", entity.getEntityName()));
                 element = null;
               }
 
@@ -364,7 +371,7 @@ public class ManifestPersistence {
                 if (referenceEntity.getModelId() != null) {
                   final String savedLocation = referenceModels.get(referenceEntity.getModelId());
                   if (savedLocation != null && !Objects.equals(savedLocation, location)) {
-                    LOGGER.error("Same ModelId pointing to different locations");
+                    Logger.error(ManifestPersistence.class.getSimpleName(), instance.getCtx(), "Same ModelId pointing to different locations");
                     element = null;
                   } else if (savedLocation == null) {
                     referenceModels.put(referenceEntity.getModelId(), location);
@@ -383,9 +390,11 @@ public class ManifestPersistence {
             if (element != null) {
               obtainedEntities.add(element);
             } else {
-              LOGGER.error(
-                  "There was an error while trying to convert {} to model json format.",
-                  entity.getEntityName());
+              Logger.error(
+                  ManifestPersistence.class.getSimpleName(),
+                  instance.getCtx(),
+                  Logger.format("There was an error while trying to convert {0} to model json format.", entity.getEntityName())
+              );
             }
           });
 
@@ -395,10 +404,11 @@ public class ManifestPersistence {
             createdPromise.get();
             promises.add(createdPromise);
           } catch (InterruptedException | ExecutionException e) {
-            LOGGER.error(
-                "There was an error while trying to convert {}'s entity declaration to model json format for reason {}.",
-                entity.getEntityName(),
-                e.getMessage());
+            Logger.error(
+                ManifestPersistence.class.getSimpleName(),
+                instance.getCtx(),
+                Logger.format("There was an error while trying to convert {0}'s entity declaration to model json format for reason {1}.", entity.getEntityName(), e.getMessage())
+            );
           }
         }
         for (final CompletableFuture<Void> promise : promises) {
@@ -427,7 +437,7 @@ public class ManifestPersistence {
           if (null != relationship) {
             result.getRelationships().add(relationship);
           } else {
-            LOGGER.error("There was an error while trying to convert cdm relationship to model.json relationship.");
+            Logger.error(ManifestPersistence.class.getSimpleName(), instance.getCtx(), "There was an error while trying to convert cdm relationship to model.json relationship.");
           }
         });
       }

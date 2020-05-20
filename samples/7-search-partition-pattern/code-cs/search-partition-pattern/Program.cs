@@ -35,12 +35,12 @@ namespace search_partition_pattern
             string pathFromExeToExampleRoot = "../../../../../../";
             string sampleEntityName = "Account";
 
-            // Mount is as a local device.
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "7-search-partition-pattern"));
+            // Mount it as a local adapter.
+            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "7-search-partition-pattern/sample-data"));
             cdmCorpus.Storage.DefaultNamespace = "local"; // local is our default. so any paths that start out navigating without a device tag will assume local
 
             // Fake cdm, normaly use the github adapter
-            // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
+            // Mount it as the 'cdm' adapter, not the default so must use "cdm:/folder" to get there
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 
             // Example how to mount to the ADLS.
@@ -54,7 +54,7 @@ namespace search_partition_pattern
             // ));
 
             Console.WriteLine("Make placeholder manifest");
-            // make the temp manifest and add it to the root of the local documents in the corpus
+            // Make the temp manifest and add it to the root of the local documents in the corpus
             CdmManifestDefinition manifestAbstract = cdmCorpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "tempAbstract");
 
             // Add the temp manifest to the root of the local documents in the corpus.
@@ -69,6 +69,8 @@ namespace search_partition_pattern
             var dataPartitionPattern = cdmCorpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, "sampleDataPartitionPattern", false);
             dataPartitionPattern.RootLocation = "local:dataFiles";
             dataPartitionPattern.RegularExpression = "/(\\d{4})/(\\w+)/cohort(\\d+)\\.csv$";
+            // the line below demonstrates using "GlobPattern" which can be used instead of "RegularExpression"
+            // dataPartitionPattern.GlobPattern = "/*/cohort*.csv";
             Console.WriteLine($"    Assign regular expression of the data partition pattern to: {dataPartitionPattern.RegularExpression}");
             Console.WriteLine($"    Assign root location of the data partition pattern to: {dataPartitionPattern.RootLocation}");
             dataPartitionPattern.Explanation = "/ capture 4 digits / capture a word / capture one or more digits after the word cohort but before .csv";

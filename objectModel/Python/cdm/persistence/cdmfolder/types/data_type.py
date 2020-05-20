@@ -12,7 +12,7 @@ class DataType(JObject):
     def __init__(self):
         super().__init__()
 
-        self.explanation = ''  # type: str
-        self.dataTypeName = ''  # type: str
+        self.explanation = None  # type: str
+        self.dataTypeName = None  # type: str
         self.extendsDataType = None  # type: Union[str, DataTypeReference]
-        self.exhibitsTraits = []  # type: List[Union[str, TraitReference]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]

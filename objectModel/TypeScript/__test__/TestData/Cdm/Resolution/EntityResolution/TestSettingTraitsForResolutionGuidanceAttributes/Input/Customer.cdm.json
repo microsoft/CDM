@@ -1,0 +1,57 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/core/cdsConcepts.cdm.json"
+        },
+        {
+            "corpusPath": "cdm:/core/wellKnownCDSAttributeGroups.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Customer",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "name": "customer",
+                    "purpose": "referencesCustomer",
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "Customer",
+                            "hasAttributes": [
+                            ]
+                        }
+                    },
+                    "resolutionGuidance": {
+                        "entityByReference": {
+                            "allowReference": true,
+                            "alwaysIncludeForeignKey": false,
+                            "referenceOnlyAfterDepth": 2,
+                            "foreignKeyAttribute": {
+                                "name": "customerId",
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "sourceName": "customerid",
+                                "displayName": "Customer"
+                            }
+                        },
+                        "selectsSubAttribute": {
+                            "selects": "one",
+                            "selectedTypeAttribute": {
+                                "name": "customerIdType",
+                                "purpose": "hasA",
+                                "dataType": "entityName",
+                                "sourceName": "customeridtype",
+                                "displayName": "Customer Type"
+                            }
+                        }
+                    }
+                }
+            ],
+            "sourceName": "Customer",
+            "displayName": "Customer",
+            "description": "Customer information."
+        }
+    ]
+}

@@ -154,7 +154,14 @@ class CdmObject(abc.ABC):
                         acp_in_context._under.contents.pop(len(acp_in_context._under.contents) - 1)
                         under_ctx = CdmAttributeContext._create_child_under(res_opt, acp_in_context)
 
-                        old_context._copy_attribute_context_tree(res_opt, under_ctx, rasb_cache.ras, None, from_moniker)
+                        new_context = old_context._copy_attribute_context_tree(res_opt, under_ctx, rasb_cache.ras, None, from_moniker)
+                        # since THIS should be a refererence to a thing found in a moniker document, it already has a moniker in the reference
+                        # this function just added that same moniker to everything in the sub-tree but now this one symbol has too many
+                        # remove one
+                        moniker_path_added = from_moniker + '/'
+                        if new_context.definition and new_context.definition.named_reference and new_context.definition.named_reference.startswith(moniker_path_added):
+                            # slice it off the front
+                            new_context.definition.named_reference = new_context.definition.named_reference[len(moniker_path_added):]
         else:
             # get the SymbolSet for this cached object and pass that back
             key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)

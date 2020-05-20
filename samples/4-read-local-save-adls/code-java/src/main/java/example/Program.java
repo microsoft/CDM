@@ -35,7 +35,7 @@ import java.util.concurrent.ExecutionException;
  *  ------------------------------------------------------------------------------------------------
  */
 public class Program {
-  private static final String MODEL_JSON_ROOT = "..";
+  private static final String MODEL_JSON_ROOT = "../sample-data";
   private static final String PATH_FROM_EXE_TO_EXAMPLE_ROOT = "../";
 
   public static void main(final String[] args) throws ExecutionException, InterruptedException {

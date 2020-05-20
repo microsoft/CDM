@@ -19,7 +19,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         public static async Task<CdmEntityDefinition> FromData(CdmCorpusContext ctx, LocalEntity obj, List<CdmTraitDefinition> extensionTraitDefList, List<CdmTraitDefinition> localExtensionTraitDefList)
         {
             var entity = ctx.Corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, obj.Name);
-            entity.Description = obj.Description;
+
+            if (!string.IsNullOrWhiteSpace(obj.Description))
+                entity.Description = obj.Description;
 
             await Utils.ProcessAnnotationsFromData(ctx, obj, entity.ExhibitsTraits);
 
@@ -49,12 +51,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             var result = new LocalEntity
             {
                 Name = instance.EntityName,
-                Description = instance.Description,
+                Description = instance.GetProperty("description"),
                 Type = "LocalEntity"
             };
-            
-            await Utils.ProcessAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
-            
+
+            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+
             if (instance.Attributes != null)
             {
                 result.Attributes = new List<Attribute>();

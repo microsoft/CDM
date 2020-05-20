@@ -4,7 +4,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -24,6 +24,8 @@ class CdmPurposeDefinition(CdmObjectDefinition):
 
         # the reference to the purpose extended by this.
         self.extends_purpose = extends_purpose  # type: Optional[CdmPurposeReference]
+
+        self._TAG = CdmPurposeDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -60,7 +62,10 @@ class CdmPurposeDefinition(CdmObjectDefinition):
         return self._is_derived_from_def(res_opt, self.extends_purpose, self.get_name(), base)
 
     def validate(self) -> bool:
-        return bool(self.purpose_name)
+        if not bool(self.purpose_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['purpose_name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

@@ -3,18 +3,19 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmArgumentDefinition extends CdmObjectSimple {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmArgumentDefinition.class);
-
   private CdmParameterDefinition resolvedParameter;
   private String explanation;
   private String name;
@@ -141,7 +142,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
       } else if (this.getValue() instanceof String){
         copy.setValue(this.getValue());
       } else {
-        LOGGER.error("Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
+        Logger.error(CdmArgumentDefinition.class.getSimpleName(), this.getCtx(), "Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
         throw new RuntimeException("Failed to copy CdmArgumentDefinition.getValue(), not recognized type");
       }
     }
@@ -152,6 +153,10 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
 
   @Override
   public boolean validate() {
-    return this.getValue() != null;
+    if (this.getValue() == null) {
+      Logger.error(CdmArgumentDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("value"))));
+      return false;
+    }
+    return true;
   }
 }

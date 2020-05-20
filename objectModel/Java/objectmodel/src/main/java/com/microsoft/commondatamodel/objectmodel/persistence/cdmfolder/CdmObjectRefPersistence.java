@@ -15,14 +15,12 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Tra
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdmObjectRefPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmObjectRefPersistence.class);
-
   public static Object toData(final CdmObjectReference instance, final ResolveOptions resOpt, final CopyOptions options) {
     Object copy = null;
 
@@ -59,7 +57,12 @@ public class CdmObjectRefPersistence {
       } catch (final NoSuchMethodException ex) {
         // Fine, some objects like AttributeGroupRef do not have applied traits
       } catch (final IllegalAccessException | InvocationTargetException ex) {
-        LOGGER.error("There was an error while trying to convert from JSON to CdmObjectReferenceBase. Reason: '{}'", ex.getLocalizedMessage());
+        Logger.error(
+            CdmObjectRefPersistence.class.getSimpleName(),
+            instance.getCtx(),
+            Logger.format("There was an error while trying to convert from JSON to CdmObjectReferenceBase. Reason: '{0}'", ex.getLocalizedMessage()),
+            "toData"
+        );
       }
     }
 

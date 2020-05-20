@@ -7,8 +7,11 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveContextScope;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -22,8 +25,20 @@ public class ResolveContext implements CdmCorpusContext {
   private ResolveContextScope currentScope;
   private CdmCorpusDefinition corpus;
   private String relativePath;
+  private CdmStatusLevel reportAtLevel;
+  private EventCallback statusEvent;
 
   public ResolveContext(final CdmCorpusDefinition corpus) {
+    this(corpus, null);
+  }
+
+  public ResolveContext(final CdmCorpusDefinition corpus, final EventCallback statusEvent) {
+    this(corpus, statusEvent, null);
+  }
+
+  public ResolveContext(final CdmCorpusDefinition corpus, final EventCallback statusEvent, CdmStatusLevel reportAtLevel) {
+    this.reportAtLevel = reportAtLevel != null ? reportAtLevel : CdmStatusLevel.Info;
+    this.statusEvent = statusEvent;
     this.cache = new LinkedHashMap<>();
     this.corpus = corpus;
   }
@@ -37,6 +52,24 @@ public class ResolveContext implements CdmCorpusContext {
   public void setCorpus(final CdmCorpusDefinition value) {
     this.corpus = value;
   }
+
+  @Override
+  public CdmStatusLevel getReportAtLevel() {
+    return this.reportAtLevel;
+  }
+
+  @Override
+  public void setReportAtLevel(final CdmStatusLevel value) {
+    this.reportAtLevel = value;
+  }
+
+  @Override
+  public EventCallback getStatusEvent() {
+    return this.statusEvent;
+  }
+
+  @Override
+  public void setStatusEvent(final EventCallback value) { this.statusEvent = value; }
 
   public void pushScope(CdmTraitDefinition currentTrait) {
     if (this.scopeStack == null) {

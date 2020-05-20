@@ -170,6 +170,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null;
             }
 
+            if (this.Folder == null)
+            {
+                Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"Cannot resolve the manifest '{this.ManifestName}' because it has not been added to a folder", nameof(CreateResolvedManifestAsync));
+                return null;
+            }
+
             if (newEntityDocumentNameFormat == null)
                 newEntityDocumentNameFormat = "{f}resolved/{n}.cdm.json";
             else if (newEntityDocumentNameFormat == "") // for back compat
@@ -221,6 +227,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     return null;
                 }
 
+                if (entDef.InDocument.Folder == null)
+                {
+                    Logger.Error(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"The document containing the entity '{entDef.EntityName}' is not in a folder", nameof(CreateResolvedManifestAsync));
+                    return null;
+                }
                 // get the path from this manifest to the source entity. this will be the {f} replacement value
                 string sourceEntityFullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.InDocument.Folder.AtCorpusPath, this);
                 string f = "";
@@ -270,16 +281,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
 
                 resolvedManifest.Entities.Add(result);
-
-                // absolute path is needed for generating relationships
-                var absoluteEntPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(result.EntityPath, resolvedManifest);
-                this.Ctx.Corpus.resEntMap.Add(this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument), absoluteEntPath);
             }
 
             Logger.Debug(nameof(CdmManifestDefinition), this.Ctx as ResolveContext, $"    calculating relationships", nameof(CreateResolvedManifestAsync));
 
             // calculate the entity graph for just this manifest and any submanifests
-            await (this.Ctx.Corpus as CdmCorpusDefinition).CalculateEntityGraphAsync(resolvedManifest);
+            await this.Ctx.Corpus.CalculateEntityGraphAsync(resolvedManifest);
             // stick results into the relationships list for the manifest
             // only put in relationships that are between the entities that are used in the manifest
             await resolvedManifest.PopulateManifestRelationshipsAsync(CdmRelationshipDiscoveryStyle.Exclusive);

@@ -7,7 +7,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -109,7 +111,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrWhiteSpace(this.ManifestName) && !string.IsNullOrWhiteSpace(this.Definition);
+            List<string> missingFields = new List<string>();
+            if (string.IsNullOrWhiteSpace(this.ManifestName))
+                missingFields.Add("ManifestName");
+            if (string.IsNullOrWhiteSpace(this.Definition))
+                missingFields.Add("Definition");
+            if (missingFields.Count > 0)
+            {
+                Logger.Error(nameof(CdmManifestDeclarationDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
 

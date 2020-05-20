@@ -11,14 +11,14 @@ class DataPartition(FileStatus):
     def __init__(self):
         super().__init__()
 
-        self.location = ''  # type: str
+        self.location = None  # type: str
         """The corpus path for the data file location."""
 
         self.exhibitsTraits = None  # type: Union[str, TraitReference]
         """The exhibited traits."""
 
-        self.arguments = None  # type: Tuple[str, str]
+        self.arguments = None  # type: List[Argument]
         """The list of key value pairs to give names for the replacement values from the RegEx."""
 
-        self.specializedSchema = ''  # type: str
+        self.specializedSchema = None  # type: str
         """The path of a specialized schema to use specifically for the partitions generated."""

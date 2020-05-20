@@ -220,7 +220,7 @@ export class ResolvedAttributeSetBuilder {
         // let bodyCode = () =>
         {
             if (this.ras && arc && arc.traitsToApply) {
-                this.takeReference(this.ras.applyTraits(arc.traitsToApply, arc.resGuide, arc.actionsModify));
+                this.takeReference(this.ras.applyTraits(arc.traitsToApply, arc.resOpt, arc.resGuide, arc.actionsModify));
             }
         }
         // return p.measure(bodyCode);

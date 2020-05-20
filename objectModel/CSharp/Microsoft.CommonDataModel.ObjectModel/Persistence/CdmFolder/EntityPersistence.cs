@@ -29,7 +29,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             Utils.AddListToCdmCollection(entity.Attributes, Utils.CreateAttributeList(ctx, obj["hasAttributes"], entity.EntityName));
             entity.SourceName = (string)obj["sourceName"];
             entity.DisplayName = (string)obj["displayName"];
-            entity.Description = (string)obj["description"];
+            if (!string.IsNullOrWhiteSpace((string)obj["description"]))
+                entity.Description = (string)obj["description"];
             entity.Version = (string)obj["version"];
             entity.CdmSchemas = obj["cdmSchemas"]?.ToObject<List<string>>();
 
@@ -42,7 +43,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 Explanation = instance.Explanation,
                 EntityName = instance.EntityName,
-                ExtendsEntity =  Utils.JsonForm(instance.ExtendsEntity, resOpt, options),
+                ExtendsEntity = Utils.JsonForm(instance.ExtendsEntity, resOpt, options),
                 ExtendsEntityResolutionGuidance = Utils.JsonForm(instance.ExtendsEntityResolutionGuidance, resOpt, options),
                 ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits?.AllItems.Where(trait => !trait.IsFromProperty)?.ToList(), options)
             };
@@ -56,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             // after the properties so they show up first in doc
             obj.HasAttributes = CopyDataUtils.ListCopyData(resOpt, instance.Attributes, options);
-            obj.AttributeContext =  Utils.JsonForm(instance.AttributeContext, resOpt, options);
+            obj.AttributeContext = Utils.JsonForm(instance.AttributeContext, resOpt, options);
 
             return obj;
         }

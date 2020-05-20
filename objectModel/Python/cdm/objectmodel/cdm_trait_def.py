@@ -5,7 +5,7 @@ from typing import Optional, List, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
 from cdm.resolvedmodel import ParameterCollection
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_collection import CdmCollection
@@ -43,6 +43,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
         self._has_set_flags = False
         self._all_parameters = None
         self._parameters = None
+
+        self._TAG = CdmTraitDefinition.__name__
 
     @property
     def parameters(self) -> 'CdmCollection[CdmParameterDefinition]':
@@ -193,7 +195,10 @@ class CdmTraitDefinition(CdmObjectDefinition):
         return self._is_derived_from_def(res_opt, self.extends_trait, self.trait_name, base)
 
     def validate(self) -> bool:
-        return bool(self.trait_name)
+        if not bool(self.trait_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['trait_name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

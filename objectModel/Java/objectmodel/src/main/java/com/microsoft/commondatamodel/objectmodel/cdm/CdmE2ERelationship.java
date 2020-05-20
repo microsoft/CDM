@@ -3,11 +3,16 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
@@ -106,10 +111,25 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.fromEntity)
-        && !Strings.isNullOrEmpty(this.fromEntityAttribute)
-        && !Strings.isNullOrEmpty(this.toEntity)
-        && !Strings.isNullOrEmpty(this.toEntityAttribute);
+    ArrayList<String> missingFields = new ArrayList<String>();
+    if (StringUtils.isNullOrTrimEmpty(this.fromEntity)) {
+      missingFields.add("fromEntity");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.fromEntityAttribute)) {
+      missingFields.add("fromEntityAttribute");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.toEntity)) {
+      missingFields.add("toEntity");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.toEntityAttribute)) {
+      missingFields.add("toEntityAttribute");
+    }
+
+    if (missingFields.size() > 0) {
+      Logger.error(CdmE2ERelationship.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      return false;
+    }
+    return true;
   }
 
   /**

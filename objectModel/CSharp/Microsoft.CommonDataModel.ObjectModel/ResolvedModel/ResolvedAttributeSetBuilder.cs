@@ -179,7 +179,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         public void ApplyTraits(AttributeResolutionContext arc)
         {
             if (this.ResolvedAttributeSet != null && arc != null && arc.TraitsToApply != null)
-                this.TakeReference(ResolvedAttributeSet.ApplyTraits(arc.TraitsToApply, arc.ResGuide, arc.ActionsModify));
+                this.TakeReference(ResolvedAttributeSet.ApplyTraits(arc.TraitsToApply, arc.ResOpt, arc.ResGuide, arc.ActionsModify));
         }
 
         public void GenerateApplierAttributes(AttributeResolutionContext arc, bool applyTraitsToNew)

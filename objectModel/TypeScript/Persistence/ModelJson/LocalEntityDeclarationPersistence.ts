@@ -124,42 +124,36 @@ export class LocalEntityDeclarationPersistence {
         resOpt: resolveOptions,
         options: copyOptions
     ): Promise<LocalEntity> {
-        const localEntity: LocalEntity = <LocalEntity>{};
-
         // Fetch the document from entity schema.
-        const entity: LocalEntity =
+        const localEntity: LocalEntity =
             await ModelJson.DocumentPersistence.toData(instance.entityPath, manifest, resOpt, options, instance.ctx);
 
-        if (entity !== undefined) {
+        if (localEntity !== undefined) {
             const t2pm: traitToPropertyMap = new traitToPropertyMap(instance);
             const isHiddenTrait: CdmTraitReference = t2pm.fetchTraitReference('is.hidden');
 
-            localEntity.name = entity.name;
-            localEntity.attributes = entity.attributes;
-            localEntity.$type = 'LocalEntity';
-            localEntity.description = instance.explanation;
-            localEntity.annotations = entity.annotations;
-            entity['cdm:lastFileStatusCheckTime'] = timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime);
-            entity['cdm:lastFileModifiedTime'] = timeUtils.getFormattedDateString(instance.lastFileModifiedTime);
-            entity['cdm:lastChildFileModifiedTime'] = timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime);
-
-            this.copyExtensionProperties(entity, localEntity);
+            if (!localEntity.description) {
+                localEntity.description = instance.explanation;
+            }
+            localEntity['cdm:lastFileStatusCheckTime'] = timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime);
+            localEntity['cdm:lastFileModifiedTime'] = timeUtils.getFormattedDateString(instance.lastFileModifiedTime);
+            localEntity['cdm:lastChildFileModifiedTime'] = timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime);
 
             if (isHiddenTrait !== undefined) {
-                entity.isHidden = true;
+                localEntity.isHidden = true;
             }
 
             const schemas: string[] = t2pm.fetchPropertyValue('cdmSchemas') as string[];
             if (schemas !== undefined) {
-                entity.schemas = schemas;
+                localEntity.schemas = schemas;
             }
 
             if (instance.dataPartitions !== undefined && instance.dataPartitions.length > 0) {
                 localEntity.partitions = [];
-                for (const partition of instance.dataPartitions) {
-                    const partiton: Partition = await ModelJson.DataPartitionPersistence.toData(partition, resOpt, options);
+                for (const element of instance.dataPartitions) {
+                    const partition: Partition = await ModelJson.DataPartitionPersistence.toData(element, resOpt, options);
                     if (partition !== undefined) {
-                        localEntity.partitions.push(partiton);
+                        localEntity.partitions.push(partition);
                     } else {
                         Logger.error(
                             LocalEntityDeclarationPersistence.name,

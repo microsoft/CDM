@@ -12,10 +12,11 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmTraitCollection,
+    Errors,
+    Logger,
     resolveOptions,
     VisitCallback
 } from '../internal';
-import { KeyValPair } from '../Persistence/CdmFolder/types';
 import * as timeUtils from '../Utilities/timeUtils';
 
 /**
@@ -79,7 +80,18 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public validate(): boolean {
-        return !!this.entityName;
+        if (!this.entityName) {
+            Logger.error(
+                CdmLocalEntityDeclarationDefinition.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, ['entityName']),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -179,7 +191,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        const fullPath: string  = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
+        const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
         const modifiedTime: Date = await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
 
         for (const partition of this.dataPartitions) {
@@ -216,7 +228,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
     public createDataPartitionFromPattern(
         filePath: string,
         exhibitsTraits: CdmTraitCollection,
-        args: KeyValPair[],
+        args: Map<string, string[]>,
         schema: string,
         modifiedTime: Date): void {
         const existingPartition: CdmDataPartitionDefinition =
@@ -232,7 +244,8 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
             for (const trait of exhibitsTraits) {
                 newPartition.exhibitsTraits.push(trait);
             }
-            newPartition.arguments = [...args];
+
+            newPartition.arguments = new Map(args);
 
             this.dataPartitions.push(newPartition);
         }

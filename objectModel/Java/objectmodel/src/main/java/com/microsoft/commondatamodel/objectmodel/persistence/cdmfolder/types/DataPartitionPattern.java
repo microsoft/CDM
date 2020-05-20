@@ -13,6 +13,7 @@ public class DataPartitionPattern extends FileStatus {
     private String name;
     private String explanation;
     private String rootLocation;
+    private String globPattern;
     private String regularExpression;
     private List<String> parameters;
     private String specializedSchema;
@@ -64,6 +65,20 @@ public class DataPartitionPattern extends FileStatus {
      */
     public void setRootLocation(final String rootLocation) {
         this.rootLocation = rootLocation;
+    }
+
+    /**
+     * Gets the glob pattern used for searching partitions.
+     */
+    public String getGlobPattern() {
+        return this.globPattern;
+    }
+
+    /**
+     * Sets the glob pattern used for searching partitions.
+     */
+    public void setGlobPattern(final String globPattern) {
+        this.globPattern = globPattern;
     }
 
     /**

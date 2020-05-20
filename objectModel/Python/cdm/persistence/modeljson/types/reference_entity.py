@@ -12,5 +12,5 @@ class ReferenceEntity(Entity):
     def __init__(self):
         super().__init__()
 
-        self.source = ''  # type: str
-        self.modelId = ''  # type: str
+        self.source = None  # type: str
+        self.modelId = None  # type: str

@@ -3,10 +3,17 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class CdmImport extends CdmObjectSimple {
 
@@ -68,7 +75,11 @@ public class CdmImport extends CdmObjectSimple {
 
   @Override
   public boolean validate() {
-    return false;
+    if (StringUtils.isNullOrTrimEmpty(this.corpusPath)) {
+      Logger.error(CdmImport.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("corpusPath"))));
+      return false;
+    }
+    return true;
   }
 
   @Override

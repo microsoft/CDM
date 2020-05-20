@@ -7,7 +7,7 @@ from typing import Any, cast, Dict, Iterable, List, Optional, Set, Union, TYPE_C
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.persistence import PersistenceLayer
 from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttributeSet
-from cdm.utilities import AttributeContextParameters, logger, ResolveOptions
+from cdm.utilities import AttributeContextParameters, logger, ResolveOptions, Errors
 
 from .cdm_attribute_context import CdmAttributeContext
 from .cdm_collection import CdmCollection
@@ -360,17 +360,17 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         if curr_att_ctx in all_att_ctx:
                             ra_ctx_in_ent.append(curr_att_ctx)
                 for ra_ctx in ra_ctx_in_ent:
-                    #  there might be more than one explanation for where and attribute came from when things get merges as they do
                     refs = ra_ctx.contents
 
+                    #  there might be more than one explanation for where and attribute came from when things get merges as they do
                     # This won't work when I add the structured attributes to avoid name collisions.
                     att_ref_path = path + ra.resolved_name
                     if isinstance(ra.target, CdmObject):
-                        att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, att_ref_path, True)  # type: CdmObjectReference
-                        if att_ref.named_reference not in att_path_to_order:
+                        if not att_ref_path in att_path_to_order:
+                            att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, att_ref_path, True)  # type: CdmObjectReference
                             # only need one explanation for this path to the insert order
                             att_path_to_order[att_ref.named_reference] = ra.insert_order
-                        refs.append(att_ref)
+                            refs.append(att_ref)
                     else:
                         att_ref_path += '/members/'
                         point_context_at_resolved_atts(cast('ResolvedAttributeSet', ra.target), att_ref_path)
@@ -466,7 +466,18 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 # use the path of the context associated with this attribute to find the new context that matches on path.
                 ra_ctx_set = ras_sub.rattr_to_attctxset[ra]
                 # find the correct att_ctx for this copy.
-                ra_ctx = next((ac for ac in all_att_ctx if ac in ra_ctx_set), None)
+                # ra_ctx = next((ac for ac in all_att_ctx if ac in ra_ctx_set), None) # type: CdmAttributeContext
+
+                if len(all_att_ctx) < len(ra_ctx_set):
+                    for curr_att_ctx in all_att_ctx:
+                        if curr_att_ctx in ra_ctx_set:
+                            ra_ctx = curr_att_ctx
+                            break
+                else:
+                    for curr_att_ctx in ra_ctx_set:
+                        if curr_att_ctx in all_att_ctx:
+                            ra_ctx = curr_att_ctx
+                            break
 
                 if isinstance(ra.target, ResolvedAttributeSet) and cast('ResolvedAttributeSet', ra.target)._set:
                     # this is a set of attributes. Make an attribute group to hold them.
@@ -578,6 +589,9 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         # Get a fresh ref.
         ent_resolved = cast('CdmEntityDefinition', doc_res._fetch_object_from_document_path(ent_name))
+
+        self.ctx.corpus._res_ent_map[self.at_corpus_path] = ent_resolved.at_corpus_path
+
         return ent_resolved
 
     def _count_inherited_attributes(self, res_opt: Optional['ResolveOptions'] = None) -> int:
@@ -662,7 +676,10 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return None
 
     def validate(self) -> bool:
-        return bool(self.entity_name)
+        if not bool(self.entity_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['entity_name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

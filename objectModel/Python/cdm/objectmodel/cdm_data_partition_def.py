@@ -37,8 +37,6 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
         # The refresh time of the partition.
         self.refresh_time = None  # type: Optional[datetime]
 
-        self.last_child_file_modified_time = None  # type: Optional[datetime]
-
         self.last_file_modified_time = None  # type: Optional[datetime]
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
@@ -58,6 +56,14 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
     @description.setter
     def description(self, val: str) -> None:
         self._ttpm._update_property_value('description', val)
+
+    @property
+    def last_child_file_modified_time(self) -> datetime:
+        raise NotImplementedError()
+
+    @last_child_file_modified_time.setter
+    def last_child_file_modified_time(self, val: datetime):
+        raise NotImplementedError()
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataPartitionDefinition'] = None) -> 'CdmDataPartitionDefinition':
         if not res_opt:

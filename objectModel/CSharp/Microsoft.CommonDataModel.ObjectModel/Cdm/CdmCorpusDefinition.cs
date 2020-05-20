@@ -298,12 +298,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Used by Visit functions of CdmObjects to skip calculating the declaredPath.
         /// </summary>
         internal bool blockDeclaredPathChanges = false;
-        
+
         /// <summary>
         /// The set of resolution directives that will be used by default by the object model when it is resolving
         /// entities and when no per-call set of directives is provided.
         /// </summary>
-        public AttributeResolutionDirectiveSet DefaultResolutionDirectives  { get; set; }
+        public AttributeResolutionDirectiveSet DefaultResolutionDirectives { get; set; }
 
         private IDictionary<string, List<CdmDocumentDefinition>> SymbolDefinitions { get; set; }
 
@@ -315,7 +315,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal CdmManifestDefinition rootManifest { get; set; }
         internal IDictionary<string, CdmObject> objectCache { get; set; }
 
-        
+
 
         internal DocumentLibrary documentLibrary;
 
@@ -347,10 +347,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.spinLock = new SpinLock(false);
 
             this.Persistence = new PersistenceLayer(this);
-            
+
             // the default for the default is to make entity attributes into foreign key references when they point at one other instance and 
             // to ignore the other entities when there are an array of them
-            this.DefaultResolutionDirectives = new AttributeResolutionDirectiveSet(new HashSet<string>(){ "normalized", "referenceOnly" });
+            this.DefaultResolutionDirectives = new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" });
         }
 
         internal static int NextId()
@@ -486,6 +486,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             return result;
         }
+
         internal CdmObjectDefinitionBase ResolveSymbolReference(ResolveOptions resOpt, CdmDocumentDefinition fromDoc, string symbolDef, CdmObjectType expectedType, bool retry)
         {
             ResolveContext ctx = this.Ctx as ResolveContext;
@@ -656,7 +657,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (symbolsRef?.Size > 0)
             {
                 // each symbol may have definitions in many documents. use importPriority to figure out which one we want
-                CdmDocumentDefinition wrtDoc = (CdmDocumentDefinition)resOpt.WrtDoc;
+                CdmDocumentDefinition wrtDoc = resOpt.WrtDoc;
                 HashSet<int> foundDocIds = new HashSet<int>();
 
                 if (wrtDoc.ImportPriorities != null)
@@ -664,11 +665,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     foreach (string symRef in symbolsRef)
                     {
                         // get the set of docs where defined
-                        DocsResult docsRes = this.DocsForSymbol(resOpt, wrtDoc, (CdmDocumentDefinition)definition.InDocument, symRef);
+                        DocsResult docsRes = this.DocsForSymbol(resOpt, wrtDoc, definition.InDocument, symRef);
                         // we only add the best doc if there are multiple options
                         if (docsRes?.DocList?.Count > 1)
                         {
-                            CdmDocumentDefinition docBest = CdmCorpusDefinition.FetchPriorityDocument(docsRes.DocList, wrtDoc.ImportPriorities.ImportPriority);
+                            CdmDocumentDefinition docBest = FetchPriorityDocument(docsRes.DocList, wrtDoc.ImportPriorities.ImportPriority);
                             if (docBest != null)
                             {
                                 foundDocIds.Add(docBest.Id);
@@ -1115,7 +1116,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         // no document set for this import, see if it is already loaded into the corpus
                         string path = this.Storage.CreateAbsoluteCorpusPath(imp.CorpusPath, doc);
                         this.documentLibrary.AddToDocsNotLoaded(path);
-                        
+
                     }
                 }
             }
@@ -1225,7 +1226,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (iObject.Validate() == false)
                     {
-                        Logger.Error(nameof(CdmCorpusDefinition), ctx, $"integrity check failed for : '{path}'", CurrentDoc.FolderPath + path);
                         errorCount++;
                     }
                     else
@@ -1327,7 +1327,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 CdmDataTypeDefinition dt = paramDef.DataTypeRef.FetchObjectDefinition<CdmDataTypeDefinition>(resOpt);
                 if (dt == null)
+                {
                     dt = paramDef.DataTypeRef.FetchObjectDefinition<CdmDataTypeDefinition>(resOpt);
+                    Logger.Error(nameof(CdmCorpusDefinition), ctx, $"parameter '${paramDef.Name}' has an unrecognized dataType.", ctx.RelativePath);
+                    return null;
+                }
                 // compare with passed in value or default for parameter
                 dynamic pValue = aValue;
                 if (pValue == null)
@@ -1550,7 +1554,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                         // if parameter type is entity, then the value should be an entity or ref to one
                                         // same is true of 'dataType' dataType
                                         aValue = this.ConstTypeCheck(resOpt, CurrentDoc, paramFound, aValue);
-                                        (iObject as CdmArgumentDefinition).Value = aValue;
+                                        if (aValue != null)
+                                            (iObject as CdmArgumentDefinition).Value = aValue;
                                     }
                                 }
                             }
@@ -1660,8 +1665,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         continue;
 
                     CdmEntityDefinition resEntity;
-                     // make options wrt this entity document and "relational" always
-                    ResolveOptions resOpt = new ResolveOptions(entity.InDocument, new AttributeResolutionDirectiveSet(new HashSet<string>(){ "normalized", "referenceOnly" }));
+                    // make options wrt this entity document and "relational" always
+                    ResolveOptions resOpt = new ResolveOptions(entity.InDocument, new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" }));
 
                     bool isResolvedEntity = entity.AttributeContext != null;
 
@@ -1677,17 +1682,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
 
                     // find outgoing entity relationships using attribute context
-                    List<CdmE2ERelationship> outgoingRelationships = this.FindOutgoingRelationships(resOpt, resEntity, resEntity.AttributeContext);
-
-                    // if the entity is a resolved entity, change the relationships to point to the resolved versions
-                    if (isResolvedEntity && this.resEntMap != null)
-                    {
-                        foreach (CdmE2ERelationship rel in outgoingRelationships)
-                        {
-                            if (this.resEntMap.ContainsKey(rel.ToEntity))
-                                rel.ToEntity = this.resEntMap[rel.ToEntity];
-                        }
-                    }
+                    List<CdmE2ERelationship> outgoingRelationships = this.FindOutgoingRelationships(resOpt, resEntity, resEntity.AttributeContext, isResolvedEntity);
 
                     this.OutgoingRelationships[entity] = outgoingRelationships;
 
@@ -1728,7 +1723,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
-        internal List<CdmE2ERelationship> FindOutgoingRelationships(ResolveOptions resOpt, CdmEntityDefinition resEntity, CdmAttributeContext attCtx, CdmAttributeContext generatedAttSetContext = null)
+        internal List<CdmE2ERelationship> FindOutgoingRelationships(ResolveOptions resOpt, CdmEntityDefinition resEntity, CdmAttributeContext attCtx, bool isResolvedEntity, CdmAttributeContext generatedAttSetContext = null)
         {
             List<CdmE2ERelationship> outRels = new List<CdmE2ERelationship>();
 
@@ -1805,17 +1800,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                         .Replace($"{child.Name}_", "");
                                     CdmE2ERelationship newE2ERel = new CdmE2ERelationship(this.Ctx, "")
                                     {
-                                        FromEntity = this.Storage.CreateAbsoluteCorpusPath(resEntity.AtCorpusPath.Replace("wrtSelf_", ""), resEntity),
                                         FromEntityAttribute = fromAtt,
-                                        ToEntity = this.Storage.CreateAbsoluteCorpusPath(toEntity.AtCorpusPath.Replace("wrtSelf_", ""), toEntity),
                                         ToEntityAttribute = toAtt[0]
                                     };
+
+                                    if (isResolvedEntity)
+                                    {
+                                        newE2ERel.FromEntity = resEntity.AtCorpusPath;
+                                        if (this.resEntMap.ContainsKey(toEntity.AtCorpusPath))
+                                            newE2ERel.ToEntity = this.resEntMap[toEntity.AtCorpusPath];
+                                        else
+                                            newE2ERel.ToEntity = toEntity.AtCorpusPath;
+                                    }
+                                    else
+                                    {
+                                        // find the path of the unresolved entity using the attribute context of the resolved entity
+                                        CdmObjectReference refToLogicalEntity = resEntity.AttributeContext.Definition;
+
+                                        CdmEntityDefinition unResolvedEntity = null;
+                                        if (refToLogicalEntity != null)
+                                        {
+                                            unResolvedEntity = refToLogicalEntity.FetchObjectDefinition<CdmEntityDefinition>(resOpt);
+                                        }
+                                        CdmEntityDefinition selectedEntity = unResolvedEntity != null ? unResolvedEntity : resEntity;
+                                        string selectedEntCorpusPath = unResolvedEntity != null ? unResolvedEntity.AtCorpusPath : resEntity.AtCorpusPath.Replace("wrtSelf_", "");
+
+                                        newE2ERel.FromEntity = this.Storage.CreateAbsoluteCorpusPath(selectedEntCorpusPath, selectedEntity);
+                                        newE2ERel.ToEntity = toEntity.AtCorpusPath;
+                                    }
+
                                     outRels.Add(newE2ERel);
                                 }
                             }
                         }
                         // repeat the process on the child node
-                        List<CdmE2ERelationship> subOutRels = this.FindOutgoingRelationships(resOpt, resEntity, child, newGenSet);
+                        List<CdmE2ERelationship> subOutRels = this.FindOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet);
                         outRels.AddRange(subOutRels);
                     }
                 }

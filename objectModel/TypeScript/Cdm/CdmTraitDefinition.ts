@@ -13,6 +13,8 @@ import {
     cdmObjectType,
     CdmParameterDefinition,
     CdmTraitReference,
+    Errors,
+    Logger,
     ParameterCollection,
     ParameterValueSet,
     resolveContext,
@@ -26,6 +28,18 @@ import {
 } from '../internal';
 
 export class CdmTraitDefinition extends CdmObjectDefinitionBase {
+
+    public static get objectType(): cdmObjectType {
+        return cdmObjectType.traitDef;
+    }
+
+    public get parameters(): CdmCollection<CdmParameterDefinition> {
+        if (!this._parameters) {
+            this._parameters = new CdmCollection<CdmParameterDefinition>(this.ctx, this, cdmObjectType.parameterDef);
+        }
+
+        return this._parameters;
+    }
     public associatedProperties: string[];
     public explanation: string;
     public elevated: boolean;
@@ -33,17 +47,13 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
     public extendsTrait: CdmTraitReference;
     public ugly: boolean;
     public _parameters: CdmCollection<CdmParameterDefinition>;
-    private allParameters: ParameterCollection;
-    private hasSetFlags: boolean;
-    private baseIsKnownToHaveParameters: boolean;
     /**
      * @internal
      */
     public thisIsKnownToHaveParameters: boolean;
-
-    public static get objectType(): cdmObjectType {
-        return cdmObjectType.traitDef;
-    }
+    private allParameters: ParameterCollection;
+    private hasSetFlags: boolean;
+    private baseIsKnownToHaveParameters: boolean;
 
     constructor(ctx: CdmCorpusContext, name: string, extendsTrait?: CdmTraitReference) {
         super(ctx);
@@ -55,14 +65,6 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
             this.extendsTrait = extendsTrait;
         }
         // return p.measure(bodyCode);
-    }
-
-    public get parameters(): CdmCollection<CdmParameterDefinition> {
-        if (!this._parameters) {
-            this._parameters = new CdmCollection<CdmParameterDefinition>(this.ctx, this, cdmObjectType.parameterDef);
-        }
-
-        return this._parameters;
     }
 
     public getObjectType(): cdmObjectType {
@@ -104,7 +106,18 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.traitName ? true : false;
+            if (!this.traitName) {
+                Logger.error(
+                    CdmTraitDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['traitName']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

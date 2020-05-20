@@ -18,7 +18,7 @@ class TypeAttribute(JObject):
         self.name = None  # type: str
         self.purpose = None  # type: Union[str, PurposeReference]
         self.dataType = None  # type: Union[str, DataTypeReference]
-        self.appliedTraits = []  # type: List[Union[str, TraitReference]]
+        self.appliedTraits = None  # type: List[Union[str, TraitReference]]
         self.attributeContext = None  # type: str
         self.isPrimaryKey = None  # type: bool
         self.isReadOnly = None  # type: bool

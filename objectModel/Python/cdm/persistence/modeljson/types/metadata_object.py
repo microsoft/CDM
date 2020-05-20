@@ -16,7 +16,7 @@ class MetadataObject(JObject):
     def __init__(self):
         super().__init__()
 
-        self.name = ''  # type: str
-        self.description = ''  # type: str
+        self.name = None  # type: str
+        self.description = None  # type: str
         self.annotations = None  # type: Optional[List[Annotation]]
         self.traits = None  # type: Optional[List]

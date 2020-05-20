@@ -44,7 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
 
             cdmCorpus.Storage.Mount("local", new LocalAdapter(SchemaDocsPath));
-            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/standards.manifest.cdm.json") as CdmManifestDefinition;
+            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>(TestHelper.CdmStandardSchemaPath) as CdmManifestDefinition;
             var directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
             var allResolved = await ListAllResolved(cdmCorpus, directives, manifest, new StringSpewCatcher());
             Assert.IsTrue(!string.IsNullOrWhiteSpace(allResolved));
@@ -220,6 +220,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             // again there are 2 attributes grouped in an entity attribute
             // and 2 attributes grouped in an attribute group
             Assert.AreEqual(((mainEntity.Attributes[2] as CdmAttributeGroupReference).ExplicitReference as CdmAttributeGroupDefinition).Members.Count, 2);
+        }
+
+        /// <summary>
+        /// Test that "is.linkedEntity.name" and "is.linkedEntity.identifier" traits are set when "selectedTypeAttribute" and "foreignKeyAttribute"
+        /// are present in the entity's resolution guidance.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestSettingTraitsForResolutionGuidanceAttributes()
+        {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestSettingTraitsForResolutionGuidanceAttributes");
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Customer.cdm.json/Customer");
+
+            // Resolve with default directives to get "is.linkedEntity.name" trait.
+            ResolveOptions resOpt = new ResolveOptions { WrtDoc = entity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" }) };
+            CdmEntityDefinition resolvedEntity = await entity.CreateResolvedEntityAsync("resolved", resOpt);
+
+            Assert.AreEqual("is.linkedEntity.name", resolvedEntity.Attributes[1].AppliedTraits[6].NamedReference);
+
+            // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
+            resOpt = new ResolveOptions { WrtDoc = entity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly" }) };
+            resolvedEntity = await entity.CreateResolvedEntityAsync("resolved2", resOpt);
+
+            Assert.AreEqual("is.linkedEntity.identifier", resolvedEntity.Attributes[0].AppliedTraits[7].NamedReference);
         }
 
         /// <summary>

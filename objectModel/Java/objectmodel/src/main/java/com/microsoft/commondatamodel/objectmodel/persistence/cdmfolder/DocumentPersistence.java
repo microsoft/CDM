@@ -19,13 +19,9 @@ import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.DynamicObjectExtensions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public class DocumentPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DocumentPersistence.class);
-
   /**
    * Whether this persistence class has async methods.
    */
@@ -83,7 +79,12 @@ public class DocumentPersistence {
       DocumentContent obj = JMapper.MAP.readValue(jsonData, DocumentContent.class);
       return fromObject(ctx, docName, folder.getNamespace(), folder.getFolderPath(), obj);
     } catch (final Exception e) {
-      LOGGER.error("Could not convert '{}'. Reason '{}'.", docName, e.getLocalizedMessage());
+      Logger.error(
+          DocumentPersistence.class.getSimpleName(),
+          ctx,
+          Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage()),
+          "fromData"
+      );
       return null;
     }
   }

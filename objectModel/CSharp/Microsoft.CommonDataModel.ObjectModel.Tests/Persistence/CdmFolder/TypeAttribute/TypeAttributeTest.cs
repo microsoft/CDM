@@ -122,6 +122,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         public async Task TestPropertyPersistence()
         {
             var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestPropertyPersistence", null);
+            var callback = new EventCallback();
+            var functionWasCalled = false;
+            var functionParameter1 = CdmStatusLevel.Info;
+            string functionParameter2 = null;
+            callback.Invoke = (CdmStatusLevel statusLevel, string message1) =>
+            {
+                functionWasCalled = true;
+                if (statusLevel.Equals(CdmStatusLevel.Error))
+                {
+                    functionParameter1 = statusLevel;
+                    functionParameter2 = message1;
+                }
+            };
+            corpus.SetEventCallback(callback);
+
             var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/PropertyEntity.cdm.json/PropertyEntity");
 
             // test loading properties
@@ -169,6 +184,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.IsFalse((bool)invalidValuesAttribute.IsReadOnly);
             Assert.IsNull(invalidValuesAttribute.MaximumLength);
 
+            // test loading values with empty default value list that should log error
+            var emptyDefaultValueAttribute = entity.Attributes[4] as CdmTypeAttributeDefinition;
+            // test log error "Default value missing languageTag or displayText."
+            Assert.IsTrue(functionWasCalled);
+            Assert.AreEqual(CdmStatusLevel.Error, functionParameter1);
+            Assert.IsTrue(functionParameter2.Contains("Default value missing languageTag or displayText."));
+            Assert.IsNull(emptyDefaultValueAttribute.DefaultValue);
+            // set the default value to an empty list for testing that it should be removed from the generated json.
+            emptyDefaultValueAttribute.DefaultValue = new List<object>();
+
             var entityData = EntityPersistence.ToData(entity, null, null);
 
             // test toData for properties
@@ -215,6 +240,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             var invalidValuesAttributeData = entityData.HasAttributes[3].ToObject<TypeAttribute>();
             Assert.IsNull(invalidValuesAttributeData.IsReadOnly);
             Assert.IsNull(invalidValuesAttributeData.MaximumLength);
+
+            // test toData with empty default value list that should be written as null
+            var emptyDefaultValueAttributeData = entityData.HasAttributes[4].ToObject<TypeAttribute>();
+            Assert.IsNull(emptyDefaultValueAttributeData.DefaultValue);
         }
 
         /// <summary>
@@ -254,6 +283,126 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.AreEqual("Opis na srpskom jeziku", constantValues[1][1]);
             Assert.AreEqual("cn", constantValues[2][0]);
             Assert.AreEqual("一些中文描述", constantValues[2][1]);
+        }
+
+        /// <summary>
+        /// Testing that DataFormat to trait mappings are correct and that correct traits are added to the type attribute.
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestDataFormatToTraitMappings()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestDataFormatToTraitMappings", null);
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Entity.cdm.json/Entity");
+
+            // Check that the traits we expect for each DataFormat are found in the type attribute's applied traits.
+
+            // DataFormat = Int16
+            var attributeA = entity.Attributes[0] as CdmTypeAttributeDefinition;
+            HashSet<string> aTraitNamedReferences = FetchTraitNamedReferences(attributeA.AppliedTraits);
+            Assert.IsTrue(aTraitNamedReferences.Contains("is.dataFormat.integer"));
+            Assert.IsTrue(aTraitNamedReferences.Contains("is.dataFormat.small"));
+
+            // DataFormat = Int32
+            var attributeB = entity.Attributes[1] as CdmTypeAttributeDefinition;
+            HashSet<string> bTraitNamedReferences = FetchTraitNamedReferences(attributeB.AppliedTraits);
+            Assert.IsTrue(bTraitNamedReferences.Contains("is.dataFormat.integer"));
+
+            // DataFormat = Int64
+            var attributeC = entity.Attributes[2] as CdmTypeAttributeDefinition;
+            HashSet<string> cTraitNamedReferences = FetchTraitNamedReferences(attributeC.AppliedTraits);
+            Assert.IsTrue(cTraitNamedReferences.Contains("is.dataFormat.integer"));
+            Assert.IsTrue(cTraitNamedReferences.Contains("is.dataFormat.big"));
+
+            // DataFormat = Float
+            var attributeD = entity.Attributes[3] as CdmTypeAttributeDefinition;
+            HashSet<string> dTraitNamedReferences = FetchTraitNamedReferences(attributeD.AppliedTraits);
+            Assert.IsTrue(dTraitNamedReferences.Contains("is.dataFormat.floatingPoint"));
+
+            // DataFormat = Double
+            var attributeE = entity.Attributes[4] as CdmTypeAttributeDefinition;
+            HashSet<string> eTraitNamedReferences = FetchTraitNamedReferences(attributeE.AppliedTraits);
+            Assert.IsTrue(eTraitNamedReferences.Contains("is.dataFormat.floatingPoint"));
+            Assert.IsTrue(eTraitNamedReferences.Contains("is.dataFormat.big"));
+
+            // DataFormat = Guid
+            var attributeF = entity.Attributes[5] as CdmTypeAttributeDefinition;
+            HashSet<string> fTraitNamedReferences = FetchTraitNamedReferences(attributeF.AppliedTraits);
+            Assert.IsTrue(fTraitNamedReferences.Contains("is.dataFormat.guid"));
+            Assert.IsTrue(fTraitNamedReferences.Contains("is.dataFormat.character"));
+            Assert.IsTrue(fTraitNamedReferences.Contains("is.dataFormat.array"));
+
+            // DataFormat = String
+            var attributeG = entity.Attributes[6] as CdmTypeAttributeDefinition;
+            HashSet<string> gTraitNamedReferences = FetchTraitNamedReferences(attributeG.AppliedTraits);
+            Assert.IsTrue(gTraitNamedReferences.Contains("is.dataFormat.character"));
+            Assert.IsTrue(gTraitNamedReferences.Contains("is.dataFormat.array"));
+
+            // DataFormat = Char
+            var attributeH = entity.Attributes[7] as CdmTypeAttributeDefinition;
+            HashSet<string> hTraitNamedReferences = FetchTraitNamedReferences(attributeH.AppliedTraits);
+            Assert.IsTrue(hTraitNamedReferences.Contains("is.dataFormat.character"));
+            Assert.IsTrue(hTraitNamedReferences.Contains("is.dataFormat.big"));
+
+            // DataFormat = Byte
+            var attributeI = entity.Attributes[8] as CdmTypeAttributeDefinition;
+            HashSet<string> iTraitNamedReferences = FetchTraitNamedReferences(attributeI.AppliedTraits);
+            Assert.IsTrue(iTraitNamedReferences.Contains("is.dataFormat.byte"));
+
+            // DataFormat = Binary
+            var attributeJ = entity.Attributes[9] as CdmTypeAttributeDefinition;
+            HashSet<string> jTraitNamedReferences = FetchTraitNamedReferences(attributeJ.AppliedTraits);
+            Assert.IsTrue(jTraitNamedReferences.Contains("is.dataFormat.byte"));
+            Assert.IsTrue(jTraitNamedReferences.Contains("is.dataFormat.array"));
+
+            // DataFormat = Time
+            var attributeK = entity.Attributes[10] as CdmTypeAttributeDefinition;
+            HashSet<string> kTraitNamedReferences = FetchTraitNamedReferences(attributeK.AppliedTraits);
+            Assert.IsTrue(kTraitNamedReferences.Contains("is.dataFormat.time"));
+
+            // DataFormat = Date
+            var attributeL = entity.Attributes[11] as CdmTypeAttributeDefinition;
+            HashSet<string> lTraitNamedReferences = FetchTraitNamedReferences(attributeL.AppliedTraits);
+            Assert.IsTrue(lTraitNamedReferences.Contains("is.dataFormat.date"));
+
+            // DataFormat = DateTime
+            var attributeM = entity.Attributes[12] as CdmTypeAttributeDefinition;
+            HashSet<string> mTraitNamedReferences = FetchTraitNamedReferences(attributeM.AppliedTraits);
+            Assert.IsTrue(mTraitNamedReferences.Contains("is.dataFormat.time"));
+            Assert.IsTrue(mTraitNamedReferences.Contains("is.dataFormat.date"));
+
+            // DataFormat = DateTimeOffset
+            var attributeN = entity.Attributes[13] as CdmTypeAttributeDefinition;
+            HashSet<string> nTraitNamedReferences = FetchTraitNamedReferences(attributeN.AppliedTraits);
+            Assert.IsTrue(nTraitNamedReferences.Contains("is.dataFormat.time"));
+            Assert.IsTrue(nTraitNamedReferences.Contains("is.dataFormat.date"));
+            Assert.IsTrue(nTraitNamedReferences.Contains("is.dataFormat.timeOffset"));
+
+            // DataFormat = Boolean
+            var attributeO = entity.Attributes[14] as CdmTypeAttributeDefinition;
+            HashSet<string> oTraitNamedReferences = FetchTraitNamedReferences(attributeO.AppliedTraits);
+            Assert.IsTrue(oTraitNamedReferences.Contains("is.dataFormat.boolean"));
+
+            // DataFormat = Decimal
+            var attributeP = entity.Attributes[15] as CdmTypeAttributeDefinition;
+            HashSet<string> pTraitNamedReferences = FetchTraitNamedReferences(attributeP.AppliedTraits);
+            Assert.IsTrue(pTraitNamedReferences.Contains("is.dataFormat.numeric.shaped"));
+
+            // DataFormat = Json
+            var attributeQ = entity.Attributes[16] as CdmTypeAttributeDefinition;
+            HashSet<string> qTraitNamedReferences = FetchTraitNamedReferences(attributeQ.AppliedTraits);
+            Assert.IsTrue(qTraitNamedReferences.Contains("is.dataFormat.array"));
+            Assert.IsTrue(qTraitNamedReferences.Contains("means.content.text.JSON"));
+        }
+
+        private static HashSet<string> FetchTraitNamedReferences(CdmTraitCollection traits)
+        {
+            HashSet<string> namedReferences = new HashSet<string>();
+            foreach (var trait in traits)
+            {
+                namedReferences.Add(trait.NamedReference);
+            }
+            return namedReferences;
         }
     }
 }

@@ -8,10 +8,15 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -20,12 +25,8 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContainerDefinition {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmDocumentDefinition.class);
-
   protected Map<String, CdmObjectDefinitionBase> internalDeclarations;
   protected boolean isDirty = true;
   private ImportPriorities importPriorities;
@@ -204,7 +205,12 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.getCtx().getCorpus().blockDeclaredPathChanges = true;
 
     // shout into the void
-    LOGGER.info("Localizing corpus paths in document '{}'.", this.getName());
+    Logger.info(
+        CdmDocumentDefinition.class.getSimpleName(),
+        this.getCtx(),
+        Logger.format("Localizing corpus paths in document '{0}'.", this.getName()),
+        "localizeCorpusPaths"
+    );
 
     // find anything in the document that is a corpus path
     this.visit("", (iObject, path) -> {
@@ -374,6 +380,15 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
     return CompletableFuture.supplyAsync(() -> {
       if (this.getNeedsIndexing()) {
+        if (this.getFolder() == null) {
+          Logger.error(
+              CdmDocumentDefinition.class.getSimpleName(),
+              this.getCtx(),
+              Logger.format("Document '{0}' is not in a folder", this.name),
+              "indexIfNeededAsync"
+          );
+          return false;
+        }
         final CdmCorpusDefinition corpus = this.getFolder().getCorpus();
 
         corpus.resolveImportsAsync(this, resOpt).join();
@@ -406,7 +421,12 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     final ResolveOptions resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     
     if (!this.indexIfNeededAsync(resOpt).join()) {
-      LOGGER.error("Failed to index document prior to save '{}'", this.getName());
+      Logger.error(
+          CdmDocumentDefinition.class.getSimpleName(),
+          this.getCtx(),
+          Logger.format("Failed to index document prior to save '{0}'", this.getName()),
+          "saveAsAsync"
+      );
       return CompletableFuture.completedFuture(false);
     }
 
@@ -456,7 +476,11 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.getName());
+    if (StringUtils.isNullOrTrimEmpty(this.getName())) {
+      Logger.error(CdmDocumentDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -645,7 +669,12 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           if (docImp != null && docImp.isDirty) {
             // save it with the same name
             if (!docImp.saveAsAsync(docImp.getName(), true, options).join()) {
-              LOGGER.error("Failed to save import '{}'", docImp.getName());
+              Logger.error(
+                  CdmDocumentDefinition.class.getSimpleName(),
+                  this.getCtx(),
+                  Logger.format("Failed to save import '{0}'", docImp.getName()),
+                  "saveLinkedDocumentsAsync"
+              );
               return false;
             }
           }

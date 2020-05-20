@@ -11,16 +11,17 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmConstantEntityDefinition.class);
-
   private String constantEntityName;
   private CdmEntityReference entityShape;
   private List<List<String>> constantValues;
@@ -103,9 +104,17 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     if (null == this.constantValues) {
       final String[] pathSplit = this.getDeclaredPath().split("/", -1);
       final String entityName = (pathSplit.length > 0) ? pathSplit[0] : new String();
-      LOGGER.warn("constant entity '{}' defined without a constant value.", entityName);
+      Logger.warning(
+          CdmConstantEntityDefinition.class.getSimpleName(),
+          this.getCtx(),
+          Logger.format("constant entity '{0}' defined without a constant value.", entityName)
+      );
     }
-    return this.entityShape != null;
+    if (this.entityShape == null) {
+      Logger.error(CdmConstantEntityDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("entityShape"))));
+      return false;
+    }
+    return true;
   }
 
   /**

@@ -19,10 +19,10 @@ class DocumentContent(JObject):
 
         self.json_rename({"schema": "$schema"})
 
-        self.schema = ''  # type: str
-        self.jsonSchemaSemanticVersion = ''  # type: str
-        self.imports = []  # type: List[Import]
+        self.schema = None  # type: str
+        self.jsonSchemaSemanticVersion = None  # type: str
+        self.imports = None  # type: List[Import]
         self.definitions = None  # type: Union[Trait, DataType, Purpose, AttributeGroup, Entity, ConstantEntity]
 
-        self.schemaVersion = ''  # type: str
+        self.schemaVersion = None  # type: str
         """DEPRECATED"""

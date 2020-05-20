@@ -25,10 +25,12 @@ import {
     cdmStatusLevel,
     CdmTraitDefinition,
     CdmTraitReference,
+    Errors,
     Logger,
     relationshipInfo,
     resolveContext,
     ResolvedAttribute,
+    ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReference,
     ResolvedEntityReferenceSet,
@@ -37,8 +39,7 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
-    VisitCallback,
-    ResolvedAttributeSet
+    VisitCallback
 } from '../internal';
 
 export class CdmEntityAttributeDefinition extends CdmAttribute {
@@ -101,7 +102,25 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.name && this.entity ? true : false;
+            const missingFields: string[] = [];
+            if (!this.name) {
+                missingFields.push('name');
+            }
+            if (!this.entity) {
+                missingFields.push('entity');
+            }
+            if (missingFields.length > 0) {
+                Logger.error(
+                    CdmEntityAttributeDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, missingFields),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -329,7 +348,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             }
 
             // a 'structured' directive wants to keep all entity attributes together in a group
-            if (arc.resOpt.directives && rtsThisAtt.resOpt.directives.has('structured')) {
+            if (arc.resOpt.directives && arc.resOpt.directives.has('structured')) {
                 const raSub: ResolvedAttribute = new ResolvedAttribute(
                     rtsThisAtt.resOpt, rasb.ras, this.name, rasb.ras.attributeContext);
                 if (relInfo.isArray) {

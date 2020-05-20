@@ -6,26 +6,28 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.regex.PatternSyntaxException;
 
 public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
-  private static Logger LOGGER = LoggerFactory.getLogger(CdmDataPartitionPatternDefinition.class);
-
   private String name;
   private String rootLocation;
+  private String globPattern;
   private String regularExpression;
   private List<String> parameters;
   private String specializedSchema;
@@ -41,7 +43,11 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   @Override
   public boolean validate() {
-    return getRegularExpression() != null || !StringUtils.isNullOrTrimEmpty(getRootLocation());
+    if (StringUtils.isNullOrEmpty(getRootLocation())) {
+      Logger.error(CdmDataPartitionPatternDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("rootLocation"))));
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -75,6 +81,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     }
 
     copy.setRootLocation(this.getRootLocation());
+    copy.setGlobPattern(this.getGlobPattern());
     copy.setRegularExpression(this.getRegularExpression());
     copy.setParameters(this.getParameters());
     copy.setLastFileStatusCheckTime(this.getLastFileStatusCheckTime());
@@ -155,6 +162,18 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   }
 
   /**
+   * Gets or sets the glob pattern used to search for partitions.
+   * If both globPattern and regularExpression is set, globPattern will be used.
+   */
+  public String getGlobPattern() {
+    return globPattern;
+  }
+
+  public void setGlobPattern(final String value) {
+    this.globPattern = value;
+  }
+
+  /**
    * Gets or sets the regular expression string to use for searching partitions.
    */
   public String getRegularExpression() {
@@ -213,14 +232,20 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     this.lastFileModifiedTime = value;
   }
 
+  /**
+   * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+   */
   @Override
   public OffsetDateTime getLastChildFileModifiedTime() {
-    return lastChildFileModifiedTime;
+    throw new UnsupportedOperationException();
   }
 
+  /**
+   * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+   */
   @Override
   public void setLastChildFileModifiedTime(final OffsetDateTime time) {
-    this.lastChildFileModifiedTime = time;
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -233,7 +258,12 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
       final StorageAdapter adapter = getCtx().getCorpus().getStorage().fetchAdapter(nameSpace);
 
       if (adapter == null) {
-        LOGGER.error("Adapter not found for the document '{}'", this.getInDocument().getName());
+        Logger.error(
+            CdmDataPartitionPatternDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("Adapter not found for the document '{0}'", this.getInDocument().getName()),
+            "fileStatusCheckAsync"
+        );
         return;
       }
 
@@ -255,7 +285,12 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         // get a list of all corpusPaths under the root
         fileInfoList = adapter.fetchAllFilesAsync(rootCorpus).join();
       } catch (Exception e) {
-        LOGGER.warn("The folder location '{}' described by a partition pattern does not exist", rootCorpus);
+        Logger.warning(
+            CdmDataPartitionPatternDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("The folder location '{0}' described by a partition pattern does not exist", rootCorpus),
+            "fileStatusCheckAsync"
+        );
       }
 
       if (fileInfoList != null) {
@@ -265,40 +300,64 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
           fileInfoList.set(i, StringUtils.slice(fileInfoList.get(i), rootCorpus.length()));
         }
 
-        final Pattern regexPattern = Pattern.compile(getRegularExpression());
-
         if (getOwner() instanceof CdmLocalEntityDeclarationDefinition) {
-          for (final String fi : fileInfoList) {
-            final Matcher m = regexPattern.matcher(fi);
+          // if both are present log warning and use glob pattern, otherwise use regularExpression
+          if (!StringUtils.isNullOrTrimEmpty(this.getGlobPattern()) && !StringUtils.isNullOrTrimEmpty(this.getRegularExpression())) {
+            Logger.warning(
+              CdmDataPartitionPatternDefinition.class.getSimpleName(),
+              this.getCtx(),
+              String.format("The Data Partition Pattern contains both a glob pattern (%s) and a regular expression (%s) set, the glob pattern will be used.", this.getGlobPattern(), this.getRegularExpression()));
+          }
+          String regularExpression = !StringUtils.isNullOrTrimEmpty(this.globPattern) ? this.globPatternToRegex(this.globPattern) : this.regularExpression;
+          Pattern regexPattern = null;
 
-            if (m.matches() && m.group().equals(fi)) {
-              // create a map of arguments out of capture groups
-              final Map<String, List<String>> args = new LinkedHashMap<>();
+          try {
+            regexPattern = Pattern.compile(regularExpression);
+          } catch (final PatternSyntaxException e) {
+            Logger.error(
+              CdmDataPartitionPatternDefinition.class.getSimpleName(),
+              this.getCtx(),
+              String.format(
+                "The %s '%s' could not form a valid regular expression. Reason: %s",
+                !StringUtils.isNullOrTrimEmpty(this.globPattern) ? "glob pattern" : "regular expression",
+                !StringUtils.isNullOrTrimEmpty(this.globPattern) ? this.globPattern : this.regularExpression,
+                e.getMessage())
+              );
+          }
 
-              // For each capture group, save the matching substring into the parameter.
-              for (int i = 0; i < m.groupCount(); i++) {
-                if (this.getParameters() != null && i < this.getParameters().size()) {
-                  final String currentParam = this.getParameters().get(i);
+          if (regexPattern != null) {
+            for (final String fi : fileInfoList) {
+              final Matcher m = regexPattern.matcher(fi);
 
-                  if (!args.containsKey(currentParam)) {
-                    args.put(currentParam, new ArrayList<>());
+              if (m.matches() && m.group().equals(fi)) {
+                // create a map of arguments out of capture groups
+                final Map<String, List<String>> args = new LinkedHashMap<>();
+
+                // For each capture group, save the matching substring into the parameter.
+                for (int i = 0; i < m.groupCount(); i++) {
+                  if (this.getParameters() != null && i < this.getParameters().size()) {
+                    final String currentParam = this.getParameters().get(i);
+
+                    if (!args.containsKey(currentParam)) {
+                      args.put(currentParam, new ArrayList<>());
+                    }
+
+                    args.get(currentParam).add(m.group(i+1));
                   }
-
-                  args.get(currentParam).add(m.group(i+1));
                 }
-              }
 
-              // put the original but cleaned up root back onto the matched doc as the location stored in the partition
-              final String locationCorpusPath = rootCleaned + fi;
-              final String fullPath = rootCorpus + fi;
-              final OffsetDateTime lastModifiedTime =
-                  adapter.computeLastModifiedTimeAsync(fullPath).join();
-              ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
-                      locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
+                // put the original but cleaned up root back onto the matched doc as the location stored in the partition
+                final String locationCorpusPath = rootCleaned + fi;
+                final String fullPath = rootCorpus + fi;
+                final OffsetDateTime lastModifiedTime =
+                    adapter.computeLastModifiedTimeAsync(fullPath).join();
+                ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
+                        locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
+              }
             }
           }
         }
-    }
+      }
 
       // update modified times
       setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
@@ -315,5 +374,63 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     }
 
     return CompletableFuture.completedFuture(null);
+  }
+
+  /**
+   * Converts a glob pattern to a regular expression
+   */
+  private String globPatternToRegex(String pattern) {
+    ArrayList<String> newPattern = new ArrayList<String>();
+
+    for (int i = 0; i < pattern.length(); i++) {
+      final char currChar = pattern.charAt(i);
+
+      switch (currChar) {
+        case '.':
+          // escape '.' characters
+          newPattern.add("\\.");
+          break;
+        case '\\':
+          // convert backslash into slash
+          newPattern.add("/");
+          break;
+        case '?':
+          // question mark in glob matches any single character
+          newPattern.add(".");
+          break;
+        case '*':
+          Character nextChar = i + 1 < pattern.length() ? pattern.charAt(i + 1) : null;
+          if (nextChar != null && nextChar.equals('*')) {
+            Character prevChar = i - 1 >= 0 ? pattern.charAt(i - 1) : null;
+            Character postChar = i + 2 < pattern.length() ? pattern.charAt(i + 2) : null;
+
+            // globstar must be at beginning of pattern, end of pattern, or wrapped in separator characters
+            if ((prevChar == null || prevChar == '/' || prevChar == '\\')
+            && (postChar == null || postChar == '/' || postChar == '\\')) {
+              newPattern.add(".*");
+
+              // globstar can match zero or more subdirectories. If it matches zero, then there should not be
+              // two consecutive '/' characters so make the second one optional
+              if (prevChar != null && postChar != null &&
+              (prevChar == '/' || prevChar == '\\') && (postChar == '/' || postChar == '\\')) {
+                newPattern.add("/?");
+                i++;
+              }
+            } else {
+              // otherwise, treat the same as '*'
+              newPattern.add("[^/\\\\]*");
+            }
+            i++;
+          } else {
+            // *
+            newPattern.add("[^/\\\\]*");
+          }
+          break;
+        default:
+          newPattern.add(Character.toString(currChar));
+      }
+    }
+
+    return String.join("", newPattern);
   }
 }

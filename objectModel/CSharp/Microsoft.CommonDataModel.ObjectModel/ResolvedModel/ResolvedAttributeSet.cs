@@ -213,16 +213,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         ////////////////////////////////////////////////////////////////////////////////////////////////////
         //  traits that change attributes
         ////////////////////////////////////////////////////////////////////////////////////////////////////
-        internal ResolvedAttributeSet ApplyTraits(ResolvedTraitSet traits, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
+        internal ResolvedAttributeSet ApplyTraits(ResolvedTraitSet traits, ResolveOptions resOpt, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
         {
             ResolvedAttributeSet rasResult = this;
             ResolvedAttributeSet rasApplied;
 
-            if (this.RefCnt > 1 && rasResult.CopyNeeded(traits, resGuide, actions))
+            if (this.RefCnt > 1 && rasResult.CopyNeeded(traits, resOpt, resGuide, actions))
             {
                 rasResult = rasResult.Copy();
             }
-            rasApplied = rasResult.Apply(traits, resGuide, actions);
+            rasApplied = rasResult.Apply(traits, resOpt, resGuide, actions);
 
             // now we are that
             rasResult.ResolvedName2resolvedAttribute = rasApplied.ResolvedName2resolvedAttribute;
@@ -234,7 +234,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             return rasResult;
         }
 
-        bool CopyNeeded(ResolvedTraitSet traits, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
+        bool CopyNeeded(ResolvedTraitSet traits, ResolveOptions resOpt, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
         {
             if (actions == null || actions.Count == 0)
             {
@@ -248,7 +248,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 ResolvedAttribute resAtt = this.Set[i];
                 foreach (var currentTraitAction in actions)
                 {
-                    ApplierContext ctx = new ApplierContext { ResOpt = traits.ResOpt, ResAttSource = resAtt, ResGuide = resGuide };
+                    ApplierContext ctx = new ApplierContext { ResOpt = resOpt, ResAttSource = resAtt, ResGuide = resGuide };
                     if (currentTraitAction.WillAttributeModify(ctx))
                         return true;
                 }
@@ -256,7 +256,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             return false;
         }
 
-        ResolvedAttributeSet Apply(ResolvedTraitSet traits, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
+        ResolvedAttributeSet Apply(ResolvedTraitSet traits, ResolveOptions resOpt, CdmAttributeResolutionGuidance resGuide, List<AttributeResolutionApplier> actions)
         {
             if (traits == null && actions.Count == 0)
             {
@@ -278,7 +278,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 ResolvedAttribute resAttTest = this.Set[0];
                 foreach (AttributeResolutionApplier traitAction in actions)
                 {
-                    ApplierContext ctx = new ApplierContext { ResOpt = traits.ResOpt, ResAttSource = resAttTest, ResGuide = resGuide };
+                    ApplierContext ctx = new ApplierContext { ResOpt = resOpt, ResAttSource = resAttTest, ResGuide = resGuide };
                     if (traitAction.WillAttributeModify(ctx) == true)
                     {
                         makingCopy = true;
@@ -313,10 +313,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 if (resAtt.Target is ResolvedAttributeSet subSet)
                 {
                     if (makingCopy)
+                    {
                         resAtt = resAtt.Copy();
-
+                        // making a copy of a subset (att group) also bring along the context tree for that whole group
+                        attCtxToMerge = resAtt.AttCtx;
+                    }
                     // the set contains another set. process those
-                    resAtt.Target = subSet.Apply(traits, resGuide, actions);
+                    resAtt.Target = subSet.Apply(traits, resOpt, resGuide, actions);
                 }
                 else
                 {

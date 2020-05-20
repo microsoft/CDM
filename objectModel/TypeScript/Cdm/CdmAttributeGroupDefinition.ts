@@ -12,6 +12,8 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
@@ -90,7 +92,18 @@ export class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.attributeGroupName ? true : false;
+            if (!this.attributeGroupName) {
+                Logger.error(
+                    CdmAttributeGroupDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['attributeGroupName']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

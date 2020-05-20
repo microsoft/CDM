@@ -20,7 +20,7 @@ class Partition(DataObject):
         super().__init__()
 
         self.refreshTime = None  # type: datetime
-        self.location = ''  # type: str
+        self.location = None  # type: str
         self.fileFormatSettings = None  # type: Optional[CsvFormatSettings]
         self.lastFileStatusCheckTime = None  # type: datetime
         self.lastFileModifiedTime = None  # type: datetime

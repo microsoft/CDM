@@ -14,6 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Attribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 
 import java.util.List;
@@ -30,7 +31,9 @@ public class TypeAttributePersistence {
     final CdmTypeAttributeDefinition attribute = ctx.getCorpus().makeObject(CdmObjectType.TypeAttributeDef, obj.getName());
     // Do a conversion between CDM data format and model.json data type.
     attribute.updateDataFormat(dataTypeFromData(obj.getDataType()));
-    attribute.updateDescription(obj.getDescription());
+    if (!StringUtils.isNullOrTrimEmpty(obj.getDescription())) {
+      attribute.updateDescription(obj.getDescription());
+    }
 
     if (obj.isHidden() != null && obj.isHidden()) {
       final CdmTraitReference isHiddenTrait = ctx.getCorpus().makeObject(CdmObjectType.TraitRef, "is.hidden");
@@ -56,15 +59,8 @@ public class TypeAttributePersistence {
     attribute.setName(instance.getName());
     attribute.setDataType(dataTypeToData(instance.fetchDataFormat()));
     attribute.setDescription((String) instance.fetchProperty(CdmPropertyName.DESCRIPTION));
-    attribute.setTraits(Utils.listCopyData(
-            instance.getAppliedTraits().getAllItems()
-                    .stream()
-                    .filter(trait -> !trait.isFromProperty())
-                    .collect(Collectors.toList()),
-            resOpt,
-            options));
 
-    return Utils.processAnnotationsToData(instance.getCtx(), attribute, instance.getAppliedTraits()).thenCompose(v -> {
+    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), attribute, instance.getAppliedTraits()).thenCompose(v -> {
       final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
       final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
 

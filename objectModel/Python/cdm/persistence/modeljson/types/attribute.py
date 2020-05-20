@@ -12,4 +12,4 @@ class Attribute(DataObject):
     def __init__(self):
         super().__init__()
 
-        self.dataType = ''  # type: str
+        self.dataType = None  # type: str

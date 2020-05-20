@@ -12,19 +12,11 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
-import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.RemoteAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import java.io.File;
 import java.io.IOException;
 import org.testng.Assert;
-import org.testng.AssertJUnit;
 import org.testng.annotations.Test;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
 
 public class DataPartitionPatternTest {
 
@@ -60,19 +52,5 @@ public class DataPartitionPatternTest {
     Assert.assertEquals(pattern.getParameters().get(1), "testParam2");
     Assert.assertEquals(pattern.getSpecializedSchema(), "test special schema");
     Assert.assertEquals(pattern.getExhibitsTraits().getCount(), 1);
-  }
-
-  /**
-   * Testing that error is handled when partition pattern contains a folder that does not exist
-   */
-  @Test
-  public void testPatternWithNonExistingFolder() throws IOException, InterruptedException {
-    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testPatternWithNonExistingFolder", null);
-    final String content = TestHelper.getInputFileContent(TESTS_SUBPATH, "testPatternWithNonExistingFolder", "entities.manifest.cdm.json");
-    final CdmManifestDefinition cdmManifest = ManifestPersistence.fromObject(new ResolveContext(corpus), "entities", "local", "/", JMapper.MAP.readValue(content, ManifestContent.class));
-    cdmManifest.fileStatusCheckAsync().join();
-    Assert.assertEquals(cdmManifest.getEntities().get(0).getDataPartitions().size(), 0);
-    // make sure the last check time is still being set
-    AssertJUnit.assertNotNull(cdmManifest.getEntities().get(0).getDataPartitionPatterns().get(0).getLastFileStatusCheckTime());
   }
 }

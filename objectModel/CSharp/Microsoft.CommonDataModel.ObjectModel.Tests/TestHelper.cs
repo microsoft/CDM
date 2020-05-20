@@ -31,6 +31,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
         public const string SchemaDocumentsPath = "../../../../../../schemaDocuments";
 
         /// <summary>
+        /// The adapter path to the top-level manifest in the CDM Schema Documents folder. Used by tests where we resolve the corpus.
+        /// This path is temporarily pointing to the applicationCommon manifest instead of standards due to performance issues when resolving
+        /// the entire set of CDM standard schemas, after 8000+ F&O entities were added.
+        /// </summary>
+        public const string CdmStandardSchemaPath = "local:/core/applicationCommon/applicationCommon.manifest.cdm.json";
+
+        /// <summary>
         /// Gets the input folder path associated with specified test.
         /// </summary>
         /// <param name="testSubpath">The subpath of the test. Path is formed from {TestDataPath}{TestSubpath}{TestName}{FolderUse}</param>

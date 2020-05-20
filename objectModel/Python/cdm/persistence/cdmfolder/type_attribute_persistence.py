@@ -65,7 +65,7 @@ class TypeAttributePersistence:
 
         if data.get('dataFormat') is not None:
             try:
-                type_attribute.data_format = CdmDataFormat(data.dataFormat)
+                type_attribute.data_format = TypeAttributePersistence._data_type_from_data(data.dataFormat)
             except ValueError:
                 logger.warning(TypeAttributePersistence.__name__, ctx, 'Couldn\'t find an enum value for {}.'.format(
                     data.dataFormat), TypeAttributePersistence.from_data.__name__)
@@ -100,21 +100,14 @@ class TypeAttributePersistence:
         if is_nullable:
             data.isNullable = is_nullable
 
-        source_name = instance._fetch_property('sourceName')
-        if source_name:
-            data.sourceName = source_name
+        data.sourceName = instance._fetch_property('sourceName')
 
         source_ordering = instance._fetch_property('sourceOrdering')
         if source_ordering:
             data.sourceOrdering = source_ordering
 
-        display_name = instance._fetch_property('displayName')
-        if display_name:
-            data.displayName = display_name
-
-        description = instance._fetch_property('description')
-        if description:
-            data.description = description
+        data.displayName = instance._fetch_property('displayName')
+        data.description = instance._fetch_property('description')
 
         value_constrained_to_list = instance._fetch_property('valueConstrainedToList')
         if value_constrained_to_list:
@@ -124,17 +117,9 @@ class TypeAttributePersistence:
         if is_primary_key:
             data.isPrimaryKey = is_primary_key
 
-        maximum_length = instance._fetch_property('maximumLength')
-        if maximum_length is not None:
-            data.maximumLength = maximum_length
-
-        maximum_value = instance._fetch_property('maximumValue')
-        if maximum_value:
-            data.maximumValue = maximum_value
-
-        minimum_value = instance._fetch_property('minimumValue')
-        if minimum_value:
-            data.minimumValue = minimum_value
+        data.maximumLength = instance._fetch_property('maximumLength')
+        data.maximumValue = instance._fetch_property('maximumValue')
+        data.minimumValue = instance._fetch_property('minimumValue')
 
         data_format = instance._fetch_property('dataFormat')
         if data_format != CdmDataFormat.UNKNOWN:
@@ -176,3 +161,43 @@ class TypeAttributePersistence:
             elif value in ['False', 'false']:
                 return False
         return None
+
+    @staticmethod
+    def _data_type_from_data(data_type: str) -> CdmDataFormat:
+        data_type = data_type.lower()
+        if data_type == 'string':
+            return CdmDataFormat.STRING
+        elif data_type == 'char':
+            return CdmDataFormat.CHAR
+        elif data_type == 'int16':
+            return CdmDataFormat.INT16
+        elif data_type == 'int32':
+            return CdmDataFormat.INT32
+        elif data_type == 'int64':
+            return CdmDataFormat.INT64
+        elif data_type == 'float':
+            return CdmDataFormat.FLOAT
+        elif data_type == 'double':
+            return CdmDataFormat.DOUBLE
+        elif data_type == 'time':
+            return CdmDataFormat.TIME
+        elif data_type == 'date':
+            return CdmDataFormat.DATE
+        elif data_type == 'datetime':
+            return CdmDataFormat.DATE_TIME
+        elif data_type == 'datetimeoffset':
+            return CdmDataFormat.DATE_TIME_OFFSET
+        elif data_type == 'decimal':
+            return CdmDataFormat.DECIMAL
+        elif data_type == 'boolean':
+            return CdmDataFormat.BOOLEAN
+        elif data_type == 'byte':
+            return CdmDataFormat.BYTE
+        elif data_type == 'binary':
+            return CdmDataFormat.BINARY
+        elif data_type == 'guid':
+            return CdmDataFormat.GUID
+        elif data_type == 'json':
+            return CdmDataFormat.JSON
+        else:
+            return CdmDataFormat.UNKNOWN

@@ -4,10 +4,16 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -28,7 +34,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, nameof(TestInvalidJson));
 
             CdmCorpusDefinition corpus = new CdmCorpusDefinition();
-            corpus.SetEventCallback(new EventCallback{ Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
+            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
             corpus.Storage.Mount("local", new LocalAdapter(testInputPath));
             corpus.Storage.DefaultNamespace = "local";
 
@@ -163,7 +169,64 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence
             var invalidModelJson = await corpus.FetchObjectAsync<CdmManifestDefinition>("test.model.json");
             Assert.IsNull(invalidModelJson);
         }
+
+        /// <summary>
+        /// Testing that type attribute properties (ex. IsReadOnly, isPrimaryKey) are persisted in model.json format.
+        /// </summary>
+        [TestMethod]
+        public async Task TestModelJsonTypeAttributePersistence()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestModelJsonTypeAttributePersistence));
+            // we need to create a second adapter to the output folder to fool the OM into thinking it's different
+            // this is because there is a bug currently that prevents us from saving and then loading a model.json
+            corpus.Storage.Mount("alternateOutput", new LocalAdapter(TestHelper.GetActualOutputFolderPath(testsSubpath, "TestModelJsonTypeAttributePersistence")));
+
+            // create manifest
+            var entityName = "TestTypeAttributePersistence";
+            var localRoot = corpus.Storage.FetchRootFolder("local");
+            var outputRoot = corpus.Storage.FetchRootFolder("output");
+            var manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "tempAbstract");
+            manifest.Imports.Add("cdm:/foundations.cdm.json", null);
+            localRoot.Documents.Add(manifest);
+
+            // create entity
+            var doc = corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, $"{entityName}.cdm.json");
+            doc.Imports.Add("cdm:/foundations.cdm.json", null);
+            localRoot.Documents.Add(doc, doc.Name);
+            var entityDef = doc.Definitions.Add(CdmObjectType.EntityDef, entityName) as CdmEntityDefinition;
+
+            // create type attribute
+            var cdmTypeAttributeDefinition = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, entityName, false);
+            cdmTypeAttributeDefinition.IsReadOnly = true;
+            entityDef.Attributes.Add(cdmTypeAttributeDefinition);
+
+            manifest.Entities.Add(entityDef);
+
+            var manifestResolved = await manifest.CreateResolvedManifestAsync("default", null);
+            outputRoot.Documents.Add(manifestResolved);
+            manifestResolved.Imports.Add("cdm:/foundations.cdm.json");
+            await manifestResolved.SaveAsAsync("model.json", true);
+            var newManifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("alternateOutput:/model.json");
+
+            CdmEntityDefinition newEnt = await corpus.FetchObjectAsync<CdmEntityDefinition>(newManifest.Entities[0].EntityPath, manifest);
+            CdmTypeAttributeDefinition typeAttribute = newEnt.Attributes[0] as CdmTypeAttributeDefinition;
+            Assert.IsTrue((bool)typeAttribute.IsReadOnly);
+        }
+
+        /// <summary>
+        /// Test that the persistence layer handles the case when the persistence format cannot be found.
+        /// </summary>
+        [TestMethod]
+        public async Task TestMissingPersistenceFormat()
+        {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestMissingPersistenceFormat");
+            CdmFolderDefinition folder = corpus.Storage.FetchRootFolder(corpus.Storage.DefaultNamespace);
+
+            CdmManifestDefinition manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "someManifest");
+            folder.Documents.Add(manifest);
+            // trying to save to an unsupported format should return false and not fail
+            bool succeded = await manifest.SaveAsAsync("manifest.unSupportedExtension");
+            Assert.IsFalse(succeded);
+        }
     }
-
-
 }

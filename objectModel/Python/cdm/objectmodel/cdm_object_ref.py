@@ -6,7 +6,7 @@ from abc import abstractmethod
 from typing import cast, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import logger
+from cdm.utilities import logger, ResolveOptions, Errors
 
 from .cdm_object import CdmObject
 from .cdm_trait_collection import CdmTraitCollection
@@ -179,6 +179,8 @@ class CdmObjectReference(CdmObject):
         return None
 
     def fetch_object_definition(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
+        if res_opt is None:
+            res_opt = ResolveOptions(self)
         return self._fetch_resolved_reference(res_opt)
 
     def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
@@ -239,7 +241,10 @@ class CdmObjectReference(CdmObject):
         return False
 
     def validate(self) -> bool:
-        return bool(self.named_reference or self.explicit_reference)
+        if not bool(self.named_reference or self.explicit_reference):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['named_reference', 'explicit_reference'], True))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

@@ -61,6 +61,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
             { "is.constrained", new List<string> { "maximumValue", "minimumValue", "maximumLength" } }
         };
 
+        private IList<string> DataFormatTraitNames = new List<string>()
+        {
+            "is.dataFormat.integer",
+            "is.dataFormat.small",
+            "is.dataFormat.big",
+            "is.dataFormat.floatingPoint",
+            "is.dataFormat.guid",
+            "is.dataFormat.character",
+            "is.dataFormat.array",
+            "is.dataFormat.byte",
+            "is.dataFormat.time",
+            "is.dataFormat.date",
+            "is.dataFormat.timeOffset",
+            "is.dataFormat.boolean",
+            "is.dataFormat.numeric.shaped",
+            "means.content.text.JSON"
+        };
+
         internal TraitToPropertyMap(CdmObject host)
         {
             this.Host = host;
@@ -148,7 +166,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 case "isPrimaryKey":
                     if (this.Host is CdmTypeAttributeDefinition)
                     {
-                        CdmTypeAttributeDefinition typeAttribute = (CdmTypeAttributeDefinition) this.Host;
+                        CdmTypeAttributeDefinition typeAttribute = (CdmTypeAttributeDefinition)this.Host;
                         if (!onlyFromProperty && typeAttribute.Purpose != null && typeAttribute.Purpose.NamedReference == "identifiedBy")
                         {
                             return true;
@@ -225,8 +243,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 
         internal void DataFormatToTraits(CdmDataFormat dataFormat)
         {
-            // if this is going to be called many times, then need to remove dynamic dataformat traits that are left behind.
-            // but ... probably not. in fact, this is probably never used because data formats come from data type which is not an attribute
+            // reset the current dataFormat
+            foreach (var traitName in DataFormatTraitNames) {
+                this.RemoveTrait(traitName);
+            }
             switch (dataFormat)
             {
                 case CdmDataFormat.Int16:
@@ -235,7 +255,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                     break;
                 case CdmDataFormat.Int32:
                     this.FetchOrCreateTrait("is.dataFormat.integer", true);
-                    this.FetchOrCreateTrait("is.dataFormat.small", true);
                     break;
                 case CdmDataFormat.Int64:
                     this.FetchOrCreateTrait("is.dataFormat.integer", true);
@@ -250,6 +269,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                     break;
                 case CdmDataFormat.Guid:
                     this.FetchOrCreateTrait("is.dataFormat.guid", true);
+                    this.FetchOrCreateTrait("is.dataFormat.character", true);
+                    this.FetchOrCreateTrait("is.dataFormat.array", true);
                     break;
                 case CdmDataFormat.String:
                     this.FetchOrCreateTrait("is.dataFormat.character", true);
@@ -263,6 +284,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                     this.FetchOrCreateTrait("is.dataFormat.byte", true);
                     break;
                 case CdmDataFormat.Binary:
+                    this.FetchOrCreateTrait("is.dataFormat.byte", true);
                     this.FetchOrCreateTrait("is.dataFormat.array", true);
                     break;
                 case CdmDataFormat.Time:
@@ -419,9 +441,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                     baseType = CdmDataFormat.Double;
                 if (isInteger && isBig)
                     baseType = CdmDataFormat.Int64;
-                if (isInteger && isSmall)
+                else if (isInteger && isSmall)
                     baseType = CdmDataFormat.Int16;
-                if (isInteger)
+                else if (isInteger)
                     baseType = CdmDataFormat.Int32;
             }
 

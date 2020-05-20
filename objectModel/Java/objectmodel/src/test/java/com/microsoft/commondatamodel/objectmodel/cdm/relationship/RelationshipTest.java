@@ -255,7 +255,29 @@ public class RelationshipTest {
 
         // check that each relationship has been created correctly
         verifyRelationships(manifest, expectedRels);
-        
+  }
+
+  /**
+   * Test relationships are generated correctly when the document name and entity name do not match
+   */
+  @Test
+  public void testRelationshipsEntityAndDocumentNameDifferent()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testRelationshipsEntityAndDocumentNameDifferent", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipsEntityAndDocumentNameDifferent", null);
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
   }
 
   private static void verifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships) {

@@ -14,15 +14,13 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Ref
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReferencedEntityDeclarationPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ReferencedEntityDeclarationPersistence.class);
-
   public static CompletableFuture<CdmEntityDeclarationDefinition> fromData(
       final CdmCorpusContext ctx,
       final ReferenceEntity obj,
@@ -56,7 +54,7 @@ public class ReferencedEntityDeclarationPersistence {
       ExtensionHelper.processExtensionFromJson(ctx, obj, extensionTraits, extensionTraitDefList);
 
       if (extensionTraitDefList.size() > 0) {
-        LOGGER.warn("Custom extensions are not supported in referenced entity.");
+        Logger.warning(ReferencedEntityDeclarationPersistence.class.getSimpleName(), ctx, "Custom extensions are not supported in referenced entity.");
       }
 
       return CompletableFuture.completedFuture(referencedEntity);
@@ -69,7 +67,7 @@ public class ReferencedEntityDeclarationPersistence {
     final int sourceIndex = instance.getEntityPath().lastIndexOf("/");
 
     if (sourceIndex == -1) {
-      LOGGER.error("There was an error while trying to convert cdm data partition to model.json partition.");
+      Logger.error(ReferencedEntityDeclarationPersistence.class.getSimpleName(), instance.getCtx(), "There was an error while trying to convert cdm data partition to model.json partition.");
       return CompletableFuture.completedFuture(null);
     }
 
@@ -81,7 +79,7 @@ public class ReferencedEntityDeclarationPersistence {
     referenceEntity.setLastFileModifiedTime(instance.getLastFileModifiedTime());
     referenceEntity.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());
 
-    return Utils.processAnnotationsToData(instance.getCtx(), referenceEntity, instance.getExhibitsTraits()).thenCompose(v -> {
+    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), referenceEntity, instance.getExhibitsTraits()).thenCompose(v -> {
       final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
       final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");

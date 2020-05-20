@@ -4,7 +4,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_collection import CdmCollection
 from .cdm_object_def import CdmObjectDefinition
@@ -27,6 +27,8 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         # Internal
 
         self._members = CdmCollection(self.ctx, self, CdmObjectType.TYPE_ATTRIBUTE_DEF)  # type: CdmCollection[CdmAttributeItem]
+
+        self._TAG = CdmAttributeGroupDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -126,7 +128,10 @@ class CdmAttributeGroupDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return False
 
     def validate(self) -> bool:
-        return bool(self.attribute_group_name)
+        if not bool(self.attribute_group_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['attribute_group_name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

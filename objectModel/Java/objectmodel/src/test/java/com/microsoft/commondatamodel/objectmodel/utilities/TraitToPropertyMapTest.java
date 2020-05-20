@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import org.testng.Assert;
@@ -80,5 +81,19 @@ public class TraitToPropertyMapTest {
     Assert.assertEquals("Fax", result.get(0).get("displayText"));
     Assert.assertNull(result.get(0).get("attributeValue"));
     Assert.assertNull(result.get(0).get("displayOrder"));
+  }
+
+  /**
+   * Test setting and getting of data format
+   */
+  @Test
+  public void TestDataFormat() {
+    final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+    final CdmTypeAttributeDefinition att = corpus.<CdmTypeAttributeDefinition>makeObject(CdmObjectType.TypeAttributeDef, "att");
+
+    for (CdmDataFormat format : CdmDataFormat.values()) {
+      att.updateDataFormat(format);
+      Assert.assertEquals(att.fetchDataFormat(), format);
+    }
   }
 }

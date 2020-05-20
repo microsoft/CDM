@@ -142,7 +142,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             var httpRequest = new CdmHttpRequest(path, this.NumberOfRetries);
 
-            httpRequest.Headers = headers;
+            httpRequest.Headers = headers ?? new Dictionary<string, string>();
             httpRequest.Timeout = this.Timeout;
             httpRequest.MaximumTimeout = this.MaximumTimeout;
             httpRequest.Method = method;

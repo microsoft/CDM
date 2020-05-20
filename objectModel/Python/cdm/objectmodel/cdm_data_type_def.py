@@ -4,7 +4,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -25,6 +25,8 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         self.extends_data_type = extends_data_type  # type: Optional[CdmDataTypeReference]
 
         self._declared_path = None  # type: Optional[str]
+
+        self._TAG = CdmDataTypeDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -51,7 +53,10 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         return copy
 
     def validate(self) -> bool:
-        return bool(self.data_type_name)
+        if not bool(self.data_type_name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['data_type_name']))
+            return False
+        return True
 
     def get_name(self) -> str:
         return self.data_type_name

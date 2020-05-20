@@ -20,7 +20,7 @@ import {
     CdmJsonType,
     DataTypeReference,
     EntityAttribute,
-    EntityReference,
+    EntityReferenceDefinition,
     PurposeReference,
     TraitReference,
     TypeAttribute
@@ -98,7 +98,7 @@ export function createConstant(ctx: CdmCorpusContext, object: CdmJsonType): Argu
         } else if (checkExistingProperty('dataTypeReference')) {
             return CdmFolder.DataTypeReferencePersistence.fromData(ctx, object as DataTypeReference);
         } else if (checkExistingProperty('entityReference')) {
-            return CdmFolder.EntityReferencePersistence.fromData(ctx, object as EntityReference);
+            return CdmFolder.EntityReferencePersistence.fromData(ctx, object as EntityReferenceDefinition);
         } else if (checkExistingProperty('attributeGroupReference')) {
             return CdmFolder.AttributeGroupReferencePersistence.fromData(ctx, object as AttributeGroupReference);
         } else {

@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Dict, Optional, Set, Tuple, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import CopyOptions, logger, ResolveOptions
+from cdm.utilities import CopyOptions, logger, ResolveOptions, Errors
 
 from .cdm_container_def import CdmContainerDefinition
 from .cdm_definition_collection import CdmDefinitionCollection
@@ -125,6 +125,10 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     async def _index_if_needed(self, res_opt: 'ResolveOptions') -> bool:
         if not self._needs_indexing:
             return True
+
+        if not self.folder:
+            logger.error(self._TAG, self.ctx, 'Document \'{}\' is not in a folder'.format(self.name), self._index_if_needed.__name__)
+            return False
 
         # make the corpus internal machinery pay attention to this document for this call
         corpus = self.folder._corpus
@@ -373,7 +377,10 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         return True
 
     def validate(self) -> bool:
-        return bool(self.name)
+        if not bool(self.name):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         if pre_children and pre_children(self, path_from):

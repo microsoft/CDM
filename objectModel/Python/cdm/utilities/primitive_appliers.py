@@ -220,7 +220,7 @@ def _does_select_attributes_builder():
         # Use the default name.
         app_ctx.res_att_new.resolved_name = sub.name
         # Add the trait that tells them what this means.
-        if not sub.applied_traits or next(filter(lambda atr: atr.fetch_object_definition_name() == 'is.linkedEntity.name', sub.applied_traits), False):
+        if not sub.applied_traits or not next(filter(lambda atr: atr.fetch_object_definition_name() == 'is.linkedEntity.name', sub.applied_traits), False):
             sub.applied_traits.append('is.linkedEntity.name', True)
 
         # Get the resolved traits from attribute.
@@ -350,7 +350,7 @@ def _does_reference_entity_via_builder():
         app_ctx.res_att_new.resolved_name = sub.name
 
         # Add the trait that tells them what this means.
-        if not sub.applied_traits or next(filter(lambda atr: atr.fetch_object_definition_name() == 'is.linkedEntity.identifier', sub.applied_traits), False):
+        if not sub.applied_traits or not next(filter(lambda atr: atr.fetch_object_definition_name() == 'is.linkedEntity.identifier', sub.applied_traits), False):
             sub.applied_traits.append('is.linkedEntity.identifier', True)
 
         # Get the resolved traits from attribute, make a copy to avoid conflicting on the param values
@@ -417,7 +417,7 @@ def _does_explain_array_builder():
         # Use the default name.
         app_ctx.res_att_new.resolved_name = sub.name
         # Add the trait that tells them what this means.
-        if not sub.applied_traits or next(filter(lambda atr: atr.fetch_object_definition_name() == 'is.linkedEntity.array.count', sub.applied_traits), False):
+        if not sub.applied_traits or not next(filter(lambda atr: atr.fetch_object_definition_name() == 'is.linkedEntity.array.count', sub.applied_traits), False):
             sub.applied_traits.append('is.linkedEntity.array.count', True)
 
         # Get the resolved traits from attribute.

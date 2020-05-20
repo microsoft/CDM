@@ -71,6 +71,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         /// <inheritdoc />
         public abstract T FetchObjectDefinition<T>(ResolveOptions resOpt = null) where T : CdmObjectDefinition;
+        
+        protected bool resolvingAttributes = false;
 
         /// <inheritdoc />
         public virtual string AtCorpusPath
@@ -113,7 +115,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             const string kind = "rtsb";
             ResolveContext ctx = this.Ctx as ResolveContext;
-            string cacheTagA = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind);
+            string cacheTagA = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind);
             ResolvedTraitSetBuilder rtsbAll = null;
             if (this.TraitCache == null)
                 this.TraitCache = new Dictionary<string, ResolvedTraitSetBuilder>();
@@ -144,7 +146,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (objDef != null)
                 {
                     // register set of possible docs
-                    ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(objDef, kind, resOpt.SymbolRefSet);
+                    ctx.Corpus.RegisterDefinitionReferenceSymbols(objDef, kind, resOpt.SymbolRefSet);
 
                     if (rtsbAll.ResolvedTraitSet == null)
                     {
@@ -152,7 +154,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         rtsbAll.ResolvedTraitSet = new ResolvedTraitSet(resOpt);
                     }
                     // get the new cache tag now that we have the list of docs
-                    cacheTagA = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind);
+                    cacheTagA = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind);
                     if (!string.IsNullOrWhiteSpace(cacheTagA))
                         this.TraitCache[cacheTagA] = rtsbAll;
                 }
@@ -174,9 +176,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return rtsbAll.ResolvedTraitSet;
         }
 
-        protected bool resolvingAttributes = false;
-
-        [Obsolete()]
         internal ResolvedAttributeSet FetchResolvedAttributes(ResolveOptions resOpt = null, AttributeContextParameters acpInContext = null)
         {
             bool wasPreviouslyResolving = this.Ctx.Corpus.isCurrentlyResolving;

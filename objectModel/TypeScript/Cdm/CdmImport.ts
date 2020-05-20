@@ -7,6 +7,8 @@ import {
     CdmObject,
     cdmObjectSimple,
     cdmObjectType,
+    Errors,
+    Logger,
     resolveOptions,
     VisitCallback
 } from '../internal';
@@ -68,7 +70,18 @@ export class CdmImport extends cdmObjectSimple {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.corpusPath ? true : false;
+            if (!this.corpusPath) {
+                Logger.error(
+                    CdmImport.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['corpusPath']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

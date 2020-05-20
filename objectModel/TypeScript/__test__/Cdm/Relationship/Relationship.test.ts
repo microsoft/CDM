@@ -22,8 +22,7 @@ describe('Cdm/Relationship/Relationship', () => {
      * Testing calculation of relationships and that those relationships are properly added to manifest objects
      */
     it('TestCalculateRelationshipsAndPopulateManifests', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
 
         const rootManifest: CdmManifestDefinition = await corpus.createRootManifest('local:/default.manifest.cdm.json');
         const subManifestPath: string = corpus.storage.createAbsoluteCorpusPath(rootManifest.subManifests.allItems[0].definition);
@@ -56,8 +55,7 @@ describe('Cdm/Relationship/Relationship', () => {
      * properly added to manifest objects setting the populate flag to Exclusive
      */
     it('TestCalculateRelationshipsAndPopulateManifestsWithExclusiveFlag', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
 
         const rootManifest: CdmManifestDefinition = await corpus.createRootManifest('local:/default.manifest.cdm.json');
         const subManifestPath: string = corpus.storage.createAbsoluteCorpusPath(rootManifest.subManifests.allItems[0].definition);
@@ -91,8 +89,7 @@ describe('Cdm/Relationship/Relationship', () => {
      * properly added to manifest objects setting the populate flag to None
      */
     it('TestCalculateRelationshipsAndPopulateManifestsWithNoneFlag', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCalculateRelationshipsAndPopulateManifests');
 
         const rootManifest: CdmManifestDefinition = await corpus.createRootManifest('local:/default.manifest.cdm.json');
         const subManifestPath: string = corpus.storage.createAbsoluteCorpusPath(rootManifest.subManifests.allItems[0].definition);
@@ -133,8 +130,7 @@ describe('Cdm/Relationship/Relationship', () => {
             testsSubpath,
             'TestCalculateRelationshipsOnResolvedEntities',
             'expectedResolvedSubManifestRels.json')) as CdmE2ERelationship[];
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestCalculateRelationshipsOnResolvedEntities');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCalculateRelationshipsOnResolvedEntities');
 
         const rootManifest: CdmManifestDefinition =
             await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
@@ -252,11 +248,30 @@ describe('Cdm/Relationship/Relationship', () => {
             testsSubpath,
             'TestCalculateRelationshipsForSelectsOneAttribute',
             'expectedRels.json')) as CdmE2ERelationship[];
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestCalculateRelationshipsForSelectsOneAttribute');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestCalculateRelationshipsForSelectsOneAttribute');
         corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
 
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/selectsOne.manifest.cdm.json');
+
+        await corpus.calculateEntityGraphAsync(manifest);
+        await manifest.populateManifestRelationshipsAsync();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+        done();
+    });
+
+    /**
+     * Test relationships are generated correctly when the document name and entity name do not match
+     */
+    it('TestRelationshipsEntityAndDocumentNameDifferent', async (done) => {
+        const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
+            testsSubpath,
+            'TestRelationshipsEntityAndDocumentNameDifferent',
+            'expectedRels.json')) as CdmE2ERelationship[];
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRelationshipsEntityAndDocumentNameDifferent');
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/main.manifest.cdm.json');
 
         await corpus.calculateEntityGraphAsync(manifest);
         await manifest.populateManifestRelationshipsAsync();

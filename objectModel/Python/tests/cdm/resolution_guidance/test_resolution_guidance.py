@@ -71,10 +71,59 @@ class ResolutionGuidanceTest(unittest.TestCase):
         await self.run_test(test_name, 'Sales')
 
     @async_test
-    async def test_selects_subattribute(self):
-        """Resolution Guidance Test - With SelectsSubAttribute property"""
-        test_name = "test_selects_subattribute"
-        await self.run_test(test_name, 'Sales')
+    async def test_selects_subattribute_take_names(self):
+        """Resolution Guidance Test - With SelectsSubAttribute - Take Names"""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_selects_subattribute_take_names')  # type: CdmCorpusDefinition
+        entity = await corpus.fetch_object_async('local:/Sales.cdm.json/Sales')  # type: CdmEntityDefinition
+        res_opt = ResolveOptions(wrt_doc=entity.in_document)
+        resolved_entity = await entity.create_resolved_entity_async('resolved', res_opt)
+
+        att_1 = resolved_entity.attributes[3]
+        att_2 = resolved_entity.attributes[4]
+
+        # Check that the attributes in selectsSomeTakeNames were added.
+        self.assertEqual('SalesProductProductId', att_1.name)
+        self.assertEqual('SalesProductProductColor', att_2.name)
+
+    @async_test
+    async def test_selects_subattribute_avoid_names(self):
+        """Resolution Guidance Test - With SelectsSubAttribute - Avoid Names"""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_selects_subattribute_avoid_names')  # type: CdmCorpusDefinition
+        entity = await corpus.fetch_object_async('local:/Sales.cdm.json/Sales')  # type: CdmEntityDefinition
+        res_opt = ResolveOptions(wrt_doc=entity.in_document)
+        resolved_entity = await entity.create_resolved_entity_async('resolved', res_opt)
+
+        # Check that the attributes in selectsSomeAvoidNames were not added.
+        for att in resolved_entity.attributes:
+            self.assertNotEqual('SalesProductProductId', att.name)
+            self.assertNotEqual('SalesProductProductColor', att.name)
+
+    @async_test
+    async def test_imposed_directives(self):
+        """
+        Resolution Guidance Test - With structured/normal imposed directives
+        This test directly read imposed directives from json file instead of setting resOpt in code as RunTest()
+        """
+
+        test_name = 'test_imposed_directives'
+        test_expected_output_path = TestHelper.get_expected_output_folder_path(self.tests_subpath, test_name)
+        test_actual_output_path = TestHelper.get_actual_output_folder_path(self.tests_subpath, test_name)
+
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
+        corpus.storage.mount('localActualOutput', LocalAdapter(test_actual_output_path))
+        actual_output_folder = await corpus.fetch_object_async('localActualOutput:/')  # type: CdmFolderDefinition
+
+        # Test "structured" imposed directive
+        entity = await corpus.fetch_object_async('local:/Person_Structured.cdm.json/Person')  # type: CdmEntityDefinition
+        resolved_entity = await entity.create_resolved_entity_async('Person_Resolved', None, actual_output_folder)
+        await resolved_entity.in_document.save_as_async('Person_Structured_Resolved.cdm.json')
+        self.validate_output('Person_Structured_Resolved.cdm.json', test_expected_output_path, test_actual_output_path)
+
+        # Test default imposed directive
+        entity = await corpus.fetch_object_async('local:/Person_Default.cdm.json/Person')  # type: CdmEntityDefinition
+        resolved_entity = await entity.create_resolved_entity_async('Person_Resolved', None, actual_output_folder)
+        await resolved_entity.in_document.save_as_async('Person_Default_Resolved.cdm.json')
+        self.validate_output('Person_Default_Resolved.cdm.json', test_expected_output_path, test_actual_output_path)
 
     async def run_test(self, test_name: str, source_entity_name: str) -> None:
         test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, test_name)

@@ -150,8 +150,8 @@ class ManifestPersistence:
     async def to_data(instance: 'CdmManifestDefinition', res_opt: 'ResolveOptions', options: 'CopyOptions') -> Optional['Model']:
         result = Model()
 
-        # process_annotations_to_data also processes extensions.
-        await utils.process_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
+        # process_traits_and_annotations_to_data also processes extensions.
+        await utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
 
         result.name = instance.manifest_name
         result.description = instance.explanation
@@ -231,20 +231,22 @@ class ManifestPersistence:
                                  'There was an error while trying to convert {}\'s entity declaration to model json format.'.format(entity.entity_name))
 
         if reference_models:
+            result.referenceModels = []
             for value, key in reference_models.items():
                 model = ReferenceModel()
                 model.id = value
                 model.location = key
                 result.referenceModels.append(model)
 
-        for cdm_relationship in instance.relationships:
-            relationship = await RelationshipPersistence.to_data(cdm_relationship, res_opt, options, instance.ctx)
-
-            if relationship:
-                result.relationships.append(relationship)
-            else:
-                logger.error(_TAG, instance.ctx, 'There was an error while trying to convert cdm relationship to model.json relationship.')
-                return None
+        if instance.relationships is not None and len(instance.relationships) > 0:
+            result.relationships = []  # type: List[SingleKeyRelationship]
+            for cdm_relationship in instance.relationships:
+                relationship = await RelationshipPersistence.to_data(cdm_relationship, res_opt, options, instance.ctx)
+                if relationship is not None:
+                    result.relationships.append(relationship)
+                else:
+                    logger.error(_TAG, instance.ctx, 'There was an error while trying to convert cdm relationship to model.json relationship.')
+                    return None
 
         if instance.imports:
             result.imports = []

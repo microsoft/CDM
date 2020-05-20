@@ -6,33 +6,23 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.AttributeResolutionContext;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.RelationshipInfo;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReference;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSide;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdmEntityAttributeDefinition extends CdmAttribute {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmEntityAttributeDefinition.class);
-
   private CdmEntityReference entity;
 
   public CdmEntityAttributeDefinition(final CdmCorpusContext ctx, final String name) {
@@ -143,7 +133,19 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.getName()) && this.entity != null;
+    ArrayList<String> missingFields = new ArrayList<String>();
+    if (StringUtils.isNullOrTrimEmpty(this.getName())) {
+      missingFields.add("name");
+    }
+    if (this.entity == null) {
+      missingFields.add("entity");
+    }
+
+    if (missingFields.size() > 0) {
+      Logger.error(CdmEntityAttributeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -392,7 +394,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
           if (reqdTrait.getParameterValues() == null
               || reqdTrait.getParameterValues().length() == 0) {
-            LOGGER.warn("is.linkedEntity.identifier does not support arguments");
+            Logger.warning(CdmEntityAttributeDefinition.class.getSimpleName(), this.getCtx(), "is.linkedEntity.identifier does not support arguments");
             continue;
           }
 
@@ -451,8 +453,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     }
 
     // a 'structured' directive wants to keep all entity attributes together in a group
-    if (rtsThisAtt != null && rtsThisAtt.getResOpt().getDirectives() != null && rtsThisAtt
-        .getResOpt().getDirectives().has("structured")) {
+    if (arc.getResOpt().getDirectives() != null && arc.getResOpt().getDirectives().has("structured")) {
       final ResolvedAttribute raSub = new ResolvedAttribute(rtsThisAtt.getResOpt(),
           rasb.getResolvedAttributeSet(),
           this.getName(),

@@ -6,15 +6,16 @@ package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
-import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
+import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Import;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
@@ -255,8 +256,8 @@ public class ModelJsonTest extends ModelJsonTestBase {
     this.handleOutput("testReferenceModels", "model.json", obtainedModelJson);
   }
 
-  /*
-  Tests loading Model.json and converting to a CdmFolder.
+  /**
+   * Tests loading Model.json and converting to a CdmFolder.
    */
   @Test
   public void testExtensibilityLoadingModelJsonAndCdmFolderToData()
@@ -304,6 +305,29 @@ public class ModelJsonTest extends ModelJsonTestBase {
         StandardCharsets.UTF_8);
     Assert.assertNotEquals(modelFromFile.indexOf("$type"), -1);
     Assert.assertEquals(modelFromFile.indexOf("$type"), modelFromFile.lastIndexOf("$type"));
+  }
+
+  /**
+   * Tests that a description on a CdmFolder entity sets the description on the ModelJson entity.
+   */
+  @Test
+  public void testSettingModelJsonEntityDescription() {
+    CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
+    CdmManifestDefinition cdmManifest = cdmCorpus.makeObject(CdmObjectType.ManifestDef, "test");
+    CdmDocumentDefinition document = cdmCorpus.makeObject(CdmObjectType.DocumentDef, "entity" + CdmConstants.CDM_EXTENSION);
+
+    CdmFolderDefinition folder = cdmCorpus.getStorage().fetchRootFolder("local");
+    folder.getDocuments().add(document);
+
+    CdmEntityDefinition entity = (CdmEntityDefinition) document.getDefinitions().add(CdmObjectType.EntityDef, "entity");
+    entity.setDescription("test description");
+
+    cdmManifest.getEntities().add(entity);
+    folder.getDocuments().add(cdmManifest);
+
+    Model obtainedModelJson = ManifestPersistence.toData(cdmManifest, null, null).join();
+
+    Assert.assertEquals(obtainedModelJson.getEntities().get(0).getDescription(), "test description");
   }
 
   private void handleOutput(

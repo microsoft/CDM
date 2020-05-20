@@ -51,7 +51,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 string name = currentTrait.GetName();
                 into.Add(name);
-                CdmTraitReference baseRef = currentTrait.FetchExtendsTrait();
+                CdmTraitReference baseRef = currentTrait.ExtendsTrait;
                 currentTrait = baseRef != null ? baseRef.FetchObjectDefinition<CdmTraitDefinition>(resOpt) : null;
             }
         }

@@ -6,6 +6,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
     using System.Collections.Generic;
 
@@ -27,8 +28,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public CdmTraitReference ExtendsTrait { get; set; }
 
-        public CdmCollection<CdmParameterDefinition> _hasParameters { get; set; }
+        private CdmCollection<CdmParameterDefinition> _hasParameters { get; set; }
+
         ParameterCollection AllParameters { get; set; }
+
         private bool HasSetFlags;
 
         /// <summary>
@@ -60,14 +63,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (this._hasParameters == null)
                     this._hasParameters = new CdmCollection<CdmParameterDefinition>(this.Ctx, this, CdmObjectType.ParameterDef);
                 return this._hasParameters;
-            }
-        }
-
-        internal CdmCollection<CdmParameterDefinition> HasParameterDefs
-        {
-            get
-            {
-                return this.Parameters;
             }
         }
 
@@ -130,7 +125,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // get parameters from base if there is one
             ParameterCollection prior = null;
             if (this.ExtendsTrait != null)
-                prior = this.FetchExtendsTrait().FetchObjectDefinition<CdmTraitDefinition>(resOpt).FetchAllParameters(resOpt);
+                prior = this.ExtendsTrait.FetchObjectDefinition<CdmTraitDefinition>(resOpt).FetchAllParameters(resOpt);
             this.AllParameters = new ParameterCollection(prior);
             if (this.Parameters != null)
             {
@@ -164,7 +159,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.TraitName);
+            if (string.IsNullOrWhiteSpace(this.TraitName))
+            {
+                Logger.Error(nameof(CdmTraitDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "TraitName" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />
@@ -193,11 +193,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
-        }
-
-        internal CdmTraitReference FetchExtendsTrait()
-        {
-            return this.ExtendsTrait;
         }
 
         internal override ResolvedTraitSet FetchResolvedTraits(ResolveOptions resOpt = null)

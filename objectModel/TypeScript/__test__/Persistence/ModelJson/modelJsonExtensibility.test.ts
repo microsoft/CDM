@@ -23,12 +23,10 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
      * Checks all the results of the operations against snapshots.
      */
     it('TestModelJsonExtensibility', async () => {
-        const inputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestModelJsonExtensibility');
-
         // Workflow of this test:
         // Model.json (file) => Model (class) => Manifest => Model -- check result
 
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(inputPath);
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestModelJsonExtensibility');
 
         const cdmManifest: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>(
             'model.json',
@@ -59,9 +57,7 @@ describe('Persistence.ModelJson.ModelJsonExtensibility', () => {
      * Reads Model.Json, converts to manifest and compares files from obtained manifest to stored files.
      */
     it('ModelJsonExtensibilityManifestDocuments', async () => {
-        const inputPath: string = testHelper.getInputFolderPath(testsSubpath, 'ModelJsonExtensibilityManifestDocuments');
-
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(inputPath);
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'ModelJsonExtensibilityManifestDocuments');
         const manifest: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>(
             'model.json',
             cdmCorpus.storage.fetchRootFolder('local')

@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, time_utils
+from cdm.utilities import ResolveOptions, time_utils, logger, Errors
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_object_def import CdmObjectDefinition
@@ -24,6 +24,8 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
 
         # The corpus path to the definition of the sub folder.
         self.definition = None  # type: Optional[str]
+
+        self._TAG = CdmManifestDeclarationDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -75,7 +77,16 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
             await cast(CdmFileStatus, self.owner).report_most_recent_time_async(child_time)
 
     def validate(self) -> bool:
-        return bool(self.manifest_name) and bool(self.definition)
+        missing_fields = []
+        if not bool(self.manifest_name):
+            missing_fields.append('manifest_name')
+        if not bool(self.definition):
+            missing_fields.append('definition')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

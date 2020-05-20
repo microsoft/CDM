@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
 
     public abstract class CdmObjectReferenceBase : CdmObjectBase, CdmObjectReference
     {
@@ -235,7 +236,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return (!string.IsNullOrEmpty(this.NamedReference) || this.ExplicitReference != null) ? true : false;
+            List<string> missingFields = new List<string>() { "NamedReference", "ExplicitReference" };
+            if (string.IsNullOrWhiteSpace(this.NamedReference) && this.ExplicitReference == null)
+            {
+                Logger.Error(nameof(CdmObjectReferenceBase), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields, true), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />

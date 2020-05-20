@@ -108,3 +108,4 @@ export * from './Utilities/Logging/Logger';
 export * from './Utilities/Network';
 export * from './Persistence/CdmFolder/types/EntityDeclarationDefinition';
 export * from './Utilities/cdmObjectTypeGuards';
+export * from './Utilities/Errors';

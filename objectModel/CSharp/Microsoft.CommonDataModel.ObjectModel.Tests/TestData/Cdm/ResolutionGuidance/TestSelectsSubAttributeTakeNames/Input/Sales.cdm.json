@@ -1,0 +1,45 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "Product.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Sales",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "integer",
+                    "name": "SalesId"
+                },
+                {
+                    "dataType": "integer",
+                    "name": "SalesNumberOfUnits"
+                },
+                {
+                    "dataType": "decimal",
+                    "name": "SalesAmount"
+                },
+                {
+                    "name": "SalesProduct",
+                    "entity": "Product",
+                    "resolutionGuidance": {
+                        "selectsSubAttribute": {
+                            "selects": "some",
+                            "selectsSomeTakeNames": [
+                                "SalesProductProductId",
+                                "SalesProductProductColor"
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

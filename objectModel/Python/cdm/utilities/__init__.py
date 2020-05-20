@@ -25,6 +25,7 @@ from .symbol_set import SymbolSet
 from .trait_to_property_map import TraitToPropertyMap
 from .visit_callback import VisitCallback
 from .logging import logger
+from .errors import Errors
 
 
 __all__ = [

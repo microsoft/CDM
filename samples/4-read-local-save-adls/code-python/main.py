@@ -4,7 +4,7 @@
 import asyncio, sys, os
 from typing import TYPE_CHECKING
 
-sys.path.append('../../objectModel/Python')
+sys.path.append('../../../objectModel/Python')
 
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.objectmodel import CdmCorpusDefinition
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
 #  5. Ensure the Azure user object is assigned "Storage Blob Data Contributor" role in the ADLSg2 access management page
 # ---------------------------------------------------------------------------------------------
 
-model_json_root = './4-read-local-save-adls'
+model_json_root = './4-read-local-save-adls/sample-data'
 
 # ---------------------------------------------------------------------------------------------
 # Instantiate corpus and set it to use default namespace 'adls'

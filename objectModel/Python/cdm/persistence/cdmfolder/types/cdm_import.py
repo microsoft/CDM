@@ -8,8 +8,8 @@ class Import(JObject):
     def __init__(self):
         super().__init__()
 
-        self.corpusPath = ''  # type: str
-        self.moniker = ''  # type: str
+        self.corpusPath = None  # type: str
+        self.moniker = None  # type: str
 
-        self.uri = ''  # type: str
+        self.uri = None  # type: str
         """DEPRECATED"""

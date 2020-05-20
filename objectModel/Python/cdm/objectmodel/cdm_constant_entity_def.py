@@ -4,7 +4,7 @@
 from typing import Callable, List, Optional, Union, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import ResolveOptions
+from cdm.utilities import ResolveOptions, logger, Errors
 
 from .cdm_object_def import CdmObjectDefinition
 
@@ -31,6 +31,8 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
 
         # the constant entity constant values.
         self.constant_values = []  # type: List[List[str]]
+
+        self._TAG = CdmConstantEntityDefinition.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -117,25 +119,24 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         if result_att >= 0 and search_att >= 0:
             increment = 1
             if order == -1:
-                # transverse the list in reverse order
+                # traverse the list in reverse order
                 increment = -1
             if self.constant_values:
                 for value in self.constant_values[::increment]:
                     if value[search_att] == value_search:
                         value[result_att] = action(value[result_att], where_params)
                         return
-
         return
 
     def _fetch_constant_value(self, res_opt: 'ResolveOptions', att_return: Union[str, int],
-                             att_search: Union[str, int], value_search: str, order: int) -> str:
+                              att_search: Union[str, int], value_search: str, order: int) -> str:
         """returns constantValue.att_return where constantValue.att_search equals value_search."""
         where_params = WhereParams(None, None)
         self._find_value(res_opt, att_return, att_search, value_search, order, self._fetch_constant_value_result, where_params)
         return where_params.result
 
     def _update_constant_value(self, res_opt: 'ResolveOptions', att_return: Union[str, int], new_value: str,
-                              att_search: Union[str, int], value_search: str, order: int) -> str:
+                               att_search: Union[str, int], value_search: str, order: int) -> str:
         """sets constantValue.att_return = newValue where constantValue.att_search equals value_search."""
         where_params = WhereParams(None, new_value)
         self._find_value(res_opt, att_return, att_search, value_search, order, self._update_constant_value_result, where_params)
@@ -150,7 +151,14 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         return where_params.new_value
 
     def validate(self) -> bool:
-        return bool(self.entity_shape)
+        if self.constant_values is None:
+            path_split = self._declared_path.split('/')
+            entity_name = path_split[0] if path_split else ''
+            logger.warning(self._TAG, self.ctx, 'constant entity \'${}\' defined without a constant value.'.format(entity_name))
+        if not bool(self.entity_shape):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['entity_shape']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

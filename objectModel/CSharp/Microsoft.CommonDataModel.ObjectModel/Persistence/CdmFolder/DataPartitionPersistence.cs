@@ -89,16 +89,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         public static DataPartition ToData(CdmDataPartitionDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
             var argumentsCopy = new List<Argument>();
-            foreach (var argumentList in instance.Arguments)
+            if (instance.Arguments != null)
             {
-                foreach (var argumentValue in argumentList.Value)
+                foreach (var argumentList in instance.Arguments)
                 {
-                    argumentsCopy.Add(new Argument()
-                        {
-                            Name = argumentList.Key,
-                            Value = argumentValue
-                        }
-                    );
+                    foreach (var argumentValue in argumentList.Value)
+                    {
+                        argumentsCopy.Add(
+                            new Argument()
+                            {
+                                Name = argumentList.Key,
+                                Value = argumentValue
+                            }
+                        );
+                    }
                 }
             }
 
@@ -108,8 +112,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Location = instance.Location,
                 LastFileStatusCheckTime = TimeUtils.GetFormattedDateString(instance.LastFileStatusCheckTime),
                 LastFileModifiedTime = TimeUtils.GetFormattedDateString(instance.LastFileModifiedTime),
-                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options),
-                Arguments = argumentsCopy,
+                ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options),
+                Arguments = argumentsCopy.Count() > 0 ? argumentsCopy : null,
                 SpecializedSchema = instance.SpecializedSchema
             };
 

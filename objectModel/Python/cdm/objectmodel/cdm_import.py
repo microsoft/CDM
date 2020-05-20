@@ -6,6 +6,7 @@ from typing import Optional, TYPE_CHECKING
 from cdm.enums import CdmObjectType
 
 from .cdm_object_simple import CdmObjectSimple
+from cdm.utilities import logger, Errors
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition
@@ -21,6 +22,8 @@ class CdmImport(CdmObjectSimple):
 
         # internal
         self.doc = None  # type: Optional[CdmDocumentDefinition]
+
+        self._TAG = CdmImport.__name__
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -48,7 +51,10 @@ class CdmImport(CdmObjectSimple):
         return copy
 
     def validate(self) -> bool:
-        return bool(self.corpus_path)
+        if not bool(self.corpus_path):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['corpus_path']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         # not much to do

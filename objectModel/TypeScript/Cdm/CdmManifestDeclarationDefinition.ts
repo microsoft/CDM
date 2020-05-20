@@ -8,6 +8,8 @@ import {
     CdmObject,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
     resolveOptions,
@@ -91,7 +93,26 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      * @inheritdoc
      */
     public validate(): boolean {
-        return this.manifestName && this.definition ? true : false;
+        const missingFields: string[] = [];
+        if (!this.manifestName) {
+            missingFields.push('manifestName');
+        }
+        if (!this.definition) {
+            missingFields.push('definition');
+        }
+
+        if (missingFields.length > 0) {
+            Logger.error(
+                CdmManifestDeclarationDefinition.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, missingFields),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -160,7 +181,7 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        const fullPath: string  = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.definition, this.inDocument);
+        const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.definition, this.inDocument);
         const modifiedTime: Date = await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
 
         this.lastFileStatusCheckTime = new Date();

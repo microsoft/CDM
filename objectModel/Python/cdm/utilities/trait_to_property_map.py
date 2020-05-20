@@ -5,6 +5,7 @@ from typing import Any, Callable, List, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.resolvedmodel.resolved_trait import ResolvedTrait
+from .logging import logger
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmConstantEntityDefinition, CdmObject, CdmTraitCollection, CdmTraitReference
@@ -22,6 +23,23 @@ trait_to_list_of_properties = {
     'is.constrainedList': ['valueConstrainedToList'],
     'is.constrained': ['maximumValue', 'minimumValue', 'maximumLength']
 }
+
+data_format_trait_names = [
+    'is.dataFormat.integer',
+    'is.dataFormat.small',
+    'is.dataFormat.big',
+    'is.dataFormat.floatingPoint',
+    'is.dataFormat.guid',
+    'is.dataFormat.character',
+    'is.dataFormat.array',
+    'is.dataFormat.byte',
+    'is.dataFormat.time',
+    'is.dataFormat.date',
+    'is.dataFormat.timeOffset',
+    'is.dataFormat.boolean',
+    'is.dataFormat.numeric.shaped',
+    'means.content.text.JSON'
+]
 
 
 def _has_applied_traits(obj: 'CdmObject'):
@@ -73,9 +91,9 @@ class TraitToPropertyMap:
         elif property_name == 'sourceName':
             self._update_trait_argument('is.CDS.sourceNamed', 'name', new_value)
         elif property_name == 'displayName':
-            self._update_localized_trait_table('is.localized.displayedAs', new_value)
+            self._construct_localized_trait_table('is.localized.displayedAs', new_value)
         elif property_name == 'description':
-            self._update_localized_trait_table('is.localized.describedAs', new_value)
+            self._construct_localized_trait_table('is.localized.describedAs', new_value)
         elif property_name == 'sourceOrdering':
             self._update_trait_argument('is.CDS.ordered', 'ordinal', str(new_value))
         elif property_name == 'isPrimaryKey':
@@ -164,12 +182,14 @@ class TraitToPropertyMap:
             self._remove_trait(trait_name)
 
     def _data_format_to_traits(self, data_format: str) -> None:
+        # reset the current dataFormat
+        for trait_name in data_format_trait_names:
+            self._remove_trait(trait_name)
         if data_format == CdmDataFormat.INT16:
             self._fetch_or_create_trait('is.dataFormat.integer', True)
             self._fetch_or_create_trait('is.dataFormat.small', True)
         elif data_format == CdmDataFormat.INT32:
             self._fetch_or_create_trait('is.dataFormat.integer', True)
-            self._fetch_or_create_trait('is.dataFormat.small', True)
         elif data_format == CdmDataFormat.INT64:
             self._fetch_or_create_trait('is.dataFormat.integer', True)
             self._fetch_or_create_trait('is.dataFormat.big', True)
@@ -180,6 +200,8 @@ class TraitToPropertyMap:
             self._fetch_or_create_trait('is.dataFormat.big', True)
         elif data_format == CdmDataFormat.GUID:
             self._fetch_or_create_trait('is.dataFormat.guid', True)
+            self._fetch_or_create_trait('is.dataFormat.character', True)
+            self._fetch_or_create_trait('is.dataFormat.array', True)
         elif data_format == CdmDataFormat.STRING:
             self._fetch_or_create_trait('is.dataFormat.character', True)
             self._fetch_or_create_trait('is.dataFormat.array', True)
@@ -189,6 +211,7 @@ class TraitToPropertyMap:
         elif data_format == CdmDataFormat.BYTE:
             self._fetch_or_create_trait('is.dataFormat.byte', True)
         elif data_format == CdmDataFormat.BINARY:
+            self._fetch_or_create_trait('is.dataFormat.byte', True)
             self._fetch_or_create_trait('is.dataFormat.array', True)
         elif data_format == CdmDataFormat.TIME:
             self._fetch_or_create_trait('is.dataFormat.time', True)
@@ -298,9 +321,9 @@ class TraitToPropertyMap:
             base_type = CdmDataFormat.DOUBLE
         if is_integer and is_big:
             base_type = CdmDataFormat.INT64
-        if is_integer and is_small:
+        elif is_integer and is_small:
             base_type = CdmDataFormat.INT16
-        if is_integer:
+        elif is_integer:
             base_type = CdmDataFormat.INT32
 
         return base_type
@@ -379,7 +402,7 @@ class TraitToPropertyMap:
         loc_ent_ref = _get_trait_ref_argument_value(trait, arg_name)
         return None if loc_ent_ref is None else loc_ent_ref.fetch_object_definition(None)
 
-    def _update_localized_trait_table(self, trait_name: str, source_text) -> None:
+    def _construct_localized_trait_table(self, trait_name: str, source_text) -> None:
         def action(c_ent, created):
             if created:
                 c_ent.constant_values = [['en', source_text]]
@@ -455,7 +478,7 @@ class TraitToPropertyMap:
     def _update_default_value(self, new_default: Any) -> None:
         if not isinstance(new_default, list):
             logger.error(self._TAG, self._host.ctx, 'Default value type not supported. Please provide a list.')
-        elif new_default is None or new_default[0].get('languageTag') is None or new_default[0].get('displayText') is None:
+        elif new_default is None or len(new_default) == 0 or new_default[0].get('languageTag') is None or new_default[0].get('displayText') is None:
             logger.error(self._TAG, self._host.ctx, 'Default value missing languageTag or displayText.')
         elif new_default:
             # Looks like something we understand.
@@ -464,7 +487,7 @@ class TraitToPropertyMap:
             def func(row):
                 raw_row = [row.get('languageTag'), row.get('displayText'), row.get('attributeValue'), row.get('displayOrder')]
                 if corr:
-                    row.append(row.get('correlatedValue'))
+                    raw_row.append(row.get('correlatedValue'))
                 return raw_row
 
             c_ent = self._ctx.corpus.make_object(CdmObjectType.CONSTANT_ENTITY_DEF, None, False)

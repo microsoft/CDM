@@ -27,9 +27,15 @@ ACTUAL_OUTPUT_FOLDER_NAME = 'ActualOutput'
 
 
 class TestHelper:
+    # The adapter path to the top-level manifest in the CDM Schema Documents folder. Used by tests where we resolve the corpus.
+    # This path is temporarily pointing to the applicationCommon manifest instead of standards due to performance issues when resolving
+    # the entire set of CDM standard schemas, after 8000+ F&O entities were added.
+    cdm_standards_schema_path = 'local:/core/applicationCommon/applicationCommon.manifest.cdm.json'
+
     @staticmethod
     def get_schema_docs_root():
         return os.path.join('..', '..', 'schemaDocuments')
+
     @staticmethod
     def get_input_folder_path(test_subpath: str, test_name: str):
         return TestHelper.get_test_folder_path(test_subpath, test_name, INPUT_FOLDER_NAME)

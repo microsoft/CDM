@@ -1,0 +1,45 @@
+{
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "A",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "entityId",
+                    "name": "aId"
+                },
+                {
+                    "name": "refToB",
+                    "entity": {
+                        "entityReference": "B",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "B/(resolvedAttributes)/bId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "defaultBId"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

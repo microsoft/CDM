@@ -17,16 +17,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class TypeAttributePersistence {
-  private static Logger LOGGER = LoggerFactory.getLogger(TypeAttributePersistence.class);
-
   public static CdmTypeAttributeDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
     return fromData(ctx, obj, null);
   }
@@ -108,7 +105,12 @@ public class TypeAttributePersistence {
       if (cdmDataFormat != CdmDataFormat.Unknown) {
         typeAttribute.updateDataFormat(cdmDataFormat);
       } else {
-        LOGGER.warn("Couldn't find an enum value for {}.", dataFormat);
+        Logger.warning(
+            TypeAttributePersistence.class.getSimpleName(),
+            ctx,
+            Logger.format("Couldn't find an enum value for {0}.", dataFormat),
+            "fromData"
+        );
       }
     }
     typeAttribute.updateDefaultValue(obj.get("defaultValue"));
@@ -171,7 +173,7 @@ public class TypeAttributePersistence {
 
     final Object defaultValue = instance.fetchProperty(CdmPropertyName.DEFAULT);
     if (defaultValue instanceof ArrayList) {
-      obj.setDefaultValue(JMapper.MAP.valueToTree(defaultValue));
+      obj.setDefaultValue(((ArrayList)defaultValue).size() > 0 ? JMapper.MAP.valueToTree(defaultValue) : null);
     } else if (defaultValue instanceof JsonNode) {
       obj.setDefaultValue((JsonNode) defaultValue);
     }

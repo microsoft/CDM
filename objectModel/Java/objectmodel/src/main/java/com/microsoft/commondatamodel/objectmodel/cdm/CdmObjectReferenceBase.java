@@ -3,6 +3,9 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
@@ -14,16 +17,14 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 public abstract class CdmObjectReferenceBase extends CdmObjectBase implements CdmObjectReference {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmObjectReferenceBase.class);
-
   private static String RES_ATT_TOKEN = "/(resolvedAttributes)/";
   private CdmTraitCollection appliedTraits;
   private String namedReference;
@@ -134,7 +135,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       }
     } else {
       final String defName = this.fetchObjectDefinitionName();
-      LOGGER.warn("Unable to resolve an object from the reference '{}'.", defName);
+      Logger.warning(defName, this.getCtx(), Logger.format("Unable to resolve an object from the reference '{0}'.", defName));
     }
     return rasb;
   }
@@ -215,7 +216,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       rtsb.takeReference(rtsInh);
     } else {
       final String defName = this.fetchObjectDefinitionName();
-      LOGGER.warn("unable to resolve an object from the reference '{}'.", defName);
+      Logger.warning(defName, this.getCtx(), Logger.format("unable to resolve an object from the reference '{0}'.", defName));
     }
 
     if (this.getAppliedTraits() != null) {
@@ -264,8 +265,11 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       final CdmObjectDefinition ent = this.getCtx().getCorpus().resolveSymbolReference(resOpt, this.getInDocument(),
           entName, CdmObjectType.EntityDef, true);
       if (ent == null) {
-        LOGGER.warn("unable to resolve an entity named '{}' from the reference '{}'", entName,
-            this.getNamedReference());
+        Logger.warning(
+            CdmObjectReferenceBase.class.getSimpleName(),
+            ctx,
+            Logger.format("unable to resolve an entity named '{0}' from the reference '{1}'", entName, this.getNamedReference())
+        );
         return null;
       }
 
@@ -278,7 +282,12 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       if (ra != null) {
         res = (CdmObjectDefinitionBase) ra.getTarget();
       } else {
-        LOGGER.warn("couldn't resolve the attribute promise for '{}'", this.getNamedReference());
+        Logger.warning(
+            CdmObjectReferenceBase.class.getSimpleName(),
+            ctx,
+            Logger.format("couldn't resolve the attribute promise for '{0}'", this.getNamedReference()),
+            resOpt.getWrtDoc().getAtCorpusPath()
+        );
       }
     } else {
       // normal symbolic reference, look up from the CdmCorpusDefinition, it knows
@@ -415,7 +424,12 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
 
   @Override
   public boolean validate() {
-    return (!Strings.isNullOrEmpty(this.namedReference) || this.explicitReference != null);
+    ArrayList<String> missingFields = new ArrayList<String>(Arrays.asList("namedReference", "explicitReference"));
+    if (StringUtils.isNullOrTrimEmpty(this.namedReference) && this.explicitReference == null) {
+      Logger.error(CdmObjectReferenceBase.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields, true));
+      return false;
+    }
+    return true;
   }
 
   @Override

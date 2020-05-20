@@ -6,7 +6,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
+    using System.Collections.Generic;
 
     public class CdmPurposeDefinition : CdmObjectDefinitionBase
     {
@@ -102,7 +104,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
-            return !string.IsNullOrEmpty(this.PurposeName);
+            if (string.IsNullOrWhiteSpace(this.PurposeName))
+            {
+                Logger.Error(nameof(CdmPurposeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "PurposeName" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         /// <inheritdoc />

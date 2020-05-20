@@ -3,6 +3,8 @@
 
 import {
     CdmCorpusDefinition,
+    cdmDataFormat,
+    cdmObjectType,
     CdmTypeAttributeDefinition,
     traitToPropertyMap
 } from '../../internal';
@@ -29,7 +31,23 @@ describe('Utilities.TraitToPropertyMapTests', () => {
         expect(result.length).toBe(1);
         expect(result[0]['languageTag']).toBe('en');
         expect(result[0]['displayText']).toBe('Fax');
-        expect(result[0]['attributeValue']).toBeUndefined();
-        expect(result[0]['displayOrder']).toBeUndefined();
+        expect(result[0]['attributeValue']).toBeNull();
+        expect(result[0]['displayOrder']).toBeNull();
+    });
+
+    /**
+     * Test setting and getting of data format
+     */
+    it('TestDataFormat', () => {
+        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
+        const att: CdmTypeAttributeDefinition = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, 'att');
+
+        // Object.keys give 2x the number that is in the enum
+        const l: number = Object.keys(cdmDataFormat).length / 2;
+        for (let i: number = 0; i < l; i++) {
+            att.dataFormat = i;
+            expect(att.dataFormat)
+                .toBe(i);
+        }
     });
 });

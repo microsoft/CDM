@@ -3,14 +3,20 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -219,7 +225,11 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
   @Override
   public boolean validate() {
-    return !StringUtils.isNullOrTrimEmpty(this.entityName);
+    if (StringUtils.isNullOrTrimEmpty(this.entityName)) {
+      Logger.error(CdmLocalEntityDeclarationDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("entityName"))));
+      return false;
+    }
+    return true;
   }
 
 

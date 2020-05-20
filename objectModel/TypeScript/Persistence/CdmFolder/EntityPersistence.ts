@@ -18,7 +18,7 @@ import {
     AttributeResolutionGuidance,
     Entity,
     EntityAttribute,
-    EntityReference,
+    EntityReferenceDefinition,
     TraitReference,
     TypeAttribute
 } from './types';
@@ -45,7 +45,7 @@ export class EntityPersistence {
         if (object.displayName) {
             entity.displayName = object.displayName;
         }
-        if (object.description) {
+        if (object.description && object.description.trim() !== '') {
             entity.description = object.description;
         }
         if (object.version) {
@@ -70,7 +70,7 @@ export class EntityPersistence {
             explanation: instance.explanation,
             entityName: instance.entityName,
             extendsEntity: instance.extendsEntity ?
-                instance.extendsEntity.copyData(resOpt, options) as (string | EntityReference) : undefined,
+                instance.extendsEntity.copyData(resOpt, options) as (string | EntityReferenceDefinition) : undefined,
             extendsEntityResolutionGuidance: instance.extendsEntityResolutionGuidance ?
                 instance.extendsEntityResolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
             exhibitsTraits: copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, exhibitsTraits, options)

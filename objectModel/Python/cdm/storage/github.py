@@ -3,6 +3,7 @@
 
 import datetime
 import json
+import warnings
 from typing import Dict, List, Optional
 
 from cdm.storage.network import NetworkAdapter
@@ -18,6 +19,8 @@ class GithubAdapter(NetworkAdapter, StorageAdapterBase):
 
     def __init__(self) -> None:
         super().__init__()
+
+        warnings.warn('GithubAdapter is deprecated. Please use the CdmStandardsAdapter instead.', DeprecationWarning)
 
         self.location_hint = None
 

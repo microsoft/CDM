@@ -86,7 +86,7 @@ export abstract class NetworkAdapter {
 
     protected async executeRequest(httpRequest: CdmHttpRequest): Promise<CdmHttpResponse> {
         try {
-            const res: CdmHttpResponse = await this.httpClient.SendAsync(httpRequest, this.waitTimeCallback);
+            const res: CdmHttpResponse = await this.httpClient.SendAsync(httpRequest, this.waitTimeCallback.bind(this));
 
             if (res === undefined) {
                 throw new Error('The result of a network adapter request is undefined.');
@@ -94,7 +94,7 @@ export abstract class NetworkAdapter {
 
             if (!res.isSuccessful) {
                 throw new Error(
-                    `HTTP ${res.statusCode} - ${res.reason}. Response headers: ${Array.from(res.responseHeaders.entries()).map((m) => `${m[0]}:${m[1]}`).join(", ")}. URL: ${httpRequest.requestedUrl}`);
+                    `HTTP ${res.statusCode} - ${res.reason}. Response headers: ${Array.from(res.responseHeaders.entries()).map((m) => `${m[0]}:${m[1]}`).join(', ')}. URL: ${httpRequest.requestedUrl}`);
             }
 
             return res;
@@ -114,7 +114,7 @@ export abstract class NetworkAdapter {
     protected setUpCdmRequest(path: string, headers: Map<string, string>, method: string): CdmHttpRequest {
         const httpRequest: CdmHttpRequest = new CdmHttpRequest(path);
 
-        httpRequest.headers = headers;
+        httpRequest.headers = headers ? headers : new Map<string, string>();
         httpRequest.timeout = this.timeout;
         httpRequest.maximumTimeout = this.maximumTimeout;
         httpRequest.numberOfRetries = this.numberOfRetries;

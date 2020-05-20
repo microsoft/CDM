@@ -88,7 +88,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 var t2pm = new TraitToPropertyMap(instance);
                 var isHiddenTrait = t2pm.FetchTraitReference("is.hidden");
 
-                localEntity.Description = instance.Explanation;
+                if (localEntity.Description == null)
+                {
+                    localEntity.Description = instance.Explanation;
+                }
                 localEntity.LastChildFileModifiedTime = instance.LastChildFileModifiedTime;
                 localEntity.LastFileModifiedTime = instance.LastFileModifiedTime;
                 localEntity.LastFileStatusCheckTime = instance.LastFileStatusCheckTime;

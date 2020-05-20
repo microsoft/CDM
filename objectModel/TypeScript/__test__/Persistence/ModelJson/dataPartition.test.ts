@@ -18,8 +18,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
     const testsSubpath: string = 'Persistence/ModelJson/DataPartition';
 
     it('TestModelJsonDataPartitionLocationConsistency', async () => {
-        const inputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestModelJsonDataPartitionLocationConsistency');
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(inputPath);
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestModelJsonDataPartitionLocationConsistency');
         const manifestRead: CdmManifestDefinition =
             await cdmCorpus.fetchObjectAsync('default.manifest.cdm.json', cdmCorpus.storage.fetchRootFolder('local'));
         expect(manifestRead.entities.allItems[0].dataPartitions.allItems[0].location)
@@ -30,7 +29,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         expect(location.indexOf('\\Persistence\\ModelJson\\DataPartition\\TestModelJsonDataPartitionLocationConsistency\\Input\\EpisodeOfCare\\partition-data.csv'))
             .toBeGreaterThan(-1);
 
-        const cdmCorpus2: CdmCorpusDefinition = testHelper.getLocalCorpus(inputPath);
+        const cdmCorpus2: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestModelJsonDataPartitionLocationConsistency');
         const manifestAfterConvertion: CdmManifestDefinition = await ModelJson.ManifestPersistence.fromObject(
             cdmCorpus2.ctx,
             convertedToModelJson,
@@ -38,14 +37,15 @@ describe('Persistence.ModelJson.ModelJson', () => {
         expect(manifestAfterConvertion.entities.allItems[0].dataPartitions.allItems[0].location)
             .toEqual('EpisodeOfCare/partition-data.csv');
 
-        const cdmCorpus3: CdmCorpusDefinition = testHelper.getLocalCorpus(inputPath);
+        const cdmCorpus3: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestModelJsonDataPartitionLocationConsistency');
         const readFile: string =
             testHelper.getInputFileContent(testsSubpath, 'TestModelJsonDataPartitionLocationConsistency', 'model.json');
         const namespaceFolder: CdmFolderDefinition = cdmCorpus3.storage.fetchRootFolder('local');
-        let modelJsonAsString: string = readFile.replace('C:\\\\cdm\\\\CDM.ObjectModel.CSharp\\\\Microsoft.CommonDataModel\\\\Microsoft.CommonDataModel.ObjectModel.Tests\\\\TestData\\\\Persistence\\\\ModelJson\\\\DataPartition\\\\TestModelJsonDataPartitionLocationConsistency\\\\Input\\\\EpisodeOfCare\\\\partition-data.csv',
-            location.replace(new RegExp('\\\\', 'g'), '\\\\'));
+        let modelJsonAsString: string = readFile;
         modelJsonAsString = modelJsonAsString.replace(/\r\n/g, '\n');
         modelJsonAsString = modelJsonAsString.replace(/\s/g, '');
+        modelJsonAsString = modelJsonAsString.replace('C:\\\\cdm\\\\CDM.ObjectModel.CSharp\\\\Microsoft.CommonDataModel\\\\Microsoft.CommonDataModel.ObjectModel.Tests\\\\TestData\\\\Persistence\\\\ModelJson\\\\DataPartition\\\\TestModelJsonDataPartitionLocationConsistency\\\\Input\\\\EpisodeOfCare\\\\partition-data.csv',
+            location.replace(new RegExp('\\\\', 'g'), '\\\\'));
         modelJsonAsString = modelJsonAsString.replace(new RegExp('/', 'g'), '\\\\');
 
         const manifestReadFromModelJson: CdmManifestDefinition =

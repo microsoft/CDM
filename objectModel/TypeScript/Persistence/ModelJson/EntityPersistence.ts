@@ -24,7 +24,9 @@ export class EntityPersistence {
     ): Promise<CdmEntityDefinition> {
         const entity: CdmEntityDefinition = ctx.corpus.MakeObject(cdmObjectType.entityDef, object.name);
 
-        entity.description = object.description;
+        if (object.description && object.description.trim() !== '') {
+            entity.description = object.description;
+        }
 
         await ModelJson.utils.processAnnotationsFromData(ctx, object, entity.exhibitsTraits);
 
@@ -68,7 +70,7 @@ export class EntityPersistence {
         const result: LocalEntity = {
             $type: 'LocalEntity',
             name: instance.entityName,
-            description: instance.description,
+            description: instance.getProperty('description') as string,
             isHidden: undefined,
             annotations: undefined,
             'cdm:traits': undefined,
@@ -77,7 +79,7 @@ export class EntityPersistence {
             schemas: undefined,
             'cdm:imports': undefined
         };
-        await ModelJson.utils.processAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (instance.attributes !== undefined) {
             result.attributes = [];

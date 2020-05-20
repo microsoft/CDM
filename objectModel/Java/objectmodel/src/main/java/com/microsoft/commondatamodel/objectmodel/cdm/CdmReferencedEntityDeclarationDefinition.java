@@ -7,13 +7,17 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.concurrent.CompletableFuture;
+import java.util.ArrayList;
 
 public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitionBase implements
     CdmEntityDeclarationDefinition {
@@ -130,7 +134,19 @@ public class CdmReferencedEntityDeclarationDefinition extends CdmObjectDefinitio
 
   @Override
   public boolean validate() {
-    return !StringUtils.isNullOrTrimEmpty(this.getEntityName()) && !StringUtils.isNullOrTrimEmpty(this.getEntityPath());
+    ArrayList<String> missingFields = new ArrayList<String>();
+    if (StringUtils.isNullOrTrimEmpty(this.getEntityName())) {
+      missingFields.add("entityName");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.getEntityPath())) {
+      missingFields.add("entityPath");
+    }
+
+    if (missingFields.size() > 0) {
+      Logger.error(CdmReferencedEntityDeclarationDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      return false;
+    }
+    return true;
   }
 
   /**

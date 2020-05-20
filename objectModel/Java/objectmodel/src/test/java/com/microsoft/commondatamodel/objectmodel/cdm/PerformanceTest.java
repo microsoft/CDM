@@ -45,7 +45,6 @@ public class PerformanceTest {
    * Test the time taken to resolve the corpus
    */
   @Test(retryAnalyzer = RetryTest.class)
-  @Ignore
   public void resolveCorpus() {
     Assert.assertTrue(
         (Files.isDirectory(
@@ -60,7 +59,7 @@ public class PerformanceTest {
     cdmCorpus.getStorage().mount("local", new LocalAdapter(SCHEMA_DOCS_ROOT));
     final CdmManifestDefinition manifest =
         cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(
-            "local:/standards.manifest.cdm.json"
+            TestHelper.CDM_STANDARDS_SCHEMA_PATH
         ).join();
     final AttributeResolutionDirectiveSet directives =
         new AttributeResolutionDirectiveSet(

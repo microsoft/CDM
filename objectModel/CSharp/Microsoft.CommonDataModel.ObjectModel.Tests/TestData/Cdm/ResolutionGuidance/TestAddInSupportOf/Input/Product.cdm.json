@@ -1,0 +1,81 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Product",
+      "extendsEntity": "CdmEntity",
+      "hasAttributes": [
+        {
+          "attributeGroupReference": {
+            "attributeGroupName": "attributesAddedAtThisScope",
+            "members": [
+              {
+                "name": "ID",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "sourceName": "ID"
+              },
+              {
+                "name": "StatusCode",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "defaultValue": [
+                  {
+                    "languageTag": "en",
+                    "displayText": "Active",
+                    "attributeValue": "1",
+                    "displayOrder": "0"
+                  },
+                  {
+                    "languageTag": "en",
+                    "displayText": "Inactive",
+                    "attributeValue": "2",
+                    "displayOrder": "1"
+                  }
+                ],
+                "sourceName": "StatusCode"
+              },
+              {
+                "name": "StatusCode_display",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.addedInSupportOf",
+                    "arguments": [
+                      "StatusCode"
+                    ]
+                  }
+                ],
+                "dataFormat": "string"
+              }
+            ],
+            "exhibitsTraits": [
+              {
+                "traitReference": "is.CDM.attributeGroup",
+                "arguments": [
+                  {
+                    "entityReference": {
+                      "entityShape": "attributeGroupSet",
+                      "constantValues": [
+                        [
+                          "/Product.cdm.json/Product/hasAttributes/attributesAddedAtThisScope"
+                        ]
+                      ]
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "sourceName": "Product",
+      "displayName": "Product",
+      "description": "Product information."
+    }
+  ]
+}

@@ -19,6 +19,8 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.MetadataObject;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -30,12 +32,9 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 final class ExtensionHelper {
   public static final String EXTENSION_DOC_NAME = "custom.extension.cdm.json";
-  private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionHelper.class);
   /**
    * Dictionary used to cache documents with trait definitions by file name.
    */
@@ -98,10 +97,11 @@ final class ExtensionHelper {
       for (int traitIndex = localExtensionTraitDefList.size() - 1; traitIndex >= 0; traitIndex--) {
         final CdmTraitDefinition extensionTraitDef = localExtensionTraitDefList.get(traitIndex);
         if (!traitDefIsExtension(extensionTraitDef)) {
-          LOGGER.error(
-              "Invalid extension trait name '{}', expected prefix '{}'",
-              extensionTraitDef.getTraitName(),
-              extensionTraitNamePrefix);
+          Logger.error(
+              ExtensionHelper.class.getSimpleName(),
+              ctx,
+              Logger.format("Invalid extension trait name '{0}', expected prefix '{1}'", extensionTraitDef.getTraitName(), extensionTraitNamePrefix)
+          );
 
           return null;
         }

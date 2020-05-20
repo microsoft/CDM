@@ -10,8 +10,8 @@ class AttributeGroup(JObject):
     def __init__(self):
         super().__init__()
 
-        self.explanation = ''  # type: str
-        self.attributeGroupName = ''  # type: str
+        self.explanation = None  # type: str
+        self.attributeGroupName = None  # type: str
         self.attributeContext = None  # type: Union[str, IdentifierRef]
-        self.members = []  # type: List[Union[str, AttributeGroupReference, TypeAttribute, EntityAttribute]]
-        self.exhibitsTraits = []  # type: List[Union[str, TraitReference]]
+        self.members = None  # type: List[Union[str, AttributeGroupReference, TypeAttribute, EntityAttribute]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]

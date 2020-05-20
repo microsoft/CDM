@@ -14,15 +14,14 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Csv
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Partition;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DataPartitionPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(DataPartitionPersistence.class);
-
   public static CompletableFuture<CdmDataPartitionDefinition> fromData(
       final CdmCorpusContext ctx,
       final Partition obj,
@@ -30,7 +29,9 @@ public class DataPartitionPersistence {
       final List<CdmTraitDefinition> localExtensionTraitDefList,
       final CdmFolderDefinition documentFolder) {
     final CdmDataPartitionDefinition partition = ctx.getCorpus().makeObject(CdmObjectType.DataPartitionDef, obj.getName());
-    partition.setDescription(obj.getDescription());
+    if (!StringUtils.isNullOrTrimEmpty(obj.getDescription())) {
+      partition.setDescription(obj.getDescription());
+    }
     partition.setLocation(
         ctx.getCorpus().getStorage().createRelativeCorpusPath(
             ctx.getCorpus().getStorage().adapterPathToCorpusPath(obj.getLocation()),
@@ -40,7 +41,12 @@ public class DataPartitionPersistence {
     partition.setLastFileStatusCheckTime(obj.getLastFileStatusCheckTime());
 
     if (Strings.isNullOrEmpty(partition.getLocation())) {
-      LOGGER.warn("Couldn't find data partition's location for partition {}.", partition.getName());
+      Logger.warning(
+          DataPartitionPersistence.class.getSimpleName(),
+          ctx,
+          Logger.format("Couldn't find data partition's location for partition {0}.", partition.getName()),
+          "fromData"
+      );
     }
 
     if (obj.isHidden() != null && obj.isHidden()) {
@@ -52,7 +58,12 @@ public class DataPartitionPersistence {
       if (obj.getFileFormatSettings() != null) {
         final CdmTraitReference csvFormatTrait = Utils.createCsvTrait(obj.getFileFormatSettings(), ctx);
         if (csvFormatTrait == null) {
-          LOGGER.error("There was a problem while processing csv format settings inside data partition.");
+          Logger.error(
+              DataPartitionPersistence.class.getSimpleName(),
+              ctx,
+              "There was a problem while processing csv format settings inside data partition.",
+              "fromData"
+          );
 
           return CompletableFuture.completedFuture(null);
         }
@@ -87,10 +98,15 @@ public class DataPartitionPersistence {
     result.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());
 
     if (Strings.isNullOrEmpty(result.getLocation())) {
-      LOGGER.warn("Couldn't find data partition's location for partition {}.", result.getName());
+      Logger.warning(
+          DataPartitionPersistence.class.getSimpleName(),
+          instance.getCtx(),
+          Logger.format("Couldn't find data partition's location for partition {0}.", result.getName()),
+          "toData"
+      );
     }
 
-    return Utils.processAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).thenCompose(v -> {
+    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).thenCompose(v -> {
       final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
       if (t2pm.fetchTraitReferenceName("is.hidden") != null) {
@@ -105,7 +121,7 @@ public class DataPartitionPersistence {
           result.setFileFormatSettings(csvFormatSettings);
           result.getFileFormatSettings().setType("CsvFormatSettings");
         } else {
-          LOGGER.error("There was a problem while processing csv format trait inside data partition.");
+          Logger.error(DataPartitionPersistence.class.getSimpleName(), instance.getCtx(), "There was a problem while processing csv format trait inside data partition.");
 
           return CompletableFuture.completedFuture(null);
         }

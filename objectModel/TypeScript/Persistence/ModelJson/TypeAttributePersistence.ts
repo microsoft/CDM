@@ -17,7 +17,7 @@ import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import { TraitReference } from '../CdmFolder/types';
 import { processExtensionFromJson } from './ExtensionHelper';
 import { Attribute, attributeBaseProperties, DataType } from './types';
-
+import { ignoredTraits } from './utils';
 
 export class TypeAttributePersistence {
     public static async fromData(
@@ -31,7 +31,10 @@ export class TypeAttributePersistence {
         attribute.name = object.name;
         // Do a conversion between CDM data format and model.json data type.
         attribute.dataFormat = this.dataTypeFromData(object.dataType);
-        attribute.description = object.description;
+
+        if (object.description && object.description.trim() !== '') {
+            attribute.description = object.description;
+        }
 
         if (object.isHidden === true) {
             const isHiddenTrait: CdmTraitReference = ctx.corpus.MakeObject(cdmObjectType.traitRef, 'is.hidden');
@@ -54,17 +57,15 @@ export class TypeAttributePersistence {
     }
 
     public static async toData(instance: CdmTypeAttributeDefinition, resOpt: resolveOptions, options: copyOptions): Promise<Attribute> {
-        const appliedTraits: CdmTraitReference[] = instance.appliedTraits ?
-        instance.appliedTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
         const attribute: Attribute = {
             name: instance.name,
             description: instance.getProperty('description') as string,
             dataType: this.dataTypeToData(instance.dataFormat) as DataType,
             annotations: undefined,
-            'cdm:traits': copyDataUtils.arrayCopyData<string | TraitReference>(resOpt, appliedTraits, options)
+            'cdm:traits': undefined
         };
 
-        await ModelJson.utils.processAnnotationsToData(instance.ctx, attribute, instance.appliedTraits);
+        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, attribute, instance.appliedTraits);
 
         const t2pm: traitToPropertyMap = new traitToPropertyMap(instance);
         const isHiddenTrait: CdmTraitReference = t2pm.fetchTraitReference('is.hidden');

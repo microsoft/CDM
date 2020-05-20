@@ -21,7 +21,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -32,9 +31,8 @@ import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 // TODO-BQ: This class will need a revisit, it is dealing with way too much reflection.
 public class PersistenceLayer {
@@ -46,7 +44,6 @@ public class PersistenceLayer {
   public static final String odi = "Odi";
 
   private static final Map<String, PersistenceType> persistenceTypeMap = new LinkedHashMap<>();
-  private static final Logger LOGGER = LoggerFactory.getLogger(PersistenceLayer.class);
 
   static {
     persistenceTypeMap.put(cdmFolder, new CdmFolderType());
@@ -165,23 +162,23 @@ public class PersistenceLayer {
       try {
         if (adapter.canRead()) {
           // log message used by navigator, do not change or remove
-          LOGGER.debug("request file: {}", docPath);
+          Logger.debug(PersistenceLayer.class.getSimpleName(), this.ctx, Logger.format("request file: {0}", docPath), "loadDocumentFromPathAsync");
           jsonData = adapter.readAsync(docPath).join();
           // log message used by navigator, do not change or remove
-          LOGGER.debug("received file: {}", docPath);
+          Logger.debug(PersistenceLayer.class.getSimpleName(), this.ctx, Logger.format("received file: {0}", docPath), "loadDocumentFromPathAsync");
         } else {
           throw new Exception("Storage Adapter is not enabled to read.");
         }
       } catch (final Exception e) {
         // log message used by navigator, do not change or remove
-        LOGGER.debug("fail file: {}", docPath);
+        Logger.debug(PersistenceLayer.class.getSimpleName(), this.ctx, Logger.format("fail file: {0}", docPath), "loadDocumentFromPathAsync");
 
-        String message = MessageFormat.format("Could not read ''{0}'' from the ''{1}'' namespace. Reason ''{2}''", docPath, folder.getNamespace(), e.getLocalizedMessage());
+        String message = Logger.format("Could not read '{0}' from the '{1}' namespace. Reason '{2}'", docPath, folder.getNamespace(), e.getLocalizedMessage());
         // When shallow validation is enabled, log messages about being unable to find referenced documents as warnings instead of errors.
         if (resOpt != null && resOpt.getShallowValidation()) {
-          LOGGER.warn(message);
+          Logger.warning(PersistenceLayer.class.getSimpleName(), this.ctx, message, "loadDocumentFromPathAsync");
         } else {
-          LOGGER.error(message);
+          Logger.error(PersistenceLayer.class.getSimpleName(), this.ctx, message, "loadDocumentFromPathAsync");
         }
         return null;
       }
@@ -189,24 +186,37 @@ public class PersistenceLayer {
       try {
         fsModifiedTime = adapter.computeLastModifiedTimeAsync(docPath).join();
       } catch (final Exception e) {
-        LOGGER.warn(
-            "Failed to compute file last modified time. Reason '{}'",
-            e.getLocalizedMessage());
+        Logger.warning(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Failed to compute file last modified time. Reason '{0}'", e.getLocalizedMessage()),
+            "loadDocumentFromPathAsync"
+        );
       }
 
       if (StringUtils.isEmpty(docName)) {
-        LOGGER.error("Document name cannot be null or empty.");
+        Logger.error(PersistenceLayer.class.getSimpleName(), this.ctx, "Document name cannot be null or empty.", "loadDocumentFromPathAsync");
         return null;
       }
 
       // If loading an odi.json/model.json file, check that it is named correctly.
       if (StringUtils.endsWithIgnoreCase(docName, CdmConstants.ODI_EXTENSION) && !StringUtils.equalsIgnoreCase(docName, CdmConstants.ODI_EXTENSION)) {
-        LOGGER.error("Failed to load '{}', as it's not an acceptable file name. It must be {}.", docName, CdmConstants.ODI_EXTENSION);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Failed to load '{0}', as it's not an acceptable file name. It must be {1}.", docName, CdmConstants.ODI_EXTENSION),
+            "loadDocumentFromPathAsync"
+        );
         return null;
       }
 
       if (StringUtils.endsWithIgnoreCase(docName, CdmConstants.MODEL_JSON_EXTENSION) && !StringUtils.equalsIgnoreCase(docName, CdmConstants.MODEL_JSON_EXTENSION)) {
-        LOGGER.error("Failed to load '{}', as it's not an acceptable file name. It must be {}.", docName, CdmConstants.MODEL_JSON_EXTENSION);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Failed to load '{0}', as it's not an acceptable file name. It must be {1}.", docName, CdmConstants.MODEL_JSON_EXTENSION),
+            "loadDocumentFromPathAsync"
+        );
         return null;
       }
 
@@ -229,12 +239,22 @@ public class PersistenceLayer {
             docContent = (CdmDocumentDefinition) method.invoke(null, this.ctx, docName, jsonData, folder);
           }
         } catch (final Exception e) {
-          LOGGER.error("Could not convert '{}'. Reason '{}'.", docName, e.getLocalizedMessage());
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Could not convert '{0}'. Reason '{1}'.", docName, e.getLocalizedMessage()),
+              "loadDocumentFromPathAsync"
+          );
           return null;
         }  
       } else {
         // Could not find a registered persistence class to handle this document type.
-        LOGGER.error("Could not find a persistence class to handle the file '{}'.", docName);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Could not find a persistence class to handle the file '{0}'.", docName),
+            "loadDocumentFromPathAsync"
+        );
         return null;
       }
       
@@ -299,14 +319,24 @@ public class PersistenceLayer {
       final StorageAdapter adapter = this.corpus.getStorage().fetchAdapter(ns);
 
       if (adapter == null) {
-        LOGGER.error("Couldn't find a storage adapter registered for the namespace '{}'", ns);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Couldn't find a storage adapter registered for the namespace '{0}'", ns),
+            "saveDocumentAsAsync"
+        );
         return false;
       } else if (!adapter.canWrite()) {
-        LOGGER.error("The storage adapter '{}' claims it is unable to write files.", ns);
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("The storage adapter '{0}' claims it is unable to write files.", ns),
+            "saveDocumentAsAsync"
+        );
         return false;
       } else {
         if (StringUtils.isEmpty(newName)) {
-          LOGGER.error("Document name cannot be null or empty.");
+          Logger.error(PersistenceLayer.class.getSimpleName(), this.ctx, "Document name cannot be null or empty.", "saveDocumentAsAsync");
           return false;
         }
 
@@ -318,19 +348,28 @@ public class PersistenceLayer {
                 : StringUtils.endsWithIgnoreCase(newName, CdmConstants.ODI_EXTENSION)? odi : cdmFolder;
 
         if (persistenceType == odi && !StringUtils.equalsIgnoreCase(newName, CdmConstants.ODI_EXTENSION)) {
-          LOGGER.error("Failed to persist '{}', as it's not an acceptable filename.  It must be {}.", newName, CdmConstants.ODI_EXTENSION);
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Failed to persist '{0}', as it's not an acceptable filename.  It must be {1}.", newName, CdmConstants.ODI_EXTENSION),
+              "saveDocumentAsAsync"
+          );
           return false;
         }
 
         if (persistenceType == modelJson && !StringUtils.equalsIgnoreCase(newName, CdmConstants.MODEL_JSON_EXTENSION)) {
-          LOGGER.error("Failed to persist '{}', as it's not an acceptable filename.  It must be {}.", newName, CdmConstants.MODEL_JSON_EXTENSION);
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Failed to persist '{0}', as it's not an acceptable filename.  It must be {1}.", newName, CdmConstants.MODEL_JSON_EXTENSION),
+              "saveDocumentAsAsync"
+          );
           return false;
         }
 
         // Save the object into a json blob
         final ResolveOptions resOpt = new ResolveOptions(doc);
         final Object persistedDoc;
-
         
         // Fetch the correct persistence class to use.
         Class persistenceClass = this.fetchRegisteredPersistenceFormat(newName);
@@ -364,17 +403,33 @@ public class PersistenceLayer {
               persistedDoc = (Object) method.invoke(null, doc, resOpt, options);
             }
           } catch (final Exception e) {
-            LOGGER.error("Could not persist file '{}'. Reason '{}'.", newName, e.getLocalizedMessage());
-            return null;
+            Logger.error(
+                PersistenceLayer.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Could not persist file '{0}'. Reason '{1}'.", newName, e.getLocalizedMessage()),
+                "saveDocumentAsAsync"
+            );
+            return false;
           }
         } else {
           // Could not find a registered persistence class to handle this document type.
-          LOGGER.error("Could not find a persistence class to handle the file '{}'.", newName);
-          return null;
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Could not find a persistence class to handle the file '{0}'.", newName),
+              "saveDocumentAsAsync"
+          );
+          return false;
         }
 
         if (persistedDoc == null) {
-          LOGGER.error("Failed to persist '{}'", newName);
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Failed to persist '{0}'", newName),
+              "saveDocumentAsAsync"
+          );
+          return false;
         }
 
         if (persistenceType.equals(odi)) {
@@ -398,7 +453,13 @@ public class PersistenceLayer {
             options.setTopLevelDocument(false);
           }
         } catch (final Exception e) {
-          LOGGER.error("Failed to write to the file '{}' for reason {}.", newName, e.getLocalizedMessage());
+          Logger.error(
+              PersistenceLayer.class.getSimpleName(),
+              this.ctx,
+              Logger.format("Failed to write to the file '{0}' for reason {1}.", newName, e.getLocalizedMessage()),
+              "saveDocumentAsAsync"
+          );
+          return false;
         }
 
         // if we also want to save referenced docs, then it depends on what kind of thing just got saved
@@ -406,7 +467,12 @@ public class PersistenceLayer {
         // definition will save imports, manifests will save imports, schemas, sub manifests
         if (saveReferenced && persistenceType.equals(cdmFolder)) {
           if (!doc.saveLinkedDocumentsAsync(options).join()) {
-            LOGGER.error("Failed to save linked documents for file '{}'", newName);
+            Logger.error(
+                PersistenceLayer.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Failed to save linked documents for file '{0}'", newName),
+                "saveDocumentAsAsync"
+            );
             return false;
           }
         }
@@ -435,10 +501,12 @@ public class PersistenceLayer {
           linkedDocuments.forEach(linkedDoc -> saveOdiDocumentsAsync(linkedDoc, adapter, newName).join());
         }
       } catch (final Exception e) {
-        LOGGER.error(
-            "Failed to write to the file '{}' for reason {}",
-            oldDocumentPath,
-            e.getMessage());
+        Logger.error(
+            PersistenceLayer.class.getSimpleName(),
+            this.ctx,
+            Logger.format("Failed to write to the file '{0}' for reason {1}", oldDocumentPath, e.getMessage()),
+            "saveOdiDocumentsAsync"
+        );
       }
     });
   }
@@ -457,7 +525,12 @@ public class PersistenceLayer {
         registeredPersistenceFormats.put(format, persistenceClass);
       }
     } catch (final Exception e) {
-      LOGGER.info("Unable to register persistence class {}. Reason: {}.", persistenceClassName, e.getLocalizedMessage());
+      Logger.info(
+          PersistenceLayer.class.getSimpleName(),
+          this.ctx,
+          Logger.format("Unable to register persistence class {0}. Reason: {1}.", persistenceClassName, e.getLocalizedMessage()),
+          "registerFormat"
+      );
     }
   }
 

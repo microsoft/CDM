@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import ResolveOptions, time_utils
+from cdm.utilities import ResolveOptions, time_utils, logger, Errors
 
 from .cdm_entity_declaration_def import CdmEntityDeclarationDefinition
 from .cdm_file_status import CdmFileStatus
@@ -25,6 +25,8 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         self.last_file_modified_time = None  # type: Optional[datetime]
 
         self.last_file_status_check_time = None  # type: Optional[datetime]
+
+        self._TAG = CdmReferencedEntityDeclarationDefinition.__name__
 
     @property
     def data_partitions(self) -> Optional['CdmCollection[CdmDataPartitionDefinition]']:
@@ -62,7 +64,16 @@ class CdmReferencedEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
         return copy
 
     def validate(self) -> bool:
-        return bool(self.entity_name and self.entity_path)
+        missing_fields = []
+        if not bool(self.entity_name):
+            missing_fields.append('entity_name')
+        if not bool(self.entity_path):
+            missing_fields.append('entity_path')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            return False
+        return True
 
     def get_name(self) -> str:
         return self.entity_name

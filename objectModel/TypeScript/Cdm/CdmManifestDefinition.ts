@@ -31,6 +31,10 @@ const rel2CacheKey = (rel: CdmE2ERelationship): string => {
 };
 
 export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmFileStatus {
+
+    public static get objectType(): cdmObjectType {
+        return cdmObjectType.manifestDef;
+    }
     public manifestName: string;
     public readonly subManifests: CdmCollection<CdmManifestDeclarationDefinition>;
     public readonly entities: CdmEntityCollection;
@@ -50,10 +54,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         this.entities = new CdmEntityCollection(this.ctx, this);
         this.relationships = new CdmCollection<CdmE2ERelationship>(this.ctx, this, cdmObjectType.e2eRelationshipDef);
         this.exhibitsTraits = new CdmTraitCollection(this.ctx, this);
-    }
-
-    public static get objectType(): cdmObjectType {
-        return cdmObjectType.manifestDef;
     }
 
     public getExplanation(): string {
@@ -159,6 +159,17 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             return undefined;
         }
 
+        if (!this.folder) {
+            Logger.error(
+                CdmManifestDefinition.name,
+                this.ctx,
+                `Cannot resolve the manifest '${this.manifestName}' because it has not been added to a folder`,
+                this.createResolvedManifestAsync.name
+            );
+
+            return undefined;
+        }
+
         if (newEntityDocumentNameFormat === undefined) {
             newEntityDocumentNameFormat = '{f}resolved/{n}.cdm.json';
         } else if (newEntityDocumentNameFormat === '') { // for back compat
@@ -214,9 +225,20 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
 
             if (entDef === undefined) {
                 Logger.error(
-                    'CdmManifestDefinition',
+                    CdmManifestDefinition.name,
                     this.ctx,
                     `Unable to get entity from reference`,
+                    this.createResolvedManifestAsync.name
+                );
+
+                return undefined;
+            }
+
+            if (!entDef.inDocument.folder) {
+                Logger.error(
+                    CdmManifestDefinition.name,
+                    this.ctx,
+                    `The document containing the entity '${entDef.entityName}' is not in a folder`,
                     this.createResolvedManifestAsync.name
                 );
 
@@ -274,10 +296,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                     || result.atCorpusPath;
             }
             resolvedManifest.entities.push(result);
-
-            // absolute path is needed for generating relationships
-            const absoluteEntPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(result.entityPath, resolvedManifest);
-            this.ctx.corpus.resEntMap.set(this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.atCorpusPath, entDef.inDocument), absoluteEntPath);
         }
 
         // add the new document to the folder
@@ -452,17 +470,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
     }
 
     /**
-     * Query the manifest for a set of entities that match an input query
-     * querySpec = a JSON object (or a string that can be parsed into one) of the form
-     * {"entityName":"", "attributes":[{see QueryOnTraits for CdmEntityDefinition for details}]}
-     * returns null for 0 results or an array of json objects, each matching the shape of the input query,
-     * with entity and attribute names filled in
-     */
-    private async queryOnTraitsAsync(querySpec: (string | object)): Promise<object[]> {
-        return undefined;
-    }
-
-    /**
      * @internal
      * Helper that fixes a path from local to absolute, gets the object from that path 
      * then looks at the document where the object is found.
@@ -606,6 +613,17 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         return entityDec ?
             this.ctx.corpus.storage.createAbsoluteCorpusPath(entityDec.entityPath, obj)
             : undefined;
+    }
+
+    /**
+     * Query the manifest for a set of entities that match an input query
+     * querySpec = a JSON object (or a string that can be parsed into one) of the form
+     * {"entityName":"", "attributes":[{see QueryOnTraits for CdmEntityDefinition for details}]}
+     * returns null for 0 results or an array of json objects, each matching the shape of the input query,
+     * with entity and attribute names filled in
+     */
+    private async queryOnTraitsAsync(querySpec: (string | object)): Promise<object[]> {
+        return undefined;
     }
 
     private localizeRelToManifest(rel: CdmE2ERelationship): CdmE2ERelationship {

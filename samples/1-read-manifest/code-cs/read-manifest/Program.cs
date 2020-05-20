@@ -34,7 +34,7 @@ namespace read_manifest
             string pathFromExeToExampleRoot = "../../../../../../";
 
             // Storage adapter pointing to the target local manifest location. 
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "1-read-manifest"));
+            cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "1-read-manifest/sample-data"));
 
             // 'local' is our default namespace. 
             // Any paths that start navigating without a device tag (ex. 'cdm') will just default to the 'local' namepace.

@@ -189,7 +189,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             manifestContent.Entities = CopyDataUtils.ListCopyData(resOpt, instance.Entities, options);
             manifestContent.SubManifests = Utils.ListCopyData<ManifestDeclaration>(resOpt, instance.SubManifests, options);
             manifestContent.Explanation = instance.Explanation;
-            manifestContent.ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options);
+            manifestContent.ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options);
 
             if (instance.Relationships != null && instance.Relationships.Count > 0)
             {

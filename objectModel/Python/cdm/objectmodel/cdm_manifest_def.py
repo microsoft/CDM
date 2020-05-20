@@ -114,6 +114,15 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         if self.entities is None:
             return None
 
+        if not self.folder:
+            logger.error(
+                self._TAG,
+                self.ctx,
+                'Cannot resolve the manifest \'{}\' because it has not been added to a folder'.format(self.manifest_name),
+                self.create_resolved_manifest_async.__name__
+            )
+            return None
+
         if new_entity_document_name_format is None:
             new_entity_document_name_format = '{f}resolved/{n}.cdm.json'
         elif new_entity_document_name_format == '':  # for back compat
@@ -155,6 +164,11 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 logger.error(self._TAG, self.ctx, 'Unable to get entity from reference', self.create_resolved_manifest_async.__name__)
                 return None
 
+            if not ent_def.in_document.folder:
+                logger.error(self._TAG, self.ctx, 'The document containing the entity \'{}\' is not in a folder'.format(
+                    ent_def.entity_name), self.create_resolved_manifest_async.__name__)
+                return None
+
             # get the path from this manifest to the source entity. this will be the {f} replacement value
             source_entity_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.in_document.folder.at_corpus_path, self)
             f = ''
@@ -193,10 +207,6 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 result.entity_path = relative_entity_path or result.at_corpus_path
 
             resolved_manifest.entities.append(result)
-
-            # absolute path is needed for generating relationships
-            absolute_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(result.entity_path, resolved_manifest)
-            self.ctx.corpus._res_ent_map[self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)] = absolute_ent_path
 
         logger.debug(self._TAG, self.ctx, '    calculating relationships', self.create_resolved_manifest_async.__name__)
         # Calculate the entity graph for just this manifest.

@@ -57,12 +57,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 { "local", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.LocalAdapter") },
                 { "adls", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.ADLSAdapter", "Microsoft.CommonDataModel.ObjectModel.Adapter.Adls") },
                 { "remote", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.RemoteAdapter") },
-                { "github", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.GithubAdapter") }
+                { "github", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.GithubAdapter") },
+                { "cdm-standards", FetchType("Microsoft.CommonDataModel.ObjectModel.Storage.CdmStandardsAdapter") }
             };
 
             // Set up default adapters.
             this.Mount("local", new LocalAdapter(Directory.GetCurrentDirectory()));
-            this.Mount("cdm", new GithubAdapter());
+            this.Mount("cdm", new CdmStandardsAdapter());
 
             systemDefinedNamespaces.Add("local");
             systemDefinedNamespaces.Add("cdm");
@@ -316,7 +317,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public string CreateAbsoluteCorpusPath(string objectPath, CdmObject obj = null)
         {
-            if (string.IsNullOrEmpty(objectPath))
+            if (string.IsNullOrWhiteSpace(objectPath))
             {
                 Logger.Error(nameof(StorageManager), this.Ctx, "The object path cannot be null or empty.", nameof(CreateAbsoluteCorpusPath));
                 return null;

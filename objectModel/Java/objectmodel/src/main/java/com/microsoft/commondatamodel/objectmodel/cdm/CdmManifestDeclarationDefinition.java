@@ -8,11 +8,16 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 
 public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase implements CdmFileStatus {
@@ -146,7 +151,19 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.getManifestName()) && !Strings.isNullOrEmpty(this.getDefinition());
+    ArrayList<String> missingFields = new ArrayList<String>();
+    if (StringUtils.isNullOrTrimEmpty(this.getManifestName())) {
+      missingFields.add("manifestName");
+    }
+    if (StringUtils.isNullOrTrimEmpty(this.getDefinition())) {
+      missingFields.add("definition");
+    }
+
+    if (missingFields.size() > 0) {
+      Logger.error(CdmManifestDeclarationDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
+      return false;
+    }
+    return true;
   }
 
   @Override

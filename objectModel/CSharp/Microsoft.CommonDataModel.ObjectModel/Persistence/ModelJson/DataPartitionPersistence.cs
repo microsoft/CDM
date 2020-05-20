@@ -20,7 +20,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
         {
             var partition = ctx.Corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, obj.Name);
 
-            partition.Description = obj.Description;
+            if (!string.IsNullOrWhiteSpace(obj.Description))
+                partition.Description = obj.Description;
             partition.Location = ctx.Corpus.Storage.CreateRelativeCorpusPath(
                 ctx.Corpus.Storage.AdapterPathToCorpusPath(obj.Location),
                 documentFolder);
@@ -79,7 +80,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 Logger.Warning(nameof(DataPartitionPersistence), instance.Ctx, $"Couldn't find data partition's location for partition {result.Name}.", nameof(ToData));
             }
 
-            await Utils.ProcessAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
 

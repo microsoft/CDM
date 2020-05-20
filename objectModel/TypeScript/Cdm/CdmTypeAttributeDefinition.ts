@@ -13,6 +13,8 @@ import {
     CdmDataTypeReference,
     CdmObject,
     cdmObjectType,
+    Errors,
+    Logger,
     ResolvedAttribute,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
@@ -162,7 +164,18 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.name ? true : false;
+            if (!this.name) {
+                Logger.error(
+                    CdmTypeAttributeDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['name']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

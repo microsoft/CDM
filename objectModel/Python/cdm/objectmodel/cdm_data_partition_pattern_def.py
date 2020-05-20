@@ -7,7 +7,7 @@ from typing import cast, Dict, List, Optional, TYPE_CHECKING
 import regex
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import logger, ResolveOptions
+from cdm.utilities import logger, ResolveOptions, Errors
 
 from .cdm_file_status import CdmFileStatus
 from .cdm_local_entity_declaration_def import CdmLocalEntityDeclarationDefinition
@@ -28,6 +28,9 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
         # The starting location corpus path for searching for inferred data partitions.
         self.root_location = None  # type: Optional[str]
 
+        # The glob pattern to use for searching partitions.
+        self.glob_pattern = None  # type: Optional[str]
+
         # The regular expression to use for searching partitions.
         self.regular_expression = None  # type: Optional[str]
 
@@ -47,6 +50,14 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.DATA_PARTITION_PATTERN_DEF
 
+    @property
+    def last_child_file_modified_time(self) -> datetime:
+        raise NotImplementedError()
+
+    @last_child_file_modified_time.setter
+    def last_child_file_modified_time(self, val: datetime):
+        raise NotImplementedError()
+
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataPartitionPatternDefinition'] = None) -> 'CdmDataPartitionPatternDefinition':
         if not res_opt:
             res_opt = ResolveOptions(wrt_doc=self)
@@ -59,6 +70,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             copy.name = self.name
 
         copy.root_location = self.root_location
+        copy.glob_pattern = self.glob_pattern
         copy.regular_expression = self.regular_expression
         copy.parameters = self.parameters
         copy.last_file_status_check_time = self.last_file_status_check_time
@@ -85,42 +97,100 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             # get a list of all corpus_paths under the root.
             file_info_list = await adapter.fetch_all_files_async(root_corpus)
         except Exception as e:
-            logger.warning(self._TAG, self.ctx, 'The folder location \'{}\' described by a partition pattern does not exist'.format(root_corpus), self.file_status_check_async.__name__)
+            logger.warning(self._TAG, self.ctx, 'The folder location \'{}\' described by a partition pattern does not exist'.format(
+                root_corpus), self.file_status_check_async.__name__)
 
         if file_info_list is not None:
             # remove root of the search from the beginning of all paths so anything in the root is not found by regex.
             file_info_list = [(namespace + ':' + fi)[len(root_corpus):] for fi in file_info_list]
 
-            reg = regex.compile(self.regular_expression)
-
             if isinstance(self.owner, CdmLocalEntityDeclarationDefinition):
-                for fi in file_info_list:
-                    m = reg.fullmatch(fi)
-                    if m:
-                        # create a map of arguments out of capture groups.
-                        args = defaultdict(list)  # type: Dict[str, List[str]]
-                        i_param = 0
-                        for i in range(1, reg.groups + 1):
-                            captures = m.captures(i)
-                            if captures and self.parameters and i_param < len(self.parameters):
-                                # to be consistent with other languages, if a capture group captures
-                                # multiple things, only use the last thing that was captured
-                                single_capture = captures[-1]
+                # if both are present log warning and use glob pattern, otherwise use regularExpression
+                if self.glob_pattern and not self.glob_pattern.isspace() and self.regular_expression and not self.regular_expression.isspace():
+                    logger.warning(self._TAG, self.ctx, 'The Data Partition Pattern contains both a glob pattern ({}) and a regular expression ({}) set, the glob pattern will be used.'.format(
+                        self.glob_pattern, self.regular_expression), self.file_status_check_async.__name__)
+                regular_expression = self.glob_pattern_to_regex(
+                    self.glob_pattern) if self.glob_pattern and not self.glob_pattern.isspace() else self.regular_expression
 
-                                current_param = self.parameters[i_param]
-                                args[current_param].append(single_capture)
-                                i_param += 1
-                            else:
-                                break
+                try:
+                    reg = regex.compile(regular_expression)
+                except Exception as e:
+                    logger.error(self._TAG, self.ctx, 'The {} \'{}\' could not form a valid regular expression. Reason: {}'.format(
+                        'glob pattern' if self.glob_pattern and not self.glob_pattern.isspace(
+                        ) else 'regular expression', self.glob_pattern if self.glob_pattern and not self.glob_pattern.isspace() else self.regular_expression, e
+                    ), self.file_status_check_async.__name__)
 
-                        # put the original but cleaned up root back onto the matched doc as the location stored in the partition.
-                        location_corpus_path = root_cleaned + fi
-                        last_modified_time = await adapter.compute_last_modified_time_async(adapter.create_adapter_path(location_corpus_path))
-                        cast('CdmLocalEntityDeclarationDefinition', self.owner)._create_partition_from_pattern(
-                            location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time)
+                if reg:
+                    for fi in file_info_list:
+                        m = reg.fullmatch(fi)
+                        if m:
+                            # create a map of arguments out of capture groups.
+                            args = defaultdict(list)  # type: Dict[str, List[str]]
+                            i_param = 0
+                            for i in range(1, reg.groups + 1):
+                                captures = m.captures(i)
+                                if captures and self.parameters and i_param < len(self.parameters):
+                                    # to be consistent with other languages, if a capture group captures
+                                    # multiple things, only use the last thing that was captured
+                                    single_capture = captures[-1]
+
+                                    current_param = self.parameters[i_param]
+                                    args[current_param].append(single_capture)
+                                    i_param += 1
+                                else:
+                                    break
+
+                            # put the original but cleaned up root back onto the matched doc as the location stored in the partition.
+                            location_corpus_path = root_cleaned + fi
+                            last_modified_time = await adapter.compute_last_modified_time_async(adapter.create_adapter_path(location_corpus_path))
+                            cast('CdmLocalEntityDeclarationDefinition', self.owner)._create_partition_from_pattern(
+                                location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time)
 
         # update modified times.
         self.last_file_status_check_time = datetime.now(timezone.utc)
+
+    def glob_pattern_to_regex(self, pattern: str) -> str:
+        new_pattern = []
+
+        i = 0
+        while i < len(pattern):
+            curr_char = pattern[i]
+
+            if curr_char is '.':
+                # escape '.' characters
+                new_pattern.append('\\.')
+            elif curr_char is '\\':
+                # convert backslash into slash
+                new_pattern.append('/')
+            elif curr_char is '?':
+                # question mark in glob matches any single character
+                new_pattern.append('.')
+            elif curr_char is '*':
+                next_char = pattern[i + 1] if i + 1 < len(pattern) else None
+                if next_char is '*':
+                    prev_char = pattern[i - 1] if i - 1 >= 0 else None
+                    post_char = pattern[i + 2] if i + 2 < len(pattern) else None
+
+                    # globstar must be at beginning of pattern, end of pattern, or wrapped in separator characters
+                    if (prev_char is None or prev_char is '/' or prev_char is '\\') and (post_char is None or post_char is '/' or post_char is '\\'):
+                        new_pattern.append('.*')
+
+                        # globstar can match zero or more subdirectories. If it matches zero, then there should not be
+                        # two consecutive '/' characters so make the second one optional
+                        if (prev_char is '/' or prev_char is '\\') and (post_char is '/' or post_char is '\\'):
+                            new_pattern.append('/?')
+                            i = i + 1
+                    else:
+                        # otherwise, treat the same as '*'
+                        new_pattern.append('[^/\\\\]*')
+                    i = i + 1
+                else:
+                    # *
+                    new_pattern.append('[^/\\\\]*')
+            else:
+                new_pattern.append(curr_char)
+            i = i + 1
+        return ''.join(new_pattern)
 
     def get_name(self) -> str:
         return self.name
@@ -134,14 +204,17 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             await cast(CdmFileStatus, self.owner).report_most_recent_time_async(child_time)
 
     def validate(self) -> bool:
-        return bool(self.name) and bool(self.root_location)
+        if not bool(self.root_location):
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['root_location']))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''
         if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
-                path = path_from + self.get_name() or 'UNNAMED'
+                path = '{}{}'.format(path_from, (self.get_name() or 'UNNAMED'))
                 self._declared_path = path
 
         if pre_children and pre_children(self, path):

@@ -13,6 +13,8 @@ import {
     CdmObjectReferenceBase,
     cdmObjectType,
     CdmTraitReference,
+    Errors,
+    Logger,
     ResolvedAttribute,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -210,7 +212,26 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
     }
 
     public validate(): boolean {
-        return this.name && this.type !== undefined;
+        const missingFields: string[] = [];
+        if (!this.name) {
+            missingFields.push('name');
+        }
+        if (this.type === undefined) {
+            missingFields.push('type');
+        }
+
+        if (missingFields.length > 0) {
+            Logger.error(
+                CdmAttributeContext.name,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, missingFields),
+                this.validate.name
+            );
+
+            return false;
+        }
+
+        return true;
     }
 
     public getName(): string {

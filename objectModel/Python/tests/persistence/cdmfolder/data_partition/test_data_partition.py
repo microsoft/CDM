@@ -1,6 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+import json
 import os
 import unittest
 
@@ -53,14 +54,18 @@ class DataPartitionTest(unittest.TestCase):
     async def test_programmatically_create_partitions(self):
         corpus = CdmCorpusDefinition()
         corpus.ctx.report_at_level = CdmStatusLevel.WARNING
-        corpus.storage.mount('local', LocalAdapter())
         manifest = corpus.make_object(CdmObjectType.MANIFEST_DEF, 'manifest')
         entity = manifest.entities.append('entity')
 
         relative_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, 'relative partition')
         relative_partition.location = 'relative/path'
+        relative_partition.arguments['test1'] = ['argument1']
+        relative_partition.arguments['test2'] = ['argument2', 'argument3']
+
         absolute_partition = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, 'absolute partition')
         absolute_partition.location = 'local:/absolute/path'
+        # add an empty arguments list to test empty list should not be displayed in ToData json.
+        absolute_partition.arguments['test'] = []
 
         entity.data_partitions.append(relative_partition)
         entity.data_partitions.append(absolute_partition)
@@ -74,4 +79,24 @@ class DataPartitionTest(unittest.TestCase):
         absolute_partition_data = partitions_list[-1]
 
         self.assertEqual(relative_partition_data.location, relative_partition.location)
+        arguments_list = relative_partition_data.arguments
+        self.assertEqual(3, len(arguments_list))
+        checked_arguments = []
+        for argument in arguments_list:
+            self.assertEqual(3, len(argument))
+            checked_arguments.append(argument.value)
+            if argument.value == 'argument1':
+                self.assertEqual('test1', argument.name)
+            elif argument.value == 'argument2':
+                self.assertEqual('test2', argument.name)
+            elif argument.value == 'argument3':
+                self.assertEqual('test2', argument.name)
+            else:
+                raise Exception('unexpected argument in data partitions')
+        self.assertTrue('argument1' in checked_arguments)
+        self.assertTrue('argument2' in checked_arguments)
+        self.assertTrue('argument3' in checked_arguments)
+
         self.assertEqual(absolute_partition_data.location, absolute_partition.location)
+        # test if empty argument list is set to null
+        self.assertEqual(absolute_partition_data.arguments, None)

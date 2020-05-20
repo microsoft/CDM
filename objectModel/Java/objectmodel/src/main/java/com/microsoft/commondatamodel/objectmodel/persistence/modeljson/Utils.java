@@ -13,6 +13,8 @@ import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.types.Met
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -20,16 +22,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Utility methods for model.json persistence.
  */
 public class Utils {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-
   private static final Map<String, String> annotationToTraitMap = new LinkedHashMap<String, String>() {
     private static final long serialVersionUID = 1863481726936L;
 
@@ -38,16 +35,30 @@ public class Utils {
     }
   };
 
-  private static final Set<String> ignoredTraits = new LinkedHashSet<String>() {
+  public static final Set<String> ignoredTraits = new LinkedHashSet<String>() {
     private static final long serialVersionUID = 1987129612639L;
 
     {
-      add("is.modelConversion.otherAnnotations");
       add("is.propertyContent.multiTrait");
       add("is.modelConversion.referenceModelMap");
       add("is.modelConversion.modelVersion");
       add("means.measurement.version");
+      add("is.CDM.entityVersion");
       add("is.partition.format.CSV");
+      add("is.partition.culture");
+      add("is.managedBy");
+      add("is.hidden");
+    }
+  };
+
+  // Traits to ignore if they come from properties.
+  // These traits become properties on the model.json. To avoid persisting both a trait
+  // and a property on the model.json, we filter these traits out.
+  public static final Set<String> modelJsonPropertyTraits = new LinkedHashSet<String>() {
+    private static final long serialVersionUID = 1560087956924063099L;
+
+    {
+      add("is.localized.describedAs");
     }
   };
 
@@ -75,7 +86,7 @@ public class Utils {
         if (multiTraitAnnotations.size() > 0) {
           final CdmTraitReference trait = ctx.getCorpus()
               .makeRef(CdmObjectType.TraitRef, "is.modelConversion.otherAnnotations", false);
-          trait.setFromProperty(true);
+          trait.setFromProperty(false);
 
           final CdmArgumentDefinition annotationsArgument =
               new CdmArgumentDefinition(ctx, "annotations");
@@ -95,7 +106,7 @@ public class Utils {
     });
   }
 
-  static CompletableFuture<Void> processAnnotationsToData(
+  static CompletableFuture<Void> processTraitsAndAnnotationsToData(
       final CdmCorpusContext ctx,
       final MetadataObject obj,
       final CdmTraitCollection traits) {
@@ -121,7 +132,7 @@ public class Utils {
           } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
             traitArguments =  (JsonNode) traitArgument;
           } else {
-            LOGGER.error("Unsupported annotation type.");
+            Logger.error(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
           }
           for (final Object annotation : traitArguments) {
             if (annotation instanceof JsonNode) {
@@ -130,27 +141,15 @@ public class Utils {
             } else if (annotation instanceof Annotation) {
               annotations.add((Annotation) annotation);
             } else {
-              LOGGER.warn("Unsupported annotation type.");
+              Logger.warning(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
             }
           }
-        } else if (!trait.isFromProperty()) {
-          final String annotationName = traitToAnnotationName(trait.getNamedReference());
-          if (annotationName != null
-              && trait.getArguments() != null
-              && trait.getArguments().getAllItems().size() == 1) {
-            final Annotation argument =
-                ArgumentPersistence.toData(
-                    trait.getArguments().get(0),
-                    null,
-                    null).join();
-            if (argument != null) {
-              argument.setName(annotationName);
-              annotations.add(argument);
-            }
-          } else if (!ignoredTraits.contains(trait.getNamedReference())) {
-            final Object extension = TraitReferencePersistence.toData(trait, null, null);
-            extensions.add(JMapper.MAP.valueToTree(extension));
-          }
+        } else if (!ignoredTraits.contains(trait.getNamedReference())
+                && !trait.getNamedReference().startsWith("is.dataFormat")
+                && !(modelJsonPropertyTraits.contains(trait.getNamedReference()) && trait.isFromProperty())
+        ) {
+          final Object extension = TraitReferencePersistence.toData(trait, null, null);
+          extensions.add(JMapper.MAP.valueToTree(extension));
         }
       }
 

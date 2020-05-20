@@ -4,7 +4,7 @@
 from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmAttributeContextType, CdmObjectType
-from cdm.utilities import logger, ResolveOptions
+from cdm.utilities import logger, ResolveOptions, Errors
 
 from .cdm_attribute_def import CdmAttribute
 from .relationship_info import RelationshipInfo
@@ -321,7 +321,16 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         return False
 
     def validate(self) -> bool:
-        return bool(self.name) and bool(self.entity)
+        missing_fields = []
+        if not bool(self.name):
+            missing_fields.append('name')
+        if not bool(self.entity):
+            missing_fields.append('entity')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
+            return False
+        return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
         path = ''

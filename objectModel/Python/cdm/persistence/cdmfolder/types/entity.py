@@ -17,15 +17,15 @@ class Entity(JObject):
     def __init__(self):
         super().__init__()
 
-        self.explanation = ''  # type: str
-        self.entityName = ''  # type: str
+        self.explanation = None  # type: str
+        self.entityName = None  # type: str
         self.extendsEntity = None  # type: Union[str, EntityReference]
         self.ExtendsEntityResolutionGuidance = None  # type: Optional[AttributeResolutionGuidance]
-        self.exhibitsTraits = []  # type: List[Union[str, TraitReference]]
+        self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]
         self.attributeContext = None  # type: AttributeContext
-        self.hasAttributes = []  # type: List[Union[str, AttributeGroupReference, TypeAttribute, EntityAttribute]]
-        self.sourceName = ''  # type: str
-        self.displayName = ''  # type: str
-        self.description = ''  # type: str
-        self.version = ''  # type: str
-        self.cdmSchemas = []  # type: List[str]
+        self.hasAttributes = None  # type: List[Union[str, AttributeGroupReference, TypeAttribute, EntityAttribute]]
+        self.sourceName = None  # type: str
+        self.displayName = None  # type: str
+        self.description = None  # type: str
+        self.version = None  # type: str
+        self.cdmSchemas = None  # type: List[str]

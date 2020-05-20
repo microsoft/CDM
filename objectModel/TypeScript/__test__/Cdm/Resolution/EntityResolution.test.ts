@@ -54,7 +54,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
 
         const localAdapter: LocalAdapter = new LocalAdapter(schemaDocsRoot);
         cdmCorpus.storage.mount('local', localAdapter);
-        const manifest: CdmManifestDefinition = await cdmCorpus.createRootManifest('local:/standards.manifest.cdm.json');
+        const manifest: CdmManifestDefinition = await cdmCorpus.createRootManifest(testHelper.cdmStandardsSchemaPath);
         expect(manifest)
             .toBeTruthy();
         const directives: AttributeResolutionDirectiveSet =
@@ -123,8 +123,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
      * the inclusion of the resolvedFrom moniker stopped the source document from being found
      */
     it('TestResolveWithExtended', async (done) => {
-        const inputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestResolveWithExtended');
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(inputPath);
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolveWithExtended');
         cdmCorpus.setEventCallback(
             (level, msg) => {
                 expect(msg.indexOf('unable to resolve the reference'))
@@ -141,8 +140,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
      * Testing that attributes that have the same name in extended entity are properly replaced
      */
     it('TestAttributesThatAreReplaced', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestAttributesThatAreReplaced');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestAttributesThatAreReplaced');
         corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
 
         const extendedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/extended.cdm.json/extended');
@@ -180,8 +178,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
      * Test that resolved attribute limit is calculated correctly and respected
      */
     it('TestResolvedAttributeLimit', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestResolvedAttributeLimit');
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testInputPath);
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolvedAttributeLimit');
 
         const mainEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/mainEntity.cdm.json/mainEntity');
         let resOpt: resolveOptions = new resolveOptions(mainEntity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
@@ -243,6 +240,32 @@ describe('Cdm/Resolution/EntityResolution', () => {
         // and 2 attributes grouped in an attribute group
         expect(((mainEntity.attributes.allItems[2] as CdmAttributeGroupReference).explicitReference as CdmAttributeGroupDefinition).members.length)
             .toBe(2);
+        done();
+    });
+
+    /**
+     * Test that "is.linkedEntity.name" and "is.linkedEntity.identifier" traits are set when "selectedTypeAttribute" and "foreignKeyAttribute"
+     * are present in the entity's resolution guidance.
+     */
+    it('TestSettingTraitsForResolutionGuidanceAttributes', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSettingTraitsForResolutionGuidanceAttributes');
+        corpus.storage.mount('cdm', new LocalAdapter(testHelper.schemaDocumentsPath));
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Customer.cdm.json/Customer');
+
+        // Resolve with default directives to get "is.linkedEntity.name" trait.
+        let resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
+        let resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync('resolved', resOpt);
+
+        expect(resolvedEntity.attributes.allItems[1].appliedTraits.allItems[6].namedReference)
+            .toBe('is.linkedEntity.name');
+
+        // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
+        resOpt = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['referenceOnly'])));
+        resolvedEntity = await entity.createResolvedEntityAsync('resolved2', resOpt);
+
+        expect(resolvedEntity.attributes.allItems[0].appliedTraits.allItems[7].namedReference)
+            .toBe('is.linkedEntity.identifier');
+
         done();
     });
 

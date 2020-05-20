@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 export { ADLSAdapter } from './ADLSAdapter';
+export { CdmStandardsAdapter } from './CdmStandardsAdapter';
 export { GithubAdapter } from './GithubAdapter';
 export { LocalAdapter } from './LocalAdapter';
 export { LocalBrowserAdapter } from './LocalBrowserAdapter';

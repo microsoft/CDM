@@ -15,5 +15,5 @@ class Annotation(JObject):
     def __init__(self):
         super().__init__()
 
-        self.name = ''  # type: str
-        self.value = ''  # type: str
+        self.name = None  # type: str
+        self.value = None  # type: str

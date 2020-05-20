@@ -40,11 +40,17 @@ public class TestHelper {
   private static final String REMOTE = "remote";
   private static final String OUTPUT = "output";
 
-
   /**
    * The path of the CDM Schema Documents Folder.
    */
   public static final String SCHEMA_DOCS_ROOT = "../../../schemaDocuments";
+
+  /**
+   * The adapter path to the top-level manifest in the CDM Schema Documents folder. Used by tests where we resolve the corpus.
+   * This path is temporarily pointing to the applicationCommon manifest instead of standards due to performance issues when resolving
+   * the entire set of CDM standard schemas, after 8000+ F&O entities were added.
+   */
+  public static final String CDM_STANDARDS_SCHEMA_PATH = "local:/core/applicationCommon/applicationCommon.manifest.cdm.json";
 
   private static Logger LOGGER = LoggerFactory.getLogger(TestHelper.class);
 

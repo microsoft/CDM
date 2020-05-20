@@ -13,13 +13,11 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ref
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.time.OffsetDateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReferencedEntityDeclarationPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(ReferencedEntityDeclarationPersistence.class);
-
   public static CdmEntityDeclarationDefinition fromData(
       final CdmCorpusContext ctx,
       final String prefixPath,
@@ -31,7 +29,7 @@ public class ReferencedEntityDeclarationPersistence {
         ? obj.get("entityPath").asText()
         : obj.get("entityDeclaration").asText();
     if (entityPath == null) {
-      LOGGER.error("Couldn't find entity path or similar.");
+      Logger.error(ReferencedEntityDeclarationPersistence.class.getSimpleName(), ctx, "Couldn't find entity path or similar.", "fromData");
     }
 
     if (entityPath != null && !entityPath.contains(":")) {

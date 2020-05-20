@@ -103,7 +103,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     public async writeAsync(corpusPath: string, data: string): Promise<void> {
-        if (this.ensurePath(`${this.root}${corpusPath}`)) {
+        if (!this.ensurePath(`${this.root}${corpusPath}`)) {
             throw new Error(`Could not create folder for document ${corpusPath}`);
         }
         const url: string = this.createAdapterPath(corpusPath);

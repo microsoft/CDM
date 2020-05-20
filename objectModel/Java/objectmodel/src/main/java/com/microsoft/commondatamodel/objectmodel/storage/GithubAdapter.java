@@ -22,7 +22,9 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Implementation of the storage adapter interface which operates with GitHub repos.
+ * @deprecated Please use the CdmStandardsAdapter instead.
  */
+@Deprecated
 public class GithubAdapter extends NetworkAdapter implements StorageAdapter {
 
   private static final String ghHost = "raw.githubusercontent.com";

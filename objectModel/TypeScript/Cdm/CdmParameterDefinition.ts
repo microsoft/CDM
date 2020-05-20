@@ -8,6 +8,8 @@ import {
     CdmObject,
     cdmObjectSimple,
     cdmObjectType,
+    Errors,
+    Logger,
     resolveOptions,
     VisitCallback
 } from '../internal';
@@ -81,7 +83,18 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.name ? true : false;
+            if (!this.name) {
+                Logger.error(
+                    CdmParameterDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['name']),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }

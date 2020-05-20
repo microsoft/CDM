@@ -16,6 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Persistence;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
 
     /// <summary>
     /// The model json tests.
@@ -64,9 +65,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             var cdmManifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>($"default{PersistenceLayer.ManifestExtension}", cdmCorpus.Storage.FetchRootFolder("local"));
             watch.Stop();
             Assert.Performance(1000, watch.ElapsedMilliseconds, "Loading from data");
-            
+
             watch.Restart();
-            var obtainedModelJson= await ManifestPersistence.ToData(cdmManifest, null, null);
+            var obtainedModelJson = await ManifestPersistence.ToData(cdmManifest, null, null);
             watch.Stop();
             Assert.Performance(5000, watch.ElapsedMilliseconds, "Parsing to data");
 
@@ -279,6 +280,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
         }
 
         /// <summary>
+        /// Tests that a description on a CdmFolder entity sets the description on the ModelJson entity.
+        /// </summary>
+        [Test]
+        public async Task TestSettingModelJsonEntityDescription()
+        {
+            var cdmCorpus = new CdmCorpusDefinition();
+            var cdmManifest = cdmCorpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "test");
+            var document = cdmCorpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, $"entity{PersistenceLayer.CdmExtension}");
+
+            var folder = cdmCorpus.Storage.FetchRootFolder("local");
+            folder.Documents.Add(document);
+
+            var entity = document.Definitions.Add(CdmObjectType.EntityDef, "entity") as CdmEntityDefinition;
+            entity.Description = "test description";
+
+            cdmManifest.Entities.Add(entity);
+            folder.Documents.Add(cdmManifest);
+
+            var obtainedModelJson = await ManifestPersistence.ToData(cdmManifest, null, null);
+
+            Assert.AreEqual("test description", obtainedModelJson.Entities[0]["description"].ToString());
+        }
+
+        /// <summary>
         /// Handles the obtained output.
         /// If needed, writes the output to a test debugging file.
         /// It reads expected output and compares it to the actual output.
@@ -298,7 +323,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
 
             var expectedOutput = TestHelper.GetExpectedOutputFileContent(testsSubpath, testName, outputFileName);
 
-            TestHelper.AssertSameObjectWasSerialized(expectedOutput, serializedOutput);            
+            TestHelper.AssertSameObjectWasSerialized(expectedOutput, serializedOutput);
         }
 
         private void RemoveEntityPathForReferencedEntities(JToken entity)

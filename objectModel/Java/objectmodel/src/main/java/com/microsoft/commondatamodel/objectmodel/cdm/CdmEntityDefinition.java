@@ -22,24 +22,24 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetB
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
-  private static final Logger LOGGER = LoggerFactory.getLogger(CdmEntityDefinition.class);
-
   private String entityName;
   private CdmEntityReference extendsEntity;
   private CdmAttributeResolutionGuidance extendsEntityResolutionGuidance;
@@ -245,9 +245,12 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       // want to pass along to getting this entities attributes
       final String oldMoniker = resOpt.getFromMoniker();
 
-      if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount()))
-      {
-        LOGGER.error("Maximum number of resolved attributes reached for the entity: {}.", this.entityName);
+      if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
+        Logger.error(
+            CdmEntityDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("Maximum number of resolved attributes reached for the entity: {0}.", this.entityName)
+        );
         return null;
       }
 
@@ -291,9 +294,12 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
         this.rasb.mergeAttributes(att.fetchResolvedAttributes(resOpt, acpAtt));
 
-        if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount()))
-        {
-          LOGGER.error("Maximum number of resolved attributes reached for the entity: {this.EntityName}.", this.entityName);
+        if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
+          Logger.error(
+              CdmEntityDefinition.class.getSimpleName(),
+              this.getCtx(),
+              Logger.format("Maximum number of resolved attributes reached for the entity: {0}.", this.entityName)
+          );
           return null;
         }
       }
@@ -334,12 +340,12 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     }
 
     if (resOpt.getWrtDoc() == null) {
-      LOGGER.error("No WRT document was supplied.");
+      Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "No WRT document was supplied.", "createResolvedEntityAsync");
       return CompletableFuture.completedFuture(null);
     }
 
     if (Strings.isNullOrEmpty(newEntName)) {
-      LOGGER.error("No Entity Name provided.");
+      Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "No Entity Name provided.", "createResolvedEntityAsync");
       return CompletableFuture.completedFuture(null);
     }
 
@@ -360,13 +366,18 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
               .createAbsoluteCorpusPath(folder.getAtCorpusPath(), folder),
           fileName);
       if (targetAtCorpusPath.equalsIgnoreCase(origDoc)) {
-        LOGGER.error("Attempting to replace source entity's document '{}'", targetAtCorpusPath);
+        Logger.error(
+            CdmEntityDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("Attempting to replace source entity's document '{0}'", targetAtCorpusPath),
+            "createResolvedEntityAsync"
+        );
         return null;
       }
 
       // if the wrtDoc needs to be indexed (like it was just modified) then do that first
       if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt).join()) {
-        LOGGER.error("Couldn't index source document.");
+        Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "Couldn't index source document.", "createResolvedEntityAsync");
         return null;
       }
 
@@ -496,6 +507,8 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       // get a fresh ref
       entResolved = (CdmEntityDefinition) docRes.fetchObjectFromDocumentPath(newEntName);
 
+      this.getCtx().getCorpus().resEntMap.put(this.getAtCorpusPath(), entResolved.getAtCorpusPath());
+
       return entResolved;
     });
   }
@@ -526,21 +539,22 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       for (final CdmAttributeContext raCtx : raCtxInEnt) {
         if (raCtx != null) {
           final CdmCollection<CdmObject> refs = raCtx.getContents();
+          // there might be more than one explanation for where and attribute came from when things get merges as they do
           // this won't work when I add the structured attributes to avoid name collisions
           String attRefPath = path + ra.getResolvedName();
-          try {
-            if (ra.getTarget() != null
-                && ra.getTarget() instanceof CdmAttribute
-                && ra.getTarget().getClass().getMethod("getObjectType") != null) {
+          if (ra.getTarget() != null
+              && ra.getTarget() instanceof CdmAttribute
+              // No need to check if method exists since we confirmed the object type is CdmAttribute
+              // && ra.getTarget().getClass().getMethod("getObjectType") != null
+            ) {
+            if (!attPath2Order.containsKey(attRefPath)) {
               final CdmObjectReference attRef = this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeRef, attRefPath, true);
               attPath2Order.put(attRef.getNamedReference(), ra.getInsertOrder());
               refs.add(attRef);
-            } else {
-              attRefPath += "/members/";
-              pointContextAtResolvedAtts(((ResolvedAttributeSet) ra.getTarget()), attRefPath, allAttCtx, attPath2Order);
             }
-          } catch (final NoSuchMethodException e) {
-            throw new RuntimeException(e.getMessage());
+          } else {
+            attRefPath += "/members/";
+            pointContextAtResolvedAtts(((ResolvedAttributeSet) ra.getTarget()), attRefPath, allAttCtx, attPath2Order);
           }
         }
       }
@@ -799,7 +813,11 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       }
     } catch (final IOException ex) {
       // TODO-BQ: What to do here, report it?
-      LOGGER.error("Error occurred while trying to get attributes with traits. Reason: {}", ex.getLocalizedMessage());
+      Logger.error(
+          CdmEntityDefinition.class.getSimpleName(),
+          this.getCtx(),
+          Logger.format("Error occurred while trying to get attributes with traits. Reason: {0}", ex.getLocalizedMessage())
+      );
     }
     return null;
   }
@@ -865,7 +883,11 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
   @Override
   public boolean validate() {
-    return !Strings.isNullOrEmpty(this.entityName);
+    if (StringUtils.isNullOrTrimEmpty(this.entityName)) {
+      Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("entityName"))));
+      return false;
+    }
+    return true;
   }
 
   @Override

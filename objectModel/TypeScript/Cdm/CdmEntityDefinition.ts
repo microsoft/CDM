@@ -29,6 +29,7 @@ import {
     CdmTraitCollection,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
+    Errors,
     Logger,
     resolveContext,
     ResolvedAttribute,
@@ -95,7 +96,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
      */
     public extendsEntityResolutionGuidance: CdmAttributeResolutionGuidance;
     private rasb: ResolvedAttributeSetBuilder;
-    private traitToPropertyMap: traitToPropertyMap;
+    private readonly traitToPropertyMap: traitToPropertyMap;
     private resolvingEntityReferences: boolean = false;
 
     constructor(
@@ -165,7 +166,18 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.entityName ? true : false;
+            if (!this.entityName) {
+                Logger.error(
+                    CdmEntityDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, [ 'entityName' ]),
+                    this.validate.name
+                );
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -583,7 +595,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
 
             // make the top level attribute context for this entity
             // for this whole section where we generate the attribute context tree and get resolved attributes
-            // set the flag that keeps all of the parent changes and document dirty from from happening 
+            // set the flag that keeps all of the parent changes and document dirty from from happening
             const wasResolving: boolean = this.ctx.corpus.isCurrentlyResolving;
             this.ctx.corpus.isCurrentlyResolving = true;
             const entName: string = newEntName;
@@ -633,7 +645,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             // make a new document in given folder if provided or the same folder as the source entity
             folder.documents.remove(fileName);
             const docRes: CdmDocumentDefinition = folder.documents.push(fileName);
-            // add a import of the source document 
+            // add a import of the source document
             origDoc = this.ctx.corpus.storage.createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
             docRes.imports.push(origDoc, 'resolvedFrom');
 
@@ -687,12 +699,12 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                             // this won't work when I add the structured attributes to avoid name collisions
                             let attRefPath: string = path + ra.resolvedName;
                             if ((ra.target as CdmAttribute).getObjectType) {
-                                const attRef: CdmObjectReference = this.ctx.corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true);
-                                if (!attPath2Order.has(attRef.namedReference)) {
+                                if (!attPath2Order.has(attRefPath)) {
+                                    const attRef: CdmObjectReference = this.ctx.corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true);
                                     // only need one explanation for this path to the insert order
                                     attPath2Order.set(attRef.namedReference, ra.insertOrder);
+                                    refs.push(attRef);
                                 }
-                                refs.push(attRef);
                             } else {
                                 attRefPath += '/members/';
                                 pointContextAtResolvedAtts(ra.target as ResolvedAttributeSet, attRefPath);
@@ -814,10 +826,20 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                         const raCtxSet: Set<CdmAttributeContext> = rasSub.ra2attCtxSet.get(ra);
                         let raCtx: CdmAttributeContext;
                         // find the correct attCtx for this copy
-                        for (const currAttCtx of allAttCtx) {
-                            if (raCtxSet.has(currAttCtx)) {
-                                raCtx = currAttCtx;
-                                break;
+                        // (interate over the shortest list)                    
+                        if (allAttCtx.size < raCtxSet.size) {
+                            for (const currAttCtx of allAttCtx) {
+                                if (raCtxSet.has(currAttCtx)) {
+                                    raCtx = currAttCtx;
+                                    break;
+                                }
+                            }
+                        } else {
+                            for (const currAttCtx of raCtxSet) {
+                                if (allAttCtx.has(currAttCtx)) {
+                                    raCtx = currAttCtx;
+                                    break;
+                                }
                             }
                         }
 
@@ -972,6 +994,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             }
             // get a fresh ref
             entResolved = docRes.fetchObjectFromDocumentPath(entName) as CdmEntityDefinition;
+
+            this.ctx.corpus.resEntMap.set(this.atCorpusPath, entResolved.atCorpusPath);
 
             return entResolved;
         }

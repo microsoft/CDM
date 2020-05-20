@@ -79,7 +79,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 string entityName = (pathSplit.Length > 0) ? pathSplit[0].ToString() : string.Empty;
                 Logger.Warning(nameof(CdmConstantEntityDefinition), this.Ctx, $"constant entity '{entityName}' defined without a constant value.");
             }
-            return this.EntityShape != null;
+            if (this.EntityShape == null)
+            {
+                Logger.Error(nameof(CdmConstantEntityDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "EntityShape" }), nameof(Validate));
+                return false;
+            }
+            return true;
         }
 
         [Obsolete]

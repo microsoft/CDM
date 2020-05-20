@@ -8,5 +8,5 @@ class AttributeReference(JObject):
     def __init__(self):
         super().__init__()
 
-        self.entityName = ''  # type: str
-        self.attributeName = ''  # type: str
+        self.entityName = None  # type: str
+        self.attributeName = None  # type: str

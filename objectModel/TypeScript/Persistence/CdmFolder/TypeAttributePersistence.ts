@@ -119,7 +119,9 @@ export class TypeAttributePersistence {
         object.dataFormat = dataFormat !== cdmDataFormat.unknown ? this.dataTypeToData(dataFormat) : undefined;
 
         const defaultValue: any = instance.getProperty('defaultValue');
-        if (defaultValue) {
+        if (defaultValue instanceof Array) {
+            object.defaultValue = (defaultValue as Array<any>).length > 0 ? defaultValue : undefined;
+        } else if (defaultValue) {
             object.defaultValue = defaultValue;
         }
 
@@ -131,7 +133,7 @@ export class TypeAttributePersistence {
      * @param value The value that should be converted to a string.
      */
     private static propertyFromDataToString(value): string {
-        if (typeof value === 'string' && value !== '') {
+        if (typeof value === 'string' && value !== '' && value.trim() !== '') {
             return value;
         } else if (typeof value === 'number') {
             return value.toString();
@@ -194,6 +196,8 @@ export class TypeAttributePersistence {
                 return cdmDataFormat.double;
             case 'time':
                 return cdmDataFormat.time;
+            case 'date':
+                return cdmDataFormat.date;
             case 'datetime':
                 return cdmDataFormat.dateTime;
             case 'datetimeoffset':
@@ -211,7 +215,7 @@ export class TypeAttributePersistence {
             case 'json':
                 return cdmDataFormat.json;
             default:
-                return undefined;
+                return cdmDataFormat.unknown;
         }
     }
 

@@ -29,6 +29,9 @@ export class DataPartitionPatternPersistence {
             = ctx.corpus.MakeObject(cdmObjectType.dataPartitionPatternDef, dataObj.name);
 
         newPattern.rootLocation = dataObj.rootLocation;
+        if (dataObj.globPattern) {
+            newPattern.globPattern = dataObj.globPattern;
+        }
         if (dataObj.regularExpression) {
             newPattern.regularExpression = dataObj.regularExpression;
         }
@@ -62,6 +65,7 @@ export class DataPartitionPatternPersistence {
             lastFileModifiedTime: timeUtils.getFormattedDateString(instance.lastFileModifiedTime),
             explanation: instance.explanation,
             rootLocation: instance.rootLocation,
+            globPattern: instance.globPattern,
             regularExpression: instance.regularExpression,
             parameters: instance.parameters,
             specializedSchema: instance.specializedSchema,

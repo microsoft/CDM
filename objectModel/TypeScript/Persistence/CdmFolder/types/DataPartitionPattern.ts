@@ -23,6 +23,10 @@ export abstract class DataPartitionPattern implements FileStatus {
     public rootLocation: string;
 
     /**
+     * The glob pattern to use for searching partitions.
+     */
+    public globPattern?: string;
+    /**
      * The regular expression to use for searching partitions.
      */
     public regularExpression?: string;

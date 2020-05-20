@@ -3,6 +3,7 @@
 
 import os
 import unittest
+from typing import Set
 
 from cdm.enums import CdmObjectType, CdmStatusLevel, CdmDataFormat
 from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmTypeAttributeDefinition
@@ -92,6 +93,19 @@ class TypeAttributeTest(unittest.TestCase):
     @async_test
     async def test_property_persistence(self):
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestPropertyPersistence')
+        function_was_called = False
+        function_parameter1 = CdmStatusLevel.INFO
+        function_parameter2 = None
+
+        def callback(status_level: CdmStatusLevel, message1: str):
+            nonlocal function_was_called, function_parameter1, function_parameter2
+            function_was_called = True
+            if status_level == CdmStatusLevel.ERROR:
+                function_parameter1 = status_level
+                function_parameter2 = message1
+
+        corpus.set_event_callback(callback)
+
         entity = await corpus.fetch_object_async('local:/PropertyEntity.cdm.json/PropertyEntity')  # type: CdmEntityDefinition
 
         # test loading properties
@@ -138,6 +152,15 @@ class TypeAttributeTest(unittest.TestCase):
         invalidValuesAttribute = entity.attributes[3]  # type: CdmTypeAttributeDefinition
         self.assertFalse(invalidValuesAttribute.is_read_only)
         self.assertIsNone(invalidValuesAttribute.maximum_length)
+
+        # test loading values with empty default value list that should log error
+        emptyDefaultValueAttribute = entity.attributes[4]  # type: CdmTypeAttributeDefinition
+        self.assertTrue(function_was_called)
+        self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
+        self.assertTrue(function_parameter2.find('Default value missing languageTag or displayText.') != -1)
+        self.assertIsNone(emptyDefaultValueAttribute.default_value)
+        # set the default value to an empty list for testing that it should be removed from the generated json.
+        emptyDefaultValueAttribute.default_value = []
 
         entityData = EntityPersistence.to_data(entity, None, None)
 
@@ -186,6 +209,9 @@ class TypeAttributeTest(unittest.TestCase):
         self.assertIsNone(invalidValuesAttributeData.is_read_only)
         self.assertIsNone(invalidValuesAttributeData.maximum_length)
 
+        # test toData with empty default value list that should be written as null
+        emptyDefaultValueAttributeData = entityData.hasAttributes[4]  # type: TypeAttribute
+        self.assertIsNone(emptyDefaultValueAttributeData.default_value)
 
     @async_test
     async def test_cdm_folder_to_data_type_attribute(self):
@@ -222,3 +248,117 @@ class TypeAttributeTest(unittest.TestCase):
         self.assertEqual('Opis na srpskom jeziku', constant_values[1][1])
         self.assertEqual('cn', constant_values[2][0])
         self.assertEqual('一些中文描述', constant_values[2][1])
+
+    @async_test
+    async def test_data_format_to_trait_mappings(self):
+        '''
+        Testing that DataFormat to trait mappings are correct and that correct traits are added to the type attribute.
+        '''
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_data_format_to_trait_mappings')
+        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')  # type: CdmEntityDefinition
+
+        # Check that the traits we expect for each DataFormat are found in the type attribute's applied traits.
+
+        # DataFormat = Int16
+        attribute_a = entity.attributes[0]  # type: CdmTypeAttributeDefinition
+        a_trait_named_references = self._fetch_trait_named_references(attribute_a.applied_traits)
+        self.assertTrue('is.dataFormat.integer' in a_trait_named_references)
+        self.assertTrue('is.dataFormat.small' in a_trait_named_references)
+
+        # DataFormat = Int32
+        attribute_b = entity.attributes[1]  # type: CdmTypeAttributeDefinition
+        b_trait_named_references = self._fetch_trait_named_references(attribute_b.applied_traits)
+        self.assertTrue('is.dataFormat.integer' in b_trait_named_references)
+
+        # DataFormat = Int64
+        attribute_c = entity.attributes[2]  # type: CdmTypeAttributeDefinition
+        c_trait_named_references = self._fetch_trait_named_references(attribute_c.applied_traits)
+        self.assertTrue('is.dataFormat.integer' in c_trait_named_references)
+        self.assertTrue('is.dataFormat.big' in c_trait_named_references)
+
+        # DataFormat = Float
+        attribute_d = entity.attributes[3]  # type: CdmTypeAttributeDefinition
+        d_trait_named_references = self._fetch_trait_named_references(attribute_d.applied_traits)
+        self.assertTrue('is.dataFormat.floatingPoint' in d_trait_named_references)
+
+        # DataFormat = Double
+        attribute_e = entity.attributes[4]  # type: CdmTypeAttributeDefinition
+        e_trait_named_references = self._fetch_trait_named_references(attribute_e.applied_traits)
+        self.assertTrue('is.dataFormat.floatingPoint' in e_trait_named_references)
+        self.assertTrue('is.dataFormat.big' in e_trait_named_references)
+
+        # DataFormat = Guid
+        attribute_f = entity.attributes[5]  # type: CdmTypeAttributeDefinition
+        f_trait_named_references = self._fetch_trait_named_references(attribute_f.applied_traits)
+        self.assertTrue('is.dataFormat.guid' in f_trait_named_references)
+        self.assertTrue('is.dataFormat.character' in f_trait_named_references)
+        self.assertTrue('is.dataFormat.array' in f_trait_named_references)
+
+        # DataFormat = String
+        attribute_g = entity.attributes[6]  # type: CdmTypeAttributeDefinition
+        g_trait_named_references = self._fetch_trait_named_references(attribute_g.applied_traits)
+        self.assertTrue('is.dataFormat.character' in g_trait_named_references)
+        self.assertTrue('is.dataFormat.array' in g_trait_named_references)
+
+        # DataFormat = Char
+        attribute_h = entity.attributes[7]  # type: CdmTypeAttributeDefinition
+        h_trait_named_references = self._fetch_trait_named_references(attribute_h.applied_traits)
+        self.assertTrue('is.dataFormat.character' in h_trait_named_references)
+        self.assertTrue('is.dataFormat.big' in h_trait_named_references)
+
+        # DataFormat = Byte
+        attribute_i = entity.attributes[8]  # type: CdmTypeAttributeDefinition
+        i_trait_named_references = self._fetch_trait_named_references(attribute_i.applied_traits)
+        self.assertTrue('is.dataFormat.byte' in i_trait_named_references)
+
+        # DataFormat = Binary
+        attribute_j = entity.attributes[9]  # type: CdmTypeAttributeDefinition
+        j_trait_named_references = self._fetch_trait_named_references(attribute_j.applied_traits)
+        self.assertTrue('is.dataFormat.byte' in j_trait_named_references)
+        self.assertTrue('is.dataFormat.array' in j_trait_named_references)
+
+        # DataFormat = Time
+        attribute_k = entity.attributes[10]  # type: CdmTypeAttributeDefinition
+        k_trait_named_references = self._fetch_trait_named_references(attribute_k.applied_traits)
+        self.assertTrue('is.dataFormat.time' in k_trait_named_references)
+
+        # DataFormat = Date
+        attribute_l = entity.attributes[11]  # type: CdmTypeAttributeDefinition
+        l_trait_named_references = self._fetch_trait_named_references(attribute_l.applied_traits)
+        self.assertTrue('is.dataFormat.date' in l_trait_named_references)
+
+        # DataFormat = DateTime
+        attribute_m = entity.attributes[12]  # type: CdmTypeAttributeDefinition
+        m_trait_named_references = self._fetch_trait_named_references(attribute_m.applied_traits)
+        self.assertTrue('is.dataFormat.time' in m_trait_named_references)
+        self.assertTrue('is.dataFormat.date' in m_trait_named_references)
+
+        # DataFormat = DateTimeOffset
+        attribute_n = entity.attributes[13]  # type: CdmTypeAttributeDefinition
+        n_trait_named_references = self._fetch_trait_named_references(attribute_n.applied_traits)
+        self.assertTrue('is.dataFormat.time' in n_trait_named_references)
+        self.assertTrue('is.dataFormat.date' in n_trait_named_references)
+        self.assertTrue('is.dataFormat.timeOffset' in n_trait_named_references)
+
+        # DataFormat = Boolean
+        attribute_o = entity.attributes[14]  # type: CdmTypeAttributeDefinition
+        o_trait_named_references = self._fetch_trait_named_references(attribute_o.applied_traits)
+        self.assertTrue('is.dataFormat.boolean' in o_trait_named_references)
+
+        # DataFormat = Decimal
+        attribute_p = entity.attributes[15]  # type: CdmTypeAttributeDefinition
+        p_trait_named_references = self._fetch_trait_named_references(attribute_p.applied_traits)
+        self.assertTrue('is.dataFormat.numeric.shaped' in p_trait_named_references)
+
+        # DataFormat = Json
+        attribute_q = entity.attributes[16]  # type: CdmTypeAttributeDefinition
+        q_trait_named_references = self._fetch_trait_named_references(attribute_q.applied_traits)
+        self.assertTrue('is.dataFormat.array' in q_trait_named_references)
+        self.assertTrue('means.content.text.JSON' in q_trait_named_references)
+
+    @staticmethod
+    def _fetch_trait_named_references(traits: 'CdmTraitCollection') -> Set[str]:
+        named_references = set()
+        for trait in traits:
+            named_references.add(trait.named_reference)
+        return named_references

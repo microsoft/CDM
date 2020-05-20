@@ -171,6 +171,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             this.Hostname = hostname;
             this.Root = root;
             this.tokenProvider = tokenProvider;
+            this.httpClient = new CdmHttpClient();
         }
 
         /// <inheritdoc />

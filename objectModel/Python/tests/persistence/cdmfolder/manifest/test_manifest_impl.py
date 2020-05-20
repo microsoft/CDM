@@ -15,7 +15,6 @@ from cdm.utilities import time_utils
 
 from tests.common import async_test, TestHelper
 
-
 class ManifestImplTest(unittest.TestCase):
     tests_subpath = os.path.join('Persistence', 'CdmFolder', 'Manifest')
 
@@ -129,65 +128,6 @@ class ManifestImplTest(unittest.TestCase):
         sub_manifest = cdm_manifest.sub_manifests[0]
         max_time = time_utils._max_time(entity.last_file_modified_time, sub_manifest.last_file_modified_time)
         self.assertEqual(time_utils._get_formatted_date_string(cdm_manifest.last_child_file_modified_time), time_utils._get_formatted_date_string(max_time))
-
-    @async_test
-    async def test_refreshes_data_partition_patterns(self):
-        """Tests refreshing files that match the regular expression"""
-        test_name = 'test_refresh_data_partition_patterns'
-        cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
-        cdm_manifest = await cdm_corpus.fetch_object_async('local:/patternManifest.manifest.cdm.json')
-        partition_entity = cdm_manifest.entities[0]
-        self.assertEqual(1, len(partition_entity.data_partitions))
-        time_before_load = datetime.now(timezone.utc)
-        await cdm_manifest.file_status_check_async()
-        # file status check should check patterns and add two more partitions that match the pattern
-        # should not re-add already existing partitions
-        # Mac and Windows behave differently when listing file content, so we don't want to be strict about partition file order
-        total_expected_partitions_found = 0
-        for partition in partition_entity.data_partitions:
-            if partition.location == 'partitions/existingPartition.csv':
-                total_expected_partitions_found += 1
-            elif partition.location == 'partitions/someSubFolder/someSubPartition.csv':
-                total_expected_partitions_found += 1
-                self.assertEqual(partition.specialized_schema, 'test special schema')
-                self.assertGreaterEqual(partition.last_file_status_check_time, time_before_load)
-                # inherits the exhibited traits from pattern
-                self.assertEqual(len(partition.exhibits_traits), 1)
-                self.assertEqual(partition.exhibits_traits[0].named_reference, 'is')
-                self.assertEqual(len(partition.arguments), 1)
-                self.assertTrue('testParam1' in partition.arguments)
-                arg_array = partition.arguments['testParam1']
-                self.assertEqual(len(arg_array), 1)
-                self.assertEqual(arg_array[0], '/someSubFolder/someSub')
-            elif partition.location == 'partitions/newPartition.csv':
-                total_expected_partitions_found += 1
-                self.assertEqual(len(partition.arguments), 1)
-            elif partition.location == 'partitions/2018/folderCapture.csv':
-                total_expected_partitions_found += 1
-                self.assertEqual(len(partition.arguments), 1)
-                self.assertTrue('year' in partition.arguments)
-                self.assertEqual(partition.arguments['year'][0], '2018')
-            elif partition.location == 'partitions/2018/8/15/folderCapture.csv':
-                total_expected_partitions_found += 1
-                self.assertEqual(len(partition.arguments), 3)
-                self.assertTrue('year' in partition.arguments)
-                self.assertEqual(partition.arguments['year'][0], '2018')
-                self.assertTrue('month' in partition.arguments)
-                self.assertEqual(partition.arguments['month'][0], '8')
-                self.assertTrue('day' in partition.arguments)
-                self.assertEqual(partition.arguments['day'][0], '15')
-            elif partition.location == 'partitions/2018/8/15/folderCaptureRepeatedGroup.csv':
-                total_expected_partitions_found += 1
-                self.assertEqual(len(partition.arguments), 1)
-                self.assertTrue('day' in partition.arguments)
-                self.assertEqual(partition.arguments['day'][0], '15')
-            elif partition.location == 'partitions/testTooFew.csv':
-                total_expected_partitions_found += 1
-                self.assertEqual(len(partition.arguments), 0)
-            elif partition.location == 'partitions/testTooMany.csv':
-                total_expected_partitions_found += 1
-                self.assertEqual(len(partition.arguments), 0)
-        self.assertEqual(8, total_expected_partitions_found)
 
     def test_valid_root_path(self):
         """Checks Absolute corpus path can be created with valid input."""

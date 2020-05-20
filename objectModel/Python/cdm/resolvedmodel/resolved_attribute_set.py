@@ -61,7 +61,7 @@ class ResolvedAttributeSet(RefCounted):
 
     def _remove_cached_attribute_context(self, att_ctx: 'CdmAttributeContext') -> None:
         if att_ctx is not None:
-            old_ra = self.attctx_to_rattr[att_ctx]
+            old_ra = self.attctx_to_rattr.get(att_ctx)
             if old_ra is not None and old_ra in self.rattr_to_attctxset:
                 self.attctx_to_rattr.pop(att_ctx)
                 self.rattr_to_attctxset[old_ra].remove(att_ctx)
@@ -164,13 +164,13 @@ class ResolvedAttributeSet(RefCounted):
 
         return ras_result
 
-    def apply_traits(self, traits: 'ResolvedTraitSet', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
+    def apply_traits(self, traits: 'ResolvedTraitSet', res_opt: 'ResolveOptions', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
                      actions: List['AttributeResolutionApplier']) -> 'ResolvedAttributeSet':
         ras_result = self
 
-        if self._ref_cnt > 1 and ras_result.copy_needed(traits, res_guide, actions):
+        if self._ref_cnt > 1 and ras_result.copy_needed(traits, res_opt, res_guide, actions):
             ras_result = ras_result.copy()
-        ras_applied = ras_result.apply(traits, res_guide, actions)
+        ras_applied = ras_result.apply(traits, res_opt, res_guide, actions)
 
         ras_result._resolved_name_to_resolved_attribute = ras_applied._resolved_name_to_resolved_attribute
         ras_result.base_trait_to_attributes = None
@@ -180,7 +180,7 @@ class ResolvedAttributeSet(RefCounted):
 
         return ras_result
 
-    def copy_needed(self, traits: 'ResolvedTraitSet', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
+    def copy_needed(self, traits: 'ResolvedTraitSet', res_opt: 'ResolveOptions', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
                     actions: List['AttributeResolutionApplier']) -> bool:
         if not actions:
             return False
@@ -190,7 +190,7 @@ class ResolvedAttributeSet(RefCounted):
         for res_att in self._set:
             for trait_action in actions:
                 ctx = ApplierContext()
-                ctx.res_opt = traits.res_opt
+                ctx.res_opt = res_opt
                 ctx.res_att_source = res_att
                 ctx.res_guide = res_guide
 
@@ -199,7 +199,7 @@ class ResolvedAttributeSet(RefCounted):
 
         return False
 
-    def apply(self, traits: 'ResolvedTraitSet', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
+    def apply(self, traits: 'ResolvedTraitSet', res_opt: 'ResolveOptions', res_guide: 'CdmAttributeResolutionGuidanceDefinition',
               actions: List['AttributeResolutionApplier']) -> 'ResolvedAttributeSet':
         from cdm.objectmodel import CdmAttributeContext
 
@@ -218,7 +218,7 @@ class ResolvedAttributeSet(RefCounted):
         if self._set and applied_att_set.attribute_context and actions:
             res_att_test = self._set[0]
             for trait_action in actions:
-                ctx = ApplierContext(res_opt=traits.res_opt, res_att_source=res_att_test, res_guide=res_guide)
+                ctx = ApplierContext(res_opt=res_opt, res_att_source=res_att_test, res_guide=res_guide)
                 if trait_action._will_attribute_modify(ctx):
                     making_copy = True
                     break
@@ -245,9 +245,11 @@ class ResolvedAttributeSet(RefCounted):
 
                 if making_copy:
                     res_att = res_att.copy()
+                    # making a copy of a subset (att group) also bring along the context tree for that whole group
+                    att_ctx_to_merge = res_att.att_ctx
 
                 # the set contains another set. Process those.
-                res_att.target = sub_set.apply(traits, res_guide, actions)
+                res_att.target = sub_set.apply(traits, res_opt, res_guide, actions)
             else:
                 rts_merge = res_att.resolved_traits.merge_set(traits)
                 res_att.resolved_traits = rts_merge

@@ -40,15 +40,15 @@ class SelectsSubAttribute(JObject):
     def __init__(self):
         super().__init__()
 
-        self.selects = ''  # type: str
+        self.selects = None  # type: str
         """used to indicate either 'one' or 'all' sub-attributes selected. """
 
         self.selectedTypeAttribute = None  # type: TypeAttribute
         """The supplied attribute definition will be added to the Entity to hold a description of the single attribute that was selected
         from the sub-entity when selects is 'one'"""
 
-        self.selectsSomeTakeNames = []
-        self.selectsSomeAvoidNames = []
+        self.selectsSomeTakeNames = None
+        self.selectsSomeAvoidNames = None
 
 
 class AttributeResolutionGuidance(JObject):
@@ -58,19 +58,19 @@ class AttributeResolutionGuidance(JObject):
         self.removeAttribute = False  # type: bool
         """If true, this attribute definiton will be removed from the final resolved attribute list of an entity."""
 
-        self.imposedDirectives = []  # type: List[str]
+        self.imposedDirectives = None  # type: List[str]
         """A list of strings, one for each 'directive' that should be always imposed at this attribute definition"""
 
-        self.removedDirectives = []  # type: List[str]
+        self.removedDirectives = None  # type: List[str]
         """A list of strings, one for each 'directive' that should be removed if previously imposed"""
 
         self.addSupportingAttribute = None  # type: TypeAttribute
         """The supplied attribute definition will be added to the Entity after this attribute definition with a trait indicating its supporting role on this."""
 
-        self.cardinality = ''  # type: str
+        self.cardinality = None  # type: str
         """If 'one' then there is a single instance of the attribute or entity used. 'many' indicates multiple instances and the 'expansion' properties will describe array enumeration to use when needed."""
 
-        self.renameFormat = ''  # type: str
+        self.renameFormat = None  # type: str
         """format specifier for generated attribute names. May contain a single occurence of ('{a} or 'A'), ('{m}' or '{M}') and '{o}' for the base (a/A)ttribute name, any (m/M)ember attributes from entities and array (o)rdinal. examples: '{a}{o}.{m}' could produce 'address2.city', '{a}{o}' gives 'city1'. Using '{A}' or '{M}' will uppercase the first letter of the name portions."""
 
         self.expansion = None  # type: Expansion

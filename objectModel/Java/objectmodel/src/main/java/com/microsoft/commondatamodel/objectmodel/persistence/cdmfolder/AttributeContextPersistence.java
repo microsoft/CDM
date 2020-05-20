@@ -16,15 +16,13 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Att
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AttributeContextPersistence {
-  private static final Logger LOGGER = LoggerFactory.getLogger(AttributeContextPersistence.class);
-
   public static CdmAttributeContext fromData(final CdmCorpusContext ctx, final AttributeContext obj) {
     if (obj == null)
       return null;
@@ -70,7 +68,12 @@ public class AttributeContextPersistence {
           try {
             attributeContext.getContents().add(fromData(ctx, JMapper.MAP.treeToValue(node, AttributeContext.class)));
           } catch (final IOException ex) {
-            LOGGER.error("There was an error while trying to convert from JSON to CdmAttributeContext. Reason: '{}'", ex.getLocalizedMessage());
+            Logger.error(
+                AttributeContextPersistence.class.getSimpleName(),
+                ctx,
+                Logger.format("There was an error while trying to convert from JSON to CdmAttributeContext. Reason: '{0}'", ex.getLocalizedMessage()),
+                "fromData"
+            );
           }
       }
     }

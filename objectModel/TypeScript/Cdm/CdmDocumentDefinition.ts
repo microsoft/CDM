@@ -22,6 +22,7 @@ import {
     cdmObjectSimple,
     cdmObjectType,
     copyOptions,
+    Errors,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
@@ -312,7 +313,17 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     public validate(): boolean {
         // let bodyCode = () =>
         {
-            return this.name ? true : false;
+            if (!this.name) {
+                Logger.error(
+                    CdmDocumentDefinition.name,
+                    this.ctx,
+                    Errors.validateErrorString(this.atCorpusPath, ['name']),
+                    this.validate.name);
+
+                return false;
+            }
+
+            return true;
         }
         // return p.measure(bodyCode);
     }
@@ -422,7 +433,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
      * linked from the source doc and that have been modified. existing document names are used for those.
      * returns false on any failure
      */
-    public async saveAsAsync(newName: string, saveReferenced: boolean, options?: copyOptions): Promise<boolean> {
+    public async saveAsAsync(newName: string, saveReferenced: boolean = false, options?: copyOptions): Promise<boolean> {
         if (!options) {
             options = new copyOptions();
         }
@@ -467,6 +478,11 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         // let bodyCode = () =>
         {
             if (this.needsIndexing) {
+                if (!this.folder) {
+                    Logger.error(CdmDocumentDefinition.name, this.ctx, `Document '${this.name}' is not in a folder`, this.indexIfNeeded.name);
+
+                    return false;
+                }
                 // make the corpus internal machinery pay attention to this document for this call
                 const corpus: CdmCorpusDefinition = this.folder.corpus;
 
