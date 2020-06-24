@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0.1"
+              "value": "2.0"
             }
           ]
         }
@@ -132,6 +132,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_assignedtoid",
                       "displayName": "Assigned To",
                       "description": "Assigned To"
@@ -175,7 +176,7 @@
                     ]
                   }
                 },
-                "name": "referencesCustomerAwardRecepient",
+                "name": "awardRecipientId",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
@@ -254,7 +255,7 @@
               {
                 "entity": {
                   "entityReference": {
-                    "entityName": "docket_FiscalSponsorId",
+                    "entityName": "docketFiscalSponsorId",
                     "hasAttributes": [
                       {
                         "entity": {
@@ -287,7 +288,7 @@
                     ]
                   }
                 },
-                "name": "referencesCustomerFiscalSponsor",
+                "name": "docketFiscalSponsorId",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
@@ -295,8 +296,8 @@
                     "alwaysIncludeForeignKey": false,
                     "referenceOnlyAfterDepth": 2,
                     "foreignKeyAttribute": {
-                      "explanation": "Unique identifier of the docket_fiscalsponsor for the item.",
-                      "name": "docket_FiscalSponsorId",
+                      "explanation": "Unique identifier of the docketfiscalsponsor for the item.",
+                      "name": "docketFiscalSponsorId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -343,7 +344,7 @@
                                 "constantValues": [
                                   [
                                     "en",
-                                    "Unique identifier of the docket_fiscalsponsor for the item."
+                                    "Unique identifier of the docketfiscalsponsor for the item."
                                   ]
                                 ]
                               }
@@ -355,7 +356,7 @@
                       "isNullable": true,
                       "sourceName": "msnfp_docket_fiscalsponsor",
                       "displayName": "Fiscal Sponsor",
-                      "description": "Unique identifier of the docket_fiscalsponsor for the item."
+                      "description": "Unique identifier of the docketfiscalsponsor for the item."
                     }
                   },
                   "selectsSubAttribute": {
@@ -372,6 +373,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_DocketId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -423,6 +433,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -455,6 +474,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_internalduedate",
                 "displayName": "Internal Due Date",
                 "description": "Date the Docket is scheduled to be completed."
@@ -550,6 +570,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -582,6 +611,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_status",
                 "displayName": "Status",
                 "description": "Indicates the current status of the Docket.",
@@ -612,6 +642,15 @@
                       {
                         "name": "maximumLength",
                         "value": "2000"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
                       }
                     ]
                   },
@@ -648,6 +687,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_summarydescription",
                 "displayName": "Summary Description",
                 "description": "Short description; longer content may be added as an attachment.",
@@ -694,6 +734,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -726,6 +775,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_type",
                 "displayName": "Type",
                 "description": "The type of Docket.",
@@ -777,6 +827,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -878,6 +937,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -910,6 +978,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "statuscode",
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Docket",

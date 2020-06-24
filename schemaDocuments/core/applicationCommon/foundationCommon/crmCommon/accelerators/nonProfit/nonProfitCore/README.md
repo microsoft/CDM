@@ -1,7 +1,7 @@
 
 # nonProfitCore
 
-CDM Solution for the 'NONPROFITCORE' CDS Solution  
+CDM standard entities for 'nonProfitCore'  
 
 ## Entities
 
@@ -28,8 +28,10 @@ CDM Solution for the 'NONPROFITCORE' CDS Solution
 |[EmploymentHistory](EmploymentHistory.cdm.json)|Employment History represents historical and/or current information about where a contact works, volunteers or serves in some capacity at an organization.|
 |[Indicator](Indicator.cdm.json)|An Indicator describes what will be measured to track evidence of a Result. Indicators can be qualitative or quantitative and may or may not be aggregable.|
 |[IndicatorValue](IndicatorValue.cdm.json)|An Indicator Value is a quantitative or qualitative value of measurement of an Indicator. Indicator Values may be but are not limited to baseline, target or actual values of measurement.|
+|[IndicatorValueUsage](IndicatorValueUsage.cdm.json)|Used to demonstrate a usage of a indicator value|
 |[Membership](Membership.cdm.json)|Representation of a Customer Membership.|
 |[MembershipCategory](MembershipCategory.cdm.json)|Represents the types of membership associated to products.|
+|[Need](Need.cdm.json)|A need that is discovered during the case. May or may not be resolved during the process of work.|
 |[Objective](Objective.cdm.json)|An Objective represents the organization's highest priorities, strategies and/or goals that guide investments (in the case of Requests and Awards) and program delivery.|
 |[OfacMatch](OfacMatch.cdm.json)|OFAC Match is a placeholder entity for tracking Office of Foreign Assets Control (OFAC) Specially Designated Naturals (SDN) searches and results.|
 |[PaymentAsset](PaymentAsset.cdm.json)|Payment Asset represents the assets associated with specific types of payments including, but not limited to, in-kind gifts, stocks and securities..|
@@ -38,6 +40,8 @@ CDM Solution for the 'NONPROFITCORE' CDS Solution
 |[PaymentSchedule](PaymentSchedule.cdm.json)|A gift transaction can be a one-time payment or a recurring payment (ie, monthly/sustainer giving). In addition, it can be a pledge (ie, promise) of a future payment or a current/received payment.|
 |[PlannedGiving](PlannedGiving.cdm.json)|A planned gift is a gift made during a donor's lifetime or at the time of their death that involves their estate and/or tax planning.|
 |[Preference](Preference.cdm.json)|Preference represents an abundance of constituent or organization information that doesn't live cleanly on an account or contact record, or that can be associated with both an Account and a Contact.|
+|[ProgramItem](ProgramItem.cdm.json)|This entity contains the information for a program items such as a assumptions, obligations, milestones, deliverables, decisions, or other items as needed.|
+|[ProgramItemRelationship](ProgramItemRelationship.cdm.json)|Records the details regarding the relationships between program items.|
 |[Recommendation](Recommendation.cdm.json)|This is the mechanism through which Foundations provide recommendations back to a grant applicant.|
 |[Report](Report.cdm.json)|Reports represent information submitted by an awardee to the awarding entity (i.e., a Foundation) or information submitted by an authorized awarding entity individual/entity about an awardee.|
 |[Request](Request.cdm.json)|Requests represent a request from an individual or institution for funding or support. A request is more formal than an inquiry (LOI) and typically happens after an inquiry has already occurred.|
@@ -45,4 +49,9 @@ CDM Solution for the 'NONPROFITCORE' CDS Solution
 |[Result](Result.cdm.json)|A Result is a container that represents the changes in the context in which an organization operates..|
 |[Review](Review.cdm.json)|The assessment of a Request made by an internal staff member (or team) or an external third party individual or entity (i.e. Consultant) and all of the relevant information that needs to be tracked.|
 |[Salutation](Salutation.cdm.json)|A Salutation represents the way a constituent wishes to be addressed, depending on the source, purpose and content of a of communication.  Salutations may or may not be auto-created by workflow.|
+|[Stakeholder](Stakeholder.cdm.json)|A person or entity with an interest or concern in something.|
+|[TheoryOfChange](TheoryOfChange.cdm.json)|Theories of Change are hypotheses for achieving a desired social impact and are comprised of a sequence of cause-and-effect actions or occurrences.|
+|[TheoryOfChangeRelationship](TheoryOfChangeRelationship.cdm.json)|Records the details regarding the relationships of theory of change.|
 |[Transaction](Transaction.cdm.json)|Transactions (also referred to as donations) represent payments from a constituent (i.e. donor, contact, account or organization) to the nonprofit.|
+|[WorkItem](WorkItem.cdm.json)|A entity that tracks a logical unit of work or process of work.|
+|[WorkItemAction](WorkItemAction.cdm.json)|This entity contains the action that are taken to complete a work item. This can include information gathering, providing services, or any other action.|

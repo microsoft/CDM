@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -58,10 +58,99 @@
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
               {
+                "entity": {
+                  "entityReference": "CarePlan",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "CarePlan/(resolvedAttributes)/carePlanId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "carePlan",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'CarePlan'.",
+                      "name": "carePlanId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Care Plan"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_careplan",
+                      "displayName": "Care Plan",
+                      "description": "Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition."
+                    }
+                  }
+                }
+              },
+              {
                 "name": "carePlanGoalId",
                 "purpose": "identifiedBy",
                 "dataType": "entityId",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_careplangoalId"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -105,9 +194,158 @@
                   }
                 ],
                 "sourceName": "msemr_careplangoalid",
-                "sourceOrdering": 1,
                 "displayName": "Care Plan Goal",
                 "description": "Unique identifier for entity instances"
+              },
+              {
+                "entity": {
+                  "entityReference": "CarePlanGoal",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "CarePlanGoal/(resolvedAttributes)/carePlanGoalId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "goal",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'CarePlanGoal'.",
+                      "name": "goalId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Goal"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Describes the intended objective(s) of carrying out the care plan. Goal can be achieving a particular change or merely maintaining a current state or even slowing a decline."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_goal",
+                      "displayName": "Goal",
+                      "description": "Describes the intended objective(s) of carrying out the care plan. Goal can be achieving a particular change or merely maintaining a current state or even slowing a decline."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "name",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_name"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "128"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msemr_name",
+                "displayName": "Name",
+                "description": "The name of the custom entity.",
+                "maximumLength": 128
               },
               {
                 "name": "stateCode",
@@ -143,6 +381,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -186,7 +430,6 @@
                   }
                 ],
                 "sourceName": "statecode",
-                "sourceOrdering": 24,
                 "displayName": "Status",
                 "description": "Status of the Care Plan Goal",
                 "resolutionGuidance": {
@@ -246,6 +489,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -289,7 +538,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "statuscode",
-                "sourceOrdering": 26,
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Care Plan Goal",
                 "resolutionGuidance": {
@@ -299,226 +547,6 @@
                     "purpose": "hasA",
                     "dataType": "localizedDisplayText",
                     "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "name",
-                "purpose": "hasA",
-                "dataType": "name",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "required"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Name"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_name",
-                "sourceOrdering": 33,
-                "displayName": "Name",
-                "description": "The name of the custom entity.",
-                "maximumLength": 128
-              },
-              {
-                "entity": {
-                  "entityReference": "CarePlan",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "CarePlan/(resolvedAttributes)/carePlanId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "CarePlan_carePlan",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "carePlan",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Care Plan"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_careplan",
-                      "sourceOrdering": 34,
-                      "displayName": "Care Plan",
-                      "description": "Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition."
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "CarePlanGoal",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "CarePlanGoal/(resolvedAttributes)/carePlanGoalId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "CarePlanGoal_goal",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "goal",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Goal"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Describes the intended objective(s) of carrying out the care plan. Goal can be achieving a particular change or merely maintaining a current state or even slowing a decline."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_goal",
-                      "sourceOrdering": 35,
-                      "displayName": "Goal",
-                      "description": "Describes the intended objective(s) of carrying out the care plan. Goal can be achieving a particular change or merely maintaining a current state or even slowing a decline."
-                    }
                   }
                 }
               }

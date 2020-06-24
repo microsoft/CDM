@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -58,379 +58,25 @@
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
               {
-                "name": "encounterId",
-                "purpose": "identifiedBy",
-                "dataType": "entityId",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Encounter"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Unique identifier for entity instances"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "msemr_encounterid",
-                "sourceOrdering": 1,
-                "displayName": "Encounter",
-                "description": "Unique identifier for entity instances"
-              },
-              {
-                "name": "stateCode",
-                "purpose": "representsStateWith",
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                            "entityShape": "listLookupValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "1",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status of the Encounter"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "statecode",
-                "sourceOrdering": 24,
-                "displayName": "Status",
-                "description": "Status of the Encounter",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'stateCode_display' is added to the 'Encounter' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                    "name": "stateCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "statusCode",
-                "purpose": {
-                  "purposeReference": "representsCorrelatedStatusWith",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.correlatedWith",
-                      "arguments": [
-                        "stateCode"
-                      ]
-                    }
-                  ]
-                },
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                            "entityShape": "listLookupCorrelatedValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Planned",
-                                "1",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "2",
-                                "5",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Arrived",
-                                "935000000",
-                                "1",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Triaged",
-                                "935000001",
-                                "2",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "In Progress",
-                                "935000002",
-                                "3",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "On Leave",
-                                "935000003",
-                                "4",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Finished",
-                                "935000004",
-                                "6",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Cancelled",
-                                "935000005",
-                                "7",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Entered in Error",
-                                "935000006",
-                                "8",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Unknown",
-                                "935000007",
-                                "9",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status Reason"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Reason for the status of the Encounter"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "statuscode",
-                "sourceOrdering": 26,
-                "displayName": "Status Reason",
-                "description": "Reason for the status of the Encounter",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'statusCode_display' is added to the 'Encounter' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                    "name": "statusCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "name",
-                "purpose": "hasA",
-                "dataType": "name",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Name"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_name",
-                "sourceOrdering": 33,
-                "displayName": "Name",
-                "description": "The name of the custom entity.",
-                "maximumLength": 100
-              },
-              {
                 "entity": {
-                  "entityReference": "EmrAppointment",
+                  "entityReference": "AppointmentEMR",
                   "appliedTraits": [
                     {
                       "traitReference": "is.identifiedBy",
                       "arguments": [
-                        "EmrAppointment/(resolvedAttributes)/activityId"
+                        "AppointmentEMR/(resolvedAttributes)/activityId"
                       ]
                     }
                   ]
                 },
-                "name": "EmrAppointment_emrAppointment",
+                "name": "appointmentEMR",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "emrAppointment",
+                      "explanation": "Unique identifier of 'AppointmentEMR'.",
+                      "name": "appointmentEMRId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -488,7 +134,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_appointmentemr",
-                      "sourceOrdering": 34,
                       "displayName": "Appointment (EMR)",
                       "description": "A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s)."
                     }
@@ -520,18 +165,6 @@
                                 "emergency",
                                 "935000001",
                                 "1"
-                              ],
-                              [
-                                "en",
-                                "short stay",
-                                "935000008",
-                                "8"
-                              ],
-                              [
-                                "en",
-                                "virtual",
-                                "935000009",
-                                "9"
                               ],
                               [
                                 "en",
@@ -568,6 +201,18 @@
                                 "pre-admission",
                                 "935000007",
                                 "7"
+                              ],
+                              [
+                                "en",
+                                "short stay",
+                                "935000008",
+                                "8"
+                              ],
+                              [
+                                "en",
+                                "virtual",
+                                "935000009",
+                                "9"
                               ]
                             ]
                           }
@@ -577,6 +222,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Class"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -621,7 +272,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_class",
-                "sourceOrdering": 35,
                 "displayName": "Class",
                 "description": "Type of: inpatient | outpatient | ambulatory | emergency +.",
                 "resolutionGuidance": {
@@ -646,13 +296,14 @@
                     }
                   ]
                 },
-                "name": "Encounter_contextEncounter",
+                "name": "contextEncounter",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contextEncounter",
+                      "explanation": "Unique identifier of 'Encounter'.",
+                      "name": "contextEncounterId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -690,12 +341,28 @@
                             }
                           ]
                         },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    ""
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
                         "is.linkedEntity.identifier"
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contextencounter",
-                      "sourceOrdering": 37,
-                      "displayName": "Context (Encounter)"
+                      "displayName": "Context (Encounter)",
+                      "description": ""
                     }
                   }
                 }
@@ -712,13 +379,14 @@
                     }
                   ]
                 },
-                "name": "EpisodeOfCare_contextEpisodeofCare",
+                "name": "contextEpisodeOfCare",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contextEpisodeofCare",
+                      "explanation": "Unique identifier of 'EpisodeOfCare'.",
+                      "name": "contextEpisodeOfCareId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -756,12 +424,28 @@
                             }
                           ]
                         },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    ""
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
                         "is.linkedEntity.identifier"
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contextepisodeofcare",
-                      "sourceOrdering": 38,
-                      "displayName": "Context (Episode of Care)"
+                      "displayName": "Context (Episode of Care)",
+                      "description": ""
                     }
                   }
                 }
@@ -771,6 +455,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Duration"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -815,7 +518,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_duration",
-                "sourceOrdering": 39,
                 "displayName": "Duration",
                 "description": "Quantity of time the encounter lasted. This excludes the time during leaves of absence.",
                 "maximumValue": "2147483647",
@@ -837,27 +539,23 @@
                             "constantValues": [
                               [
                                 "en",
+                                "Inpatient",
+                                "935000000"
+                              ],
+                              [
+                                "en",
                                 "Outpatient",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Ambulatory",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Emergency",
-                                "935000003",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "Inpatient",
-                                "935000000",
-                                "0"
+                                "935000003"
                               ]
                             ]
                           }
@@ -867,6 +565,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EncounterClass"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -911,7 +615,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_encounterclass",
-                "sourceOrdering": 40,
                 "displayName": "Class",
                 "description": "Refers to the class of encounter.",
                 "resolutionGuidance": {
@@ -929,6 +632,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EncounterEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -973,7 +682,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_encounterenddate",
-                "sourceOrdering": 42,
                 "displayName": "End Date/Time",
                 "description": "The start and end time of the encounter."
               },
@@ -989,13 +697,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_encounterGroupIdentifier",
+                "name": "encounterGroupIdentifier",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "encounterGroupIdentifier",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "encounterGroupIdentifierId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1053,7 +762,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_encountergroupidentifier",
-                      "sourceOrdering": 43,
                       "displayName": "Group",
                       "description": "The group present at the encounter"
                     }
@@ -1061,10 +769,82 @@
                 }
               },
               {
+                "name": "encounterId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_encounterId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Encounter"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msemr_encounterid",
+                "displayName": "Encounter",
+                "description": "Unique identifier for entity instances"
+              },
+              {
                 "name": "encounterIdentifier",
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EncounterIdentifier"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1109,7 +889,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_encounteridentifier",
-                "sourceOrdering": 44,
                 "displayName": "Encounter Number",
                 "description": "Identifier(s) by which this encounter is known.",
                 "maximumLength": 100
@@ -1119,6 +898,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EncounterLength"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1163,7 +961,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_encounterlength",
-                "sourceOrdering": 45,
                 "displayName": "Duration",
                 "description": "Quantity of time the encounter lasted. This excludes the time during leaves of absence.",
                 "maximumValue": "100000000000",
@@ -1181,13 +978,14 @@
                     }
                   ]
                 },
-                "name": "Encounter_encounterParentEncounterIdentifier",
+                "name": "encounterParentEncounterIdentifier",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "encounterParentEncounterIdentifier",
+                      "explanation": "Unique identifier of 'Encounter'.",
+                      "name": "encounterParentEncounterIdentifierId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1245,7 +1043,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_encounterparentencounteridentifier",
-                      "sourceOrdering": 46,
                       "displayName": "Parent Enounter",
                       "description": "Another Encounter of which this encounter is a part of (administratively or in time)."
                     }
@@ -1264,13 +1061,14 @@
                     }
                   ]
                 },
-                "name": "Contact_encounterPatientIdentifier",
+                "name": "encounterPatientIdentifier",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "encounterPatientIdentifier",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "encounterPatientIdentifierId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1328,7 +1126,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_encounterpatientidentifier",
-                      "sourceOrdering": 47,
                       "displayName": "Patient",
                       "description": "The patient present at the encounter."
                     }
@@ -1347,13 +1144,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_encounterPriority",
+                "name": "encounterPriority",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "encounterPriority",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "encounterPriorityId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1411,7 +1209,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_encounterpriority",
-                      "sourceOrdering": 48,
                       "displayName": "Priority",
                       "description": "Indicates the urgency of the encounter."
                     }
@@ -1423,6 +1220,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EncounterStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1467,7 +1270,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_encounterstartdate",
-                "sourceOrdering": 49,
                 "displayName": "Start Date/Time",
                 "description": "The start and end time of the encounter."
               },
@@ -1488,56 +1290,47 @@
                               [
                                 "en",
                                 "Planned",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Arrived",
-                                "935000001",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Unknown",
-                                "935000008",
-                                "8"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Triaged",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "In Progress",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "On Leave",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Finished",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ],
                               [
                                 "en",
                                 "Cancelled",
-                                "935000006",
-                                "6"
+                                "935000006"
                               ],
                               [
                                 "en",
                                 "Entered in Error",
-                                "935000007",
-                                "7"
+                                "935000007"
+                              ],
+                              [
+                                "en",
+                                "Unknown",
+                                "935000008"
                               ]
                             ]
                           }
@@ -1547,6 +1340,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EncounterStatus"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1591,7 +1390,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_encounterstatus",
-                "sourceOrdering": 50,
                 "displayName": "Status",
                 "description": "Refers to the status of encounter.",
                 "resolutionGuidance": {
@@ -1616,13 +1414,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_hospitalizationAdmitSource",
+                "name": "hospitalizationAdmitSource",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "hospitalizationAdmitSource",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "hospitalizationAdmitSourceId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1680,7 +1479,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_hospitalizationadmitsource",
-                      "sourceOrdering": 52,
                       "displayName": "Admit Source",
                       "description": "From where patient was admitted (physician referral, transfer)."
                     }
@@ -1699,13 +1497,14 @@
                     }
                   ]
                 },
-                "name": "Location_hospitalizationDestination",
+                "name": "hospitalizationDestination",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "hospitalizationDestination",
+                      "explanation": "Unique identifier of 'Location'.",
+                      "name": "hospitalizationDestinationId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1763,7 +1562,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_hospitalizationdestination",
-                      "sourceOrdering": 53,
                       "displayName": "Destination",
                       "description": "Location to which the patient is discharged."
                     }
@@ -1782,13 +1580,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_hospitalizationDischargeDisposition",
+                "name": "hospitalizationDischargeDisposition",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "hospitalizationDischargeDisposition",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "hospitalizationDischargeDispositionId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1846,7 +1645,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_hospitalizationdischargedisposition",
-                      "sourceOrdering": 54,
                       "displayName": "Discharge Disposition",
                       "description": "Category or kind of location after discharge."
                     }
@@ -1865,13 +1663,14 @@
                     }
                   ]
                 },
-                "name": "Location_hospitalizationOrigin",
+                "name": "hospitalizationOrigin",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "hospitalizationOrigin",
+                      "explanation": "Unique identifier of 'Location'.",
+                      "name": "hospitalizationOriginId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1929,7 +1728,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_hospitalizationorigin",
-                      "sourceOrdering": 55,
                       "displayName": "Origin",
                       "description": "The location from which the patient came before admission."
                     }
@@ -1941,6 +1739,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_HospitalizationPreAdmissionNumber"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1985,7 +1798,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_hospitalizationpreadmissionnumber",
-                "sourceOrdering": 56,
                 "displayName": "Pre Admission Number",
                 "description": "Pre-admission identifier.",
                 "maximumLength": 100
@@ -2002,13 +1814,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_hospitalizationReadmission",
+                "name": "hospitalizationReadmission",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "hospitalizationReadmission",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "hospitalizationReadmissionId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2066,12 +1879,79 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_hospitalizationreadmission",
-                      "sourceOrdering": 57,
                       "displayName": "Re admission",
                       "description": "Whether this hospitalization is a readmission and why if known."
                     }
                   }
                 }
+              },
+              {
+                "name": "name",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_name"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_name",
+                "displayName": "Name",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
               },
               {
                 "entity": {
@@ -2085,13 +1965,14 @@
                     }
                   ]
                 },
-                "name": "Account_onBehalfOf",
+                "name": "onBehalfOf",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "onBehalfOf",
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "onBehalfOfId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2129,12 +2010,28 @@
                             }
                           ]
                         },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    ""
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
                         "is.linkedEntity.identifier"
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_onbehalfof",
-                      "sourceOrdering": 58,
-                      "displayName": "On behalf of"
+                      "displayName": "On behalf of",
+                      "description": ""
                     }
                   }
                 }
@@ -2144,6 +2041,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PeriodEnd"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2188,7 +2091,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_periodend",
-                "sourceOrdering": 59,
                 "displayName": "Period End",
                 "description": "The start and end time of the encounter."
               },
@@ -2197,6 +2099,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PeriodStart"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2241,7 +2149,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_periodstart",
-                "sourceOrdering": 60,
                 "displayName": "Period Start",
                 "description": "The start and end time of the encounter."
               },
@@ -2261,21 +2168,39 @@
                             "constantValues": [
                               [
                                 "en",
-                                "timing critical",
-                                "935000012",
-                                "12"
+                                "ASAP",
+                                "935000000",
+                                "0"
                               ],
                               [
                                 "en",
-                                "use as directed",
-                                "935000013",
-                                "13"
+                                "callback results",
+                                "935000001",
+                                "1"
                               ],
                               [
                                 "en",
-                                "urgent",
-                                "935000014",
-                                "14"
+                                "callback for scheduling",
+                                "935000002",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "callback placer for scheduling",
+                                "935000003",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "contact recipient for scheduling",
+                                "935000004",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "elective",
+                                "935000005",
+                                "5"
                               ],
                               [
                                 "en",
@@ -2315,39 +2240,21 @@
                               ],
                               [
                                 "en",
-                                "ASAP",
-                                "935000000",
-                                "0"
+                                "timing critical",
+                                "935000012",
+                                "12"
                               ],
                               [
                                 "en",
-                                "callback results",
-                                "935000001",
-                                "1"
+                                "use as directed",
+                                "935000013",
+                                "13"
                               ],
                               [
                                 "en",
-                                "callback for scheduling",
-                                "935000002",
-                                "2"
-                              ],
-                              [
-                                "en",
-                                "callback placer for scheduling",
-                                "935000003",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "contact recipient for scheduling",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
-                                "elective",
-                                "935000005",
-                                "5"
+                                "urgent",
+                                "935000014",
+                                "14"
                               ]
                             ]
                           }
@@ -2357,6 +2264,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Priority"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2401,7 +2314,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_priority",
-                "sourceOrdering": 61,
                 "displayName": "Priority",
                 "description": "Indicates the urgency of the encounter.",
                 "resolutionGuidance": {
@@ -2426,13 +2338,14 @@
                     }
                   ]
                 },
-                "name": "Contact_subjectPatient",
+                "name": "subjectPatient",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "subjectPatient",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "subjectPatientId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2490,10 +2403,268 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_subjectpatient",
-                      "sourceOrdering": 63,
                       "displayName": "Subject (Patient)",
                       "description": "The patient or group present at the encounter."
                     }
+                  }
+                }
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Encounter"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "displayName": "Status",
+                "description": "Status of the Encounter",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'Encounter' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Planned",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Arrived",
+                                "935000000",
+                                "1",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Triaged",
+                                "935000001",
+                                "2",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "In Progress",
+                                "935000002",
+                                "3",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "On Leave",
+                                "935000003",
+                                "4",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "5",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Finished",
+                                "935000004",
+                                "6",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Cancelled",
+                                "935000005",
+                                "7",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Entered in Error",
+                                "935000006",
+                                "8",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Unknown",
+                                "935000007",
+                                "9",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Encounter"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "displayName": "Status Reason",
+                "description": "Reason for the status of the Encounter",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'Encounter' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
                   }
                 }
               }

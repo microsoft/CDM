@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -58,10 +58,225 @@
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
               {
+                "entity": {
+                  "entityReference": "Contact",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Contact/(resolvedAttributes)/contactId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "careManager",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "careManagerId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Care Manager"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The practitioner that is the care manager/care coordinator for this patient."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_caremanager",
+                      "displayName": "Care Manager",
+                      "description": "The practitioner that is the care manager/care coordinator for this patient."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "description",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_description"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_description",
+                "displayName": "Description",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
+              },
+              {
+                "name": "endDateTime",
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EndDateTime"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "End Date/Time"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The interval during which the managing organization assumes the defined responsibility."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_enddatetime",
+                "displayName": "End Date/Time",
+                "description": "The interval during which the managing organization assumes the defined responsibility."
+              },
+              {
                 "name": "episodeOfCareId",
                 "purpose": "identifiedBy",
                 "dataType": "entityId",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_episodeofcareId"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -105,9 +320,419 @@
                   }
                 ],
                 "sourceName": "msemr_episodeofcareid",
-                "sourceOrdering": 1,
                 "displayName": "Episode of Care",
                 "description": "Unique identifier for entity instances"
+              },
+              {
+                "name": "identifier",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Identifier"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Episode Of Care Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The EpisodeOfCare may be known by different identifiers for different contexts of use, such as when an external agency is tracking the Episode for funding purposes."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_identifier",
+                "displayName": "Episode Of Care Number",
+                "description": "The EpisodeOfCare may be known by different identifiers for different contexts of use, such as when an external agency is tracking the Episode for funding purposes.",
+                "maximumLength": 100
+              },
+              {
+                "entity": {
+                  "entityReference": "Account",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Account/(resolvedAttributes)/accountId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "organization",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "organizationId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Organization"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The organization that has assumed the specific responsibilities for the specified duration."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_organization",
+                      "displayName": "Organization",
+                      "description": "The organization that has assumed the specific responsibilities for the specified duration."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Contact",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Contact/(resolvedAttributes)/contactId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "patient",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "patientId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Patient"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The patient who is the focus of this episode of care."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_patient",
+                      "displayName": "Patient",
+                      "description": "The patient who is the focus of this episode of care."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "startDateTime",
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_StartDateTime"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Start Date/Time"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The interval during which the managing organization assumes the defined responsibility."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_startdatetime",
+                "displayName": "Start Date/Time",
+                "description": "The interval during which the managing organization assumes the defined responsibility."
+              },
+              {
+                "name": "status",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Planned",
+                                "935000000"
+                              ],
+                              [
+                                "en",
+                                "Waitlist",
+                                "935000001"
+                              ],
+                              [
+                                "en",
+                                "Active",
+                                "935000002"
+                              ],
+                              [
+                                "en",
+                                "On Hold",
+                                "935000003"
+                              ],
+                              [
+                                "en",
+                                "Finished",
+                                "935000004"
+                              ],
+                              [
+                                "en",
+                                "Cancelled",
+                                "935000005"
+                              ],
+                              [
+                                "en",
+                                "Entered in Error",
+                                "935000006"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Status"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Current status of episode."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_status",
+                "displayName": "Status",
+                "description": "Current status of episode.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'status_display' is added to the 'EpisodeOfCare' entity to provide the localized display text for the value of the listLookup attribute 'status'",
+                    "name": "status_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
               },
               {
                 "name": "stateCode",
@@ -143,6 +768,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -186,7 +817,6 @@
                   }
                 ],
                 "sourceName": "statecode",
-                "sourceOrdering": 24,
                 "displayName": "Status",
                 "description": "Status of the Episode of Care",
                 "resolutionGuidance": {
@@ -246,6 +876,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -289,597 +925,12 @@
                 ],
                 "isNullable": true,
                 "sourceName": "statuscode",
-                "sourceOrdering": 26,
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Episode of Care",
                 "resolutionGuidance": {
                   "addSupportingAttribute": {
                     "explanation": "This attribute 'statusCode_display' is added to the 'EpisodeOfCare' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
                     "name": "statusCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "description",
-                "purpose": "hasA",
-                "dataType": "string",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Description"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_description",
-                "sourceOrdering": 33,
-                "displayName": "Description",
-                "description": "The name of the custom entity.",
-                "maximumLength": 100
-              },
-              {
-                "entity": {
-                  "entityReference": "Contact",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Contact/(resolvedAttributes)/contactId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Contact_careManager",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "careManager",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Care Manager"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "The practitioner that is the care manager/care coordinator for this patient."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_caremanager",
-                      "sourceOrdering": 34,
-                      "displayName": "Care Manager",
-                      "description": "The practitioner that is the care manager/care coordinator for this patient."
-                    }
-                  }
-                }
-              },
-              {
-                "name": "endDateTime",
-                "purpose": "hasA",
-                "dataType": "dateTime",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "End Date/Time"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The interval during which the managing organization assumes the defined responsibility."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_enddatetime",
-                "sourceOrdering": 35,
-                "displayName": "End Date/Time",
-                "description": "The interval during which the managing organization assumes the defined responsibility."
-              },
-              {
-                "name": "identifier",
-                "purpose": "hasA",
-                "dataType": "string",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Episode Of Care Number"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The EpisodeOfCare may be known by different identifiers for different contexts of use, such as when an external agency is tracking the Episode for funding purposes."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_identifier",
-                "sourceOrdering": 36,
-                "displayName": "Episode Of Care Number",
-                "description": "The EpisodeOfCare may be known by different identifiers for different contexts of use, such as when an external agency is tracking the Episode for funding purposes.",
-                "maximumLength": 100
-              },
-              {
-                "entity": {
-                  "entityReference": "Account",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Account/(resolvedAttributes)/accountId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Account_organization",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "organization",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Organization"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "The organization that has assumed the specific responsibilities for the specified duration."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_organization",
-                      "sourceOrdering": 37,
-                      "displayName": "Organization",
-                      "description": "The organization that has assumed the specific responsibilities for the specified duration."
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "Contact",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Contact/(resolvedAttributes)/contactId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Contact_patient",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "patient",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Patient"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "The patient who is the focus of this episode of care."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_patient",
-                      "sourceOrdering": 38,
-                      "displayName": "Patient",
-                      "description": "The patient who is the focus of this episode of care."
-                    }
-                  }
-                }
-              },
-              {
-                "name": "startDateTime",
-                "purpose": "hasA",
-                "dataType": "dateTime",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Start Date/Time"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The interval during which the managing organization assumes the defined responsibility."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_startdatetime",
-                "sourceOrdering": 39,
-                "displayName": "Start Date/Time",
-                "description": "The interval during which the managing organization assumes the defined responsibility."
-              },
-              {
-                "name": "status",
-                "purpose": "hasA",
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                            "entityShape": "listLookupValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Cancelled",
-                                "935000005",
-                                "5"
-                              ],
-                              [
-                                "en",
-                                "Entered in Error",
-                                "935000006",
-                                "6"
-                              ],
-                              [
-                                "en",
-                                "Planned",
-                                "935000000",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Waitlist",
-                                "935000001",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Active",
-                                "935000002",
-                                "2"
-                              ],
-                              [
-                                "en",
-                                "On Hold",
-                                "935000003",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "Finished",
-                                "935000004",
-                                "4"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Current status of episode."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_status",
-                "sourceOrdering": 40,
-                "displayName": "Status",
-                "description": "Current status of episode.",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'status_display' is added to the 'EpisodeOfCare' entity to provide the localized display text for the value of the listLookup attribute 'status'",
-                    "name": "status_display",
                     "purpose": "hasA",
                     "dataType": "localizedDisplayText",
                     "isReadOnly": true

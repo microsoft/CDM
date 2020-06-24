@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0.1"
+              "value": "2.0"
             }
           ]
         }
@@ -66,6 +66,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_AggregationStatus"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -101,6 +110,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_aggregationstatus",
                 "displayName": "Aggregation Status",
                 "description": "Indicates whether the data in the result set are suitable for aggregation"
@@ -180,6 +190,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_deliveryframeworkid",
                       "displayName": "Delivery Framework",
                       "description": ""
@@ -204,6 +215,15 @@
                       {
                         "name": "maximumLength",
                         "value": "1024"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
                       }
                     ]
                   },
@@ -240,6 +260,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_description",
                 "displayName": "Description",
                 "description": "Description",
@@ -254,6 +275,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_EndDate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -289,6 +319,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_enddate",
                 "displayName": "End Date",
                 "description": "End Date of the result"
@@ -309,7 +340,7 @@
                     "arguments": [
                       {
                         "name": "maximumLength",
-                        "value": "100"
+                        "value": "850"
                       }
                     ]
                   },
@@ -358,7 +389,90 @@
                 "sourceName": "msnfp_name",
                 "displayName": "Name",
                 "description": "The name of the custom entity.",
-                "maximumLength": 100
+                "maximumLength": 850
+              },
+              {
+                "entity": {
+                  "entityReference": "Result",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Result/(resolvedAttributes)/resultId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "parentResult",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Result'.",
+                      "name": "parentResultId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Parent Result"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "This field contains the unique identifier for the parent result. "
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msnfp_parentresultid",
+                      "displayName": "Parent Result",
+                      "description": "This field contains the unique identifier for the parent result. "
+                    }
+                  }
+                }
               },
               {
                 "name": "resultId",
@@ -369,6 +483,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_resultId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -461,6 +584,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -493,6 +625,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_resulttype",
                 "displayName": "Result Type",
                 "description": "An IATI code for the type of result being reported.",
@@ -515,6 +648,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_StartDate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -550,6 +692,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_startdate",
                 "displayName": "Start Date",
                 "description": "Start Date of the result"
@@ -592,6 +735,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -693,6 +845,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -725,6 +886,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "statuscode",
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Result",

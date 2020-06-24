@@ -1,0 +1,552 @@
+{
+    "$id": "http://microsoft.com/cdm/schema.manifest.cdm.json",
+    "$schema": "http://json-schema.org/draft-06/schema#",
+    "$version": "1.0.0",
+    "type": "object",
+    "definitions": {
+        "import": {
+            "type": "object",
+            "description": "used to bring referenced entity definitions into scope of this document",
+            "properties": {
+                "corpusPath": {
+                    "type": "string",
+                    "description": "The relative or absolute (from the root of the corpus folder hierarchy) location of a document file and object"
+                },
+                "moniker": {
+                    "type": "string",
+                    "description": "A prefix that can be added to disambiguate different imported objects that may share a name. References to object defined in this imported document (or in the documents it further imports) must start with the moniker name such as myMoniker/MyEntity"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "corpusPath"
+            ]
+        },
+        "constant": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/entityClassReference"
+                }
+            ]
+        },
+        "traitArgument": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'argument' within the context of this entity definition system."
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "$ref": "#/definitions/constant"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "value"
+            ]
+        },
+        "traitReference": {
+            "oneOf": [
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "traitClassReference": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "traitReference": {
+                    "$ref": "#/definitions/traitReference"
+                },
+                "arguments": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitArgument"
+                            },
+                            {
+                                "$ref": "#/definitions/constant"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "traitReference"
+            ]
+        },
+        "entityReference": {
+            "oneOf": [
+                {
+                    "type": "string"
+                },
+                {
+                    "$ref": "#/definitions/constantEntity"
+                }
+            ]
+        },
+        "entityClassReference": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "entityReference": {
+                    "$ref": "#/definitions/entityReference"
+                },
+                "appliedTraits": {
+                    "type": "array",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "entityReference"
+            ]
+        },
+        "constantEntity": {
+            "type": "object",
+            "description": "Used to structure and describe a set of related constant values that may be used as trait arguments",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'constant entity' within the context of this entity definition system."
+                },
+                "constantEntityName": {
+                    "type": "string"
+                },
+                "entityShape": {
+                    "oneOf": [
+                        {
+                            "type": "string"
+                        }
+                    ]
+                },
+                "constantValues": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "entityShape",
+                "constantValues"
+            ]
+        },
+        "dataPartitionDefinition": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'dataPartition' within the context of this entity definition system."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "a name for the partition"
+                },
+                "description": {
+                    "type": "string",
+                    "description": ""
+                },
+                "location": {
+                    "type": "string",
+                    "description": "a corpus path to the file of data"
+                },
+                "inferred": {
+                    "type": "boolean",
+                    "description": "true if this partition was discovered by a pattern in this session"
+                },
+                "arguments": {
+                    "type": "array",
+                    "description": "a list of name value pairs that give details about the meaning of this partition. These can be set by partition patterns",
+                    "items": {
+                        "dataPartitionArgument" : {
+                            "type": "object",
+                            "additionalProperties": {"type": "string"}
+                        }
+                    }
+                },
+                "specializedSchema": {
+                    "type": "string",
+                    "description": "the corpus path to a document/entity to use as the schema for just this partition of data. Different than the default schema for the entity"
+                },
+                "refreshTime": {
+                    "type": "string",
+                    "description": "the last time the data from this partition was read and consumed."
+                },
+                "LastFileStatusCheckTime": {
+                    "type": "string",
+                    "description": "The date and time at which the file modified date and time status of this object was checked"
+                },
+                "LastFileModifiedTime": {
+                    "type": "string",
+                    "description": "The date and time of the last modification for this object's associated file at the last time this status was checked."
+                },
+                "LastChildFileModifiedTime": {
+                    "type": "string",
+                    "description": "The most recent date and time reported by any of the children objects of this object when it was last checked."
+                },
+                "exhibitsTraits": {
+                    "type": "array",
+                    "description": "A list of the trait references are ascribed to this object to lend it semantic meaning or better describe it.",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "location"
+            ]
+        },
+        "dataPartitionPatternDefinition": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'dataPartitionPattern' within the context of this entity definition system."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "a name for the pattern"
+                },
+                "rootLocation": {
+                    "type": "string",
+                    "description": "the starting point for searching with this pattern"
+                },
+                "regularExpression": {
+                    "type": "string",
+                    "description": "a regular expression (with capture groups) that will be used to locate new partitions. This expression is relative to the rootLocation value"
+                },
+                "parameters": {
+                    "type": "array",
+                    "description": "a list of names that line up with the replacement captures in the regularExpression. These turn into arguments on resulting partitions",
+                    "items": {
+                        "type": "string"
+                     }
+                },
+                "specializedSchema": {
+                    "type": "string",
+                    "description": "the corpus path to a document/entity to use as the schema for just the partitions that are found with this pattern"
+                },
+
+                "LastFileStatusCheckTime": {
+                    "type": "string",
+                    "description": "The date and time at which the file modified date and time status of this object was checked"
+                },
+                "LastFileModifiedTime": {
+                    "type": "string",
+                    "description": "The date and time of the last modification for this object's associated file at the last time this status was checked."
+                },
+                "LastChildFileModifiedTime": {
+                    "type": "string",
+                    "description": "The most recent date and time reported by any of the children objects of this object when it was last checked."
+                },
+                "exhibitsTraits": {
+                    "type": "array",
+                    "description": "A list of the trait references are ascribed to this object to lend it semantic meaning or better describe it.",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": ["rootLocation", "regularExpression"]
+        },
+        "entityDeclarationDefinition": {
+            "type": "object",
+            "description": "details about the use of an entity schema and data files",
+            "properties": {
+                "type": {
+                    "enum": [
+                        "LocalEntity",
+                        "ReferencedEntity"
+                    ],
+                    "description": "",
+                    "default": "LocalEntity"
+                },
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'entityDeclaration' within the context of this entity definition system."
+                },
+                "entityName": {
+                    "type": "string",
+                    "description": "a name for this use of the entity"
+                },
+                "entityPath": {
+                    "type": "string",
+                    "description": "a corpus path to the document/entity for the detailed schema descriptions of the entity"
+                },
+                "LastFileStatusCheckTime": {
+                    "type": "string",
+                    "description": "The date and time at which the file modified date and time status of this object was checked"
+                },
+                "LastFileModifiedTime": {
+                    "type": "string",
+                    "description": "The date and time of the last modification for this object's associated file at the last time this status was checked."
+                },
+                "LastChildFileModifiedTime": {
+                    "type": "string",
+                    "description": "The most recent date and time reported by any of the children objects of this object when it was last checked."
+                },
+                "dataPartitions": {
+                    "type": "array",
+                    "description": "a list of known data partitions for the entity",
+                    "items": {
+                        "$ref": "#/definitions/dataPartitionDefinition"
+                    }
+                },
+                "dataPartitionPatterns": {
+                    "type": "array",
+                    "description": "a list of data partition patterns that should be searched to discover new partitions",
+                    "items": {
+                        "$ref": "#/definitions/dataPartitionPatternDefinition"
+                    }
+                },
+                "exhibitsTraits": {
+                    "type": "array",
+                    "description": "A list of the trait references are ascribed to this object to lend it semantic meaning or better describe it.",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "type",
+                "entityName",
+                "entityPath"
+            ]
+        },
+        "entityRelationshipDefinition": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'relationship' within the context of this entity definition system."
+                },
+                "name": {
+                    "type": "string",
+                    "description": "a name for this relationship"
+                },
+                "fromEntity": {
+                    "type": "string",
+                    "description": "the name of the entity making a referenced in the relationship"
+                },
+                "fromEntityAttribute": {
+                    "type": "string",
+                    "description": "the name of the attribute in the entity making a referenced in the relationship"
+                },
+                "toEntity": {
+                    "type": "string",
+                    "description": "the name of the entity being referenced by the relationship"
+                },
+                "toEntityAttribute": {
+                    "type": "string",
+                    "description": "the name of the attribute in the entity being referenced by the relationship"
+                },
+                "exhibitsTraits": {
+                    "type": "array",
+                    "description": "A list of the trait references are ascribed to this object to lend it semantic meaning or better describe it.",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "fromEntity",
+                "fromEntityAttribute",
+                "toEntity",
+                "toEntityAttribute"
+            ]
+        },
+        "manifestDeclarationDefinition": {
+            "type": "object",
+            "description": "",
+            "properties": {
+                "explanation": {
+                    "type": "string",
+                    "description": "Used to document the usage or meaning of the 'subManifest' within the context of this entity definition system."
+                },
+                "manifestName": {
+                    "type": "string",
+                    "description": "a display name for the sub manifest"
+                },
+                "definition": {
+                    "type": "string",
+                    "description": "a corpus path to the manifest document"
+                },
+                "LastFileStatusCheckTime": {
+                    "type": "string",
+                    "description": "The date and time at which the file modified date and time status of this object was checked"
+                },
+                "LastFileModifiedTime": {
+                    "type": "string",
+                    "description": "The date and time of the last modification for this object's associated file at the last time this status was checked."
+                },
+                "LastChildFileModifiedTime": {
+                    "type": "string",
+                    "description": "The most recent date and time reported by any of the children objects of this object when it was last checked."
+                },
+                "exhibitsTraits": {
+                    "type": "array",
+                    "description": "A list of the trait references are ascribed to this object to lend it semantic meaning or better describe it.",
+                    "items": {
+                        "oneOf": [
+                            {
+                                "$ref": "#/definitions/traitClassReference"
+                            },
+                            {
+                                "type": "string"
+                            }
+                        ]
+                    }
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "manifestName",
+                "definition"
+            ]
+        }
+    },
+    "properties": {
+        "$schema": {
+            "type": "string",
+            "examples": [
+                "../schema.cdm.json"
+            ]
+        },
+        "jsonSchemaSemanticVersion": {
+            "type": "string",
+            "description": "the semantic version (major.minor.patch) number of the $schema document dictating the shape of the json document describing the entity shapes",
+            "examples": [
+                "1.3.0"
+            ]
+        },
+        "imports": {
+            "type": "array",
+            "description": "a list of references to other CDM documents that are being imported in order to make use of their defintions",
+            "items": {
+                "$ref": "#/definitions/import"
+            }
+        },
+        "manifestName": {
+            "type": "string",
+            "description": "a name for the manifest"
+        },
+        "explanation": {
+            "type": "string",
+            "description": "Used to document the usage or meaning of the 'manifest' within the context of this entity definition system."
+        },
+        "LastFileStatusCheckTime": {
+            "type": "string",
+            "description": "The date and time at which the file modified date and time status of this object was checked"
+        },
+        "LastFileModifiedTime": {
+            "type": "string",
+            "description": "The date and time of the last modification for this object's associated file at the last time this status was checked."
+        },
+        "LastChildFileModifiedTime": {
+            "type": "string",
+            "description": "The most recent date and time reported by any of the children objects of this object when it was last checked."
+        },
+        "exhibitsTraits": {
+            "type": "array",
+            "description": "A list of the trait references are ascribed to this object to lend it semantic meaning or better describe it.",
+            "items": {
+                "oneOf": [
+                    {
+                        "$ref": "#/definitions/traitClassReference"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            }
+        },
+        "entities": {
+            "type": "array",
+            "description": "a list of the entity declarations for the entities that are contained within the scope of this manifest",
+            "items": {
+                "$ref": "#/definitions/entityDeclarationDefinition"
+            }
+        },
+        "subManifests": {
+            "type": "array",
+            "description": "a list of child manifests",
+            "items": {
+                "$ref": "#/definitions/manifestDeclarationDefinition"
+            }
+        },
+        "relationships": {
+            "type": "array",
+            "description": "a list of the entity to entity key to key relationships for the entities in this manifest",
+            "items": {
+                "$ref": "#/definitions/entityRelationshipDefinition"
+            }
+        }
+
+
+    },
+    "additionalProperties": false,
+    "required": [
+        "jsonSchemaSemanticVersion",
+        "manifestName"
+    ]
+
+}

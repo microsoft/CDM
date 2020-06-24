@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -57,111 +57,6 @@
           "attributeGroupReference": {
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
-              {
-                "name": "locationId",
-                "purpose": "identifiedBy",
-                "dataType": "entityId",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Location"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Unique identifier for entity instances"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "msemr_locationid",
-                "sourceOrdering": 1,
-                "displayName": "Location",
-                "description": "Unique identifier for entity instances"
-              },
-              {
-                "name": "createdOn",
-                "purpose": "createdOn",
-                "dataType": "dateTime",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Created On"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Date and time when the record was created."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "createdon",
-                "sourceOrdering": 2,
-                "displayName": "Created On",
-                "description": "Date and time when the record was created."
-              },
               {
                 "entity": {
                   "entityReference": "User",
@@ -174,12 +69,13 @@
                     }
                   ]
                 },
-                "name": "User_createdBy",
+                "name": "createdBy",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'User'.",
                       "name": "createdBy",
                       "purpose": "hasA",
                       "dataType": "entityId",
@@ -238,7 +134,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "createdby",
-                      "sourceOrdering": 3,
                       "displayName": "Created By",
                       "description": "Unique identifier of the user who created the record."
                     }
@@ -246,10 +141,16 @@
                 }
               },
               {
-                "name": "modifiedOn",
-                "purpose": "modifiedOn",
+                "name": "createdOn",
+                "purpose": "createdOn",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "CreatedOn"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -268,7 +169,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "Modified On"
+                              "Created On"
                             ]
                           ]
                         }
@@ -284,7 +185,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "Date and time when the record was modified."
+                              "Date and time when the record was created."
                             ]
                           ]
                         }
@@ -293,10 +194,149 @@
                   }
                 ],
                 "isNullable": true,
-                "sourceName": "modifiedon",
-                "sourceOrdering": 4,
-                "displayName": "Modified On",
-                "description": "Date and time when the record was modified."
+                "sourceName": "createdon",
+                "displayName": "Created On",
+                "description": "Date and time when the record was created."
+              },
+              {
+                "name": "createdOnBehalfBy",
+                "purpose": "hasA",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "CreatedOnBehalfBy"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.lookup",
+                    "arguments": [
+                      {
+                        "name": "style",
+                        "value": "single"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Created By (Delegate)"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier of the delegate user who created the record."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "createdonbehalfby",
+                "displayName": "Created By (Delegate)",
+                "description": "Unique identifier of the delegate user who created the record."
+              },
+              {
+                "name": "importSequenceNumber",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "ImportSequenceNumber"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Import Sequence Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Sequence number of the import that created this record."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "importsequencenumber",
+                "displayName": "Import Sequence Number",
+                "description": "Sequence number of the import that created this record.",
+                "maximumValue": "2147483647",
+                "minimumValue": "-2147483648"
               },
               {
                 "entity": {
@@ -310,12 +350,13 @@
                     }
                   ]
                 },
-                "name": "User_modifiedBy",
+                "name": "modifiedBy",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'User'.",
                       "name": "modifiedBy",
                       "purpose": "hasA",
                       "dataType": "entityId",
@@ -374,7 +415,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "modifiedby",
-                      "sourceOrdering": 5,
                       "displayName": "Modified By",
                       "description": "Unique identifier of the user who modified the record."
                     }
@@ -382,612 +422,16 @@
                 }
               },
               {
-                "entity": {
-                  "entityReference": "User",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "User/(resolvedAttributes)/systemUserId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "User_createdOnBehalfBy",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "createdOnBehalfBy",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Created By (Delegate)"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Unique identifier of the delegate user who created the record."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "createdonbehalfby",
-                      "sourceOrdering": 6,
-                      "displayName": "Created By (Delegate)",
-                      "description": "Unique identifier of the delegate user who created the record."
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "User",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "User/(resolvedAttributes)/systemUserId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "User_modifiedOnBehalfBy",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "modifiedOnBehalfBy",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Modified By (Delegate)"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Unique identifier of the delegate user who modified the record."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "modifiedonbehalfby",
-                      "sourceOrdering": 7,
-                      "displayName": "Modified By (Delegate)",
-                      "description": "Unique identifier of the delegate user who modified the record."
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "Organization",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Organization/(resolvedAttributes)/organizationId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "organization",
-                "resolutionGuidance": {
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "id",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Organization Id"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Unique identifier for the organization"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "organizationid",
-                      "sourceOrdering": 16,
-                      "displayName": "Organization Id",
-                      "description": "Unique identifier for the organization"
-                    }
-                  }
-                }
-              },
-              {
-                "name": "stateCode",
-                "purpose": "representsStateWith",
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                            "entityShape": "listLookupValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "1",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status of the Location"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "statecode",
-                "sourceOrdering": 18,
-                "displayName": "Status",
-                "description": "Status of the Location",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'stateCode_display' is added to the 'Location' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                    "name": "stateCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "statusCode",
-                "purpose": {
-                  "purposeReference": "representsCorrelatedStatusWith",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.correlatedWith",
-                      "arguments": [
-                        "stateCode"
-                      ]
-                    }
-                  ]
-                },
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                            "entityShape": "listLookupCorrelatedValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "1",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "2",
-                                "1",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status Reason"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Reason for the status of the Location"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "statuscode",
-                "sourceOrdering": 20,
-                "displayName": "Status Reason",
-                "description": "Reason for the status of the Location",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'statusCode_display' is added to the 'Location' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                    "name": "statusCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "versionNumber",
-                "purpose": "hasA",
-                "dataType": "bigInteger",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Version Number"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Version Number"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "versionnumber",
-                "sourceOrdering": 22,
-                "displayName": "Version Number",
-                "description": "Version Number"
-              },
-              {
-                "name": "importSequenceNumber",
-                "purpose": "hasA",
-                "dataType": "integer",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Import Sequence Number"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Sequence number of the import that created this record."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "importsequencenumber",
-                "sourceOrdering": 23,
-                "displayName": "Import Sequence Number",
-                "description": "Sequence number of the import that created this record.",
-                "maximumValue": "2147483647",
-                "minimumValue": "-2147483648"
-              },
-              {
-                "name": "overriddenCreatedOn",
-                "purpose": "createdOn",
+                "name": "modifiedOn",
+                "purpose": "modifiedOn",
                 "dataType": "dateTime",
                 "appliedTraits": [
                   {
-                    "traitReference": "is.requiredAtLevel",
+                    "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
+                      "ModifiedOn"
                     ]
                   },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Record Created On"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Date and time that the record was migrated."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "overriddencreatedon",
-                "sourceOrdering": 24,
-                "displayName": "Record Created On",
-                "description": "Date and time that the record was migrated."
-              },
-              {
-                "name": "timeZoneRuleVersionNumber",
-                "purpose": "hasA",
-                "dataType": "integer",
-                "appliedTraits": [
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1006,7 +450,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "Time Zone Rule Version Number"
+                              "Modified On"
                             ]
                           ]
                         }
@@ -1022,7 +466,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "For internal use only."
+                              "Date and time when the record was modified."
                             ]
                           ]
                         }
@@ -1031,18 +475,30 @@
                   }
                 ],
                 "isNullable": true,
-                "sourceName": "timezoneruleversionnumber",
-                "sourceOrdering": 25,
-                "displayName": "Time Zone Rule Version Number",
-                "description": "For internal use only.",
-                "maximumValue": "2147483647",
-                "minimumValue": "-1"
+                "sourceName": "modifiedon",
+                "displayName": "Modified On",
+                "description": "Date and time when the record was modified."
               },
               {
-                "name": "UTCConversionTimeZoneCode",
+                "name": "modifiedOnBehalfBy",
                 "purpose": "hasA",
-                "dataType": "integer",
+                "dataType": "entityId",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "ModifiedOnBehalfBy"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.CDS.lookup",
+                    "arguments": [
+                      {
+                        "name": "style",
+                        "value": "single"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1061,7 +517,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "UTC Conversion Time Zone Code"
+                              "Modified By (Delegate)"
                             ]
                           ]
                         }
@@ -1077,7 +533,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "Time zone code that was in use when the record was created."
+                              "Unique identifier of the delegate user who modified the record."
                             ]
                           ]
                         }
@@ -1086,72 +542,30 @@
                   }
                 ],
                 "isNullable": true,
-                "sourceName": "utcconversiontimezonecode",
-                "sourceOrdering": 26,
-                "displayName": "UTC Conversion Time Zone Code",
-                "description": "Time zone code that was in use when the record was created.",
-                "maximumValue": "2147483647",
-                "minimumValue": "-1"
-              },
-              {
-                "name": "name",
-                "purpose": "hasA",
-                "dataType": "name",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "required"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Name"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_name",
-                "sourceOrdering": 27,
-                "displayName": "Name",
-                "description": "The name of the custom entity.",
-                "maximumLength": 100
+                "sourceName": "modifiedonbehalfby",
+                "displayName": "Modified By (Delegate)",
+                "description": "Unique identifier of the delegate user who modified the record."
               },
               {
                 "name": "addressCity",
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressCity"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1196,7 +610,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addresscity",
-                "sourceOrdering": 28,
                 "displayName": "Address City",
                 "description": "The name of the city, town, village or other community or delivery center.",
                 "maximumLength": 100
@@ -1206,6 +619,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressCountry"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1250,7 +678,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addresscountry",
-                "sourceOrdering": 29,
                 "displayName": "Address Country",
                 "description": "Country - a nation as commonly understood or generally accepted.",
                 "maximumLength": 100
@@ -1260,6 +687,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressDistinct"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1304,7 +746,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addressdistinct",
-                "sourceOrdering": 30,
                 "displayName": "Address Distinct",
                 "description": "The name of the administrative area (county).",
                 "maximumLength": 100
@@ -1314,6 +755,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressLine1"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1358,7 +814,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addressline1",
-                "sourceOrdering": 31,
                 "displayName": "Street 1",
                 "description": "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information",
                 "maximumLength": 100
@@ -1368,6 +823,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressLine2"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1412,7 +882,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addressline2",
-                "sourceOrdering": 32,
                 "displayName": "Street 2",
                 "description": "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information",
                 "maximumLength": 100
@@ -1422,6 +891,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressLine3"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1466,7 +950,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addressline3",
-                "sourceOrdering": 33,
                 "displayName": "Street 3",
                 "description": "This component contains the house number, apartment number, street name, street direction, P.O. Box number, delivery hints, and similar address information",
                 "maximumLength": 100
@@ -1476,6 +959,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressPeriodEnd"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1520,7 +1009,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addressperiodend",
-                "sourceOrdering": 34,
                 "displayName": "Address Period End",
                 "description": "Time period when address was/is in use."
               },
@@ -1529,6 +1017,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressPeriodStart"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1573,7 +1067,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addressperiodstart",
-                "sourceOrdering": 35,
                 "displayName": "Address Period Start",
                 "description": "Time period when address was/is in use."
               },
@@ -1582,6 +1075,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressPostalCode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1626,7 +1134,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addresspostalcode",
-                "sourceOrdering": 36,
                 "displayName": "Address Postal Code",
                 "description": "A postal code designating a region defined by the postal service.",
                 "maximumLength": 100
@@ -1636,6 +1143,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressState"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1680,7 +1202,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addressstate",
-                "sourceOrdering": 37,
                 "displayName": "Address State",
                 "description": "Sub-unit of a country with limited sovereignty in a federally organized country. A code may be used if codes are in common use (i.e. US 2 letter state codes).",
                 "maximumLength": 100
@@ -1690,6 +1211,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressText"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1734,7 +1270,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addresstext",
-                "sourceOrdering": 38,
                 "displayName": "Address Text",
                 "description": "A full text representation of the address.",
                 "maximumLength": 100
@@ -1756,20 +1291,17 @@
                               [
                                 "en",
                                 "Postal",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Physical",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Both",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ]
                             ]
                           }
@@ -1779,6 +1311,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1823,7 +1361,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addresstype",
-                "sourceOrdering": 39,
                 "displayName": "Address Type",
                 "description": "Distinguishes between physical addresses (those you can visit) and mailing addresses (e.g. PO Boxes and care-of addresses). Most addresses are both.",
                 "resolutionGuidance": {
@@ -1853,26 +1390,22 @@
                               [
                                 "en",
                                 "Home",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Work",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Old",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ]
                             ]
                           }
@@ -1882,6 +1415,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AddressUse"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1926,7 +1465,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_addressuse",
-                "sourceOrdering": 41,
                 "displayName": "Address Use",
                 "description": "The purpose of this address.",
                 "resolutionGuidance": {
@@ -1944,6 +1482,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Description"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1988,7 +1541,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_description",
-                "sourceOrdering": 43,
                 "displayName": "Description",
                 "description": "Description of the Location, which helps in finding or referencing the place.",
                 "maximumLength": 100
@@ -1998,6 +1550,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_LocationAlias1"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2032,7 +1599,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "A list of alternate names that the location is known as, or was known as in the past."
+                              "A list of alternate names that the location is known as, or was known as in the past."
                             ]
                           ]
                         }
@@ -2042,9 +1609,8 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_locationalias1",
-                "sourceOrdering": 44,
                 "displayName": "Alias 1",
-                "description": "A list of alternate names that the location is known as, or was known as in the past.",
+                "description": "A list of alternate names that the location is known as, or was known as in the past.",
                 "maximumLength": 100
               },
               {
@@ -2052,6 +1618,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_LocationAlias2"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2086,7 +1667,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "A list of alternate names that the location is known as, or was known as in the past."
+                              "A list of alternate names that the location is known as, or was known as in the past."
                             ]
                           ]
                         }
@@ -2096,9 +1677,8 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_locationalias2",
-                "sourceOrdering": 45,
                 "displayName": "Alias 2",
-                "description": "A list of alternate names that the location is known as, or was known as in the past.",
+                "description": "A list of alternate names that the location is known as, or was known as in the past.",
                 "maximumLength": 100
               },
               {
@@ -2106,6 +1686,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_LocationAlias3"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2140,7 +1735,7 @@
                           "constantValues": [
                             [
                               "en",
-                              "A list of alternate names that the location is known as, or was known as in the past."
+                              "A list of alternate names that the location is known as, or was known as in the past."
                             ]
                           ]
                         }
@@ -2150,16 +1745,87 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_locationalias3",
-                "sourceOrdering": 46,
                 "displayName": "Alias 3",
-                "description": "A list of alternate names that the location is known as, or was known as in the past.",
+                "description": "A list of alternate names that the location is known as, or was known as in the past.",
                 "maximumLength": 100
+              },
+              {
+                "name": "locationId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_locationId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Location"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msemr_locationid",
+                "displayName": "Location",
+                "description": "Unique identifier for entity instances"
               },
               {
                 "name": "locationNumber",
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_LocationNumber"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2204,7 +1870,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_locationnumber",
-                "sourceOrdering": 47,
                 "displayName": "Location Number",
                 "description": "Unique code or number identifying the location to its users.",
                 "maximumLength": 100
@@ -2214,6 +1879,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_LocationPositionAltitude"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2258,7 +1942,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_locationpositionaltitude",
-                "sourceOrdering": 48,
                 "displayName": "Position Altitude",
                 "description": "Altitude. The value domain and the interpretation are the same as for the text of the altitude element in KML (see notes below)",
                 "maximumValue": "100000000000",
@@ -2269,6 +1952,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_LocationPositionLatitude"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2313,7 +2015,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_locationpositionlatitude",
-                "sourceOrdering": 49,
                 "displayName": "Position Latitude",
                 "description": "Latitude. The value domain and the interpretation are the same as for the text of the latitude element in KML",
                 "maximumValue": "100000000000",
@@ -2324,6 +2025,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_LocationPositionLongitude"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2368,7 +2088,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_locationpositionlongitude",
-                "sourceOrdering": 50,
                 "displayName": "Position Longitude",
                 "description": "Longitude. The value domain and the interpretation are the same as for the text of the longitude element in KML",
                 "maximumValue": "100000000000",
@@ -2386,13 +2105,14 @@
                     }
                   ]
                 },
-                "name": "Account_managingOrganization",
+                "name": "managingOrganization",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "managingOrganization",
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "managingOrganizationId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2450,7 +2170,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_managingorganization",
-                      "sourceOrdering": 51,
                       "displayName": "Managing Organization",
                       "description": "The organization responsible for the provisioning and upkeep of the location."
                     }
@@ -2474,14 +2193,12 @@
                               [
                                 "en",
                                 "instance",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Kind",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ]
                             ]
                           }
@@ -2491,6 +2208,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Mode"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2535,7 +2258,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_mode",
-                "sourceOrdering": 52,
                 "displayName": "Mode",
                 "description": "Indicates whether a resource instance represents a specific location or a class of locations.",
                 "resolutionGuidance": {
@@ -2547,6 +2269,73 @@
                     "isReadOnly": true
                   }
                 }
+              },
+              {
+                "name": "name",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_name"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msemr_name",
+                "displayName": "Name",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
               },
               {
                 "name": "operationalStatus",
@@ -2565,38 +2354,32 @@
                               [
                                 "en",
                                 "Closed",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Housekeeping",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Isolated",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Contaminated",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Occupied",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Unoccupied",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ]
                             ]
                           }
@@ -2606,6 +2389,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OperationalStatus"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2650,7 +2439,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_operationalstatus",
-                "sourceOrdering": 54,
                 "displayName": "Operational Status",
                 "description": "The Operational status covers operation values most relevant to beds (but can also apply to rooms/units/chair/etc such as an isolation unit/dialysis chair).",
                 "resolutionGuidance": {
@@ -2675,13 +2463,14 @@
                     }
                   ]
                 },
-                "name": "Location_partOf",
+                "name": "partOf",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "partOf",
+                      "explanation": "Unique identifier of 'Location'.",
+                      "name": "partOfId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2739,7 +2528,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_partof",
-                      "sourceOrdering": 56,
                       "displayName": "Part Of",
                       "description": "Another Location which this Location is physically part of."
                     }
@@ -2758,13 +2546,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_physicalType",
+                "name": "physicalType",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "physicalType",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "physicalTypeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2822,7 +2611,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_physicaltype",
-                      "sourceOrdering": 57,
                       "displayName": "Physical Type",
                       "description": "Physical form of the location, e.g. building, room, vehicle, road."
                     }
@@ -2846,20 +2634,17 @@
                               [
                                 "en",
                                 "Active",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Suspended",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Inactive",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ]
                             ]
                           }
@@ -2869,6 +2654,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Status"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2913,7 +2704,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_status",
-                "sourceOrdering": 58,
                 "displayName": "Status",
                 "description": "The status property covers the general availability of the resource, not the current value which may be covered by the operationStatus, or by a schedule/slots if they are configured for the location.",
                 "resolutionGuidance": {
@@ -2938,13 +2728,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_type",
+                "name": "type",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "type",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "typeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -3002,12 +2793,513 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_type",
-                      "sourceOrdering": 60,
                       "displayName": "Type",
                       "description": "Indicates the type of function performed at the location."
                     }
                   }
                 }
+              },
+              {
+                "entity": {
+                  "entityReference": "Organization",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Organization/(resolvedAttributes)/organizationId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "organization",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Organization'.",
+                      "name": "organizationId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Organization Id"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Unique identifier for the organization"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "organizationid",
+                      "displayName": "Organization Id",
+                      "description": "Unique identifier for the organization"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "overriddenCreatedOn",
+                "purpose": "createdOn",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "OverriddenCreatedOn"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Record Created On"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Date and time that the record was migrated."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "overriddencreatedon",
+                "displayName": "Record Created On",
+                "description": "Date and time that the record was migrated."
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Location"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "displayName": "Status",
+                "description": "Status of the Location",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'Location' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    },
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    },
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Location"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "displayName": "Status Reason",
+                "description": "Reason for the status of the Location",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'Location' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "timeZoneRuleVersionNumber",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "TimeZoneRuleVersionNumber"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-1"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Time Zone Rule Version Number"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "For internal use only."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "timezoneruleversionnumber",
+                "displayName": "Time Zone Rule Version Number",
+                "description": "For internal use only.",
+                "maximumValue": "2147483647",
+                "minimumValue": "-1"
+              },
+              {
+                "name": "UTCConversionTimeZoneCode",
+                "purpose": "hasA",
+                "dataType": "integer",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "UTCConversionTimeZoneCode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-1"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "UTC Conversion Time Zone Code"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Time zone code that was in use when the record was created."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "utcconversiontimezonecode",
+                "displayName": "UTC Conversion Time Zone Code",
+                "description": "Time zone code that was in use when the record was created.",
+                "maximumValue": "2147483647",
+                "minimumValue": "-1"
               }
             ],
             "exhibitsTraits": [

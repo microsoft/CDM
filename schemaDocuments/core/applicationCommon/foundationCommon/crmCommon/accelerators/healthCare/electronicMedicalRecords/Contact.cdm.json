@@ -11,11 +11,43 @@
       "extendsEntity": "base_Contact/Contact",
       "exhibitsTraits": [
         {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Contact"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Person with whom a business unit has a relationship, such as customer, supplier, and colleague."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
           "traitReference": "is.CDM.entityVersion",
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -25,115 +57,6 @@
           "attributeGroupReference": {
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
-              {
-                "name": "genderCode",
-                "purpose": "hasA",
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                            "entityShape": "listLookupValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Female",
-                                "2",
-                                "6"
-                              ],
-                              [
-                                "en",
-                                "Other",
-                                "935000000",
-                                "2"
-                              ],
-                              [
-                                "en",
-                                "Unknown",
-                                "935000001",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "Item",
-                                "935000002",
-                                "4"
-                              ],
-                              [
-                                "en",
-                                "Male",
-                                "1",
-                                "5"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Gender"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Select the contact's gender to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "gendercode",
-                "sourceOrdering": 35,
-                "displayName": "Gender",
-                "description": "Select the contact's gender to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'genderCode_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'genderCode'",
-                    "name": "genderCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
               {
                 "name": "familyStatusCode",
                 "purpose": "hasA",
@@ -150,75 +73,75 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Domestic Partner",
-                                "935000003",
-                                "7"
-                              ],
-                              [
-                                "en",
-                                "Never Married",
-                                "935000007",
-                                "11"
-                              ],
-                              [
-                                "en",
-                                "Divorced",
-                                "3",
-                                "14"
-                              ],
-                              [
-                                "en",
-                                "Widowed",
-                                "4",
-                                "15"
-                              ],
-                              [
-                                "en",
                                 "Anulled",
                                 "935000000",
-                                "4"
+                                "0"
                               ],
                               [
                                 "en",
                                 "Interlocutory",
                                 "935000001",
-                                "5"
+                                "1"
                               ],
                               [
                                 "en",
                                 "Legally Seperated",
                                 "935000002",
-                                "6"
+                                "2"
                               ],
                               [
                                 "en",
-                                "Single",
-                                "1",
-                                "12"
-                              ],
-                              [
-                                "en",
-                                "Married",
-                                "2",
-                                "13"
+                                "Domestic Partner",
+                                "935000003",
+                                "3"
                               ],
                               [
                                 "en",
                                 "Unmarried",
                                 "935000004",
-                                "8"
+                                "4"
                               ],
                               [
                                 "en",
                                 "Unknown",
                                 "935000005",
-                                "9"
+                                "5"
                               ],
                               [
                                 "en",
                                 "Polygamous",
                                 "935000006",
+                                "6"
+                              ],
+                              [
+                                "en",
+                                "Never Married",
+                                "935000007",
+                                "7"
+                              ],
+                              [
+                                "en",
+                                "Single",
+                                "1",
+                                "8"
+                              ],
+                              [
+                                "en",
+                                "Married",
+                                "2",
+                                "9"
+                              ],
+                              [
+                                "en",
+                                "Divorced",
+                                "3",
                                 "10"
+                              ],
+                              [
+                                "en",
+                                "Widowed",
+                                "4",
+                                "11"
                               ]
                             ]
                           }
@@ -228,6 +151,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "FamilyStatusCode"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -272,7 +201,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "familystatuscode",
-                "sourceOrdering": 40,
                 "displayName": "Marital Status",
                 "description": "Select the marital status of the contact for reference in follow-up phone calls and other communications.",
                 "resolutionGuidance": {
@@ -286,10 +214,130 @@
                 }
               },
               {
+                "name": "genderCode",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Other",
+                                "935000000",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Unknown",
+                                "935000001",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Item",
+                                "935000002",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Male",
+                                "1",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Female",
+                                "2",
+                                "4"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "GenderCode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Gender"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Select the contact's gender to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "gendercode",
+                "displayName": "Gender",
+                "description": "Select the contact's gender to make sure the contact is addressed correctly in sales calls, email, and marketing campaigns.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'genderCode_display' is added to the 'Contact' entity to provide the localized display text for the value of the listLookup attribute 'genderCode'",
+                    "name": "genderCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
                 "name": "activityStartDate",
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ActivityStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -334,7 +382,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_activitystartdate",
-                "sourceOrdering": 10011,
                 "displayName": "Activity Start Date",
                 "description": "The date on which first activity occurred"
               },
@@ -343,6 +390,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address1PeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -387,7 +440,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address1periodenddate",
-                "sourceOrdering": 10012,
                 "displayName": "Permanent - Address Period End Date",
                 "description": "Time period when address was/is in use."
               },
@@ -396,6 +448,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address1PeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -440,7 +498,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address1periodstartdate",
-                "sourceOrdering": 10013,
                 "displayName": "Permanent- Address Period Start Date",
                 "description": "Time period when address was/is in use."
               },
@@ -449,6 +506,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address2PeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -493,7 +556,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address2periodenddate",
-                "sourceOrdering": 10014,
                 "displayName": "Current - Address Period End Date",
                 "description": "Time period when address was/is in use."
               },
@@ -502,6 +564,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address2PeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -546,7 +614,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address2periodstartdate",
-                "sourceOrdering": 10015,
                 "displayName": "Current - Address Period Start Date",
                 "description": "Time period when address was/is in use."
               },
@@ -555,6 +622,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address3PeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -599,7 +672,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address3periodenddate",
-                "sourceOrdering": 10016,
                 "displayName": "Billing  - Address Period End Date",
                 "description": "Time period when address was/is in use."
               },
@@ -608,6 +680,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address3PeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -652,7 +730,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address3periodstartdate",
-                "sourceOrdering": 10017,
                 "displayName": "Billing  - Address Period Start Date",
                 "description": "Time period when address was/is in use."
               },
@@ -661,6 +738,12 @@
                 "purpose": "hasA",
                 "dataType": "boolean",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Animal"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -705,7 +788,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_animal",
-                "sourceOrdering": 10018,
                 "displayName": "Animal",
                 "description": "This patient is known to be an animal."
               },
@@ -721,13 +803,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_animalBreed",
+                "name": "animalBreed",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "animalBreed",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "animalBreedId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -785,7 +868,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_animalbreed",
-                      "sourceOrdering": 10020,
                       "displayName": "Animal Breed",
                       "description": "Identifies the detailed categorization of the kind of animal."
                     }
@@ -804,13 +886,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_animalGenderStatus",
+                "name": "animalGenderStatus",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "animalGenderStatus",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "animalGenderStatusId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -868,7 +951,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_animalgenderstatus",
-                      "sourceOrdering": 10021,
                       "displayName": "Animal Gender Status",
                       "description": "Indicates the current state of the animal's reproductive organs."
                     }
@@ -887,13 +969,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_animalSpecies",
+                "name": "animalSpecies",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "animalSpecies",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "animalSpeciesId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -951,7 +1034,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_animalspecies",
-                      "sourceOrdering": 10022,
                       "displayName": "AnimalSpecies",
                       "description": "Identifies the high level taxonomic categorization of the kind of animal."
                     }
@@ -970,13 +1052,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_communication1Language",
+                "name": "communication1Language",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "communication1Language",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "communication1LanguageId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1034,7 +1117,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_communication1language",
-                      "sourceOrdering": 10023,
                       "displayName": "Primary Language",
                       "description": "Primary Language of the patient."
                     }
@@ -1046,6 +1128,12 @@
                 "purpose": "hasA",
                 "dataType": "boolean",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Communication1Preferred"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1090,7 +1178,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_communication1preferred",
-                "sourceOrdering": 10024,
                 "displayName": "Primary Language Preferred",
                 "description": "If Primary Language is preferred."
               },
@@ -1106,13 +1193,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_communication2Language",
+                "name": "communication2Language",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "communication2Language",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "communication2LanguageId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1170,7 +1258,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_communication2language",
-                      "sourceOrdering": 10026,
                       "displayName": "Secondary Language",
                       "description": "Secondary Language of the patient."
                     }
@@ -1182,6 +1269,12 @@
                 "purpose": "hasA",
                 "dataType": "boolean",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Communication2Preferred"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1226,7 +1319,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_communication2preferred",
-                "sourceOrdering": 10027,
                 "displayName": "Secondary Language Preferred",
                 "description": "If Secondary Language is preferred."
               },
@@ -1235,6 +1327,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Contac1tEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1279,7 +1377,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contac1tenddate",
-                "sourceOrdering": 10029,
                 "displayName": "Emergency Contact End Date",
                 "description": "Time period for this contact."
               },
@@ -1288,6 +1385,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Contac2tEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1332,7 +1435,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contac2tenddate",
-                "sourceOrdering": 10030,
                 "displayName": "Primary Contact End Date",
                 "description": "Time period for this contact."
               },
@@ -1348,13 +1450,14 @@
                     }
                   ]
                 },
-                "name": "Contact_contact1",
+                "name": "contact1",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contact1",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "contact1Id",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1412,7 +1515,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contact1",
-                      "sourceOrdering": 10031,
                       "displayName": "Emergency Contact Name",
                       "description": "A contact party (e.g. guardian, partner, friend) for the patient."
                     }
@@ -1431,13 +1533,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_contact1Relationship",
+                "name": "contact1Relationship",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contact1Relationship",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "contact1RelationshipId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1495,7 +1598,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contact1relationship",
-                      "sourceOrdering": 10032,
                       "displayName": "Emergency Contact Relationship",
                       "description": "The nature of the relationship between the patient and the contact person."
                     }
@@ -1507,6 +1609,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Contact1StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1551,7 +1659,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contact1startdate",
-                "sourceOrdering": 10033,
                 "displayName": "Emergency Contact Start Date",
                 "description": "Time period for this contact."
               },
@@ -1567,13 +1674,14 @@
                     }
                   ]
                 },
-                "name": "Contact_contact2",
+                "name": "contact2",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contact2",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "contact2Id",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1631,7 +1739,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contact2",
-                      "sourceOrdering": 10034,
                       "displayName": "Primary Contact Name",
                       "description": "A contact party (e.g. guardian, partner, friend) for the patient."
                     }
@@ -1650,13 +1757,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_contact2Relationship",
+                "name": "contact2Relationship",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contact2Relationship",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "contact2RelationshipId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1714,7 +1822,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contact2relationship",
-                      "sourceOrdering": 10035,
                       "displayName": "Primary Contact Relationship",
                       "description": "The nature of the relationship between the patient and the contact person."
                     }
@@ -1726,6 +1833,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Contact2StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1770,7 +1883,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contact2startdate",
-                "sourceOrdering": 10036,
                 "displayName": "Primary Contact Start Date",
                 "description": "Time period for this contact."
               },
@@ -1815,6 +1927,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ContactType"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -1858,7 +1976,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contacttype",
-                "sourceOrdering": 10037,
                 "displayName": "Contact Type",
                 "description": "Type of contact, either Patient, Practitioner or Related Person",
                 "resolutionGuidance": {
@@ -1876,6 +1993,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_DeceasedDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1920,7 +2043,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_deceaseddate",
-                "sourceOrdering": 10039,
                 "displayName": "Deceased Date",
                 "description": "Indicates if the individual is deceased or not."
               },
@@ -1936,13 +2058,14 @@
                     }
                   ]
                 },
-                "name": "Contact_generalPractioner",
+                "name": "generalPractioner",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "generalPractioner",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "generalPractionerId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2000,7 +2123,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_generalpractioner",
-                      "sourceOrdering": 10040,
                       "displayName": "Primary Practitioner",
                       "description": "Patient's nominated care provider."
                     }
@@ -2019,13 +2141,14 @@
                     }
                   ]
                 },
-                "name": "Contact_link1",
+                "name": "link1",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "link1",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "link1Id",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2083,7 +2206,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_link1",
-                      "sourceOrdering": 10041,
                       "displayName": "Patient Link 1",
                       "description": "Link to another patient resource that concerns the same actual patient."
                     }
@@ -2102,13 +2224,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_link1Type",
+                "name": "link1Type",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "link1Type",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "link1TypeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2166,7 +2289,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_link1type",
-                      "sourceOrdering": 10042,
                       "displayName": "Patient Link Type 1",
                       "description": "The type of link between this patient resource and another patient resource."
                     }
@@ -2185,13 +2307,14 @@
                     }
                   ]
                 },
-                "name": "Contact_link2",
+                "name": "link2",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "link2",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "link2Id",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2249,7 +2372,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_link2",
-                      "sourceOrdering": 10043,
                       "displayName": "Patient Link 2",
                       "description": "Link to another patient resource that concerns the same actual patient."
                     }
@@ -2268,13 +2390,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_link2Type",
+                "name": "link2Type",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "link2Type",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "link2TypeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2332,7 +2455,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_link2type",
-                      "sourceOrdering": 10044,
                       "displayName": "Patient Link Type 2",
                       "description": "The type of link between this patient resource and another patient resource."
                     }
@@ -2351,13 +2473,14 @@
                     }
                   ]
                 },
-                "name": "Account_managingOrganization",
+                "name": "managingOrganization",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "managingOrganization",
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "managingOrganizationId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2415,7 +2538,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_managingorganization",
-                      "sourceOrdering": 10045,
                       "displayName": "Managing Organization",
                       "description": "Organization that is the custodian of the patient record."
                     }
@@ -2427,6 +2549,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_MedicalRecordNumber"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "256"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2471,7 +2608,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_medicalrecordnumber",
-                "sourceOrdering": 10046,
                 "displayName": "Medical Record Number",
                 "description": "An identifier for this patient.",
                 "maximumLength": 256
@@ -2481,6 +2617,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_MultipleBirth"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2525,7 +2680,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_multiplebirth",
-                "sourceOrdering": 10047,
                 "displayName": "Multiple Birth",
                 "description": "Indicates the actual birth order (integer).",
                 "maximumValue": "2147483647",
@@ -2536,6 +2690,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name1EndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2580,7 +2740,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name1enddate",
-                "sourceOrdering": 10048,
                 "displayName": "Usual-Name End Date",
                 "description": "End time of validity of name."
               },
@@ -2589,6 +2748,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name1StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2633,7 +2798,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name1startdate",
-                "sourceOrdering": 10049,
                 "displayName": "Usual-Name Start Date",
                 "description": "Start time of validity of name."
               },
@@ -2653,45 +2817,38 @@
                             "constantValues": [
                               [
                                 "en",
+                                "Usual",
+                                "935000000"
+                              ],
+                              [
+                                "en",
                                 "Official",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Nick",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Maiden",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Old",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ],
                               [
                                 "en",
                                 "Anonymus",
-                                "935000006",
-                                "6"
-                              ],
-                              [
-                                "en",
-                                "Usual",
-                                "935000000",
-                                "0"
+                                "935000006"
                               ]
                             ]
                           }
@@ -2701,6 +2858,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name1Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2745,7 +2908,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name1use",
-                "sourceOrdering": 10050,
                 "displayName": "Use of Name",
                 "description": "The use of a human name.",
                 "resolutionGuidance": {
@@ -2763,6 +2925,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name2"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2807,7 +2984,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name2",
-                "sourceOrdering": 10052,
                 "displayName": "Official Name",
                 "description": "A name associated with the individual.",
                 "maximumLength": 100
@@ -2817,6 +2993,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name2EndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2861,7 +3043,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name2enddate",
-                "sourceOrdering": 10053,
                 "displayName": "Official-Name End Date",
                 "description": "End time of validity of name."
               },
@@ -2870,6 +3051,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name2FamilyName"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2914,7 +3110,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name2familyname",
-                "sourceOrdering": 10054,
                 "displayName": "Official- Family Name",
                 "description": "Family name (often called 'Surname').",
                 "maximumLength": 100
@@ -2924,6 +3119,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name2GivenName"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2968,7 +3178,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name2givenname",
-                "sourceOrdering": 10055,
                 "displayName": "Official - Given Name",
                 "description": "Given names (not always 'first'). Includes middle names.",
                 "maximumLength": 100
@@ -2978,6 +3187,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name2Prefix"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3022,7 +3246,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name2prefix",
-                "sourceOrdering": 10056,
                 "displayName": "Official- Prefix",
                 "description": "Parts that come before the name.",
                 "maximumLength": 100
@@ -3032,6 +3255,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name2StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3076,7 +3305,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name2startdate",
-                "sourceOrdering": 10057,
                 "displayName": "Official-Name Start Date",
                 "description": "Start time of validity of name."
               },
@@ -3085,6 +3313,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name2Suffix"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3129,7 +3372,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name2suffix",
-                "sourceOrdering": 10058,
                 "displayName": "Official- Suffix",
                 "description": "Parts that come after the name.",
                 "maximumLength": 100
@@ -3150,45 +3392,38 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Maiden",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
-                                "Old",
-                                "935000005",
-                                "5"
-                              ],
-                              [
-                                "en",
-                                "Anonymus",
-                                "935000006",
-                                "6"
-                              ],
-                              [
-                                "en",
                                 "Usual",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Official",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Nick",
-                                "935000003",
-                                "3"
+                                "935000003"
+                              ],
+                              [
+                                "en",
+                                "Maiden",
+                                "935000004"
+                              ],
+                              [
+                                "en",
+                                "Old",
+                                "935000005"
+                              ],
+                              [
+                                "en",
+                                "Anonymus",
+                                "935000006"
                               ]
                             ]
                           }
@@ -3198,6 +3433,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name2Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3242,7 +3483,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name2use",
-                "sourceOrdering": 10059,
                 "displayName": "Use of Name",
                 "description": "The use of a human name.",
                 "resolutionGuidance": {
@@ -3260,6 +3500,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name3"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3304,7 +3559,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name3",
-                "sourceOrdering": 10061,
                 "displayName": "Temporary Name",
                 "description": "A name associated with the individual.",
                 "maximumLength": 100
@@ -3314,6 +3568,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name3FamilyName"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3358,7 +3627,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name3familyname",
-                "sourceOrdering": 10062,
                 "displayName": "Official- Family Name",
                 "description": "Family name (often called 'Surname').",
                 "maximumLength": 100
@@ -3368,6 +3636,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name3GivenName"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3412,7 +3695,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name3givenname",
-                "sourceOrdering": 10063,
                 "displayName": "Official - Given Name",
                 "description": "Given names (not always 'first'). Includes middle names.",
                 "maximumLength": 100
@@ -3422,6 +3704,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name3NameEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3466,7 +3754,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name3nameenddate",
-                "sourceOrdering": 10064,
                 "displayName": "Official-Name End Date",
                 "description": "End time of validity of name."
               },
@@ -3475,6 +3762,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name3NameStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3519,7 +3812,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name3namestartdate",
-                "sourceOrdering": 10065,
                 "displayName": "Official-Name Start Date",
                 "description": "Start time of validity of name."
               },
@@ -3528,6 +3820,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name3Prefix"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3572,7 +3879,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name3prefix",
-                "sourceOrdering": 10066,
                 "displayName": "Official- Prefix",
                 "description": "Parts that come before the name.",
                 "maximumLength": 100
@@ -3582,6 +3888,21 @@
                 "purpose": "hasA",
                 "dataType": "name",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name3Suffix"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3626,7 +3947,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name3suffix",
-                "sourceOrdering": 10067,
                 "displayName": "Official- Suffix",
                 "description": "Parts that come after the name.",
                 "maximumLength": 100
@@ -3648,44 +3968,37 @@
                               [
                                 "en",
                                 "Usual",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Official",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Nick",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Maiden",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Old",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ],
                               [
                                 "en",
                                 "Anonymus",
-                                "935000006",
-                                "6"
+                                "935000006"
                               ]
                             ]
                           }
@@ -3695,6 +4008,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Name3Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3739,7 +4058,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_name3use",
-                "sourceOrdering": 10068,
                 "displayName": "Use of Name",
                 "description": "The use of a human name.",
                 "resolutionGuidance": {
@@ -3757,6 +4075,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Qualification1Identifier"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3801,7 +4134,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_qualification1identifier",
-                "sourceOrdering": 10070,
                 "displayName": "Provider NPI Number",
                 "description": "An identifier for this qualification for the practitioner.",
                 "maximumLength": 100
@@ -3818,13 +4150,14 @@
                     }
                   ]
                 },
-                "name": "Account_qualification",
+                "name": "qualification1Issuer",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "qualification1Issuer",
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "qualification1IssuerId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -3882,7 +4215,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_qualification1issuer",
-                      "sourceOrdering": 10071,
                       "displayName": "Qualification Issuer",
                       "description": "Organization that regulates and issues the qualification."
                     }
@@ -3894,6 +4226,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Qualification1PeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3938,7 +4276,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_qualification1periodenddate",
-                "sourceOrdering": 10072,
                 "displayName": "Qualification Expiry Date",
                 "description": "Qualification Expiry Date."
               },
@@ -3947,6 +4284,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Qualification1PeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3991,7 +4334,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_qualification1periodstartdate",
-                "sourceOrdering": 10073,
                 "displayName": "Qualification Issue Date",
                 "description": "Qualification Issue Date."
               },
@@ -4000,6 +4342,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1EndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4044,7 +4392,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1enddate",
-                "sourceOrdering": 10074,
                 "displayName": "Primary Day Time Phone End Date",
                 "description": "End time of validity of telecom."
               },
@@ -4053,6 +4400,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1Rank"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "1"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4097,7 +4463,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1rank",
-                "sourceOrdering": 10075,
                 "displayName": "Rank of Contact",
                 "description": "Specify preferred order of use (1 = highest).",
                 "maximumValue": "2147483647",
@@ -4108,6 +4473,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4152,7 +4523,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1startdate",
-                "sourceOrdering": 10076,
                 "displayName": "Primary Day Time Phone Start Date",
                 "description": "Start time of validity of telecom."
               },
@@ -4173,38 +4543,32 @@
                               [
                                 "en",
                                 "Phone",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Email",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Fax",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Pager",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "SMS",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Skype",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ]
                             ]
                           }
@@ -4214,6 +4578,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1System"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4258,7 +4628,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1system",
-                "sourceOrdering": 10077,
                 "displayName": "Telecom System",
                 "description": "Type of Technology mediated contact point.",
                 "resolutionGuidance": {
@@ -4288,32 +4657,27 @@
                               [
                                 "en",
                                 "Home",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Work",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Mobile",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Old",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ]
                             ]
                           }
@@ -4323,6 +4687,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4367,7 +4737,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1use",
-                "sourceOrdering": 10079,
                 "displayName": "Use of contact point",
                 "description": "Purpose of this contact point.",
                 "resolutionGuidance": {
@@ -4385,6 +4754,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2EndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4429,7 +4804,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2enddate",
-                "sourceOrdering": 10081,
                 "displayName": "Primary Evening Phone End Date",
                 "description": "End time of validity of telecom."
               },
@@ -4438,6 +4812,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2Rank"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "1"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4482,7 +4875,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2rank",
-                "sourceOrdering": 10082,
                 "displayName": "Rank of Contact",
                 "description": "Specify preferred order of use (1 = highest).",
                 "maximumValue": "2147483647",
@@ -4493,6 +4885,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4537,7 +4935,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2startdate",
-                "sourceOrdering": 10083,
                 "displayName": "Primary Evening Phone Start Date",
                 "description": "Start time of validity of telecom."
               },
@@ -4558,38 +4955,32 @@
                               [
                                 "en",
                                 "Phone",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Email",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Fax",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Pager",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "SMS",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Skype",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ]
                             ]
                           }
@@ -4599,6 +4990,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2System"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4643,7 +5040,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2system",
-                "sourceOrdering": 10084,
                 "displayName": "Telecom System",
                 "description": "Type of Technology mediated contact point.",
                 "resolutionGuidance": {
@@ -4672,33 +5068,28 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Old",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
                                 "Home",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Work",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Mobile",
-                                "935000003",
-                                "3"
+                                "935000003"
+                              ],
+                              [
+                                "en",
+                                "Old",
+                                "935000004"
                               ]
                             ]
                           }
@@ -4708,6 +5099,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4752,7 +5149,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2use",
-                "sourceOrdering": 10086,
                 "displayName": "Use of Contact Point",
                 "description": "Purpose of this contact point.",
                 "resolutionGuidance": {
@@ -4770,6 +5166,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3EndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4814,7 +5216,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3enddate",
-                "sourceOrdering": 10088,
                 "displayName": "Primary Email End Date",
                 "description": "End time of validity of telecom."
               },
@@ -4823,6 +5224,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3Rank"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "1"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4867,7 +5287,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3rank",
-                "sourceOrdering": 10089,
                 "displayName": "Rank of Contact",
                 "description": "Specify preferred order of use (1 = highest).",
                 "maximumValue": "2147483647",
@@ -4878,6 +5297,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4922,7 +5347,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3startdate",
-                "sourceOrdering": 10090,
                 "displayName": "Primary Email Start Date",
                 "description": "Start time of validity of telecom."
               },
@@ -4943,38 +5367,32 @@
                               [
                                 "en",
                                 "Phone",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Email",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Fax",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Pager",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "SMS",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Skype",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ]
                             ]
                           }
@@ -4984,6 +5402,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3System"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -5028,7 +5452,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3system",
-                "sourceOrdering": 10091,
                 "displayName": "Telecom System",
                 "description": "Type of Technology mediated contact point.",
                 "resolutionGuidance": {
@@ -5058,32 +5481,27 @@
                               [
                                 "en",
                                 "Home",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Work",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Mobile",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Old",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ]
                             ]
                           }
@@ -5093,6 +5511,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -5137,7 +5561,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3use",
-                "sourceOrdering": 10093,
                 "displayName": "Use of Contact Point",
                 "description": "Purpose of this Contact Point.",
                 "resolutionGuidance": {
@@ -5170,7 +5593,10 @@
             ]
           }
         }
-      ]
+      ],
+      "sourceName": "Contact",
+      "displayName": "Contact",
+      "description": "Person with whom a business unit has a relationship, such as customer, supplier, and colleague."
     }
   ]
 }
