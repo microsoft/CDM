@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0.1"
+              "value": "2.0"
             }
           ]
         }
@@ -132,12 +132,81 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_account",
                       "displayName": "Account",
                       "description": "Account"
                     }
                   }
                 }
+              },
+              {
+                "name": "country",
+                "purpose": "hasA",
+                "dataType": "country",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_Country"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "250"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Country"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Records the country related to the delivery framework."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msnfp_country",
+                "displayName": "Country",
+                "description": "Records the country related to the delivery framework.",
+                "maximumLength": 250
               },
               {
                 "name": "deliveryFrameworkId",
@@ -148,6 +217,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_deliveryframeworkId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -234,6 +312,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -266,6 +353,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_deliveryframeworktype",
                 "displayName": "Delivery Framework Type",
                 "description": "The type of Framwork, i.e. Program, Project, Initiative, Activity",
@@ -296,6 +384,15 @@
                       {
                         "name": "maximumLength",
                         "value": "4000"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
                       }
                     ]
                   },
@@ -332,10 +429,94 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_description",
                 "displayName": "Description",
                 "description": "Description of the Framework.",
                 "maximumLength": 4000
+              },
+              {
+                "entity": {
+                  "entityReference": "Account",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Account/(resolvedAttributes)/accountId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "donor",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "donorId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Donor"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "This field contains the unique identifier for the donor."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msnfp_donorid",
+                      "displayName": "Donor",
+                      "description": "This field contains the unique identifier for the donor."
+                    }
+                  }
+                }
               },
               {
                 "name": "endDate",
@@ -346,6 +527,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_enddate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -381,6 +571,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_enddate",
                 "displayName": "End Date",
                 "description": "End date of the Framework."
@@ -402,6 +593,15 @@
                       {
                         "name": "maximumLength",
                         "value": "1024"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
                       }
                     ]
                   },
@@ -438,6 +638,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_goal",
                 "displayName": "Goal",
                 "description": "Indicates the goal of the Framework.",
@@ -585,6 +786,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_objectiveid",
                       "displayName": "Objective",
                       "description": "Objective"
@@ -667,6 +869,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_parentdeliveryframeworkid",
                       "displayName": "Parent Delivery Framework",
                       "description": "Parent DeliveryFramework"
@@ -683,6 +886,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_plannedenddate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -718,6 +930,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_plannedenddate",
                 "displayName": "Planned End Date",
                 "description": "Planned end date of the framework."
@@ -731,6 +944,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_plannedstartdate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -766,9 +988,161 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_plannedstartdate",
                 "displayName": "Planned Start Date",
                 "description": "Planned start date of the framework."
+              },
+              {
+                "name": "region",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msnfp_Region"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "250"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Region"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Records the region related to the delivery framework."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msnfp_region",
+                "displayName": "Region",
+                "description": "Records the region related to the delivery framework.",
+                "maximumLength": 250
+              },
+              {
+                "entity": {
+                  "entityReference": "User",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "User/(resolvedAttributes)/systemUserId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "reviewer",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'User'.",
+                      "name": "reviewerId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Reviewer"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Records who will be reviewing the delivery framework."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msnfp_reviewer",
+                      "displayName": "Reviewer",
+                      "description": "Records who will be reviewing the delivery framework."
+                    }
+                  }
+                }
               },
               {
                 "name": "scope",
@@ -847,6 +1221,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -879,6 +1262,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_scope",
                 "displayName": "Scope",
                 "description": "Scope of the Framework.",
@@ -901,6 +1285,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_startdate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -936,6 +1329,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_startdate",
                 "displayName": "Start Date",
                 "description": "Start date of the Framework."
@@ -1005,6 +1399,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -1037,6 +1440,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_status",
                 "displayName": "Status",
                 "description": "Status",
@@ -1088,6 +1492,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -1189,6 +1602,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -1221,6 +1643,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "statuscode",
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Delivery Framework",

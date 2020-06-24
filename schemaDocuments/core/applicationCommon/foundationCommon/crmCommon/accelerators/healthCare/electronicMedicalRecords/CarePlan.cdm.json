@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -62,6 +62,12 @@
                 "purpose": "identifiedBy",
                 "dataType": "entityId",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_careplanId"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -105,262 +111,29 @@
                   }
                 ],
                 "sourceName": "msemr_careplanid",
-                "sourceOrdering": 1,
                 "displayName": "Care Plan",
                 "description": "Unique identifier for entity instances"
-              },
-              {
-                "name": "stateCode",
-                "purpose": "representsStateWith",
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                            "entityShape": "listLookupValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "1",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status of the Care Plan"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "statecode",
-                "sourceOrdering": 24,
-                "displayName": "Status",
-                "description": "Status of the Care Plan",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'stateCode_display' is added to the 'CarePlan' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                    "name": "stateCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "statusCode",
-                "purpose": {
-                  "purposeReference": "representsCorrelatedStatusWith",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.correlatedWith",
-                      "arguments": [
-                        "stateCode"
-                      ]
-                    }
-                  ]
-                },
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                            "entityShape": "listLookupCorrelatedValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "1",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "2",
-                                "1",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status Reason"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Reason for the status of the Care Plan"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "statuscode",
-                "sourceOrdering": 26,
-                "displayName": "Status Reason",
-                "description": "Reason for the status of the Care Plan",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'statusCode_display' is added to the 'CarePlan' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                    "name": "statusCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "title",
-                "purpose": "hasA",
-                "dataType": "string",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "required"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Title"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_title",
-                "sourceOrdering": 33,
-                "displayName": "Title",
-                "description": "The name of the custom entity.",
-                "maximumLength": 100
               },
               {
                 "name": "carePlanIdentifier",
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_CarePlanIdentifier"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -405,7 +178,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_careplanidentifier",
-                "sourceOrdering": 34,
                 "displayName": "Identifier",
                 "description": "This records identifiers associated with this care plan that are defined by business processes and/or used to refer to it when a direct URL reference to the resource itself is not appropriate.",
                 "maximumLength": 100
@@ -427,14 +199,12 @@
                               [
                                 "en",
                                 "Encounter",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Episode Of Care",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ]
                             ]
                           }
@@ -444,6 +214,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ContextType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -488,7 +264,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contexttype",
-                "sourceOrdering": 35,
                 "displayName": "Context Type",
                 "description": "Type of the context care plan is created for",
                 "resolutionGuidance": {
@@ -513,13 +288,14 @@
                     }
                   ]
                 },
-                "name": "Encounter_encounterIdentifier",
+                "name": "encounterIdentifier",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "encounterIdentifier",
+                      "explanation": "Unique identifier of 'Encounter'.",
+                      "name": "encounterIdentifierId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -577,7 +353,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_encounteridentifier",
-                      "sourceOrdering": 37,
                       "displayName": "Encounter",
                       "description": "Identifies the original context in which this particular CarePlan was created."
                     }
@@ -596,13 +371,14 @@
                     }
                   ]
                 },
-                "name": "EpisodeOfCare_episodeOfCare",
+                "name": "episodeOfCare",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "episodeOfCare",
+                      "explanation": "Unique identifier of 'EpisodeOfCare'.",
+                      "name": "episodeOfCareId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -660,7 +436,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_episodeofcare",
-                      "sourceOrdering": 38,
                       "displayName": "Episode of Care",
                       "description": "Identifies the original context in which this particular CarePlan was created."
                     }
@@ -679,13 +454,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_groupIdentifier",
+                "name": "groupIdentifier",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "groupIdentifier",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "groupIdentifierId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -743,7 +519,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_groupidentifier",
-                      "sourceOrdering": 39,
                       "displayName": "Group",
                       "description": "Identifies the patient or group whose intended care is described by the plan."
                     }
@@ -762,13 +537,14 @@
                     }
                   ]
                 },
-                "name": "Contact_patientIdentifier",
+                "name": "patientIdentifier",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "patientIdentifier",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "patientIdentifierId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -826,7 +602,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_patientidentifier",
-                      "sourceOrdering": 40,
                       "displayName": "Patient",
                       "description": "Identifies the patient or group whose intended care is described by the plan."
                     }
@@ -838,6 +613,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PlanDescription"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -882,7 +672,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_plandescription",
-                "sourceOrdering": 41,
                 "displayName": "Description",
                 "description": "A description of the scope and nature of the plan.",
                 "maximumLength": 100
@@ -892,6 +681,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PlanEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -936,7 +731,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_planenddate",
-                "sourceOrdering": 42,
                 "displayName": "End Date",
                 "description": "Indicates when the plan did (or is intended to) come into effect and end."
               },
@@ -987,6 +781,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PlanIntent"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -1030,7 +830,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_planintent",
-                "sourceOrdering": 43,
                 "displayName": "Intent",
                 "description": "Indicates the level of authority/intentionality associated with the care plan and where the care plan fits into the workflow chain.",
                 "resolutionGuidance": {
@@ -1048,6 +847,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PlanStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1092,7 +897,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_planstartdate",
-                "sourceOrdering": 45,
                 "displayName": "Start Date",
                 "description": "Indicates when the plan did (or is intended to) come into effect and end."
               },
@@ -1161,6 +965,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PlanStatus"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -1204,7 +1014,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_planstatus",
-                "sourceOrdering": 46,
                 "displayName": "Status",
                 "description": "Indicates whether the plan is currently being acted upon, represents future intentions or is now a historical record.",
                 "resolutionGuidance": {
@@ -1252,6 +1061,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_SubjectType"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -1295,13 +1110,282 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_subjecttype",
-                "sourceOrdering": 48,
                 "displayName": "Subject Type",
                 "description": "Type of subject of the care plan",
                 "resolutionGuidance": {
                   "addSupportingAttribute": {
                     "explanation": "This attribute 'subjectType_display' is added to the 'CarePlan' entity to provide the localized display text for the value of the listLookup attribute 'subjectType'",
                     "name": "subjectType_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "title",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_title"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Title"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msemr_title",
+                "displayName": "Title",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Care Plan"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "displayName": "Status",
+                "description": "Status of the Care Plan",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'CarePlan' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Care Plan"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "displayName": "Status Reason",
+                "description": "Reason for the status of the Care Plan",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'CarePlan' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
                     "purpose": "hasA",
                     "dataType": "localizedDisplayText",
                     "isReadOnly": true

@@ -1,9 +1,8 @@
 {
   "$schema": "CdmManifest.cdm.json",
   "jsonSchemaSemanticVersion": "1.0.0",
-  "imports": [],
   "manifestName": "nonProfitCore",
-  "explanation": "CDM Solution for the 'NONPROFITCORE' CDS Solution",
+  "explanation": "CDM standard entities for 'nonProfitCore'",
   "entities": [
     {
       "type": "LocalEntity",
@@ -112,6 +111,11 @@
     },
     {
       "type": "LocalEntity",
+      "entityName": "IndicatorValueUsage",
+      "entityPath": "IndicatorValueUsage.cdm.json/IndicatorValueUsage"
+    },
+    {
+      "type": "LocalEntity",
       "entityName": "Membership",
       "entityPath": "Membership.cdm.json/Membership"
     },
@@ -119,6 +123,11 @@
       "type": "LocalEntity",
       "entityName": "MembershipCategory",
       "entityPath": "MembershipCategory.cdm.json/MembershipCategory"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Need",
+      "entityPath": "Need.cdm.json/Need"
     },
     {
       "type": "LocalEntity",
@@ -162,6 +171,16 @@
     },
     {
       "type": "LocalEntity",
+      "entityName": "ProgramItem",
+      "entityPath": "ProgramItem.cdm.json/ProgramItem"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "ProgramItemRelationship",
+      "entityPath": "ProgramItemRelationship.cdm.json/ProgramItemRelationship"
+    },
+    {
+      "type": "LocalEntity",
       "entityName": "Recommendation",
       "entityPath": "Recommendation.cdm.json/Recommendation"
     },
@@ -197,8 +216,33 @@
     },
     {
       "type": "LocalEntity",
+      "entityName": "Stakeholder",
+      "entityPath": "Stakeholder.cdm.json/Stakeholder"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TheoryOfChange",
+      "entityPath": "TheoryOfChange.cdm.json/TheoryOfChange"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "TheoryOfChangeRelationship",
+      "entityPath": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship"
+    },
+    {
+      "type": "LocalEntity",
       "entityName": "Transaction",
       "entityPath": "Transaction.cdm.json/Transaction"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "WorkItem",
+      "entityPath": "WorkItem.cdm.json/WorkItem"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "WorkItemAction",
+      "entityPath": "WorkItemAction.cdm.json/WorkItemAction"
     }
   ],
   "relationships": [
@@ -270,6 +314,18 @@
     },
     {
       "fromEntity": "Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "/core/applicationCommon/Address.cdm.json/customerAddressInline",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "Account.cdm.json/Account",
       "fromEntityAttribute": "preferredSystemUserId",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
       "toEntityAttribute": "systemUserId"
@@ -317,12 +373,6 @@
       "toEntityAttribute": "accountId"
     },
     {
-      "fromEntity": "/core/applicationCommon/Activity.cdm.json/Activity",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
       "fromEntity": "/core/applicationCommon/ActivityParty.cdm.json/ActivityParty",
       "fromEntityAttribute": "partyId",
       "toEntity": "Account.cdm.json/Account",
@@ -331,12 +381,6 @@
     {
       "fromEntity": "/core/applicationCommon/Address.cdm.json/Address",
       "fromEntityAttribute": "parentId",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/Appointment.cdm.json/Appointment",
-      "fromEntityAttribute": "regardingObjectId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -372,12 +416,6 @@
     },
     {
       "fromEntity": "/core/applicationCommon/Email.cdm.json/Email",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/Email.cdm.json/Email",
       "fromEntityAttribute": "emailSender",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
@@ -389,44 +427,14 @@
       "toEntityAttribute": "accountId"
     },
     {
-      "fromEntity": "/core/applicationCommon/Fax.cdm.json/Fax",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/Letter.cdm.json/Letter",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
       "fromEntity": "/core/applicationCommon/Note.cdm.json/Note",
       "fromEntityAttribute": "objectId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
     {
-      "fromEntity": "/core/applicationCommon/PhoneCall.cdm.json/PhoneCall",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/RecurringAppointment.cdm.json/RecurringAppointment",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
       "fromEntity": "/core/applicationCommon/SLAKPIInstance.cdm.json/SLAKPIInstance",
       "fromEntityAttribute": "regarding",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/SocialActivity.cdm.json/SocialActivity",
-      "fromEntityAttribute": "regardingObjectId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -445,12 +453,6 @@
     {
       "fromEntity": "/core/applicationCommon/SocialProfile.cdm.json/SocialProfile",
       "fromEntityAttribute": "customerId",
-      "toEntity": "Account.cdm.json/Account",
-      "toEntityAttribute": "accountId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/Task.cdm.json/Task",
-      "fromEntityAttribute": "regardingObjectId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -744,19 +746,25 @@
     },
     {
       "fromEntity": "CreditPlan.cdm.json/CreditPlan",
-      "fromEntityAttribute": "creditPlan_AccountId",
+      "fromEntityAttribute": "creditPlanAccountId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
     {
       "fromEntity": "CreditPlanRecipient.cdm.json/CreditPlanRecipient",
-      "fromEntityAttribute": "creditPlanRecipient_CustomerId",
+      "fromEntityAttribute": "creditPlanRecipientCustomerId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
     {
       "fromEntity": "DeliveryFramework.cdm.json/DeliveryFramework",
       "fromEntityAttribute": "accountId",
+      "toEntity": "Account.cdm.json/Account",
+      "toEntityAttribute": "accountId"
+    },
+    {
+      "fromEntity": "DeliveryFramework.cdm.json/DeliveryFramework",
+      "fromEntityAttribute": "donorId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -774,7 +782,7 @@
     },
     {
       "fromEntity": "Docket.cdm.json/Docket",
-      "fromEntityAttribute": "docket_FiscalSponsorId",
+      "fromEntityAttribute": "docketFiscalSponsorId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -815,14 +823,20 @@
       "toEntityAttribute": "accountId"
     },
     {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "beneficiaryId",
+      "toEntity": "Account.cdm.json/Account",
+      "toEntityAttribute": "accountId"
+    },
+    {
       "fromEntity": "Objective.cdm.json/Objective",
-      "fromEntityAttribute": "objective_AccountId",
+      "fromEntityAttribute": "objectiveAccountId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
     {
       "fromEntity": "OfacMatch.cdm.json/OfacMatch",
-      "fromEntityAttribute": "ofacMatch_CustomerId",
+      "fromEntityAttribute": "ofacMatchCustomerId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -834,7 +848,7 @@
     },
     {
       "fromEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
-      "fromEntityAttribute": "omtSched_DefaultHardCreditToCustomerId",
+      "fromEntityAttribute": "omtSchedDefaultHardCreditToCustomerId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -858,7 +872,7 @@
     },
     {
       "fromEntity": "Preference.cdm.json/Preference",
-      "fromEntityAttribute": "accountOrContactId",
+      "fromEntityAttribute": "preferenceCustomerId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -870,7 +884,7 @@
     },
     {
       "fromEntity": "Report.cdm.json/Report",
-      "fromEntityAttribute": "report_AccountId",
+      "fromEntityAttribute": "reportAccountId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -888,13 +902,37 @@
     },
     {
       "fromEntity": "Salutation.cdm.json/Salutation",
-      "fromEntityAttribute": "customerId",
+      "fromEntityAttribute": "salutationCustomerId",
+      "toEntity": "Account.cdm.json/Account",
+      "toEntityAttribute": "accountId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "stakeholderNameId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
     {
       "fromEntity": "Transaction.cdm.json/Transaction",
-      "fromEntityAttribute": "transaction_ReceiptOnAccountId",
+      "fromEntityAttribute": "transactionReceiptOnAccountId",
+      "toEntity": "Account.cdm.json/Account",
+      "toEntityAttribute": "accountId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "beneficiaryId",
+      "toEntity": "Account.cdm.json/Account",
+      "toEntityAttribute": "accountId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "beneficiaryId",
+      "toEntity": "Account.cdm.json/Account",
+      "toEntityAttribute": "accountId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "referralToId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -924,7 +962,7 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/CreditPlan.cdm.json/CreditPlan",
-      "fromEntityAttribute": "creditPlan_AccountId",
+      "fromEntityAttribute": "creditPlanAccountId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -942,7 +980,7 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/OfacMatch.cdm.json/OfacMatch",
-      "fromEntityAttribute": "ofacMatch_CustomerId",
+      "fromEntityAttribute": "ofacMatchCustomerId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -960,7 +998,7 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Preference.cdm.json/Preference",
-      "fromEntityAttribute": "accountOrContactId",
+      "fromEntityAttribute": "preferenceCustomerId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -972,7 +1010,7 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Report.cdm.json/Report",
-      "fromEntityAttribute": "report_AccountId",
+      "fromEntityAttribute": "reportAccountId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -990,7 +1028,7 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Transaction.cdm.json/Transaction",
-      "fromEntityAttribute": "transaction_ReceiptOnAccountId",
+      "fromEntityAttribute": "transactionReceiptOnAccountId",
       "toEntity": "Account.cdm.json/Account",
       "toEntityAttribute": "accountId"
     },
@@ -1062,6 +1100,18 @@
     },
     {
       "fromEntity": "Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "/core/applicationCommon/Address.cdm.json/customerAddressInline",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "Contact.cdm.json/Contact",
       "fromEntityAttribute": "preferredSystemUserId",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
       "toEntityAttribute": "systemUserId"
@@ -1109,12 +1159,6 @@
       "toEntityAttribute": "contactId"
     },
     {
-      "fromEntity": "/core/applicationCommon/Activity.cdm.json/Activity",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
       "fromEntity": "/core/applicationCommon/ActivityParty.cdm.json/ActivityParty",
       "fromEntityAttribute": "partyId",
       "toEntity": "Contact.cdm.json/Contact",
@@ -1123,12 +1167,6 @@
     {
       "fromEntity": "/core/applicationCommon/Address.cdm.json/Address",
       "fromEntityAttribute": "parentId",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/Appointment.cdm.json/Appointment",
-      "fromEntityAttribute": "regardingObjectId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1170,19 +1208,7 @@
     },
     {
       "fromEntity": "/core/applicationCommon/Email.cdm.json/Email",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/Email.cdm.json/Email",
       "fromEntityAttribute": "emailSender",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/Fax.cdm.json/Fax",
-      "fromEntityAttribute": "regardingObjectId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1205,38 +1231,14 @@
       "toEntityAttribute": "contactId"
     },
     {
-      "fromEntity": "/core/applicationCommon/Letter.cdm.json/Letter",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
       "fromEntity": "/core/applicationCommon/Note.cdm.json/Note",
       "fromEntityAttribute": "objectId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
     {
-      "fromEntity": "/core/applicationCommon/PhoneCall.cdm.json/PhoneCall",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/RecurringAppointment.cdm.json/RecurringAppointment",
-      "fromEntityAttribute": "regardingObjectId",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
       "fromEntity": "/core/applicationCommon/SLAKPIInstance.cdm.json/SLAKPIInstance",
       "fromEntityAttribute": "regarding",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/SocialActivity.cdm.json/SocialActivity",
-      "fromEntityAttribute": "regardingObjectId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1255,12 +1257,6 @@
     {
       "fromEntity": "/core/applicationCommon/SocialProfile.cdm.json/SocialProfile",
       "fromEntityAttribute": "customerId",
-      "toEntity": "Contact.cdm.json/Contact",
-      "toEntityAttribute": "contactId"
-    },
-    {
-      "fromEntity": "/core/applicationCommon/Task.cdm.json/Task",
-      "fromEntityAttribute": "regardingObjectId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1542,7 +1538,7 @@
     },
     {
       "fromEntity": "CreditPlanRecipient.cdm.json/CreditPlanRecipient",
-      "fromEntityAttribute": "creditPlanRecipient_CustomerId",
+      "fromEntityAttribute": "creditPlanRecipientCustomerId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1566,7 +1562,7 @@
     },
     {
       "fromEntity": "Docket.cdm.json/Docket",
-      "fromEntityAttribute": "docket_FiscalSponsorId",
+      "fromEntityAttribute": "docketFiscalSponsorId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1578,7 +1574,7 @@
     },
     {
       "fromEntity": "Education.cdm.json/Education",
-      "fromEntityAttribute": "education_ContactId",
+      "fromEntityAttribute": "educationContactId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1595,8 +1591,14 @@
       "toEntityAttribute": "contactId"
     },
     {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "beneficiaryId",
+      "toEntity": "Contact.cdm.json/Contact",
+      "toEntityAttribute": "contactId"
+    },
+    {
       "fromEntity": "OfacMatch.cdm.json/OfacMatch",
-      "fromEntityAttribute": "ofacMatch_CustomerId",
+      "fromEntityAttribute": "ofacMatchCustomerId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1608,19 +1610,19 @@
     },
     {
       "fromEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
-      "fromEntityAttribute": "omtSched_DefaultHardCreditToCustomerId",
+      "fromEntityAttribute": "omtSchedDefaultHardCreditToCustomerId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
     {
       "fromEntity": "PlannedGiving.cdm.json/PlannedGiving",
-      "fromEntityAttribute": "plannedGiving_PledgedByContactId",
+      "fromEntityAttribute": "plannedGivingPledgedByContactId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
     {
       "fromEntity": "Preference.cdm.json/Preference",
-      "fromEntityAttribute": "accountOrContactId",
+      "fromEntityAttribute": "preferenceCustomerId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1638,7 +1640,7 @@
     },
     {
       "fromEntity": "Report.cdm.json/Report",
-      "fromEntityAttribute": "report_SubmittedById",
+      "fromEntityAttribute": "reportSubmittedById",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1662,7 +1664,31 @@
     },
     {
       "fromEntity": "Salutation.cdm.json/Salutation",
-      "fromEntityAttribute": "customerId",
+      "fromEntityAttribute": "salutationCustomerId",
+      "toEntity": "Contact.cdm.json/Contact",
+      "toEntityAttribute": "contactId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "stakeholderNameId",
+      "toEntity": "Contact.cdm.json/Contact",
+      "toEntityAttribute": "contactId"
+    },
+    {
+      "fromEntity": "Transaction.cdm.json/Transaction",
+      "fromEntityAttribute": "receiptOnContactId",
+      "toEntity": "Contact.cdm.json/Contact",
+      "toEntityAttribute": "contactId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "beneficiaryId",
+      "toEntity": "Contact.cdm.json/Contact",
+      "toEntityAttribute": "contactId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "beneficiaryId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1686,19 +1712,19 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/OfacMatch.cdm.json/OfacMatch",
-      "fromEntityAttribute": "ofacMatch_CustomerId",
+      "fromEntityAttribute": "ofacMatchCustomerId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/PlannedGiving.cdm.json/PlannedGiving",
-      "fromEntityAttribute": "plannedGiving_PledgedByContactId",
+      "fromEntityAttribute": "plannedGivingPledgedByContactId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Preference.cdm.json/Preference",
-      "fromEntityAttribute": "accountOrContactId",
+      "fromEntityAttribute": "preferenceCustomerId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1716,7 +1742,7 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Report.cdm.json/Report",
-      "fromEntityAttribute": "report_SubmittedById",
+      "fromEntityAttribute": "reportSubmittedById",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1735,6 +1761,12 @@
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Review.cdm.json/Review",
       "fromEntityAttribute": "reviewerId",
+      "toEntity": "Contact.cdm.json/Contact",
+      "toEntityAttribute": "contactId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Transaction.cdm.json/Transaction",
+      "fromEntityAttribute": "receiptOnContactId",
       "toEntity": "Contact.cdm.json/Contact",
       "toEntityAttribute": "contactId"
     },
@@ -1803,6 +1835,132 @@
       "fromEntityAttribute": "transactionCurrencyId",
       "toEntity": "/core/applicationCommon/Currency.cdm.json/Currency",
       "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/financialServices/banking/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/financialServices/banking/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitIati/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitIati/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitVolunteers/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitVolunteers/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/projectCommon/projectServiceAutomation/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Contract.cdm.json/Contract",
+      "fromEntityAttribute": "billToAddress",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/Contract.cdm.json/Contract",
+      "fromEntityAttribute": "serviceAddress",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/service/ContractLine.cdm.json/ContractLine",
+      "fromEntityAttribute": "serviceAddress",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/solutions/marketing/eventManagement/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/solutions/portals/Account.cdm.json/Account",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/solutions/portals/Contact.cdm.json/Contact",
+      "fromEntityAttribute": "address1AddressId",
+      "toEntity": "Address.cdm.json/Address",
+      "toEntityAttribute": "customerAddressId"
     },
     {
       "fromEntity": "Award.cdm.json/Award",
@@ -2141,6 +2299,18 @@
       "toEntityAttribute": "budgetId"
     },
     {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "budgetId",
+      "toEntity": "Budget.cdm.json/Budget",
+      "toEntityAttribute": "budgetId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "budgetId",
+      "toEntity": "Budget.cdm.json/Budget",
+      "toEntityAttribute": "budgetId"
+    },
+    {
       "fromEntity": "CreditPlan.cdm.json/CreditPlan",
       "fromEntityAttribute": "createdBy",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
@@ -2196,13 +2366,13 @@
     },
     {
       "fromEntity": "CreditPlan.cdm.json/CreditPlan",
-      "fromEntityAttribute": "creditPlan_PaymentScheduleId",
+      "fromEntityAttribute": "creditPlanPaymentScheduleId",
       "toEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
       "toEntityAttribute": "paymentScheduleId"
     },
     {
       "fromEntity": "CreditPlanRecipient.cdm.json/CreditPlanRecipient",
-      "fromEntityAttribute": "creditRecipient_CreditPlanId",
+      "fromEntityAttribute": "creditRecipientCreditPlanId",
       "toEntity": "CreditPlan.cdm.json/CreditPlan",
       "toEntityAttribute": "creditPlanId"
     },
@@ -2327,7 +2497,19 @@
       "toEntityAttribute": "deliveryFrameworkId"
     },
     {
+      "fromEntity": "DeliveryFramework.cdm.json/DeliveryFramework",
+      "fromEntityAttribute": "reviewerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
       "fromEntity": "DisbursementDistribution.cdm.json/DisbursementDistribution",
+      "fromEntityAttribute": "deliveryFrameworkId",
+      "toEntity": "DeliveryFramework.cdm.json/DeliveryFramework",
+      "toEntityAttribute": "deliveryFrameworkId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
       "fromEntityAttribute": "deliveryFrameworkId",
       "toEntity": "DeliveryFramework.cdm.json/DeliveryFramework",
       "toEntityAttribute": "deliveryFrameworkId"
@@ -2335,6 +2517,18 @@
     {
       "fromEntity": "Result.cdm.json/Result",
       "fromEntityAttribute": "deliveryFrameworkId",
+      "toEntity": "DeliveryFramework.cdm.json/DeliveryFramework",
+      "toEntityAttribute": "deliveryFrameworkId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "deliveryFrameworkId",
+      "toEntity": "DeliveryFramework.cdm.json/DeliveryFramework",
+      "toEntityAttribute": "deliveryFrameworkId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "relatedDeliveryFrameworkId",
       "toEntity": "DeliveryFramework.cdm.json/DeliveryFramework",
       "toEntityAttribute": "deliveryFrameworkId"
     },
@@ -2418,7 +2612,7 @@
     },
     {
       "fromEntity": "DesignatedCredit.cdm.json/DesignatedCredit",
-      "fromEntityAttribute": "designatiedCredit_DesignationId",
+      "fromEntityAttribute": "designatiedCreditDesignationId",
       "toEntity": "Designation.cdm.json/Designation",
       "toEntityAttribute": "designationId"
     },
@@ -2502,13 +2696,13 @@
     },
     {
       "fromEntity": "DesignationPlan.cdm.json/DesignationPlan",
-      "fromEntityAttribute": "designationPlan_DesignationId",
+      "fromEntityAttribute": "designationPlanDesignationId",
       "toEntity": "Designation.cdm.json/Designation",
       "toEntityAttribute": "designationId"
     },
     {
       "fromEntity": "DonorCommitment.cdm.json/DonorCommitment",
-      "fromEntityAttribute": "commitment_DefaultDesignationId",
+      "fromEntityAttribute": "commitmentDefaultDesignationId",
       "toEntity": "Designation.cdm.json/Designation",
       "toEntityAttribute": "designationId"
     },
@@ -2520,13 +2714,13 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/DesignationPlan.cdm.json/DesignationPlan",
-      "fromEntityAttribute": "designationPlan_DesignationId",
+      "fromEntityAttribute": "designationPlanDesignationId",
       "toEntity": "Designation.cdm.json/Designation",
       "toEntityAttribute": "designationId"
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/DonorCommitment.cdm.json/DonorCommitment",
-      "fromEntityAttribute": "commitment_DefaultDesignationId",
+      "fromEntityAttribute": "commitmentDefaultDesignationId",
       "toEntity": "Designation.cdm.json/Designation",
       "toEntityAttribute": "designationId"
     },
@@ -2598,13 +2792,13 @@
     },
     {
       "fromEntity": "DesignationPlan.cdm.json/DesignationPlan",
-      "fromEntityAttribute": "designationPlan_DonorCommitmentId",
+      "fromEntityAttribute": "designationPlanDonorCommitmentId",
       "toEntity": "DonorCommitment.cdm.json/DonorCommitment",
       "toEntityAttribute": "donorCommitmentId"
     },
     {
       "fromEntity": "DesignationPlan.cdm.json/DesignationPlan",
-      "fromEntityAttribute": "designationPlan_PaymentScheduleId",
+      "fromEntityAttribute": "designationPlanPaymentScheduleId",
       "toEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
       "toEntityAttribute": "paymentScheduleId"
     },
@@ -2808,7 +3002,7 @@
     },
     {
       "fromEntity": "Review.cdm.json/Review",
-      "fromEntityAttribute": "review_DocketId",
+      "fromEntityAttribute": "reviewDocketId",
       "toEntity": "Docket.cdm.json/Docket",
       "toEntityAttribute": "docketId"
     },
@@ -2826,7 +3020,7 @@
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Review.cdm.json/Review",
-      "fromEntityAttribute": "review_DocketId",
+      "fromEntityAttribute": "reviewDocketId",
       "toEntity": "Docket.cdm.json/Docket",
       "toEntityAttribute": "docketId"
     },
@@ -2886,7 +3080,7 @@
     },
     {
       "fromEntity": "DonorCommitment.cdm.json/DonorCommitment",
-      "fromEntityAttribute": "donorCommitment_PlannedGivingId",
+      "fromEntityAttribute": "donorCommitmentPlannedGivingId",
       "toEntity": "PlannedGiving.cdm.json/PlannedGiving",
       "toEntityAttribute": "plannedGivingId"
     },
@@ -2898,7 +3092,7 @@
     },
     {
       "fromEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
-      "fromEntityAttribute": "paymentSchedule_DonorCommitmentId",
+      "fromEntityAttribute": "paymentScheduleDonorCommitmentId",
       "toEntity": "DonorCommitment.cdm.json/DonorCommitment",
       "toEntityAttribute": "donorCommitmentId"
     },
@@ -3077,6 +3271,18 @@
       "toEntityAttribute": "indicatorId"
     },
     {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "indicatorId",
+      "toEntity": "Indicator.cdm.json/Indicator",
+      "toEntityAttribute": "indicatorId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "indicatorId",
+      "toEntity": "Indicator.cdm.json/Indicator",
+      "toEntityAttribute": "indicatorId"
+    },
+    {
       "fromEntity": "IndicatorValue.cdm.json/IndicatorValue",
       "fromEntityAttribute": "createdBy",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
@@ -3143,12 +3349,90 @@
       "toEntityAttribute": "transactionCurrencyId"
     },
     {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "indicatorValueId",
+      "toEntity": "IndicatorValue.cdm.json/IndicatorValue",
+      "toEntityAttribute": "indicatorValueId"
+    },
+    {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitIati/IndicatorValue.cdm.json/IndicatorValue",
       "fromEntityAttribute": "parentIndicatorValueId",
       "toEntity": "IndicatorValue.cdm.json/IndicatorValue",
       "toEntityAttribute": "indicatorValueId"
     },
     {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "needId",
+      "toEntity": "Need.cdm.json/Need",
+      "toEntityAttribute": "needId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "workItemActionId",
+      "toEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "toEntityAttribute": "workItemActionId"
+    },
+    {
+      "fromEntity": "IndicatorValueUsage.cdm.json/IndicatorValueUsage",
+      "fromEntityAttribute": "workItemId",
+      "toEntity": "WorkItem.cdm.json/WorkItem",
+      "toEntityAttribute": "workItemId"
+    },
+    {
       "fromEntity": "Membership.cdm.json/Membership",
       "fromEntityAttribute": "createdBy",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
@@ -3255,6 +3539,66 @@
       "fromEntityAttribute": "owningTeam",
       "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
       "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Need.cdm.json/Need",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "needId",
+      "toEntity": "Need.cdm.json/Need",
+      "toEntityAttribute": "needId"
     },
     {
       "fromEntity": "Objective.cdm.json/Objective",
@@ -3313,6 +3657,18 @@
     {
       "fromEntity": "Objective.cdm.json/Objective",
       "fromEntityAttribute": "parentObjectiveId",
+      "toEntity": "Objective.cdm.json/Objective",
+      "toEntityAttribute": "objectiveId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "objectiveId",
+      "toEntity": "Objective.cdm.json/Objective",
+      "toEntityAttribute": "objectiveId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "objectiveId",
       "toEntity": "Objective.cdm.json/Objective",
       "toEntityAttribute": "objectiveId"
     },
@@ -3456,13 +3812,13 @@
     },
     {
       "fromEntity": "PaymentAsset.cdm.json/PaymentAsset",
-      "fromEntityAttribute": "paymentAsset_PlannedGivingId",
+      "fromEntityAttribute": "paymentassetPlannedgivingId",
       "toEntity": "PlannedGiving.cdm.json/PlannedGiving",
       "toEntityAttribute": "plannedGivingId"
     },
     {
       "fromEntity": "PaymentAsset.cdm.json/PaymentAsset",
-      "fromEntityAttribute": "paymentAsset_PledgedAssetId",
+      "fromEntityAttribute": "paymentAssetPledgedAssetId",
       "toEntity": "PaymentAsset.cdm.json/PaymentAsset",
       "toEntityAttribute": "paymentAssetId"
     },
@@ -3552,13 +3908,13 @@
     },
     {
       "fromEntity": "Transaction.cdm.json/Transaction",
-      "fromEntityAttribute": "transaction_PaymentMethodId",
+      "fromEntityAttribute": "transactionPaymentMethodId",
       "toEntity": "PaymentMethod.cdm.json/PaymentMethod",
       "toEntityAttribute": "paymentMethodId"
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Transaction.cdm.json/Transaction",
-      "fromEntityAttribute": "transaction_PaymentMethodId",
+      "fromEntityAttribute": "transactionPaymentMethodId",
       "toEntity": "PaymentMethod.cdm.json/PaymentMethod",
       "toEntityAttribute": "paymentMethodId"
     },
@@ -3678,25 +4034,25 @@
     },
     {
       "fromEntity": "Transaction.cdm.json/Transaction",
-      "fromEntityAttribute": "transaction_PaymentScheduleId",
+      "fromEntityAttribute": "transactionPaymentScheduleId",
       "toEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
       "toEntityAttribute": "paymentScheduleId"
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/CreditPlan.cdm.json/CreditPlan",
-      "fromEntityAttribute": "creditPlan_PaymentScheduleId",
+      "fromEntityAttribute": "creditPlanPaymentScheduleId",
       "toEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
       "toEntityAttribute": "paymentScheduleId"
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/DesignationPlan.cdm.json/DesignationPlan",
-      "fromEntityAttribute": "designationPlan_PaymentScheduleId",
+      "fromEntityAttribute": "designationPlanPaymentScheduleId",
       "toEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
       "toEntityAttribute": "paymentScheduleId"
     },
     {
       "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitForSales/Transaction.cdm.json/Transaction",
-      "fromEntityAttribute": "transaction_PaymentScheduleId",
+      "fromEntityAttribute": "transactionPaymentScheduleId",
       "toEntity": "PaymentSchedule.cdm.json/PaymentSchedule",
       "toEntityAttribute": "paymentScheduleId"
     },
@@ -3813,6 +4169,144 @@
       "fromEntityAttribute": "owningTeam",
       "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
       "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "ProgramItem.cdm.json/ProgramItem",
+      "fromEntityAttribute": "theoryOfChangeId",
+      "toEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "toEntityAttribute": "theoryOfChangeId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "relatedFromProgramItemId",
+      "toEntity": "ProgramItem.cdm.json/ProgramItem",
+      "toEntityAttribute": "programItemId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "relatedToProgramItemId",
+      "toEntity": "ProgramItem.cdm.json/ProgramItem",
+      "toEntityAttribute": "programItemId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "programItemId",
+      "toEntity": "ProgramItem.cdm.json/ProgramItem",
+      "toEntityAttribute": "programItemId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "ProgramItemRelationship.cdm.json/ProgramItemRelationship",
+      "fromEntityAttribute": "resultId",
+      "toEntity": "Result.cdm.json/Result",
+      "toEntityAttribute": "resultId"
     },
     {
       "fromEntity": "Recommendation.cdm.json/Recommendation",
@@ -3936,7 +4430,7 @@
     },
     {
       "fromEntity": "Review.cdm.json/Review",
-      "fromEntityAttribute": "review_ReportId",
+      "fromEntityAttribute": "reviewReportId",
       "toEntity": "Report.cdm.json/Report",
       "toEntityAttribute": "reportId"
     },
@@ -4115,6 +4609,30 @@
       "toEntityAttribute": "teamId"
     },
     {
+      "fromEntity": "Result.cdm.json/Result",
+      "fromEntityAttribute": "parentResultId",
+      "toEntity": "Result.cdm.json/Result",
+      "toEntityAttribute": "resultId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "resultId",
+      "toEntity": "Result.cdm.json/Result",
+      "toEntityAttribute": "resultId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitMeasurement/Result.cdm.json/Result",
+      "fromEntityAttribute": "parentResultId",
+      "toEntity": "Result.cdm.json/Result",
+      "toEntityAttribute": "resultId"
+    },
+    {
+      "fromEntity": "/core/applicationCommon/foundationCommon/crmCommon/accelerators/nonProfit/nonProfitIati/Result.cdm.json/Result",
+      "fromEntityAttribute": "parentResultId",
+      "toEntity": "Result.cdm.json/Result",
+      "toEntityAttribute": "resultId"
+    },
+    {
       "fromEntity": "Review.cdm.json/Review",
       "fromEntityAttribute": "createdBy",
       "toEntity": "/core/applicationCommon/User.cdm.json/User",
@@ -4218,6 +4736,180 @@
     },
     {
       "fromEntity": "Salutation.cdm.json/Salutation",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "Stakeholder.cdm.json/Stakeholder",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "fromEntityAttribute": "parentTheoryOfChangeId",
+      "toEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "toEntityAttribute": "theoryOfChangeId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "theoryOfChangeId",
+      "toEntity": "TheoryOfChange.cdm.json/TheoryOfChange",
+      "toEntityAttribute": "theoryOfChangeId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "TheoryOfChangeRelationship.cdm.json/TheoryOfChangeRelationship",
       "fromEntityAttribute": "owningTeam",
       "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
       "toEntityAttribute": "teamId"
@@ -4299,6 +4991,126 @@
       "fromEntityAttribute": "originalTxnAdjustedId",
       "toEntity": "Transaction.cdm.json/Transaction",
       "toEntityAttribute": "transactionId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "WorkItem.cdm.json/WorkItem",
+      "fromEntityAttribute": "parentWorkItemId",
+      "toEntity": "WorkItem.cdm.json/WorkItem",
+      "toEntityAttribute": "workItemId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "workItemId",
+      "toEntity": "WorkItem.cdm.json/WorkItem",
+      "toEntityAttribute": "workItemId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "createdBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "modifiedBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "createdOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "modifiedOnBehalfBy",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "ownerId",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "owningBusinessUnit",
+      "toEntity": "/core/applicationCommon/BusinessUnit.cdm.json/BusinessUnit",
+      "toEntityAttribute": "businessUnitId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "owningUser",
+      "toEntity": "/core/applicationCommon/User.cdm.json/User",
+      "toEntityAttribute": "systemUserId"
+    },
+    {
+      "fromEntity": "WorkItemAction.cdm.json/WorkItemAction",
+      "fromEntityAttribute": "owningTeam",
+      "toEntity": "/core/applicationCommon/Team.cdm.json/Team",
+      "toEntityAttribute": "teamId"
     }
   ]
 }

@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -58,309 +58,29 @@
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
               {
-                "name": "conditionId",
-                "purpose": "identifiedBy",
-                "dataType": "entityId",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Condition"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Unique identifier for entity instances"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "msemr_conditionid",
-                "sourceOrdering": 1,
-                "displayName": "Condition",
-                "description": "Unique identifier for entity instances"
-              },
-              {
-                "name": "stateCode",
-                "purpose": "representsStateWith",
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                            "entityShape": "listLookupValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "1",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status of the Condition"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "statecode",
-                "sourceOrdering": 24,
-                "displayName": "Status",
-                "description": "Status of the Condition",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'stateCode_display' is added to the 'Condition' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                    "name": "stateCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "statusCode",
-                "purpose": {
-                  "purposeReference": "representsCorrelatedStatusWith",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.correlatedWith",
-                      "arguments": [
-                        "stateCode"
-                      ]
-                    }
-                  ]
-                },
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                            "entityShape": "listLookupCorrelatedValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "1",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "2",
-                                "1",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status Reason"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Reason for the status of the Condition"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "statuscode",
-                "sourceOrdering": 26,
-                "displayName": "Status Reason",
-                "description": "Reason for the status of the Condition",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'statusCode_display' is added to the 'Condition' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                    "name": "statusCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "name",
-                "purpose": "hasA",
-                "dataType": "name",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "required"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Description"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_name",
-                "sourceOrdering": 33,
-                "displayName": "Description",
-                "description": "The name of the custom entity.",
-                "maximumLength": 100
-              },
-              {
                 "name": "abatementAge",
                 "purpose": "hasA",
                 "dataType": "double",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AbatementAge"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "0"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "1000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -405,7 +125,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_abatementage",
-                "sourceOrdering": 34,
                 "displayName": "Abatement Age",
                 "description": "The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\" or \"resolution\" -",
                 "maximumValue": "1000000000",
@@ -416,6 +135,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AbatementDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -460,7 +185,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_abatementdate",
-                "sourceOrdering": 35,
                 "displayName": "Abatement Date",
                 "description": "The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\" or \"resolution\""
               },
@@ -469,6 +193,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AbatementPeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -513,7 +243,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_abatementperiodenddate",
-                "sourceOrdering": 36,
                 "displayName": "Abatement Period End Date",
                 "description": "The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\" or \"resolution\""
               },
@@ -522,6 +251,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AbatementPeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -566,7 +301,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_abatementperiodstartdate",
-                "sourceOrdering": 37,
                 "displayName": "Abatement Period Start Date",
                 "description": "The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\" or \"resolution\""
               },
@@ -575,6 +309,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AbatementRangeHigh"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -619,7 +372,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_abatementrangehigh",
-                "sourceOrdering": 38,
                 "displayName": "Abatement Range High",
                 "description": "The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\" or \"resolution\"",
                 "maximumValue": "2147483647",
@@ -630,6 +382,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AbatementRangeLow"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -674,7 +445,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_abatementrangelow",
-                "sourceOrdering": 39,
                 "displayName": "Abatement Range Low",
                 "description": "The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\" or \"resolution\"",
                 "maximumValue": "2147483647",
@@ -685,6 +455,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AbatementString"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -729,7 +514,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_abatementstring",
-                "sourceOrdering": 40,
                 "displayName": "Abatement String",
                 "description": "The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\" or \"resolution\"",
                 "maximumLength": 100
@@ -793,6 +577,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AbatementType"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -836,7 +626,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_abatementtype",
-                "sourceOrdering": 41,
                 "displayName": "Abatement Type",
                 "description": "Type of: The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\"/resolution.",
                 "resolutionGuidance": {
@@ -851,23 +640,24 @@
               },
               {
                 "entity": {
-                  "entityReference": "EmrAppointment",
+                  "entityReference": "AppointmentEMR",
                   "appliedTraits": [
                     {
                       "traitReference": "is.identifiedBy",
                       "arguments": [
-                        "EmrAppointment/(resolvedAttributes)/activityId"
+                        "AppointmentEMR/(resolvedAttributes)/activityId"
                       ]
                     }
                   ]
                 },
-                "name": "EmrAppointment_appointment",
+                "name": "appointment",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "appointment",
+                      "explanation": "Unique identifier of 'AppointmentEMR'.",
+                      "name": "appointmentId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -925,7 +715,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_appointment",
-                      "sourceOrdering": 43,
                       "displayName": "Appointment",
                       "description": "A booking of a healthcare event among patient(s), practitioner(s), related person(s) and/or device(s) for a specific date/time. This may result in one or more Encounter(s)."
                     }
@@ -937,6 +726,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AssertedDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -981,7 +776,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_asserteddate",
-                "sourceOrdering": 44,
                 "displayName": "Asserted Date",
                 "description": "The date on which the existence of the Condition was first asserted or acknowledged."
               },
@@ -997,13 +791,14 @@
                     }
                   ]
                 },
-                "name": "Contact_asserter",
+                "name": "asserter",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "asserter",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "asserterId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1061,7 +856,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_asserter",
-                      "sourceOrdering": 45,
                       "displayName": "Asserter",
                       "description": "Person who asserts this condition"
                     }
@@ -1080,13 +874,14 @@
                     }
                   ]
                 },
-                "name": "CarePlan_carePlan",
+                "name": "carePlan",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "carePlan",
+                      "explanation": "Unique identifier of 'CarePlan'.",
+                      "name": "carePlanId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1144,7 +939,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_careplan",
-                      "sourceOrdering": 46,
                       "displayName": "Care Plan",
                       "description": "Describes the intention of how one or more practitioners intend to deliver care for a particular patient, group or community for a period of time, possibly limited to care for a specific condition."
                     }
@@ -1163,13 +957,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_category",
+                "name": "category",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "category",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "categoryId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1227,7 +1022,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_category",
-                      "sourceOrdering": 47,
                       "displayName": "Category",
                       "description": "Categorization of the condition recorded by health care practitioner."
                     }
@@ -1287,6 +1081,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ClinicalStatus"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -1330,7 +1130,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_clinicalstatus",
-                "sourceOrdering": 48,
                 "displayName": "Clinical Status",
                 "description": "The clinical status of the condition.",
                 "resolutionGuidance": {
@@ -1355,13 +1154,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_conditionCode",
+                "name": "conditionCode",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "conditionCode",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "conditionCodeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1419,12 +1219,68 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_conditioncode",
-                      "sourceOrdering": 50,
                       "displayName": "Condition Code",
                       "description": "List of diagnosis/condition codes"
                     }
                   }
                 }
+              },
+              {
+                "name": "conditionId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_conditionId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Condition"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msemr_conditionid",
+                "displayName": "Condition",
+                "description": "Unique identifier for entity instances"
               },
               {
                 "entity": {
@@ -1438,13 +1294,14 @@
                     }
                   ]
                 },
-                "name": "Encounter_contextEncounter",
+                "name": "contextEncounter",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contextEncounter",
+                      "explanation": "Unique identifier of 'Encounter'.",
+                      "name": "contextEncounterId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1502,7 +1359,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contextencounter",
-                      "sourceOrdering": 51,
                       "displayName": "Context",
                       "description": "Categorization of the condition recorded by health care practitioner."
                     }
@@ -1521,13 +1377,14 @@
                     }
                   ]
                 },
-                "name": "EpisodeOfCare_contextEpisodeofCare",
+                "name": "contextEpisodeOfCare",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contextEpisodeofCare",
+                      "explanation": "Unique identifier of 'EpisodeOfCare'.",
+                      "name": "contextEpisodeOfCareId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1585,7 +1442,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contextepisodeofcare",
-                      "sourceOrdering": 52,
                       "displayName": "Context",
                       "description": "Encounter or episode when condition first asserted"
                     }
@@ -1609,14 +1465,12 @@
                               [
                                 "en",
                                 "Encounter",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Episode Of Care",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ]
                             ]
                           }
@@ -1626,6 +1480,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ContextType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1670,7 +1530,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contexttype",
-                "sourceOrdering": 53,
                 "displayName": "Context Type",
                 "description": "Type of: Encounter during which the condition was first asserted.",
                 "resolutionGuidance": {
@@ -1695,13 +1554,14 @@
                     }
                   ]
                 },
-                "name": "Encounter_encounter",
+                "name": "encounter",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "encounter",
+                      "explanation": "Unique identifier of 'Encounter'.",
+                      "name": "encounterId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1759,7 +1619,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_encounter",
-                      "sourceOrdering": 55,
                       "displayName": "Encounter",
                       "description": "An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient."
                     }
@@ -1771,6 +1630,12 @@
                 "purpose": "hasA",
                 "dataType": "boolean",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_IsAbatement"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1815,15 +1680,100 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_isabatement",
-                "sourceOrdering": 56,
                 "displayName": "Is Abatement",
                 "description": "The date or estimated date that the condition resolved or went into remission. This is called \"abatement\" because of the many overloaded connotations associated with \"remission\" or \"resolution\""
+              },
+              {
+                "name": "name",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_name"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "required"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msemr_name",
+                "displayName": "Description",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
               },
               {
                 "name": "onsetAge",
                 "purpose": "hasA",
                 "dataType": "double",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OnsetAge"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "0"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "1000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1868,7 +1818,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_onsetage",
-                "sourceOrdering": 58,
                 "displayName": "Onset Age",
                 "description": "Estimated or actual date or date-time the condition began, in the opinion of the clinician.",
                 "maximumValue": "1000000000",
@@ -1879,6 +1828,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OnsetDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1923,7 +1878,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_onsetdate",
-                "sourceOrdering": 59,
                 "displayName": "Onset Date",
                 "description": "Estimated or actual date or date-time the condition began, in the opinion of the clinician."
               },
@@ -1932,6 +1886,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OnsetPeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1976,7 +1936,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_onsetperiodenddate",
-                "sourceOrdering": 60,
                 "displayName": "Onset Period End Date",
                 "description": "Estimated or actual date or date-time the condition began, in the opinion of the clinician."
               },
@@ -1985,6 +1944,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OnsetPeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2029,7 +1994,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_onsetperiodstartdate",
-                "sourceOrdering": 61,
                 "displayName": "Onset Period Start Date",
                 "description": "Estimated or actual date or date-time the condition began, in the opinion of the clinician."
               },
@@ -2038,6 +2002,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OnsetRangeHigh"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2082,7 +2065,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_onsetrangehigh",
-                "sourceOrdering": 62,
                 "displayName": "Onset Range High",
                 "description": "Estimated or actual date or date-time the condition began, in the opinion of the clinician.",
                 "maximumValue": "2147483647",
@@ -2093,6 +2075,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OnsetRangeLow"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2137,7 +2138,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_onsetrangelow",
-                "sourceOrdering": 63,
                 "displayName": "Onset Range Low",
                 "description": "Estimated or actual date or date-time the condition began, in the opinion of the clinician.",
                 "maximumValue": "2147483647",
@@ -2148,6 +2148,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OnsetString"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2192,7 +2207,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_onsetstring",
-                "sourceOrdering": 64,
                 "displayName": "Onset String",
                 "description": "Estimated or actual date or date-time the condition began, in the opinion of the clinician.",
                 "maximumLength": 100
@@ -2244,6 +2258,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_OnsetType"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -2287,7 +2307,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_onsettype",
-                "sourceOrdering": 65,
                 "displayName": "Onset Type",
                 "description": "Type of: Estimated or actual date or date-time the condition began, in the opinion of the clinician.",
                 "resolutionGuidance": {
@@ -2312,13 +2331,14 @@
                     }
                   ]
                 },
-                "name": "Contact_practitioner",
+                "name": "practitioner",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "practitioner",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "practitionerId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2376,7 +2396,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_practitioner",
-                      "sourceOrdering": 67,
                       "displayName": "Practitioner",
                       "description": "Individual who is making the condition statement."
                     }
@@ -2395,13 +2414,14 @@
                     }
                   ]
                 },
-                "name": "ReferralRequest_reasonReferenceReferralRequest",
+                "name": "reasonReferenceReferralRequest",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "reasonReferenceReferralRequest",
+                      "explanation": "Unique identifier of 'ReferralRequest'.",
+                      "name": "reasonReferenceReferralRequestId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2439,12 +2459,28 @@
                             }
                           ]
                         },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    ""
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
                         "is.linkedEntity.identifier"
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_reasonreferencereferralrequest",
-                      "sourceOrdering": 68,
-                      "displayName": "Reason Reference (Referral Request)"
+                      "displayName": "Reason Reference (Referral Request)",
+                      "description": ""
                     }
                   }
                 }
@@ -2461,13 +2497,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_severity",
+                "name": "severity",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "severity",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "severityId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2525,7 +2562,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_severity",
-                      "sourceOrdering": 69,
                       "displayName": "Severity",
                       "description": "Grading  of the severity of the condition recorded"
                     }
@@ -2544,13 +2580,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_stage",
+                "name": "stage",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "stage",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "stageId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2608,7 +2645,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_stage",
-                      "sourceOrdering": 70,
                       "displayName": "Stage",
                       "description": "Specific stage of condition"
                     }
@@ -2649,6 +2685,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_SubjectType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2693,7 +2735,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_subjecttype",
-                "sourceOrdering": 71,
                 "displayName": "Subject Type",
                 "description": "Type of: Indicates the patient or group who the condition record is associated with.",
                 "resolutionGuidance": {
@@ -2718,13 +2759,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_subjectTypeGroup",
+                "name": "subjectTypeGroup",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "subjectTypeGroup",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "subjectTypeGroupId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2782,7 +2824,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_subjecttypegroup",
-                      "sourceOrdering": 73,
                       "displayName": "Group",
                       "description": "Indicates the patient or group who the condition record is associated with."
                     }
@@ -2801,13 +2842,14 @@
                     }
                   ]
                 },
-                "name": "Contact_subjectTypePatient",
+                "name": "subjectTypePatient",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "subjectTypePatient",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "subjectTypePatientId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2865,7 +2907,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_subjecttypepatient",
-                      "sourceOrdering": 74,
                       "displayName": "Patient",
                       "description": "Indicates the patient or group who the condition record is associated with."
                     }
@@ -2886,18 +2927,6 @@
                             "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
                             "entityShape": "listLookupValues",
                             "constantValues": [
-                              [
-                                "en",
-                                "Entered-In-Error",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
-                                "Unknown",
-                                "935000005",
-                                "5"
-                              ],
                               [
                                 "en",
                                 "Provisional",
@@ -2921,6 +2950,18 @@
                                 "Refuted",
                                 "935000003",
                                 "3"
+                              ],
+                              [
+                                "en",
+                                "Entered-In-Error",
+                                "935000004",
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Unknown",
+                                "935000005",
+                                "5"
                               ]
                             ]
                           }
@@ -2930,6 +2971,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_VerificationStatus"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2974,13 +3021,215 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_verificationstatus",
-                "sourceOrdering": 75,
                 "displayName": "Verification Status",
                 "description": "Type of: The verification status to support the clinical status of the condition.",
                 "resolutionGuidance": {
                   "addSupportingAttribute": {
                     "explanation": "This attribute 'verificationStatus_display' is added to the 'Condition' entity to provide the localized display text for the value of the listLookup attribute 'verificationStatus'",
                     "name": "verificationStatus_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Condition"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "displayName": "Status",
+                "description": "Status of the Condition",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'Condition' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status Reason"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Condition"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "displayName": "Status Reason",
+                "description": "Reason for the status of the Condition",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'Condition' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
                     "purpose": "hasA",
                     "dataType": "localizedDisplayText",
                     "isReadOnly": true

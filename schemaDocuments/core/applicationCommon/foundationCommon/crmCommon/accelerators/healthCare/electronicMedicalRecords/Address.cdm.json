@@ -11,11 +11,43 @@
       "extendsEntity": "base_Address/Address",
       "exhibitsTraits": [
         {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Address"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Address and shipping information. Used to store additional addresses for an account or contact."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
           "traitReference": "is.CDM.entityVersion",
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -41,57 +73,57 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Other",
-                                "4",
-                                "12"
-                              ],
-                              [
-                                "en",
                                 "home",
                                 "935000000",
-                                "4"
+                                "0"
                               ],
                               [
                                 "en",
                                 "work",
                                 "935000001",
-                                "5"
+                                "1"
                               ],
                               [
                                 "en",
                                 "temp",
                                 "935000002",
-                                "6"
+                                "2"
                               ],
                               [
                                 "en",
                                 "old",
                                 "935000003",
-                                "7"
-                              ],
-                              [
-                                "en",
-                                "Bill To",
-                                "1",
-                                "9"
-                              ],
-                              [
-                                "en",
-                                "Ship To",
-                                "2",
-                                "10"
+                                "3"
                               ],
                               [
                                 "en",
                                 "Item",
                                 "935000004",
-                                "8"
+                                "4"
+                              ],
+                              [
+                                "en",
+                                "Bill To",
+                                "1",
+                                "5"
+                              ],
+                              [
+                                "en",
+                                "Ship To",
+                                "2",
+                                "6"
                               ],
                               [
                                 "en",
                                 "Primary",
                                 "3",
-                                "11"
+                                "7"
+                              ],
+                              [
+                                "en",
+                                "Other",
+                                "4",
+                                "8"
                               ]
                             ]
                           }
@@ -101,6 +133,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "AddressTypeCode"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -145,7 +183,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "addresstypecode",
-                "sourceOrdering": 5,
                 "displayName": "Address Type",
                 "description": "Select the address type, such as primary or billing.",
                 "resolutionGuidance": {
@@ -163,6 +200,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -187,18 +230,40 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_enddate",
-                "sourceOrdering": 10000,
-                "displayName": "End Date"
+                "displayName": "End Date",
+                "description": ""
               },
               {
                 "name": "startDate",
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -223,12 +288,28 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_startdate",
-                "sourceOrdering": 10001,
-                "displayName": "Start Date"
+                "displayName": "Start Date",
+                "description": ""
               }
             ],
             "exhibitsTraits": [
@@ -250,7 +331,10 @@
             ]
           }
         }
-      ]
+      ],
+      "sourceName": "CustomerAddress",
+      "displayName": "Address",
+      "description": "Address and shipping information. Used to store additional addresses for an account or contact."
     }
   ]
 }

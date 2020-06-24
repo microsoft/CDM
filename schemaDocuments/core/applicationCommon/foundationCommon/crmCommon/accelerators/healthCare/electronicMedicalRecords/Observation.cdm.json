@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -57,361 +57,6 @@
           "attributeGroupReference": {
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
-              {
-                "name": "observationId",
-                "purpose": "identifiedBy",
-                "dataType": "entityId",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Observation"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Unique identifier for entity instances"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "msemr_observationid",
-                "sourceOrdering": 1,
-                "displayName": "Observation",
-                "description": "Unique identifier for entity instances"
-              },
-              {
-                "name": "stateCode",
-                "purpose": "representsStateWith",
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                            "entityShape": "listLookupValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "1",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "systemrequired"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Status of the Observation"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "sourceName": "statecode",
-                "sourceOrdering": 24,
-                "displayName": "Status",
-                "description": "Status of the Observation",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'stateCode_display' is added to the 'Observation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
-                    "name": "stateCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "statusCode",
-                "purpose": {
-                  "purposeReference": "representsCorrelatedStatusWith",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.correlatedWith",
-                      "arguments": [
-                        "stateCode"
-                      ]
-                    }
-                  ]
-                },
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
-                            "entityShape": "listLookupCorrelatedValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Active",
-                                "1",
-                                "0",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Inactive",
-                                "2",
-                                "6",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Registered",
-                                "935000001",
-                                "1",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Preliminary",
-                                "935000002",
-                                "2",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Final",
-                                "935000003",
-                                "3",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Amended",
-                                "935000004",
-                                "4",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Corrected",
-                                "935000005",
-                                "5",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Cancelled",
-                                "935000006",
-                                "7",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Entered in Error",
-                                "935000007",
-                                "8",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Unknown",
-                                "935000008",
-                                "9",
-                                "1"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Observation Status"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Reason for the status of the Observation"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "statuscode",
-                "sourceOrdering": 26,
-                "displayName": "Observation Status",
-                "description": "Reason for the status of the Observation",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'statusCode_display' is added to the 'Observation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
-                    "name": "statusCode_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "description",
-                "purpose": "hasA",
-                "dataType": "string",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Description"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_description",
-                "sourceOrdering": 33,
-                "displayName": "Description",
-                "description": "The name of the custom entity.",
-                "maximumLength": 100
-              },
               {
                 "entity": {
                   "entityReference": "CodeableConcept",
@@ -424,13 +69,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_bodySite",
+                "name": "bodySite",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "bodySite",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "bodySiteId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -488,7 +134,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_bodysite",
-                      "sourceOrdering": 34,
                       "displayName": "Body Site",
                       "description": "Indicates the site on the subject's body where the observation was made (i.e. the target site)."
                     }
@@ -507,13 +152,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_code",
+                "name": "code",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "code",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "codeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -571,7 +217,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_code",
-                      "sourceOrdering": 35,
                       "displayName": "Code",
                       "description": "Describes what was observed. Sometimes this is called the observation \"name\"."
                     }
@@ -583,6 +228,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Comment"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "256"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -627,7 +287,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_comment",
-                "sourceOrdering": 36,
                 "displayName": "Comment",
                 "description": "May include statements about significant, unexpected or unreliable values, or information about the source of the value where this may be relevant to the interpretation of the result.",
                 "maximumLength": 256
@@ -644,13 +303,14 @@
                     }
                   ]
                 },
-                "name": "Encounter_conextTypeEncounter",
+                "name": "conextTypeEncounter",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "conextTypeEncounter",
+                      "explanation": "Unique identifier of 'Encounter'.",
+                      "name": "conextTypeEncounterId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -708,7 +368,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_conexttypeencounter",
-                      "sourceOrdering": 37,
                       "displayName": "Encounter",
                       "description": "The healthcare event (e.g. a patient and healthcare provider interaction) during which this observation is made."
                     }
@@ -727,13 +386,14 @@
                     }
                   ]
                 },
-                "name": "EpisodeOfCare_conextTypeEpisodeOfCare",
+                "name": "conextTypeEpisodeOfCare",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "conextTypeEpisodeOfCare",
+                      "explanation": "Unique identifier of 'EpisodeOfCare'.",
+                      "name": "conextTypeEpisodeOfCareId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -791,7 +451,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_conexttypeepisodeofcare",
-                      "sourceOrdering": 38,
                       "displayName": "Episode Of Care",
                       "description": "The healthcare event (e.g. a patient and healthcare provider interaction) during which this observation is made."
                     }
@@ -815,14 +474,12 @@
                               [
                                 "en",
                                 "Encounter",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Episode Of Care",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ]
                             ]
                           }
@@ -832,6 +489,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ContextType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -876,7 +539,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contexttype",
-                "sourceOrdering": 39,
                 "displayName": "Context Type",
                 "description": "The healthcare event (e.g. a patient and healthcare provider interaction) during which this observation is made.",
                 "resolutionGuidance": {
@@ -901,13 +563,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_dataAbsentReason",
+                "name": "dataAbsentReason",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "dataAbsentReason",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "dataAbsentReasonId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -965,12 +628,79 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_dataabsentreason",
-                      "sourceOrdering": 41,
                       "displayName": "Data Absent Reason",
                       "description": "Provides a reason why the expected value in the element Observation.value[x] is missing."
                     }
                   }
                 }
+              },
+              {
+                "name": "description",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_description"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_description",
+                "displayName": "Description",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
               },
               {
                 "entity": {
@@ -984,13 +714,14 @@
                     }
                   ]
                 },
-                "name": "Device_device",
+                "name": "device",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "device",
+                      "explanation": "Unique identifier of 'Device'.",
+                      "name": "deviceId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1048,7 +779,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_device",
-                      "sourceOrdering": 42,
                       "displayName": "Subject (Device)",
                       "description": "The device whose characteristics (direct or indirect) are described by the observation and into whose record the observation is placed."
                     }
@@ -1089,6 +819,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_DeviceType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1133,7 +869,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_devicetype",
-                "sourceOrdering": 43,
                 "displayName": "Device Type",
                 "description": "The device used to generate the observation data.",
                 "resolutionGuidance": {
@@ -1158,13 +893,14 @@
                     }
                   ]
                 },
-                "name": "Device_deviceTypeDevice",
+                "name": "deviceTypeDevice",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "deviceTypeDevice",
+                      "explanation": "Unique identifier of 'Device'.",
+                      "name": "deviceTypeDeviceId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1222,7 +958,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_devicetypedevice",
-                      "sourceOrdering": 45,
                       "displayName": "Device",
                       "description": "The device used to generate the observation data."
                     }
@@ -1230,72 +965,99 @@
                 }
               },
               {
+                "entity": {
+                  "entityReference": "DeviceMetric",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "DeviceMetric/(resolvedAttributes)/deviceMetricId"
+                      ]
+                    }
+                  ]
+                },
                 "name": "deviceTypeDeviceMetric",
-                "purpose": "hasA",
-                "dataType": "entityId",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.CDS.lookup",
-                    "arguments": [
-                      {
-                        "name": "style",
-                        "value": "single"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Device Metric"
-                            ]
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'DeviceMetric'.",
+                      "name": "deviceTypeDeviceMetricId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
                           ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The device  metric used to generate the observation data."
-                            ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
                           ]
-                        }
-                      }
-                    ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Device Metric"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The device  metric used to generate the observation data."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_devicetypedevicemetric",
+                      "displayName": "Device Metric",
+                      "description": "The device  metric used to generate the observation data."
+                    }
                   }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_devicetypedevicemetric",
-                "sourceOrdering": 46,
-                "displayName": "Device Metric",
-                "description": "The device  metric used to generate the observation data."
+                }
               },
               {
                 "name": "effectiveEnd",
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EffectiveEnd"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1340,7 +1102,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_effectiveend",
-                "sourceOrdering": 47,
                 "displayName": "Effective End",
                 "description": "The  End time-period the observed value is asserted as being true. For biological subjects"
               },
@@ -1349,6 +1110,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EffectiveStart"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1393,7 +1160,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_effectivestart",
-                "sourceOrdering": 48,
                 "displayName": "Effective Start",
                 "description": "The start time-period the observed value is asserted as being true. For biological subjects"
               },
@@ -1431,6 +1197,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EffectiveType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1475,7 +1247,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_effectivetype",
-                "sourceOrdering": 49,
                 "displayName": "Effective Type",
                 "description": "Clinically relevant time/time-period for observation.",
                 "resolutionGuidance": {
@@ -1493,6 +1264,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_EffectiveTypeDateTime"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1537,7 +1314,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_effectivetypedatetime",
-                "sourceOrdering": 51,
                 "displayName": "Effective Type Date",
                 "description": "Enable this field if the Effective type field is Date time."
               },
@@ -1553,13 +1329,14 @@
                     }
                   ]
                 },
-                "name": "EpisodeOfCare_episodeOfCare",
+                "name": "episodeOfCare",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "episodeOfCare",
+                      "explanation": "Unique identifier of 'EpisodeOfCare'.",
+                      "name": "episodeOfCareId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1617,7 +1394,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_episodeofcare",
-                      "sourceOrdering": 52,
                       "displayName": "Episode of Care",
                       "description": "The healthcare event (e.g. a patient and healthcare provider interaction) during which this observation is made."
                     }
@@ -1629,6 +1405,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Identifier"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1673,7 +1464,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_identifier",
-                "sourceOrdering": 53,
                 "displayName": "Identifier",
                 "description": "A unique identifier assigned to this observation.",
                 "maximumLength": 100
@@ -1690,13 +1480,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_interpretation",
+                "name": "interpretation",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "interpretation",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "interpretationId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1754,7 +1545,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_interpretation",
-                      "sourceOrdering": 54,
                       "displayName": "Interpretation",
                       "description": "The assessment made based on the result of the observation. Intended as a simple compact code often placed adjacent to the result value in reports and flow sheets to signal the meaning/normalcy status"
                     }
@@ -1766,6 +1556,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_IssuedDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1810,7 +1606,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_issueddate",
-                "sourceOrdering": 55,
                 "displayName": "Issued Date",
                 "description": "The date and time this observation was made available to providers, typically after the results have been reviewed and verified."
               },
@@ -1826,13 +1621,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_method",
+                "name": "method",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "method",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "methodId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1890,7 +1686,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_method",
-                      "sourceOrdering": 56,
                       "displayName": "Method",
                       "description": "Indicates the mechanism used to perform the observation."
                     }
@@ -1898,10 +1693,82 @@
                 }
               },
               {
+                "name": "observationId",
+                "purpose": "identifiedBy",
+                "dataType": "entityId",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_observationId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Observation"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Unique identifier for entity instances"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "msemr_observationid",
+                "displayName": "Observation",
+                "description": "Unique identifier for entity instances"
+              },
+              {
                 "name": "observationNumber",
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ObservationNumber"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1946,72 +1813,92 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_observationnumber",
-                "sourceOrdering": 57,
                 "displayName": "Observation Number",
                 "description": "A unique identifier assigned to this observation.",
                 "maximumLength": 100
               },
               {
+                "entity": {
+                  "entityReference": "Specimen",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Specimen/(resolvedAttributes)/specimenId"
+                      ]
+                    }
+                  ]
+                },
                 "name": "specimen",
-                "purpose": "hasA",
-                "dataType": "entityId",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.CDS.lookup",
-                    "arguments": [
-                      {
-                        "name": "style",
-                        "value": "single"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Specimen"
-                            ]
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Specimen'.",
+                      "name": "specimenId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
                           ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The specimen that was used when this observation was made."
-                            ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
                           ]
-                        }
-                      }
-                    ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Specimen"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The specimen that was used when this observation was made."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_specimen",
+                      "displayName": "Specimen",
+                      "description": "The specimen that was used when this observation was made."
+                    }
                   }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_specimen",
-                "sourceOrdering": 58,
-                "displayName": "Specimen",
-                "description": "The specimen that was used when this observation was made."
+                }
               },
               {
                 "name": "status",
@@ -2029,51 +1916,43 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Corrected",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
-                                "Cancelled",
-                                "935000005",
-                                "5"
-                              ],
-                              [
-                                "en",
-                                "Entered in Error",
-                                "935000006",
-                                "6"
-                              ],
-                              [
-                                "en",
-                                "Unknown",
-                                "935000007",
-                                "7"
-                              ],
-                              [
-                                "en",
                                 "Registered",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Preliminary",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Final",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Amended",
-                                "935000003",
-                                "3"
+                                "935000003"
+                              ],
+                              [
+                                "en",
+                                "Corrected",
+                                "935000004"
+                              ],
+                              [
+                                "en",
+                                "Cancelled",
+                                "935000005"
+                              ],
+                              [
+                                "en",
+                                "Entered in Error",
+                                "935000006"
+                              ],
+                              [
+                                "en",
+                                "Unknown",
+                                "935000007"
                               ]
                             ]
                           }
@@ -2083,6 +1962,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Status"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2127,7 +2012,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_status",
-                "sourceOrdering": 59,
                 "displayName": "Status",
                 "description": "The status of the result value.",
                 "resolutionGuidance": {
@@ -2156,27 +2040,23 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Patient",
-                                "935000000",
-                                "3"
+                                "Device",
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Group",
-                                "935000001",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Device",
-                                "935000002",
-                                "0"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Location",
-                                "935000003",
-                                "2"
+                                "935000003"
+                              ],
+                              [
+                                "en",
+                                "Patient",
+                                "935000000"
                               ]
                             ]
                           }
@@ -2186,6 +2066,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_SubjectType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2230,7 +2116,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_subjecttype",
-                "sourceOrdering": 61,
                 "displayName": "Subject Type",
                 "description": "The patient, or group of patients, location, or device whose characteristics (direct or indirect) are described by the observation and into whose record the observation is placed.",
                 "resolutionGuidance": {
@@ -2255,13 +2140,14 @@
                     }
                   ]
                 },
-                "name": "Device_subjectTypeDevice",
+                "name": "subjectTypeDevice",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "subjectTypeDevice",
+                      "explanation": "Unique identifier of 'Device'.",
+                      "name": "subjectTypeDeviceId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2319,7 +2205,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_subjecttypedevice",
-                      "sourceOrdering": 63,
                       "displayName": "Device",
                       "description": "The  device whose characteristics (direct or indirect) are described by the observation and into whose record the observation is placed."
                     }
@@ -2338,13 +2223,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_subjectTypeGroup",
+                "name": "subjectTypeGroup",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "subjectTypeGroup",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "subjectTypeGroupId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2402,7 +2288,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_subjecttypegroup",
-                      "sourceOrdering": 64,
                       "displayName": "Group",
                       "description": "The group whose characteristics (direct or indirect) are described by the observation and into whose record the observation is placed."
                     }
@@ -2421,13 +2306,14 @@
                     }
                   ]
                 },
-                "name": "Location_subjectTypeLocation",
+                "name": "subjectTypeLocation",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "subjectTypeLocation",
+                      "explanation": "Unique identifier of 'Location'.",
+                      "name": "subjectTypeLocationId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2485,7 +2371,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_subjecttypelocation",
-                      "sourceOrdering": 65,
                       "displayName": "Location",
                       "description": "The location whose characteristics (direct or indirect) are described by the observation and into whose record the observation is placed."
                     }
@@ -2504,13 +2389,14 @@
                     }
                   ]
                 },
-                "name": "Contact_subjectTypePatient",
+                "name": "subjectTypePatient",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "subjectTypePatient",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "subjectTypePatientId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2568,7 +2454,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_subjecttypepatient",
-                      "sourceOrdering": 66,
                       "displayName": "Patient",
                       "description": "The patient whose characteristics (direct or indirect) are described by the observation and into whose record the observation is placed."
                     }
@@ -2580,6 +2465,12 @@
                 "purpose": "hasA",
                 "dataType": "boolean",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueBoolean"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2624,7 +2515,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valueboolean",
-                "sourceOrdering": 67,
                 "displayName": "Value Boolean",
                 "description": "The boolean information determined as a result of making the observation, if the information has a simple value."
               },
@@ -2640,13 +2530,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_valueCodeableConcept",
+                "name": "valueCodeableConcept",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "valueCodeableConcept",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "valueCodeableConceptId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2704,7 +2595,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_valuecodeableconcept",
-                      "sourceOrdering": 69,
                       "displayName": "Value Codeable Concept",
                       "description": "The codeable concept information determined as a result of making the observation, if the information has a simple value."
                     }
@@ -2716,6 +2606,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueDateType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2760,7 +2656,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuedatetype",
-                "sourceOrdering": 70,
                 "displayName": "Value Date Time",
                 "description": "The date and time  information determined as a result of making the observation, if the information has a simple value."
               },
@@ -2769,6 +2664,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValuePeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2813,7 +2714,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valueperiodenddate",
-                "sourceOrdering": 71,
                 "displayName": "Value Period End Date",
                 "description": "The period end date information determined as a result of making the observation, if the information has a simple value."
               },
@@ -2822,6 +2722,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValuePeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2866,7 +2772,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valueperiodstartdate",
-                "sourceOrdering": 72,
                 "displayName": "Value Period Start Date",
                 "description": "The period start date information determined as a result of making the observation, if the information has a simple value."
               },
@@ -2882,13 +2787,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_valueQuantityCode",
+                "name": "valueQuantityCode",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "valueQuantityCode",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "valueQuantityCodeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2946,7 +2852,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_valuequantitycode",
-                      "sourceOrdering": 73,
                       "displayName": "Value Quantity Code",
                       "description": "Coded form of the unit."
                     }
@@ -2958,6 +2863,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueQuantitySystem"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3002,7 +2922,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuequantitysystem",
-                "sourceOrdering": 74,
                 "displayName": "Value Quantity System",
                 "description": "System that defines coded unit form.",
                 "maximumLength": 100
@@ -3012,6 +2931,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueQuantityUnit"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3056,7 +2990,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuequantityunit",
-                "sourceOrdering": 75,
                 "displayName": "Value Quantity Unit",
                 "description": "Unit representation.",
                 "maximumLength": 100
@@ -3066,6 +2999,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRangeHighLimit"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3110,7 +3062,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuerangehighlimit",
-                "sourceOrdering": 76,
                 "displayName": "Value Range High Limit",
                 "description": "The value high range information determined as a result of making the observation, if the information has a simple value.",
                 "maximumValue": "2147483647",
@@ -3121,6 +3072,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRangeLowLimit"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3165,7 +3135,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuerangelowlimit",
-                "sourceOrdering": 77,
                 "displayName": "Value Range Low Limit",
                 "description": "The range low value information determined as a result of making the observation, if the information has a simple value.",
                 "maximumValue": "2147483647",
@@ -3183,13 +3152,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_valueRatioDenominatorCode",
+                "name": "valueRatioDenominatorCode",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "valueRatioDenominatorCode",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "valueRatioDenominatorCodeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -3247,7 +3217,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_valueratiodenominatorcode",
-                      "sourceOrdering": 78,
                       "displayName": "Ratio Denominator  Code",
                       "description": "The denominator code information determined as a result of making the observation, if the information has a simple value."
                     }
@@ -3301,6 +3270,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRatioDenominatorComparator"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -3344,7 +3319,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valueratiodenominatorcomparator",
-                "sourceOrdering": 79,
                 "displayName": "Ratio Denominator Comparator",
                 "description": "The denominator comparator information determined as a result of making the observation, if the information has a simple value.",
                 "resolutionGuidance": {
@@ -3358,10 +3332,25 @@
                 }
               },
               {
-                "name": "valueratioDenominatorSystem",
+                "name": "valueRatioDenominatorSystem",
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRatioDenominatorSystem"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3406,7 +3395,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valueratiodenominatorsystem",
-                "sourceOrdering": 81,
                 "displayName": "Ratio Denominator System",
                 "description": "The denominator system information determined as a result of making the observation, if the information has a simple value.",
                 "maximumLength": 100
@@ -3416,6 +3404,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRatioDenominatorUnit"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3440,19 +3443,54 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valueratiodenominatorunit",
-                "sourceOrdering": 82,
                 "displayName": "Ratio Denominator Unit",
+                "description": "",
                 "maximumLength": 100
               },
               {
-                "name": "valueratioDenominatorvalue",
+                "name": "valueRatioDenominatorValue",
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRatioDenominatorValue"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3477,12 +3515,28 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valueratiodenominatorvalue",
-                "sourceOrdering": 83,
                 "displayName": "Ratio Denominator Value",
+                "description": "",
                 "maximumValue": "100000000000",
                 "minimumValue": "-100000000000"
               },
@@ -3498,13 +3552,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_valueRatioNumeratorCode",
+                "name": "valueRatioNumeratorCode",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "valueRatioNumeratorCode",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "valueRatioNumeratorCodeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -3542,12 +3597,28 @@
                             }
                           ]
                         },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    ""
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
                         "is.linkedEntity.identifier"
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_valuerationumeratorcode",
-                      "sourceOrdering": 84,
-                      "displayName": "Ratio Numerator Code"
+                      "displayName": "Ratio Numerator Code",
+                      "description": ""
                     }
                   }
                 }
@@ -3599,6 +3670,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRatioNumeratorComparator"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -3622,12 +3699,28 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuerationumeratorcomparator",
-                "sourceOrdering": 85,
                 "displayName": "Ratio Numerator Comparator",
+                "description": "",
                 "resolutionGuidance": {
                   "addSupportingAttribute": {
                     "explanation": "This attribute 'valueRatioNumeratorComparator_display' is added to the 'Observation' entity to provide the localized display text for the value of the listLookup attribute 'valueRatioNumeratorComparator'",
@@ -3643,6 +3736,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRatioNumeratorSystem"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3667,12 +3775,28 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuerationumeratorsystem",
-                "sourceOrdering": 87,
                 "displayName": "Ratio Numerator  System",
+                "description": "",
                 "maximumLength": 100
               },
               {
@@ -3680,6 +3804,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRatioNumeratorUnit"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3704,12 +3843,28 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuerationumeratorunit",
-                "sourceOrdering": 88,
                 "displayName": "Ratio Numerator Unit",
+                "description": "",
                 "maximumLength": 100
               },
               {
@@ -3717,6 +3872,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueRatioNumeratorValue"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3741,12 +3915,28 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuerationumeratorvalue",
-                "sourceOrdering": 89,
                 "displayName": "Ratio Numerator Value",
+                "description": "",
                 "maximumValue": "100000000000",
                 "minimumValue": "-100000000000"
               },
@@ -3755,6 +3945,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueSampledDataTypeData"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3799,7 +4004,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuesampleddatatypedata",
-                "sourceOrdering": 90,
                 "displayName": "Value Sampled DataType Data",
                 "description": "Decimal values with spaces, or \"E\" | \"U\" | \"L\"",
                 "maximumLength": 100
@@ -3809,6 +4013,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueSampledDataTypeDimension"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "1"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3853,7 +4076,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuesampleddatatypedimension",
-                "sourceOrdering": 91,
                 "displayName": "Value Sampled Data Type Dimension",
                 "description": "Number of sample points at each time point.",
                 "maximumValue": "2147483647",
@@ -3864,6 +4086,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueSampledDataTypeFactor"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3908,7 +4149,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuesampleddatatypefactor",
-                "sourceOrdering": 92,
                 "displayName": "Value Sampled Data Type Factor",
                 "description": "Multiply data by this before adding to origin.",
                 "maximumValue": "100000000000",
@@ -3919,6 +4159,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueSampledDataTypeLowerLimit"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -3963,7 +4222,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuesampleddatatypelowerlimit",
-                "sourceOrdering": 93,
                 "displayName": "Value Sampled Data Type Lower Limit",
                 "description": "Lower limit of detection",
                 "maximumValue": "100000000000",
@@ -3974,6 +4232,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueSampledDataTypeOrigin"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4018,7 +4295,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuesampleddatatypeorigin",
-                "sourceOrdering": 94,
                 "displayName": "Value Sampled Data Type Origin",
                 "description": "Zero value and units.",
                 "maximumValue": "2147483647",
@@ -4029,6 +4305,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueSampledDataTypePeriod"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4073,7 +4368,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuesampleddatatypeperiod",
-                "sourceOrdering": 95,
                 "displayName": "Value Sampled Data Type Period",
                 "description": "Number of milliseconds between samples.",
                 "maximumValue": "100000000000",
@@ -4084,6 +4378,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueSampledDataTypeUpperLimit"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4128,7 +4441,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuesampleddatatypeupperlimit",
-                "sourceOrdering": 96,
                 "displayName": "Value Sampled Data Type Upper Limit",
                 "description": "Upper limit of detection.",
                 "maximumValue": "100000000000",
@@ -4139,6 +4451,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueString"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4163,12 +4490,28 @@
                         }
                       }
                     ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              ""
+                            ]
+                          ]
+                        }
+                      }
+                    ]
                   }
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuestring",
-                "sourceOrdering": 97,
                 "displayName": "Value String",
+                "description": "",
                 "maximumLength": 100
               },
               {
@@ -4187,69 +4530,58 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Boolean",
-                                "935000003",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "Range",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
-                                "Ratio",
-                                "935000005",
-                                "5"
-                              ],
-                              [
-                                "en",
-                                "Sample Data",
-                                "935000006",
-                                "6"
-                              ],
-                              [
-                                "en",
-                                "Attachment",
-                                "935000007",
-                                "7"
-                              ],
-                              [
-                                "en",
                                 "Quantity",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Codeable Concept",
-                                "935000001",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Time",
-                                "935000008",
-                                "8"
-                              ],
-                              [
-                                "en",
-                                "Date Time",
-                                "935000009",
-                                "9"
-                              ],
-                              [
-                                "en",
-                                "Period",
-                                "935000010",
-                                "10"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "String",
-                                "935000002",
-                                "2"
+                                "935000002"
+                              ],
+                              [
+                                "en",
+                                "Boolean",
+                                "935000003"
+                              ],
+                              [
+                                "en",
+                                "Range",
+                                "935000004"
+                              ],
+                              [
+                                "en",
+                                "Ratio",
+                                "935000005"
+                              ],
+                              [
+                                "en",
+                                "Sample Data",
+                                "935000006"
+                              ],
+                              [
+                                "en",
+                                "Attachment",
+                                "935000007"
+                              ],
+                              [
+                                "en",
+                                "Time",
+                                "935000008"
+                              ],
+                              [
+                                "en",
+                                "Date Time",
+                                "935000009"
+                              ],
+                              [
+                                "en",
+                                "Period",
+                                "935000010"
                               ]
                             ]
                           }
@@ -4259,6 +4591,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4303,7 +4641,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuetype",
-                "sourceOrdering": 98,
                 "displayName": "Value Type",
                 "description": "The information determined as a result of making the observation, if the information has a simple value.",
                 "resolutionGuidance": {
@@ -4332,27 +4669,23 @@
                             "constantValues": [
                               [
                                 "en",
+                                "<",
+                                "935000000"
+                              ],
+                              [
+                                "en",
                                 "<=",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 ">=",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 ">",
-                                "935000003",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "<",
-                                "935000000",
-                                "0"
+                                "935000003"
                               ]
                             ]
                           }
@@ -4362,6 +4695,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueTypeQuantityComparator"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4406,7 +4745,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuetypequantitycomparator",
-                "sourceOrdering": 100,
                 "displayName": "Quantity Comparator",
                 "description": "How the Quantity should be understood and represented.",
                 "resolutionGuidance": {
@@ -4424,6 +4762,25 @@
                 "purpose": "hasA",
                 "dataType": "decimal",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ValueTypeQuantityValue"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-100000000000"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "100000000000"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -4468,11 +4825,269 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_valuetypequantityvalue",
-                "sourceOrdering": 102,
                 "displayName": "Quantity Value",
                 "description": "Numerical value (with implicit precision).",
                 "maximumValue": "100000000000",
                 "minimumValue": "-100000000000"
+              },
+              {
+                "name": "stateCode",
+                "purpose": "representsStateWith",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "1",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Status of the Observation"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "sourceName": "statecode",
+                "displayName": "Status",
+                "description": "Status of the Observation",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'stateCode_display' is added to the 'Observation' entity to provide the localized display text for the value of the listLookup attribute 'stateCode'",
+                    "name": "stateCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "name": "statusCode",
+                "purpose": {
+                  "purposeReference": "representsCorrelatedStatusWith",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.correlatedWith",
+                      "arguments": [
+                        "stateCode"
+                      ]
+                    }
+                  ]
+                },
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupCorrelatedValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder, correlatedValue}",
+                            "entityShape": "listLookupCorrelatedValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Active",
+                                "1",
+                                "0",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Registered",
+                                "935000001",
+                                "1",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Preliminary",
+                                "935000002",
+                                "2",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Final",
+                                "935000003",
+                                "3",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Amended",
+                                "935000004",
+                                "4",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Corrected",
+                                "935000005",
+                                "5",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Inactive",
+                                "2",
+                                "6",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Cancelled",
+                                "935000006",
+                                "7",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Entered in Error",
+                                "935000007",
+                                "8",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Unknown",
+                                "935000008",
+                                "9",
+                                "1"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Observation Status"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Reason for the status of the Observation"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "statuscode",
+                "displayName": "Observation Status",
+                "description": "Reason for the status of the Observation",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'statusCode_display' is added to the 'Observation' entity to provide the localized display text for the value of the listLookup attribute 'statusCode'",
+                    "name": "statusCode_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
               }
             ],
             "exhibitsTraits": [

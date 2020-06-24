@@ -11,11 +11,43 @@
       "extendsEntity": "base_Task/Task",
       "exhibitsTraits": [
         {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Task"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Generic activity representing work needed to be done."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
           "traitReference": "is.CDM.entityVersion",
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -37,13 +69,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_businessStatus",
+                "name": "businessStatus",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "businessStatus",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "businessStatusId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -101,7 +134,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_businessstatus",
-                      "sourceOrdering": 10002,
                       "displayName": "Business Status",
                       "description": "There's often a need to track substrates of a task - this is often variable by specific workflow implementation."
                     }
@@ -120,13 +152,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_code",
+                "name": "code",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "code",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "codeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -184,7 +217,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_code",
-                      "sourceOrdering": 10003,
                       "displayName": "Code",
                       "description": "A name or code (or both) briefly describing what the task involves."
                     }
@@ -203,13 +235,14 @@
                     }
                   ]
                 },
-                "name": "Encounter_contextEncounter",
+                "name": "contextEncounter",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contextEncounter",
+                      "explanation": "Unique identifier of 'Encounter'.",
+                      "name": "contextEncounterId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -267,7 +300,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contextencounter",
-                      "sourceOrdering": 10004,
                       "displayName": "Encounter",
                       "description": "An interaction between a patient and healthcare provider(s) for the purpose of providing healthcare service(s) or assessing the health status of a patient"
                     }
@@ -286,13 +318,14 @@
                     }
                   ]
                 },
-                "name": "EpisodeOfCare_contextEpisodeofCare",
+                "name": "contextEpisodeOfCare",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contextEpisodeofCare",
+                      "explanation": "Unique identifier of 'EpisodeOfCare'.",
+                      "name": "contextEpisodeOfCareId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -350,7 +383,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contextepisodeofcare",
-                      "sourceOrdering": 10005,
                       "displayName": "Episode of Care",
                       "description": "An association between a patient and an organization / healthcare provider(s) during which time encounters may occur."
                     }
@@ -374,14 +406,12 @@
                               [
                                 "en",
                                 "Encounter",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Episode Of Care",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ]
                             ]
                           }
@@ -391,6 +421,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_ContextType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -435,7 +471,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_contexttype",
-                "sourceOrdering": 10006,
                 "displayName": "Context Type",
                 "description": "The healthcare event (e.g. a patient and healthcare provider interaction) during which this task was created.",
                 "resolutionGuidance": {
@@ -453,6 +488,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_DefinitionUri"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -497,7 +547,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_definitionuri",
-                "sourceOrdering": 10008,
                 "displayName": "Definition Uri",
                 "description": "A reference to a formal or informal definition of the task. For example, a protocol, a step within a defined workflow definition, etc.",
                 "maximumLength": 100
@@ -507,6 +556,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_DescriptionFocus"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -551,7 +615,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_descriptionfocus",
-                "sourceOrdering": 10009,
                 "displayName": "Description Focus",
                 "description": "The request being actioned or the resource being manipulated by this task.",
                 "maximumLength": 100
@@ -561,6 +624,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_DescriptionFor"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -605,7 +683,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_descriptionfor",
-                "sourceOrdering": 10010,
                 "displayName": "Description For",
                 "description": "The entity who benefits from the performance of the service specified in the task (e.g., the patient).",
                 "maximumLength": 100
@@ -615,6 +692,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_GroupIdentifier"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -659,7 +751,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_groupidentifier",
-                "sourceOrdering": 10011,
                 "displayName": "Group Identifier",
                 "description": "An identifier that links together multiple tasks and other requests that were created in the same context.",
                 "maximumLength": 100
@@ -710,15 +801,15 @@
                               ],
                               [
                                 "en",
-                                "Instance order",
-                                "935000005",
-                                "6"
-                              ],
-                              [
-                                "en",
                                 "Original-order",
                                 "935000006",
                                 "5"
+                              ],
+                              [
+                                "en",
+                                "Instance order",
+                                "935000005",
+                                "6"
                               ],
                               [
                                 "en",
@@ -734,6 +825,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Intent"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -778,7 +875,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_intent",
-                "sourceOrdering": 10012,
                 "displayName": "Intent",
                 "description": "Indicates the \"\"level\"\" of actionability associated with the Task. I.e. Is this a proposed task, a planned task, an actionable task, etc.",
                 "resolutionGuidance": {
@@ -803,13 +899,14 @@
                     }
                   ]
                 },
-                "name": "Device_performerOwnerAgentDevice",
+                "name": "performerOwnerAgentDevice",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "performerOwnerAgentDevice",
+                      "explanation": "Unique identifier of 'Device'.",
+                      "name": "performerOwnerAgentDeviceId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -867,7 +964,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_performerowneragentdevice",
-                      "sourceOrdering": 10014,
                       "displayName": "Performer (Device)",
                       "description": "This resource identifies an instance or a type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity."
                     }
@@ -886,13 +982,14 @@
                     }
                   ]
                 },
-                "name": "Account_performerOwnerOrganization",
+                "name": "performerOwnerOrganization",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "performerOwnerOrganization",
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "performerOwnerOrganizationId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -950,7 +1047,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_performerownerorganization",
-                      "sourceOrdering": 10015,
                       "displayName": "Performer (Organization)",
                       "description": "A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action."
                     }
@@ -969,13 +1065,14 @@
                     }
                   ]
                 },
-                "name": "Contact_performerOwnerPatient",
+                "name": "performerOwnerPatient",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "performerOwnerPatient",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "performerOwnerPatientId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1033,7 +1130,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_performerownerpatient",
-                      "sourceOrdering": 10016,
                       "displayName": "Performer (Patient)",
                       "description": "Demographics and other administrative information about an individual or animal receiving care or other health-related services."
                     }
@@ -1052,13 +1148,14 @@
                     }
                   ]
                 },
-                "name": "Contact_performerOwnerPractitioner",
+                "name": "performerOwnerPractitioner",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "performerOwnerPractitioner",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "performerOwnerPractitionerId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1116,7 +1213,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_performerownerpractitioner",
-                      "sourceOrdering": 10017,
                       "displayName": "Performer (Practitioner)",
                       "description": "A person who is directly or indirectly involved in the provisioning of healthcare."
                     }
@@ -1135,13 +1231,14 @@
                     }
                   ]
                 },
-                "name": "Contact_performerOwnerRelatedPerson",
+                "name": "performerOwnerRelatedPerson",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "performerOwnerRelatedPerson",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "performerOwnerRelatedPersonId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1199,7 +1296,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_performerownerrelatedperson",
-                      "sourceOrdering": 10018,
                       "displayName": "Performer (Related Person)",
                       "description": "Information about a person that is involved in the care for a patient, but who is not the target of healthcare, nor has a formal responsibility in the care process."
                     }
@@ -1223,38 +1319,32 @@
                               [
                                 "en",
                                 "Practitioner",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Organization",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Patient",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Device",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Related Person",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Healthcare Service",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ]
                             ]
                           }
@@ -1264,6 +1354,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PerformerOwnerType"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1308,7 +1404,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_performerownertype",
-                "sourceOrdering": 10019,
                 "displayName": "Performer type",
                 "description": "The type for Individual organization or Device currently responsible for task execution.",
                 "resolutionGuidance": {
@@ -1333,13 +1428,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_reason",
+                "name": "reason",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "reason",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "reasonId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1397,7 +1493,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_reason",
-                      "sourceOrdering": 10021,
                       "displayName": "Reason",
                       "description": "A description or code indicating why this task needs to be performed."
                     }
@@ -1405,66 +1500,87 @@
                 }
               },
               {
+                "entity": {
+                  "entityReference": "ActivityDefinition",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "ActivityDefinition/(resolvedAttributes)/identifiesspecifictimeswhentheeventoccuId"
+                      ]
+                    }
+                  ]
+                },
                 "name": "reference",
-                "purpose": "hasA",
-                "dataType": "entityId",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.CDS.lookup",
-                    "arguments": [
-                      {
-                        "name": "style",
-                        "value": "single"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Definition Reference"
-                            ]
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'ActivityDefinition'.",
+                      "name": "referenceId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
                           ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "A reference to a formal or informal definition of the task. For example, a protocol, a step within a defined workflow definition, etc."
-                            ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
                           ]
-                        }
-                      }
-                    ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Definition Reference"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "A reference to a formal or informal definition of the task. For example, a protocol, a step within a defined workflow definition, etc."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_reference",
+                      "displayName": "Definition Reference",
+                      "description": "A reference to a formal or informal definition of the task. For example, a protocol, a step within a defined workflow definition, etc."
+                    }
                   }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_reference",
-                "sourceOrdering": 10022,
-                "displayName": "Definition Reference",
-                "description": "A reference to a formal or informal definition of the task. For example, a protocol, a step within a defined workflow definition, etc."
+                }
               },
               {
                 "name": "requesterAgent",
@@ -1483,32 +1599,27 @@
                               [
                                 "en",
                                 "Practitioner",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Organization",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Patient",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Related Person",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Device",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ]
                             ]
                           }
@@ -1518,6 +1629,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_RequesterAgent"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1562,7 +1679,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_requesteragent",
-                "sourceOrdering": 10023,
                 "displayName": "Requester Agent",
                 "description": "The device, practitioner, etc. who initiated the task.",
                 "resolutionGuidance": {
@@ -1587,13 +1703,14 @@
                     }
                   ]
                 },
-                "name": "Device_requesterAgentDevice",
+                "name": "requesterAgentDevice",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "requesterAgentDevice",
+                      "explanation": "Unique identifier of 'Device'.",
+                      "name": "requesterAgentDeviceId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1640,7 +1757,7 @@
                                 "constantValues": [
                                   [
                                     "en",
-                                    "This resource identifies an instance or a type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity."
+                                    "\" \nThis resource identifies an instance or a type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity."
                                   ]
                                 ]
                               }
@@ -1651,9 +1768,8 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_requesteragentdevice",
-                      "sourceOrdering": 10025,
                       "displayName": "Requester (Device)",
-                      "description": "This resource identifies an instance or a type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity."
+                      "description": "\" \nThis resource identifies an instance or a type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity."
                     }
                   }
                 }
@@ -1670,13 +1786,14 @@
                     }
                   ]
                 },
-                "name": "Account_requesterAgentOrganization",
+                "name": "requesterAgentOrganization",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "requesterAgentOrganization",
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "requesterAgentOrganizationId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1734,7 +1851,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_requesteragentorganization",
-                      "sourceOrdering": 10026,
                       "displayName": "Requester (Organization)",
                       "description": "A formally or informally recognized grouping of people or organizations formed for the purpose of achieving some form of collective action."
                     }
@@ -1753,13 +1869,14 @@
                     }
                   ]
                 },
-                "name": "Contact_requesterAgentPatient",
+                "name": "requesterAgentPatient",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "requesterAgentPatient",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "requesterAgentPatientId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1817,7 +1934,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_requesteragentpatient",
-                      "sourceOrdering": 10027,
                       "displayName": "Requester (Patient)",
                       "description": "Demographics and other administrative information about an individual or animal receiving care or other health-related services."
                     }
@@ -1836,13 +1952,14 @@
                     }
                   ]
                 },
-                "name": "Contact_requesterAgentPractitioner",
+                "name": "requesterAgentPractitioner",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "requesterAgentPractitioner",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "requesterAgentPractitionerId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1900,7 +2017,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_requesteragentpractitioner",
-                      "sourceOrdering": 10028,
                       "displayName": "Requester (Practitioner)",
                       "description": "A person who is directly or indirectly involved in the provisioning of healthcare."
                     }
@@ -1919,13 +2035,14 @@
                     }
                   ]
                 },
-                "name": "Contact_requesterAgentRelatedPerson",
+                "name": "requesterAgentRelatedPerson",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "requesterAgentRelatedPerson",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "requesterAgentRelatedPersonId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -1983,7 +2100,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_requesteragentrelatedperson",
-                      "sourceOrdering": 10029,
                       "displayName": "Requester (Related Person)",
                       "description": "Information about a person that is involved in the care for a patient, but who is not the target of healthcare, nor has a formal responsibility in the care process."
                     }
@@ -2002,13 +2118,14 @@
                     }
                   ]
                 },
-                "name": "Account_requesterOnBehalfOf",
+                "name": "requesterOnBehalfOf",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "requesterOnBehalfOf",
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "requesterOnBehalfOfId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2066,7 +2183,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_requesteronbehalfof",
-                      "sourceOrdering": 10030,
                       "displayName": "Requester on behalf of",
                       "description": "This resource identifies an instance or a type of a manufactured item that is used in the provision of healthcare without being substantially changed through that activity."
                     }
@@ -2078,6 +2194,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_RestrictionPeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2122,7 +2244,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_restrictionperiodenddate",
-                "sourceOrdering": 10031,
                 "displayName": "Restriction Period End Date",
                 "description": "The end of the period. If the end of the period is missing, it means that the period is ongoing."
               },
@@ -2131,6 +2252,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_RestrictionPeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2175,7 +2302,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_restrictionperiodstartdate",
-                "sourceOrdering": 10032,
                 "displayName": "Restriction Period Start Date",
                 "description": "The start of the period. The boundary is inclusive."
               },
@@ -2184,6 +2310,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_RestrictionRepetitions"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2228,7 +2373,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_restrictionrepetitions",
-                "sourceOrdering": 10033,
                 "displayName": "Restriction Repetitions",
                 "description": "Indicates the number of times the requested action should occur.",
                 "maximumValue": "2147483647",
@@ -2250,75 +2394,63 @@
                             "constantValues": [
                               [
                                 "en",
+                                "Draft",
+                                "935000000"
+                              ],
+                              [
+                                "en",
                                 "Requested",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Received",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Accepted",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Rejected",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
-                                "Cancelled",
-                                "935000006",
-                                "6"
-                              ],
-                              [
-                                "en",
-                                "In progress",
-                                "935000007",
-                                "7"
-                              ],
-                              [
-                                "en",
-                                "On-hold",
-                                "935000008",
-                                "8"
-                              ],
-                              [
-                                "en",
-                                "Failed",
-                                "935000009",
-                                "9"
-                              ],
-                              [
-                                "en",
-                                "Completed",
-                                "935000010",
-                                "10"
-                              ],
-                              [
-                                "en",
-                                "Draft",
-                                "935000000",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Entered-in-error",
-                                "935000011",
-                                "11"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Ready",
-                                "935000005",
-                                "5"
+                                "935000005"
+                              ],
+                              [
+                                "en",
+                                "Cancelled",
+                                "935000006"
+                              ],
+                              [
+                                "en",
+                                "In progress",
+                                "935000007"
+                              ],
+                              [
+                                "en",
+                                "On-hold",
+                                "935000008"
+                              ],
+                              [
+                                "en",
+                                "Failed",
+                                "935000009"
+                              ],
+                              [
+                                "en",
+                                "Completed",
+                                "935000010"
+                              ],
+                              [
+                                "en",
+                                "Entered-in-error",
+                                "935000011"
                               ]
                             ]
                           }
@@ -2328,6 +2460,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Status"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2372,7 +2510,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_status",
-                "sourceOrdering": 10034,
                 "displayName": "Status",
                 "description": "These states enable coordination of task status with off-the-shelf workflow solutions that support automation of tasks.",
                 "resolutionGuidance": {
@@ -2397,13 +2534,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_statusReason",
+                "name": "statusReason",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "statusReason",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "statusReasonId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -2461,7 +2599,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_statusreason",
-                      "sourceOrdering": 10036,
                       "displayName": "Status Reason",
                       "description": "These states enable coordination of task status with off-the-shelf workflow solutions that support automation of tasks."
                     }
@@ -2473,6 +2610,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_TaskNumber"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -2517,7 +2669,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_tasknumber",
-                "sourceOrdering": 10037,
                 "displayName": "Task Number",
                 "description": "A task to be performed.",
                 "maximumLength": 100
@@ -2569,6 +2720,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_TaskPriority"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -2612,7 +2769,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_taskpriority",
-                "sourceOrdering": 10038,
                 "displayName": "Task Priority",
                 "description": "Indicates how quickly the Task should be addressed with respect to other requests.",
                 "resolutionGuidance": {
@@ -2645,7 +2801,10 @@
             ]
           }
         }
-      ]
+      ],
+      "sourceName": "Task",
+      "displayName": "Task",
+      "description": "Generic activity representing work needed to be done."
     }
   ]
 }

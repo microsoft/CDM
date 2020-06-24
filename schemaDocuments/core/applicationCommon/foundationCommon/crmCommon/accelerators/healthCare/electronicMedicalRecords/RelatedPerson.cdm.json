@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -58,10 +58,308 @@
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
               {
+                "name": "active",
+                "purpose": "hasA",
+                "dataType": "boolean",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Active"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Active"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Whether this related person record is in active use."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_active",
+                "displayName": "Active",
+                "description": "Whether this related person record is in active use."
+              },
+              {
+                "name": "name",
+                "purpose": "hasA",
+                "dataType": "name",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_name"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Name"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_name",
+                "displayName": "Name",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
+              },
+              {
+                "entity": {
+                  "entityReference": "Contact",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Contact/(resolvedAttributes)/contactId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "patient",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "patientId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Patient"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The patient this person is related to."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_patient",
+                      "displayName": "Patient",
+                      "description": "The patient this person is related to."
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Contact",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Contact/(resolvedAttributes)/contactId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "relatedPerson",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "relatedPersonId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Related Person"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Information about a person that is involved in the care for a patient, but who is not the target of healthcare, nor has a formal responsibility in the care process."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_relatedperson",
+                      "displayName": "Related Person",
+                      "description": "Information about a person that is involved in the care for a patient, but who is not the target of healthcare, nor has a formal responsibility in the care process."
+                    }
+                  }
+                }
+              },
+              {
                 "name": "relatedPersonId",
                 "purpose": "identifiedBy",
                 "dataType": "entityId",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_relatedpersonId"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -105,9 +403,207 @@
                   }
                 ],
                 "sourceName": "msemr_relatedpersonid",
-                "sourceOrdering": 1,
                 "displayName": "Related Person",
                 "description": "Unique identifier for entity instances"
+              },
+              {
+                "name": "relatedPersonPeriodEndDate",
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_RelatedPersonPeriodEndDate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Related Person Period End Date"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The period of time that this relationship is considered to be valid. If there are no dates defined, then the interval is unknown."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_relatedpersonperiodenddate",
+                "displayName": "Related Person Period End Date",
+                "description": "The period of time that this relationship is considered to be valid. If there are no dates defined, then the interval is unknown."
+              },
+              {
+                "name": "relatedPersonPeriodStartDate",
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_RelatedPersonPeriodStartDate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Related Person Period Start Date"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The period of time that this relationship is considered to be valid. If there are no dates defined, then the interval is unknown."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_relatedpersonperiodstartdate",
+                "displayName": "Related Person Period Start Date",
+                "description": "The period of time that this relationship is considered to be valid. If there are no dates defined, then the interval is unknown."
+              },
+              {
+                "entity": {
+                  "entityReference": "CodeableConcept",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "CodeableConcept/(resolvedAttributes)/codeableConceptId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "relationship",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "relationshipId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Relationship"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The nature of the relationship between a patient and the related person."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_relationship",
+                      "displayName": "Relationship",
+                      "description": "The nature of the relationship between a patient and the related person."
+                    }
+                  }
+                }
               },
               {
                 "name": "stateCode",
@@ -143,6 +639,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -186,7 +688,6 @@
                   }
                 ],
                 "sourceName": "statecode",
-                "sourceOrdering": 24,
                 "displayName": "Status",
                 "description": "Status of the Related Person",
                 "resolutionGuidance": {
@@ -246,6 +747,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -289,7 +796,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "statuscode",
-                "sourceOrdering": 26,
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Related Person",
                 "resolutionGuidance": {
@@ -299,468 +805,6 @@
                     "purpose": "hasA",
                     "dataType": "localizedDisplayText",
                     "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "name",
-                "purpose": "hasA",
-                "dataType": "name",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Name"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_name",
-                "sourceOrdering": 33,
-                "displayName": "Name",
-                "description": "The name of the custom entity.",
-                "maximumLength": 100
-              },
-              {
-                "name": "active",
-                "purpose": "hasA",
-                "dataType": "boolean",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Active"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Whether this related person record is in active use."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_active",
-                "sourceOrdering": 34,
-                "displayName": "Active",
-                "description": "Whether this related person record is in active use."
-              },
-              {
-                "entity": {
-                  "entityReference": "Contact",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Contact/(resolvedAttributes)/contactId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Contact_patient",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "patient",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Patient"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "The patient this person is related to."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_patient",
-                      "sourceOrdering": 36,
-                      "displayName": "Patient",
-                      "description": "The patient this person is related to."
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "Contact",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Contact/(resolvedAttributes)/contactId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Contact_relatedPerson",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "relatedPerson",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Related Person"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Information about a person that is involved in the care for a patient, but who is not the target of healthcare, nor has a formal responsibility in the care process."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_relatedperson",
-                      "sourceOrdering": 37,
-                      "displayName": "Related Person",
-                      "description": "Information about a person that is involved in the care for a patient, but who is not the target of healthcare, nor has a formal responsibility in the care process."
-                    }
-                  }
-                }
-              },
-              {
-                "name": "relatedPersonPeriodEndDate",
-                "purpose": "hasA",
-                "dataType": "dateTime",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Related Person Period End Date"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The period of time that this relationship is considered to be valid. If there are no dates defined, then the interval is unknown."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_relatedpersonperiodenddate",
-                "sourceOrdering": 38,
-                "displayName": "Related Person Period End Date",
-                "description": "The period of time that this relationship is considered to be valid. If there are no dates defined, then the interval is unknown."
-              },
-              {
-                "name": "relatedPersonPeriodStartDate",
-                "purpose": "hasA",
-                "dataType": "dateTime",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Related Person Period Start Date"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The period of time that this relationship is considered to be valid. If there are no dates defined, then the interval is unknown."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_relatedpersonperiodstartdate",
-                "sourceOrdering": 39,
-                "displayName": "Related Person Period Start Date",
-                "description": "The period of time that this relationship is considered to be valid. If there are no dates defined, then the interval is unknown."
-              },
-              {
-                "entity": {
-                  "entityReference": "CodeableConcept",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "CodeableConcept/(resolvedAttributes)/codeableConceptId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "CodeableConcept_relationship",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "relationship",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Relationship"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "The nature of the relationship between a patient and the related person."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_relationship",
-                      "sourceOrdering": 40,
-                      "displayName": "Relationship",
-                      "description": "The nature of the relationship between a patient and the related person."
-                    }
                   }
                 }
               }

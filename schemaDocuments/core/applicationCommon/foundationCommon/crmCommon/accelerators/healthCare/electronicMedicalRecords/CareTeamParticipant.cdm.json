@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -58,10 +58,167 @@
             "attributeGroupName": "attributesAddedAtThisScope",
             "members": [
               {
+                "name": "entityImage",
+                "purpose": "hasA",
+                "dataType": "image",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "EntityImage"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "9437328"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Entity Image"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Entity Image"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "entityimage",
+                "displayName": "Entity Image",
+                "description": "Entity Image",
+                "maximumLength": 9437328
+              },
+              {
+                "entity": {
+                  "entityReference": "CareTeam",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "CareTeam/(resolvedAttributes)/careTeamId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "careTeam",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'CareTeam'.",
+                      "name": "careTeamId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Care Team"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "This records identifiers associated with this care team that are defined by business processes and/or used to refer to it when a direct URL reference to the resource itself is not appropriate."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_careteam",
+                      "displayName": "Care Team",
+                      "description": "This records identifiers associated with this care team that are defined by business processes and/or used to refer to it when a direct URL reference to the resource itself is not appropriate."
+                    }
+                  }
+                }
+              },
+              {
                 "name": "careTeamParticipantId",
                 "purpose": "identifiedBy",
                 "dataType": "entityId",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_careteamparticipantId"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -105,9 +262,887 @@
                   }
                 ],
                 "sourceName": "msemr_careteamparticipantid",
-                "sourceOrdering": 1,
                 "displayName": "Care Team Participant",
                 "description": "Unique identifier for entity instances"
+              },
+              {
+                "name": "description",
+                "purpose": "hasA",
+                "dataType": "string",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_description"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Description"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "The name of the custom entity."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_description",
+                "displayName": "Description",
+                "description": "The name of the custom entity.",
+                "maximumLength": 100
+              },
+              {
+                "entity": {
+                  "entityReference": "CareTeam",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "CareTeam/(resolvedAttributes)/careTeamId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "memberCareTeam",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'CareTeam'.",
+                      "name": "memberCareTeamId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Care Team"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Member is care team"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_membercareteam",
+                      "displayName": "Care Team",
+                      "description": "Member is care team"
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Account",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Account/(resolvedAttributes)/accountId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "memberOrganization",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "memberOrganizationId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Organization"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Member is organization"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_memberorganization",
+                      "displayName": "Organization",
+                      "description": "Member is organization"
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Contact",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Contact/(resolvedAttributes)/contactId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "memberPatient",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "memberPatientId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Patient"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Member is patient"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_memberpatient",
+                      "displayName": "Patient",
+                      "description": "Member is patient"
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Contact",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Contact/(resolvedAttributes)/contactId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "memberPractioner",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "memberPractionerId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Practioner"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Member is practitioner"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_memberpractioner",
+                      "displayName": "Practioner",
+                      "description": "Member is practitioner"
+                    }
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Contact",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Contact/(resolvedAttributes)/contactId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "memberRelatedPerson",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "memberRelatedPersonId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Related Person"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Member is person related to patient"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_memberrelatedperson",
+                      "displayName": "Related Person",
+                      "description": "Member is person related to patient"
+                    }
+                  }
+                }
+              },
+              {
+                "name": "memberType",
+                "purpose": "hasA",
+                "dataType": {
+                  "dataTypeReference": "listLookup",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "does.haveDefault",
+                      "arguments": [
+                        {
+                          "entityReference": {
+                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
+                            "entityShape": "listLookupValues",
+                            "constantValues": [
+                              [
+                                "en",
+                                "Practitioner",
+                                "935000000",
+                                "0"
+                              ],
+                              [
+                                "en",
+                                "Related Person",
+                                "935000001",
+                                "1"
+                              ],
+                              [
+                                "en",
+                                "Patient",
+                                "935000002",
+                                "2"
+                              ],
+                              [
+                                "en",
+                                "Organization",
+                                "935000003",
+                                "3"
+                              ],
+                              [
+                                "en",
+                                "Care Team",
+                                "935000004",
+                                "4"
+                              ]
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_MemberType"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Member Type"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Type of member."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_membertype",
+                "displayName": "Member Type",
+                "description": "Type of member.",
+                "resolutionGuidance": {
+                  "addSupportingAttribute": {
+                    "explanation": "This attribute 'memberType_display' is added to the 'CareTeamParticipant' entity to provide the localized display text for the value of the listLookup attribute 'memberType'",
+                    "name": "memberType_display",
+                    "purpose": "hasA",
+                    "dataType": "localizedDisplayText",
+                    "isReadOnly": true
+                  }
+                }
+              },
+              {
+                "entity": {
+                  "entityReference": "Account",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "Account/(resolvedAttributes)/accountId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "onBehalfOf",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'Account'.",
+                      "name": "onBehalfOfId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "On Behalf Of"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "The organization of the practitioner."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_onbehalfof",
+                      "displayName": "On Behalf Of",
+                      "description": "The organization of the practitioner."
+                    }
+                  }
+                }
+              },
+              {
+                "name": "periodEnd",
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PeriodEnd"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Period End"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Indicates when the specific member or organization did (or is intended to) come into effect and end."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_periodend",
+                "displayName": "Period End",
+                "description": "Indicates when the specific member or organization did (or is intended to) come into effect and end."
+              },
+              {
+                "name": "periodStart",
+                "purpose": "hasA",
+                "dataType": "dateTime",
+                "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_PeriodStart"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.displayedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Period Start"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.localized.describedAs",
+                    "arguments": [
+                      {
+                        "entityReference": {
+                          "entityShape": "localizedTable",
+                          "constantValues": [
+                            [
+                              "en",
+                              "Indicates when the specific member or organization did (or is intended to) come into effect and end."
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "isNullable": true,
+                "sourceName": "msemr_periodstart",
+                "displayName": "Period Start",
+                "description": "Indicates when the specific member or organization did (or is intended to) come into effect and end."
+              },
+              {
+                "entity": {
+                  "entityReference": "CodeableConcept",
+                  "appliedTraits": [
+                    {
+                      "traitReference": "is.identifiedBy",
+                      "arguments": [
+                        "CodeableConcept/(resolvedAttributes)/codeableConceptId"
+                      ]
+                    }
+                  ]
+                },
+                "name": "role",
+                "resolutionGuidance": {
+                  "renameFormat": "{m}",
+                  "entityByReference": {
+                    "allowReference": true,
+                    "foreignKeyAttribute": {
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "roleId",
+                      "purpose": "hasA",
+                      "dataType": "entityId",
+                      "appliedTraits": [
+                        {
+                          "traitReference": "is.CDS.lookup",
+                          "arguments": [
+                            {
+                              "name": "style",
+                              "value": "single"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.requiredAtLevel",
+                          "arguments": [
+                            {
+                              "name": "level",
+                              "value": "none"
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.displayedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Role"
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "traitReference": "is.localized.describedAs",
+                          "arguments": [
+                            {
+                              "entityReference": {
+                                "entityShape": "localizedTable",
+                                "constantValues": [
+                                  [
+                                    "en",
+                                    "Indicates specific responsibility of an individual within the care team, such as \"Primary care physician\", \"Trained social worker counselor\", \"Caregiver\", etc."
+                                  ]
+                                ]
+                              }
+                            }
+                          ]
+                        },
+                        "is.linkedEntity.identifier"
+                      ],
+                      "isNullable": true,
+                      "sourceName": "msemr_role",
+                      "displayName": "Role",
+                      "description": "Indicates specific responsibility of an individual within the care team, such as \"Primary care physician\", \"Trained social worker counselor\", \"Caregiver\", etc."
+                    }
+                  }
+                }
               },
               {
                 "name": "stateCode",
@@ -143,6 +1178,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statecode"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -186,7 +1227,6 @@
                   }
                 ],
                 "sourceName": "statecode",
-                "sourceOrdering": 24,
                 "displayName": "Status",
                 "description": "Status of the Care Team Participant",
                 "resolutionGuidance": {
@@ -246,6 +1286,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "statuscode"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -289,7 +1335,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "statuscode",
-                "sourceOrdering": 26,
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Care Team Participant",
                 "resolutionGuidance": {
@@ -299,958 +1344,6 @@
                     "purpose": "hasA",
                     "dataType": "localizedDisplayText",
                     "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "name": "description",
-                "purpose": "hasA",
-                "dataType": "string",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Description"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "The name of the custom entity."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_description",
-                "sourceOrdering": 33,
-                "displayName": "Description",
-                "description": "The name of the custom entity.",
-                "maximumLength": 100
-              },
-              {
-                "name": "entityImageId",
-                "purpose": "hasA",
-                "dataType": "guid",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "entityimageid",
-                "sourceOrdering": 34
-              },
-              {
-                "entity": {
-                  "entityReference": "CareTeam",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "CareTeam/(resolvedAttributes)/careTeamId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "CareTeam_careTeam",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "careTeam",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Care Team"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "This records identifiers associated with this care team that are defined by business processes and/or used to refer to it when a direct URL reference to the resource itself is not appropriate."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_careteam",
-                      "sourceOrdering": 38,
-                      "displayName": "Care Team",
-                      "description": "This records identifiers associated with this care team that are defined by business processes and/or used to refer to it when a direct URL reference to the resource itself is not appropriate."
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "CareTeam",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "CareTeam/(resolvedAttributes)/careTeamId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "CareTeam_memberCareTeam",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "memberCareTeam",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Care Team"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Member is care team"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_membercareteam",
-                      "sourceOrdering": 39,
-                      "displayName": "Care Team",
-                      "description": "Member is care team"
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "Account",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Account/(resolvedAttributes)/accountId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Account_memberOrganization",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "memberOrganization",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Organization"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Member is organization"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_memberorganization",
-                      "sourceOrdering": 40,
-                      "displayName": "Organization",
-                      "description": "Member is organization"
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "Contact",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Contact/(resolvedAttributes)/contactId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Contact_memberPatient",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "memberPatient",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Patient"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Member is patient"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_memberpatient",
-                      "sourceOrdering": 41,
-                      "displayName": "Patient",
-                      "description": "Member is patient"
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "Contact",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Contact/(resolvedAttributes)/contactId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Contact_memberPractioner",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "memberPractioner",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Practioner"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Member is practitioner"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_memberpractioner",
-                      "sourceOrdering": 42,
-                      "displayName": "Practioner",
-                      "description": "Member is practitioner"
-                    }
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "Contact",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Contact/(resolvedAttributes)/contactId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Contact_memberRelatedPerson",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "memberRelatedPerson",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Related Person"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Member is person related to patient"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_memberrelatedperson",
-                      "sourceOrdering": 43,
-                      "displayName": "Related Person",
-                      "description": "Member is person related to patient"
-                    }
-                  }
-                }
-              },
-              {
-                "name": "memberType",
-                "purpose": "hasA",
-                "dataType": {
-                  "dataTypeReference": "listLookup",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "does.haveDefault",
-                      "arguments": [
-                        {
-                          "entityReference": {
-                            "explanation": "The constantValues below correspond to the attributes of the 'listLookupValues' entityShape which are: {languageTag, displayText, attributeValue, displayOrder}",
-                            "entityShape": "listLookupValues",
-                            "constantValues": [
-                              [
-                                "en",
-                                "Practitioner",
-                                "935000000",
-                                "0"
-                              ],
-                              [
-                                "en",
-                                "Relation Person",
-                                "935000001",
-                                "1"
-                              ],
-                              [
-                                "en",
-                                "Patient",
-                                "935000002",
-                                "2"
-                              ],
-                              [
-                                "en",
-                                "Organization",
-                                "935000003",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "Care Team",
-                                "935000004",
-                                "4"
-                              ]
-                            ]
-                          }
-                        }
-                      ]
-                    }
-                  ]
-                },
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Member Type"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Type of member."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_membertype",
-                "sourceOrdering": 44,
-                "displayName": "Member Type",
-                "description": "Type of member.",
-                "resolutionGuidance": {
-                  "addSupportingAttribute": {
-                    "explanation": "This attribute 'memberType_display' is added to the 'CareTeamParticipant' entity to provide the localized display text for the value of the listLookup attribute 'memberType'",
-                    "name": "memberType_display",
-                    "purpose": "hasA",
-                    "dataType": "localizedDisplayText",
-                    "isReadOnly": true
-                  }
-                }
-              },
-              {
-                "entity": {
-                  "entityReference": "Account",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "Account/(resolvedAttributes)/accountId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "Account_onBehalfOf",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "onBehalfOf",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "On Behalf Of"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "The organization of the practitioner."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_onbehalfof",
-                      "sourceOrdering": 46,
-                      "displayName": "On Behalf Of",
-                      "description": "The organization of the practitioner."
-                    }
-                  }
-                }
-              },
-              {
-                "name": "periodEnd",
-                "purpose": "hasA",
-                "dataType": "dateTime",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Period End"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Indicates when the specific member or organization did (or is intended to) come into effect and end."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_periodend",
-                "sourceOrdering": 47,
-                "displayName": "Period End",
-                "description": "Indicates when the specific member or organization did (or is intended to) come into effect and end."
-              },
-              {
-                "name": "periodStart",
-                "purpose": "hasA",
-                "dataType": "dateTime",
-                "appliedTraits": [
-                  {
-                    "traitReference": "is.requiredAtLevel",
-                    "arguments": [
-                      {
-                        "name": "level",
-                        "value": "none"
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.displayedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Period Start"
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  },
-                  {
-                    "traitReference": "is.localized.describedAs",
-                    "arguments": [
-                      {
-                        "entityReference": {
-                          "entityShape": "localizedTable",
-                          "constantValues": [
-                            [
-                              "en",
-                              "Indicates when the specific member or organization did (or is intended to) come into effect and end."
-                            ]
-                          ]
-                        }
-                      }
-                    ]
-                  }
-                ],
-                "isNullable": true,
-                "sourceName": "msemr_periodstart",
-                "sourceOrdering": 48,
-                "displayName": "Period Start",
-                "description": "Indicates when the specific member or organization did (or is intended to) come into effect and end."
-              },
-              {
-                "entity": {
-                  "entityReference": "CodeableConcept",
-                  "appliedTraits": [
-                    {
-                      "traitReference": "is.identifiedBy",
-                      "arguments": [
-                        "CodeableConcept/(resolvedAttributes)/codeableConceptId"
-                      ]
-                    }
-                  ]
-                },
-                "name": "CodeableConcept_role",
-                "resolutionGuidance": {
-                  "renameFormat": "{m}",
-                  "entityByReference": {
-                    "allowReference": true,
-                    "foreignKeyAttribute": {
-                      "name": "role",
-                      "purpose": "hasA",
-                      "dataType": "entityId",
-                      "appliedTraits": [
-                        {
-                          "traitReference": "is.CDS.lookup",
-                          "arguments": [
-                            {
-                              "name": "style",
-                              "value": "single"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.requiredAtLevel",
-                          "arguments": [
-                            {
-                              "name": "level",
-                              "value": "none"
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.displayedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Role"
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        {
-                          "traitReference": "is.localized.describedAs",
-                          "arguments": [
-                            {
-                              "entityReference": {
-                                "entityShape": "localizedTable",
-                                "constantValues": [
-                                  [
-                                    "en",
-                                    "Indicates specific responsibility of an individual within the care team, such as \"Primary care physician\", \"Trained social worker counselor\", \"Caregiver\", etc."
-                                  ]
-                                ]
-                              }
-                            }
-                          ]
-                        },
-                        "is.linkedEntity.identifier"
-                      ],
-                      "isNullable": true,
-                      "sourceName": "msemr_role",
-                      "sourceOrdering": 49,
-                      "displayName": "Role",
-                      "description": "Indicates specific responsibility of an individual within the care team, such as \"Primary care physician\", \"Trained social worker counselor\", \"Caregiver\", etc."
-                    }
                   }
                 }
               }

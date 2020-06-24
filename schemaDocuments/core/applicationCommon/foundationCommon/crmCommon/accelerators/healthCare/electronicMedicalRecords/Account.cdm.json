@@ -11,11 +11,43 @@
       "extendsEntity": "base_Account/Account",
       "exhibitsTraits": [
         {
+          "traitReference": "is.localized.displayedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Account"
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "traitReference": "is.localized.describedAs",
+          "arguments": [
+            {
+              "entityReference": {
+                "entityShape": "localizedTable",
+                "constantValues": [
+                  [
+                    "en",
+                    "Business that represents a customer or potential customer. The company that is billed in business transactions."
+                  ]
+                ]
+              }
+            }
+          ]
+        },
+        {
           "traitReference": "is.CDM.entityVersion",
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0"
+              "value": "2.0"
             }
           ]
         }
@@ -60,6 +92,12 @@
                 },
                 "appliedTraits": [
                   {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_AccountType"
+                    ]
+                  },
+                  {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
                       {
@@ -103,7 +141,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_accounttype",
-                "sourceOrdering": 10036,
                 "displayName": "Account Type",
                 "description": "The kind(s) of organization that this is",
                 "resolutionGuidance": {
@@ -121,6 +158,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address1PeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -165,7 +208,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address1periodenddate",
-                "sourceOrdering": 10038,
                 "displayName": "Primary - Primary End Date",
                 "description": "Time period when address was/is in use"
               },
@@ -174,6 +216,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address1PeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -218,7 +266,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address1periodstartdate",
-                "sourceOrdering": 10039,
                 "displayName": "Primary - Address Period Start Date",
                 "description": "Time period when address was/is in use"
               },
@@ -227,6 +274,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address2PeriodEndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -271,7 +324,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address2periodenddate",
-                "sourceOrdering": 10040,
                 "displayName": "Secondary  - Address Period End Date",
                 "description": "Time period when address was/is in use"
               },
@@ -280,6 +332,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Address2PeriodStartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -324,7 +382,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_address2periodstartdate",
-                "sourceOrdering": 10041,
                 "displayName": "Secondary  - Address Period Start Date",
                 "description": "Time period when address was/is in use"
               },
@@ -333,6 +390,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Alias"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -377,7 +449,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_alias",
-                "sourceOrdering": 10042,
                 "displayName": "DBA",
                 "description": "A list of alternate names that the organization is known as, or was known as in the past.",
                 "maximumLength": 100
@@ -394,13 +465,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_contact1Purpose",
+                "name": "contact1Puropose",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contact1Puropose",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "contact1PuroposeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -458,7 +530,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contact1puropose",
-                      "sourceOrdering": 10043,
                       "displayName": "Primary Contact Purpose",
                       "description": "Indicates a purpose for which the contact can be reached."
                     }
@@ -477,13 +548,14 @@
                     }
                   ]
                 },
-                "name": "Contact_contact",
+                "name": "contact2",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contact2",
+                      "explanation": "Unique identifier of 'Contact'.",
+                      "name": "contact2Id",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -541,7 +613,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contact2",
-                      "sourceOrdering": 10044,
                       "displayName": "Primary Contact",
                       "description": "Contact for the organization for a certain purpose."
                     }
@@ -560,13 +631,14 @@
                     }
                   ]
                 },
-                "name": "CodeableConcept_contact2Purpose",
+                "name": "contact2Puropose",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
-                      "name": "contact2Puropose",
+                      "explanation": "Unique identifier of 'CodeableConcept'.",
+                      "name": "contact2PuroposeId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -624,7 +696,6 @@
                       ],
                       "isNullable": true,
                       "sourceName": "msemr_contact2puropose",
-                      "sourceOrdering": 10045,
                       "displayName": "Primary Contact Purpose",
                       "description": "Indicates a purpose for which the contact can be reached."
                     }
@@ -636,6 +707,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1EndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -680,7 +757,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1enddate",
-                "sourceOrdering": 10046,
                 "displayName": "Primary Phone End Date",
                 "description": "End time of validity of telecom"
               },
@@ -689,6 +765,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1Rank"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -733,7 +828,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1rank",
-                "sourceOrdering": 10047,
                 "displayName": "Rank Of Contact",
                 "description": "Specify preferred order of use (1 = highest)",
                 "maximumValue": "2147483647",
@@ -744,6 +838,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -788,7 +888,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1startdate",
-                "sourceOrdering": 10048,
                 "displayName": "Primary Phone Start Date",
                 "description": "Start time of validtity of telecom"
               },
@@ -809,38 +908,32 @@
                               [
                                 "en",
                                 "Phone",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Email",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Fax",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Pager",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "SMS",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Skype",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ]
                             ]
                           }
@@ -850,6 +943,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1System"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -894,7 +993,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1system",
-                "sourceOrdering": 10049,
                 "displayName": "Telecom System",
                 "description": "Type of Technology mediated contact point",
                 "resolutionGuidance": {
@@ -923,33 +1021,28 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Mobile",
-                                "935000003",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "Old",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
                                 "Home",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Work",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
+                              ],
+                              [
+                                "en",
+                                "Mobile",
+                                "935000003"
+                              ],
+                              [
+                                "en",
+                                "Old",
+                                "935000004"
                               ]
                             ]
                           }
@@ -959,6 +1052,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom1Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1003,7 +1102,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom1use",
-                "sourceOrdering": 10051,
                 "displayName": "Use Of Contact Point",
                 "description": "purpose of this contact point",
                 "resolutionGuidance": {
@@ -1021,6 +1119,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2EndDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1065,7 +1169,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2enddate",
-                "sourceOrdering": 10053,
                 "displayName": "Secondary Phone End Date",
                 "description": "End time of validity of telecom"
               },
@@ -1074,6 +1177,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2Rank"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "-2147483648"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1118,7 +1240,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2rank",
-                "sourceOrdering": 10054,
                 "displayName": "Rank Of Contact",
                 "description": "Specify preferred order of use (1 = highest)",
                 "maximumValue": "2147483647",
@@ -1129,6 +1250,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1173,7 +1300,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2startdate",
-                "sourceOrdering": 10055,
                 "displayName": "Secondary Phone Start Date",
                 "description": "Start time of validity of telecom"
               },
@@ -1194,38 +1320,32 @@
                               [
                                 "en",
                                 "Phone",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Email",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Fax",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Pager",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "SMS",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ],
                               [
                                 "en",
                                 "Skype",
-                                "935000005",
-                                "5"
+                                "935000005"
                               ]
                             ]
                           }
@@ -1235,6 +1355,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2System"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1279,7 +1405,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2system",
-                "sourceOrdering": 10056,
                 "displayName": "Telecom System",
                 "description": "Type of Technology mediated contact point",
                 "resolutionGuidance": {
@@ -1309,32 +1434,27 @@
                               [
                                 "en",
                                 "Home",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Work",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Mobile",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Old",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ]
                             ]
                           }
@@ -1344,6 +1464,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom2Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1388,7 +1514,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom2use",
-                "sourceOrdering": 10058,
                 "displayName": "Use Of Contact Point",
                 "description": "purpose of this contact point",
                 "resolutionGuidance": {
@@ -1406,6 +1531,21 @@
                 "purpose": "hasA",
                 "dataType": "string",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3EndDate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "maximumLength",
+                        "value": "100"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1450,7 +1590,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3enddate",
-                "sourceOrdering": 10060,
                 "displayName": "Primary Email End Date",
                 "description": "End time of validity of telecom",
                 "maximumLength": 100
@@ -1460,6 +1599,25 @@
                 "purpose": "hasA",
                 "dataType": "integer",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3Rank"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.constrained",
+                    "arguments": [
+                      {
+                        "name": "minimumValue",
+                        "value": "1"
+                      },
+                      {
+                        "name": "maximumValue",
+                        "value": "2147483647"
+                      }
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1504,7 +1662,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3rank",
-                "sourceOrdering": 10061,
                 "displayName": "Rank Of Contact",
                 "description": "Specify preferred order of use (1 = highest)",
                 "maximumValue": "2147483647",
@@ -1515,6 +1672,12 @@
                 "purpose": "hasA",
                 "dataType": "dateTime",
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3StartDate"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1559,7 +1722,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3startdate",
-                "sourceOrdering": 10062,
                 "displayName": "Primary Email Start Date",
                 "description": "Start time of validtity of telecom"
               },
@@ -1579,39 +1741,33 @@
                             "constantValues": [
                               [
                                 "en",
-                                "Fax",
-                                "935000002",
-                                "2"
-                              ],
-                              [
-                                "en",
-                                "Pager",
-                                "935000003",
-                                "3"
-                              ],
-                              [
-                                "en",
-                                "SMS",
-                                "935000004",
-                                "4"
-                              ],
-                              [
-                                "en",
-                                "Skype",
-                                "935000005",
-                                "5"
-                              ],
-                              [
-                                "en",
                                 "Phone",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Email",
-                                "935000001",
-                                "1"
+                                "935000001"
+                              ],
+                              [
+                                "en",
+                                "Fax",
+                                "935000002"
+                              ],
+                              [
+                                "en",
+                                "Pager",
+                                "935000003"
+                              ],
+                              [
+                                "en",
+                                "SMS",
+                                "935000004"
+                              ],
+                              [
+                                "en",
+                                "Skype",
+                                "935000005"
                               ]
                             ]
                           }
@@ -1621,6 +1777,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3System"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1665,7 +1827,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3system",
-                "sourceOrdering": 10063,
                 "displayName": "Telecom System",
                 "description": "Type of Technology mediated contact point",
                 "resolutionGuidance": {
@@ -1695,32 +1856,27 @@
                               [
                                 "en",
                                 "Home",
-                                "935000000",
-                                "0"
+                                "935000000"
                               ],
                               [
                                 "en",
                                 "Work",
-                                "935000001",
-                                "1"
+                                "935000001"
                               ],
                               [
                                 "en",
                                 "Temp",
-                                "935000002",
-                                "2"
+                                "935000002"
                               ],
                               [
                                 "en",
                                 "Mobile",
-                                "935000003",
-                                "3"
+                                "935000003"
                               ],
                               [
                                 "en",
                                 "Old",
-                                "935000004",
-                                "4"
+                                "935000004"
                               ]
                             ]
                           }
@@ -1730,6 +1886,12 @@
                   ]
                 },
                 "appliedTraits": [
+                  {
+                    "traitReference": "is.CDS.sourceNamed",
+                    "arguments": [
+                      "msemr_Telecom3Use"
+                    ]
+                  },
                   {
                     "traitReference": "is.requiredAtLevel",
                     "arguments": [
@@ -1774,7 +1936,6 @@
                 ],
                 "isNullable": true,
                 "sourceName": "msemr_telecom3use",
-                "sourceOrdering": 10065,
                 "displayName": "Use Of Contact Point",
                 "description": "purpose of this contact point",
                 "resolutionGuidance": {
@@ -1807,7 +1968,10 @@
             ]
           }
         }
-      ]
+      ],
+      "sourceName": "Account",
+      "displayName": "Account",
+      "description": "Business that represents a customer or potential customer. The company that is billed in business transactions."
     }
   ]
 }

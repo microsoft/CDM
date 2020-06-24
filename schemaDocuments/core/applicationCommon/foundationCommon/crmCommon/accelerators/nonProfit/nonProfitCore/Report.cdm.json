@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0.1"
+              "value": "2.0"
             }
           ]
         }
@@ -132,6 +132,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_award",
                       "displayName": "Award",
                       "description": "Award"
@@ -214,6 +215,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_awardversionid",
                       "displayName": "Award Version",
                       "description": "Award Version"
@@ -238,6 +240,15 @@
                       {
                         "name": "maximumLength",
                         "value": "1024"
+                      }
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
                       }
                     ]
                   },
@@ -274,6 +285,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_description",
                 "displayName": "Description",
                 "description": "Description of the Report.",
@@ -288,6 +300,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_DueDate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -323,6 +344,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_duedate",
                 "displayName": "Due Date",
                 "description": "Date Report is due."
@@ -452,6 +474,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_primarycontactid",
                       "displayName": "Contact",
                       "description": "Unique identifier for Contact associated with Report."
@@ -478,7 +501,7 @@
                     "allowReference": true,
                     "foreignKeyAttribute": {
                       "explanation": "Unique identifier of 'Account'.",
-                      "name": "report_AccountId",
+                      "name": "reportAccountId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -534,6 +557,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_report_accountid",
                       "displayName": "Account",
                       "description": "Account"
@@ -553,14 +577,14 @@
                     }
                   ]
                 },
-                "name": "report_SubmittedBy",
+                "name": "reportSubmittedBy",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
                       "explanation": "Unique identifier of 'Contact'.",
-                      "name": "report_SubmittedById",
+                      "name": "reportSubmittedById",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -616,6 +640,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_report_submittedbyid",
                       "displayName": "Submitted By",
                       "description": "Unique identifier for Contact associated with Report."
@@ -632,6 +657,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_ReportId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -746,6 +780,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_requestid",
                       "displayName": "Request",
                       "description": "Request"
@@ -806,6 +841,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -838,6 +882,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_status",
                 "displayName": "Report Status",
                 "description": "Status of the Report.",
@@ -860,6 +905,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_SubmittedDate"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
                     ]
                   },
                   {
@@ -895,6 +949,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_submitteddate",
                 "displayName": "Submitted Date",
                 "description": "Date Report was submitted."
@@ -934,6 +989,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -966,6 +1030,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_type",
                 "displayName": "Type",
                 "description": "Type of Report.",
@@ -1017,6 +1082,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -1118,6 +1192,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -1150,6 +1233,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "statuscode",
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Report",

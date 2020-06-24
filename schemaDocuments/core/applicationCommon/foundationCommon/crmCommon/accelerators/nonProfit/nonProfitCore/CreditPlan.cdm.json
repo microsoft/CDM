@@ -47,7 +47,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.0.1"
+              "value": "2.0"
             }
           ]
         }
@@ -69,14 +69,14 @@
                     }
                   ]
                 },
-                "name": "creditPlan_Account",
+                "name": "creditPlanAccount",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
                       "explanation": "Unique identifier of 'Account'.",
-                      "name": "creditPlan_AccountId",
+                      "name": "creditPlanAccountId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -132,6 +132,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_creditplan_accountid",
                       "displayName": "Default on Account",
                       "description": "Default on Account"
@@ -151,14 +152,14 @@
                     }
                   ]
                 },
-                "name": "creditPlan_PaymentSchedule",
+                "name": "creditPlanPaymentSchedule",
                 "resolutionGuidance": {
                   "renameFormat": "{m}",
                   "entityByReference": {
                     "allowReference": true,
                     "foreignKeyAttribute": {
                       "explanation": "Unique identifier of 'PaymentSchedule'.",
-                      "name": "creditPlan_PaymentScheduleId",
+                      "name": "creditPlanPaymentScheduleId",
                       "purpose": "hasA",
                       "dataType": "entityId",
                       "appliedTraits": [
@@ -214,6 +215,7 @@
                         },
                         "is.linkedEntity.identifier"
                       ],
+                      "isNullable": true,
                       "sourceName": "msnfp_creditplan_paymentscheduleid",
                       "displayName": "Payment Schedule",
                       "description": "Payment Schedule"
@@ -230,6 +232,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "msnfp_CreditPlanId"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -316,6 +327,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -348,6 +368,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_credittype",
                 "displayName": "Credit Type",
                 "description": "",
@@ -423,6 +444,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -455,6 +485,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "msnfp_validtodate",
                 "displayName": "Valid To Date",
                 "description": ""
@@ -497,6 +528,15 @@
                     "traitReference": "is.CDS.sourceNamed",
                     "arguments": [
                       "statecode"
+                    ]
+                  },
+                  {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "systemrequired"
+                      }
                     ]
                   },
                   {
@@ -598,6 +638,15 @@
                     ]
                   },
                   {
+                    "traitReference": "is.requiredAtLevel",
+                    "arguments": [
+                      {
+                        "name": "level",
+                        "value": "none"
+                      }
+                    ]
+                  },
+                  {
                     "traitReference": "is.localized.displayedAs",
                     "arguments": [
                       {
@@ -630,6 +679,7 @@
                     ]
                   }
                 ],
+                "isNullable": true,
                 "sourceName": "statuscode",
                 "displayName": "Status Reason",
                 "description": "Reason for the status of the Credit Plan",
