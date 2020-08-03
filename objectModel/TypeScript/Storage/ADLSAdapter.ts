@@ -325,7 +325,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         const headers: Map<string, string> = new Map<string, string>();
 
         // Add UTC now time and new version.
-        headers.set(this.httpXmsDate, new Date().toISOString());
+        headers.set(this.httpXmsDate, new Date().toUTCString());
         headers.set(this.httpXmsVersion, '2018-06-17');
 
         let contentLength: number = 0;
@@ -339,7 +339,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         let builder: string = '';
         builder += `${method}\n`; // verb;
         builder += '\n'; // Content-Encoding
-        builder += ('\n'); // Content-Language.
+        builder += '\n'; // Content-Language.
         builder += (contentLength !== 0) ? `${contentLength}\n` : '\n'; // Content length.
         builder += '\n'; // Content-md5.
         builder += contentType ? `${contentType}; charset=utf-8\n` : '\n'; // Content-type.
@@ -355,8 +355,8 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         }
 
         // Append canonicalized resource.
-        const accountName: string =
-            builder += '/';
+        const accountName: string = uri.host.split('.')[0];
+        builder += '/';
         builder += accountName;
         builder += uri.pathname;
 
@@ -372,20 +372,12 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
 
         // hash the payload
         const dataToHash: Buffer = Buffer.from(builder.trimRight());
-        const bytes: Buffer = new Buffer(sharedKey);
+        const bytes: Buffer = Buffer.from(sharedKey, 'base64');
 
         const hmac: crypto.Hmac = crypto.createHmac('sha256', bytes);
-
-        hmac.on('readable', () => {
-            const data: string | Buffer = hmac.read();
-            if (data) {
-                const signedString: string = `SharedKey ${accountName}:${data.toString()}`;
-                headers.set(this.httpAuthorization, signedString);
-            }
-        });
-
-        hmac.write(dataToHash);
-        hmac.end();
+        hmac.update(dataToHash);
+        const signedString: string = `SharedKey ${accountName}:${hmac.digest('base64')}`;
+        headers.set(this.httpAuthorization, signedString);
 
         return headers;
     }
