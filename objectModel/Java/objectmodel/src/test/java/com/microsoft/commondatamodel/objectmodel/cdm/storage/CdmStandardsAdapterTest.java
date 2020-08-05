@@ -41,8 +41,7 @@ public class CdmStandardsAdapterTest {
      * Tests if the adapter is able to read correctly.
      */
     @Test
-    public void testReadAsync()
-    {
+    public void testReadAsync() {
         CdmStandardsAdapter adapter = new CdmStandardsAdapter();
         String foundations = adapter.readAsync(TEST_FILE_PATH).join();
         Assert.assertNotNull(foundations);

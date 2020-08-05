@@ -1,0 +1,175 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetLine/RTax25RegisterJournalTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Main/RTax25RegisterTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetHeader/RTax25RegisterJournalTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25RegisterHideSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FieldId",
+          "dataType": "FieldNum_RU",
+          "description": ""
+        },
+        {
+          "name": "FiscalYear",
+          "dataType": "Yr",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Hided",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Hide",
+          "description": ""
+        },
+        {
+          "name": "JournalNum",
+          "dataType": "RTax25RegisterJournalNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodNum",
+          "dataType": "RTax25PeriodNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegisterId",
+          "dataType": "RTax25RegisterId",
+          "description": ""
+        },
+        {
+          "name": "TableTrans",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTrans"
+          },
+          "name": "Relationship_RegisterJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterTable"
+          },
+          "name": "Relationship_RegisterTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTable"
+          },
+          "name": "Relationship_RTax25RegisterJournalTableJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTable"
+          },
+          "name": "Relationship_RTax25RegisterJournalTablePeriodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Register journal lines"
+    },
+    {
+      "dataTypeName": "FieldNum_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Yr",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25RegisterJournalNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25PeriodNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25RegisterId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -280,6 +280,29 @@ public class RelationshipTest {
         verifyRelationships(manifest, expectedRels);
   }
 
+  /**
+   * Test that multiple relationships are generated when there are references to multiple entities
+   */
+  @Test
+  public void testRelationshipToMultipleEntities()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testRelationshipToMultipleEntities", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToMultipleEntities", null);
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+  }
+
   private static void verifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships) {
     Assert.assertEquals(manifest.getRelationships().size(), expectedRelationships.size());
 

@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING
 from .cdm_attribute_item import CdmAttributeItem
 from .cdm_trait_collection import CdmTraitCollection
 from .cdm_object_def import CdmObjectDefinition
+from .projections.cardinality_settings import CardinalitySettings
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmTraitDefinition, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext
     from cdm.resolvedmodel import ResolvedTraitSet, ResolvedTraitSetBuilder
     from cdm.utilities import ResolveOptions, VisitCallback
 
@@ -25,6 +26,9 @@ class CdmAttribute(CdmObjectDefinition, CdmAttributeItem):
 
         # properties that guide the resolution of this attribute and interact with directives
         self.resolution_guidance = None  # type: Optional[CdmAttributeResolutionGuidanceDefinition]
+
+        # cardinality settings for projections
+        self.cardinality = None  # type: Optional[CardinalitySettings]
 
         # Internal
         # the attribute's applied traits.

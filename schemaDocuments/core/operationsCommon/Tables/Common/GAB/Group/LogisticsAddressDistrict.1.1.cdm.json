@@ -1,0 +1,176 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "LogisticsAddressCity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressCountryRegion.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressCounty.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressProperties_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "LogisticsAddressState.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LogisticsAddressDistrict",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "City",
+          "dataType": "LogisticsAddressCityRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountryRegionId_RU",
+          "dataType": "LogisticsAddressCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountyId_RU",
+          "dataType": "LogisticsAddressCountyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "LogisticsAddressDistrictDescr",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "LogisticsAddressDistrictName",
+          "description": ""
+        },
+        {
+          "name": "Properties_RU",
+          "dataType": "LogisticsAddressPropertiesId_RU",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StateId_RU",
+          "dataType": "LogisticsAddressStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCity"
+          },
+          "name": "Relationship_City_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_CountryRegion_RU_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCounty"
+          },
+          "name": "Relationship_County_RU_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressProperties_RU"
+          },
+          "name": "Relationship_Properties_RU_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressState"
+          },
+          "name": "Relationship_State_RU_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Districts"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressCountyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressDistrictDescr",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressDistrictName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressPropertiesId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LogisticsAddressStateId",
+      "extendsDataType": "string"
+    }
+  ]
+}

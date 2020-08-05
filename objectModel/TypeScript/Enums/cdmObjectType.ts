@@ -32,5 +32,16 @@ export enum cdmObjectType {
     dataPartitionDef,
     dataPartitionPatternDef,
     attributeResolutionGuidanceDef,
-    e2eRelationshipDef
+    e2eRelationshipDef,
+    operationAddCountAttributeDef,
+    operationAddSupportingAttributeDef,
+    operationAddTypeAttributeDef,
+    operationExcludeAttributesDef,
+    operationArrayExpansionDef,
+    operationCombineAttributesDef,
+    operationRenameAttributesDef,
+    operationReplaceAsForeignKeyDef,
+    operationIncludeAttributesDef,
+    operationAddAttributeGroupDef,
+    projectionDef
 }

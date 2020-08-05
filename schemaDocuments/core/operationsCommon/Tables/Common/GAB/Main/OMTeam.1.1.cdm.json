@@ -1,0 +1,118 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Reference/OMTeamMembershipCriterion.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/SysUserInfo.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "DirPersonUser.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "OMInternalOrganization.1.1.cdm.json",
+      "moniker": "base_OMInternalOrganization"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "OMTeam",
+      "extendsEntity": "base_OMInternalOrganization/OMInternalOrganization",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "description": ""
+        },
+        {
+          "name": "IsActive",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "TeamAdministrator",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Administrator",
+          "description": ""
+        },
+        {
+          "name": "TeamMembershipCriterion",
+          "dataType": "OMTeamMembershipCriterionRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "OMTeamMembershipCriterion"
+          },
+          "name": "Relationship_OMTeamMembershipCriterionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysUserInfo"
+          },
+          "name": "Relationship_SysUserInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPersonUser"
+          },
+          "name": "Relationship_DirPersonUserRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Team"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OMTeamMembershipCriterionRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

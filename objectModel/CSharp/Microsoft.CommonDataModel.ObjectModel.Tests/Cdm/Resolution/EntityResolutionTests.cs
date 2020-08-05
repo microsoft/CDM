@@ -237,7 +237,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             ResolveOptions resOpt = new ResolveOptions { WrtDoc = entity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" }) };
             CdmEntityDefinition resolvedEntity = await entity.CreateResolvedEntityAsync("resolved", resOpt);
 
-            Assert.AreEqual("is.linkedEntity.name", resolvedEntity.Attributes[1].AppliedTraits[6].NamedReference);
+            Assert.AreEqual("is.linkedEntity.name", resolvedEntity.Attributes[1].AppliedTraits[7].NamedReference);
 
             // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
             resOpt = new ResolveOptions { WrtDoc = entity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly" }) };

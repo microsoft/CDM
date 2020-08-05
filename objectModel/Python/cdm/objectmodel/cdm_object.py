@@ -102,7 +102,7 @@ class CdmObject(abc.ABC):
         was_previously_resolving = self.ctx.corpus._is_currently_resolving
         self.ctx.corpus._is_currently_resolving = True
         if not res_opt:
-            res_opt = ResolveOptions(self)
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
         kind = 'rasb'
         ctx = self.ctx
@@ -148,7 +148,7 @@ class CdmObject(abc.ABC):
                     if cache_tag:
                         ctx._cache[cache_tag] = rasb_cache
 
-                    if from_moniker and acp_in_context and cast('CdmObjectReference', self).named_reference:
+                    if from_moniker and acp_in_context and hasattr(cast('CdmObjectReference', self), 'named_reference'):
                         # create a fresh context
                         old_context = acp_in_context._under.contents[-1]
                         acp_in_context._under.contents.pop(len(acp_in_context._under.contents) - 1)
@@ -188,7 +188,7 @@ class CdmObject(abc.ABC):
         was_previously_resolving = self.ctx.corpus._is_currently_resolving
         self.ctx.corpus._is_currently_resolving = True
         if not res_opt:
-            res_opt = ResolveOptions(self)
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
         kind = 'rtsb'
         ctx = self.ctx

@@ -6,7 +6,6 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
@@ -19,7 +18,7 @@ public class CdmImport extends CdmObjectSimple {
 
   private String moniker;
   private String corpusPath;
-  private CdmDocumentDefinition doc;
+  private CdmDocumentDefinition document;
 
   public CdmImport(final CdmCorpusContext ctx, final String corpusPath, final String moniker) {
     super(ctx);
@@ -39,12 +38,12 @@ public class CdmImport extends CdmObjectSimple {
   /**
    * Gets or sets the document.
    */
-  CdmDocumentDefinition getDoc() {
-    return doc;
+  CdmDocumentDefinition getDocument() {
+    return document;
   }
 
-  void setDoc(final CdmDocumentDefinition doc) {
-    this.doc = doc;
+  void setDocument(final CdmDocumentDefinition document) {
+    this.document = document;
   }
 
   /**
@@ -67,10 +66,6 @@ public class CdmImport extends CdmObjectSimple {
 
   public void setMoniker(final String value) {
     this.moniker = value;
-  }
-
-  CdmDocumentDefinition getResolvedDocument() {
-    return this.doc;
   }
 
   @Override
@@ -112,7 +107,7 @@ public class CdmImport extends CdmObjectSimple {
       copy.setMoniker(this.getMoniker());
     }
 
-    copy.setDoc(doc);
+    copy.setDocument(document);
     return copy;
   }
 }

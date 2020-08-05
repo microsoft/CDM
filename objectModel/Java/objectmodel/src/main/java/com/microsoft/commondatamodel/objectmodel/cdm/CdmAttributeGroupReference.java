@@ -46,6 +46,14 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
       final boolean simpleReference,
       final CdmObjectReferenceBase host) {
     if (host == null) {
+      // for inline attribute group definition, the owner information is lost here when a ref object created
+      // updating it here
+      if (this.getExplicitReference() != null &&
+          this.getExplicitReference().getObjectType() == CdmObjectType.AttributeGroupDef &&
+          this.getExplicitReference().getOwner() == null) {
+        this.getExplicitReference().setOwner(this.getOwner());
+      }
+
       return new CdmAttributeGroupReference(this.getCtx(), refTo, simpleReference);
     } else {
       return host.copyToHost(this.getCtx(), refTo, simpleReference);
@@ -72,9 +80,9 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
-    final CdmObjectDefinition cdmObjectDefinition = this.fetchResolvedReference(resOpt);
-    if (cdmObjectDefinition != null) {
-      return ((CdmAttributeGroupDefinition) cdmObjectDefinition).fetchResolvedEntityReferences(resOpt);
+    final CdmObject ref = this.fetchResolvedReference(resOpt);
+    if (ref != null) {
+      return ((CdmAttributeGroupDefinition) ref).fetchResolvedEntityReferences(resOpt);
     }
     if (this.getExplicitReference() != null) {
       return ((CdmAttributeGroupDefinition) this.getExplicitReference()).fetchResolvedEntityReferences(resOpt);

@@ -25,14 +25,27 @@ import {
     CdmManifestDeclarationDefinition,
     CdmManifestDefinition,
     CdmObject,
+    CdmObjectReference,
     cdmObjectType,
+    CdmOperationAddAttributeGroup,
+    CdmOperationAddCountAttribute,
+    CdmOperationAddSupportingAttribute,
+    CdmOperationAddTypeAttribute,
+    CdmOperationArrayExpansion,
+    CdmOperationCombineAttributes,
+    CdmOperationExcludeAttributes,
+    CdmOperationIncludeAttributes,
+    CdmOperationRenameAttributes,
+    CdmOperationReplaceAsForeignKey,
     CdmParameterDefinition,
+    CdmProjection,
     CdmPurposeDefinition,
     CdmPurposeReference,
     CdmReferencedEntityDeclarationDefinition,
     CdmTraitDefinition,
     CdmTraitReference,
-    CdmTypeAttributeDefinition
+    CdmTypeAttributeDefinition,
+    StorageAdapter
 } from '../internal';
 
 export function isImport(obj: CdmObject): obj is CdmImport {
@@ -149,4 +162,52 @@ export function isAttributeResolutionGuidance(obj: CdmObject): obj is CdmAttribu
 
 export function isE2ERelationship(obj: CdmObject): obj is CdmE2ERelationship {
     return obj && obj.objectType === cdmObjectType.e2eRelationshipDef;
+}
+
+export function isCdmObjectReference(obj: CdmObject): obj is CdmObjectReference {
+    return obj && (obj as CdmObjectReference).fetchResolvedReference !== undefined;
+}
+
+export function isProjection(obj: CdmObject): obj is CdmProjection {
+    return obj && obj.objectType === cdmObjectType.projectionDef;
+}
+
+export function isOperationAddCountAttribute(obj: CdmObject): obj is CdmOperationAddCountAttribute {
+    return obj && obj.objectType === cdmObjectType.operationAddCountAttributeDef;
+}
+
+export function isOperationAddSupportingAttribute(obj: CdmObject): obj is CdmOperationAddSupportingAttribute {
+    return obj && obj.objectType === cdmObjectType.operationAddSupportingAttributeDef;
+}
+
+export function isOperationAddTypeAttribute(obj: CdmObject): obj is CdmOperationAddTypeAttribute {
+    return obj && obj.objectType === cdmObjectType.operationAddTypeAttributeDef;
+}
+
+export function isOperationExcludeAttributes(obj: CdmObject): obj is CdmOperationExcludeAttributes {
+    return obj && obj.objectType === cdmObjectType.operationExcludeAttributesDef;
+}
+
+export function isOperationArrayExpansion(obj: CdmObject): obj is CdmOperationArrayExpansion {
+    return obj && obj.objectType === cdmObjectType.operationArrayExpansionDef;
+}
+
+export function isOperationCombineAttributes(obj: CdmObject): obj is CdmOperationCombineAttributes {
+    return obj && obj.objectType === cdmObjectType.operationCombineAttributesDef;
+}
+
+export function isOperationRenameAttributes(obj: CdmObject): obj is CdmOperationRenameAttributes {
+    return obj && obj.objectType === cdmObjectType.operationRenameAttributesDef;
+}
+
+export function isOperationReplaceAsForeignKey(obj: CdmObject): obj is CdmOperationReplaceAsForeignKey {
+    return obj && obj.objectType === cdmObjectType.operationReplaceAsForeignKeyDef;
+}
+
+export function isOperationIncludeAttributes(obj: CdmObject): obj is CdmOperationIncludeAttributes {
+    return obj && obj.objectType === cdmObjectType.operationIncludeAttributesDef;
+}
+
+export function isOperationAddAttributeGroup(obj: CdmObject): obj is CdmOperationAddAttributeGroup {
+    return obj && obj.objectType === cdmObjectType.operationAddAttributeGroupDef;
 }

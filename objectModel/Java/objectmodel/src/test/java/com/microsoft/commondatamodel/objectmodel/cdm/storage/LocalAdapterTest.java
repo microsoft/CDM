@@ -119,8 +119,12 @@ public class LocalAdapterTest {
     final LocalAdapter adapter = new LocalAdapter("C:/some/dir");
     String pathWithLeadingSlash = adapter.createAdapterPath("/folder");
     String pathWithoutLeadingSlash = adapter.createAdapterPath("folder");
+
     // Path with or without a leading slash should return the same result.
     assertEquals(pathWithLeadingSlash, "C:\\some\\dir\\folder");
     assertEquals(pathWithLeadingSlash, pathWithoutLeadingSlash);
+
+    // A null corpus path should return a null adapter path
+    assertNull(adapter.createAdapterPath(null));
   }
 }

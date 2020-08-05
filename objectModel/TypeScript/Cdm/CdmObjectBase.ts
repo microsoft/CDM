@@ -211,7 +211,7 @@ export abstract class CdmObjectBase implements CdmObject {
             const wasPreviouslyResolving: boolean = this.ctx.corpus.isCurrentlyResolving;
             this.ctx.corpus.isCurrentlyResolving = true;
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             const kind: string = 'rtsb';
@@ -280,7 +280,7 @@ export abstract class CdmObjectBase implements CdmObject {
             const wasPreviouslyResolving: boolean = this.ctx.corpus.isCurrentlyResolving;
             this.ctx.corpus.isCurrentlyResolving = true;
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             const kind: string = 'rasb';

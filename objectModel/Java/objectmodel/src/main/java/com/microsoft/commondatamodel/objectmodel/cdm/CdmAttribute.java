@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -15,6 +16,10 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
   private CdmAttributeResolutionGuidance resolutionGuidance;
   private CdmTraitCollection appliedTraits;
   private int attributeCount;
+  /**
+   * Cardinality setting for projections
+   */
+  private CardinalitySettings cardinality;
 
   public CdmAttribute(final CdmCorpusContext ctx, final String name) {
     super(ctx);
@@ -81,6 +86,14 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
    * to be called externally at all. Please refrain from using it.
    */
   public void setAttributeCount(final int attributeCount) { this.attributeCount = attributeCount; }
+
+  public CardinalitySettings getCardinality() {
+    return cardinality;
+  }
+
+  public void setCardinality(final CardinalitySettings cardinality) {
+    this.cardinality = cardinality;
+  }
 
   boolean visitAtt(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
     if (this.getPurpose() != null && this.getPurpose()

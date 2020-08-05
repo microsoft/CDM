@@ -15,6 +15,7 @@ import {
 } from '../internal';
 import { isLocalEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
 import { Logger } from '../Utilities/Logging/Logger';
+import { StorageUtils } from '../Utilities/StorageUtils';
 
 /**
  * The object model implementation for Data Partition Pattern.
@@ -119,6 +120,9 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
      * @inheritdoc
      */
     public copy(resOpt: resolveOptions, host?: CdmObject): CdmDataPartitionPatternDefinition {
+        if (resOpt === undefined) {
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+        }
         let copy: CdmDataPartitionPatternDefinition;
         if (!host) {
             copy = new CdmDataPartitionPatternDefinition(this.ctx, this.name);
@@ -184,10 +188,6 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 
@@ -200,7 +200,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
         if (adapter === undefined) {
             Logger.error(
-                CdmCorpusDefinition.name,
+                CdmDataPartitionPatternDefinition.name,
                 this.ctx,
                 `Adapter not found for the document '${this.inDocument.name}'.`,
                 this.fileStatusCheckAsync.name
@@ -214,15 +214,19 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         if (rootCleaned === undefined) {
             rootCleaned = '';
         }
-        if (rootCleaned.endsWith('/')) {
-            rootCleaned = rootCleaned.slice(rootCleaned.length - 1);
-        }
         const rootCorpus: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(rootCleaned, this.inDocument);
 
         let fileInfoList: string[];
         try {
+            // Remove namespace from path
+            const pathTuple: [string, string] = StorageUtils.splitNamespacePath(rootCorpus);
+            if (!pathTuple) {
+                Logger.error(CdmDataPartitionPatternDefinition.name, this.ctx, 'The root corpus path should not be null or empty.', this.fileStatusCheckAsync.name);
+
+                return;
+            }
             // get a list of all corpusPaths under the root
-            fileInfoList = await adapter.fetchAllFilesAsync(rootCorpus);
+            fileInfoList = await adapter.fetchAllFilesAsync(pathTuple[1]);
         } catch (e) {
             Logger.warning(CdmDataPartitionPatternDefinition.name, this.ctx, `The folder location '${rootCorpus}' described by a partition pattern does not exist`, this.fileStatusCheckAsync.name);
         }
@@ -281,7 +285,14 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                             // put the origial but cleaned up root back onto the matched doc as the location stored in the partition
                             const locationCorpusPath: string = `${rootCleaned}${fi}`;
                             const fullPath: string = `${rootCorpus}${fi}`;
-                            const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(fullPath);
+                            // Remove namespace from path
+                            const pathTuple: [string, string] = StorageUtils.splitNamespacePath(fullPath);
+                            if (!pathTuple) {
+                                Logger.error(CdmDataPartitionPatternDefinition.name, this.ctx, 'The corpus path should not be null or empty.', this.fileStatusCheckAsync.name);
+
+                                return;
+                            }
+                            const lastModifiedTime: Date = await adapter.computeLastModifiedTimeAsync(pathTuple[1]);
                             (this.owner).createDataPartitionFromPattern(
                                 locationCorpusPath, this.exhibitsTraits, args, this.specializedSchema, lastModifiedTime);
                         }

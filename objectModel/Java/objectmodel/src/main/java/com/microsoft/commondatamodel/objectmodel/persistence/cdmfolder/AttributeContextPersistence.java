@@ -137,6 +137,32 @@ public class AttributeContextPersistence {
         return CdmAttributeContextType.GeneratedRound;
       case "generatedSet":
         return CdmAttributeContextType.GeneratedSet;
+      case "projection":
+        return CdmAttributeContextType.Projection;
+      case "source":
+        return CdmAttributeContextType.Source;
+      case "operations":
+        return CdmAttributeContextType.Operations;
+      case "operationAddCountAttribute":
+        return CdmAttributeContextType.OperationAddCountAttribute;
+      case "operationAddSupportingAttribute":
+        return CdmAttributeContextType.OperationAddSupportingAttribute;
+      case "operationAddTypeAttribute":
+        return CdmAttributeContextType.OperationAddTypeAttribute;
+      case "operationExcludeAttributes":
+        return CdmAttributeContextType.OperationExcludeAttributes;
+      case "operationArrayExpansion":
+        return CdmAttributeContextType.OperationArrayExpansion;
+      case "operationCombineAttributes":
+        return CdmAttributeContextType.OperationCombineAttributes;
+      case "operationRenameAttributes":
+        return CdmAttributeContextType.OperationRenameAttributes;
+      case "operationReplaceAsForeignKey":
+        return CdmAttributeContextType.OperationReplaceAsForeignKey;
+      case "operationIncludeAttributes":
+        return CdmAttributeContextType.OperationIncludeAttributes;
+      case "operationAddAttributeGroup":
+        return CdmAttributeContextType.OperationAddAttributeGroup;
       default:
         return null;
     }
@@ -164,6 +190,32 @@ public class AttributeContextPersistence {
         return "generatedRound";
       case GeneratedSet:
         return "generatedSet";
+      case Projection:
+        return "projection";
+      case Source:
+        return "source";
+      case Operations:
+        return "operations";
+      case OperationAddCountAttribute:
+        return "operationAddCountAttribute";
+      case OperationAddSupportingAttribute:
+        return "operationAddSupportingAttribute";
+      case OperationAddTypeAttribute:
+        return "operationAddTypeAttribute";
+      case OperationExcludeAttributes:
+        return "operationExcludeAttributes";
+      case OperationArrayExpansion:
+        return "operationArrayExpansion";
+      case OperationCombineAttributes:
+        return "operationCombineAttributes";
+      case OperationRenameAttributes:
+        return "operationRenameAttributes";
+      case OperationReplaceAsForeignKey:
+        return "operationReplaceAsForeignKey";
+      case OperationIncludeAttributes:
+        return "operationIncludeAttributes";
+      case OperationAddAttributeGroup:
+        return "operationAddAttributeGroup";
       default:
         return "unknown";
     }

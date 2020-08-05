@@ -15,36 +15,29 @@ from .types import Entity
 class EntityPersistence:
     @staticmethod
     def from_data(ctx: CdmCorpusContext, data: Entity) -> CdmEntityDefinition:
+        if not data:
+            return None
+
         if not data.get('entityName'):
             return None
 
         entity = ctx.corpus.make_object(CdmObjectType.ENTITY_DEF, data.entityName)
+
         entity.extends_entity = EntityReferencePersistence.from_data(ctx, data.get('extendsEntity'))
         entity.extends_entity_resolution_guidance = AttributeResolutionGuidancePersistence.from_data(ctx, data.get('extendsEntityResolutionGuidance'))
 
-        if data.get('explanation'):
-            entity.explanation = data.explanation
+        entity.explanation = utils._property_from_data_to_string(data.explanation)
 
         exhibits_traits = utils.create_trait_reference_array(ctx, data.get('exhibitsTraits'))
         entity.exhibits_traits.extend(exhibits_traits)
+        
+        entity.source_name = utils._property_from_data_to_string(data.sourceName)
+        entity.display_name = utils._property_from_data_to_string(data.displayName)
+        entity.description = utils._property_from_data_to_string(data.description)
+        entity.version = utils._property_from_data_to_string(data.version)
+        entity.cdm_schemas = data.cdmSchemas
 
-        if data.get('sourceName'):
-            entity.source_name = data.sourceName
-
-        if data.get('displayName'):
-            entity.display_name = data.displayName
-
-        if data.get('description') and not data.get('description').isspace():
-            entity.description = data.description
-
-        if data.get('version'):
-            entity.version = data.version
-
-        if data.get('cdmSchemas'):
-            entity.cdm_schemas = data.cdmSchemas
-
-        if data.get('attributeContext'):
-            entity.attribute_context = AttributeContextPersistence.from_data(ctx, data.attributeContext)
+        entity.attribute_context = AttributeContextPersistence.from_data(ctx, data.attributeContext)
 
         attributes = utils.create_attribute_array(ctx, data.get('hasAttributes'), entity.entity_name)
         entity.attributes.extend(attributes)

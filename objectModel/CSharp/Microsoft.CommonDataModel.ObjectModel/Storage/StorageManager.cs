@@ -181,27 +181,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
-        /// Splits the namespace path on namespace and objects.
-        /// </summary>
-        /// <param name="objectPath"></param>
-        /// <returns>The tuple.</returns>
-        internal Tuple<string, string> SplitNamespacePath(string objectPath)
-        {
-            if (string.IsNullOrEmpty(objectPath))
-            {
-                Logger.Error(nameof(StorageManager), this.Ctx, "The object path cannot be null or empty.", nameof(SplitNamespacePath));
-                return null;
-            }
-            string nameSpace = "";
-            if (objectPath.Contains(":"))
-            {
-                nameSpace = StringUtils.Slice(objectPath, 0, objectPath.IndexOf(":"));
-                objectPath = StringUtils.Slice(objectPath, objectPath.IndexOf(":") + 1);
-            }
-            return new Tuple<string, string>(nameSpace, objectPath);
-        }
-
-        /// <summary>
         /// Retrieves the adapter for the specified namespace.
         /// </summary>
         /// <param name="nameSpace"></param>
@@ -286,13 +265,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             if (string.IsNullOrEmpty(corpusPath))
             {
-                Logger.Error(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, $"The corpus path is null or empty", nameof(CorpusPathToAdapterPath));
+                Logger.Error(nameof(StorageManager), (ResolveContext)this.Ctx, $"The corpus path is null or empty", nameof(CorpusPathToAdapterPath));
                 return null;
             }
 
             string result = "";
             // break the corpus path into namespace and ... path
-            Tuple<string, string> pathTuple = SplitNamespacePath(corpusPath);
+            Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
+            if (pathTuple == null)
+            {
+                Logger.Error(nameof(StorageManager), this.Ctx, "The corpus path cannot be null or empty.", nameof(CorpusPathToAdapterPath));
+                return null;
+            }
             string nameSpace = pathTuple.Item1;
             if (string.IsNullOrWhiteSpace(nameSpace))
                 nameSpace = this.DefaultNamespace;
@@ -301,7 +285,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             StorageAdapter namespaceAdapter = this.FetchAdapter(nameSpace);
             if (namespaceAdapter == null)
             {
-                Logger.Error(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, $"The namespace '{nameSpace}' has not been registered", nameof(CorpusPathToAdapterPath));
+                Logger.Error(nameof(StorageManager), (ResolveContext)this.Ctx, $"The namespace '{nameSpace}' has not been registered", nameof(CorpusPathToAdapterPath));
             }
             else
             {
@@ -329,22 +313,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 return null;
             }
 
-            Tuple<string, string> pathTuple = this.SplitNamespacePath(objectPath);
+            Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(objectPath);
+            if (pathTuple == null)
+            {
+                Logger.Error(nameof(StorageManager), this.Ctx, "The object path cannot be null or empty.", nameof(CreateAbsoluteCorpusPath));
+                return null;
+            }
             string nameSpace = pathTuple.Item1;
             string newObjectPath = pathTuple.Item2;
             string finalNamespace;
 
             string prefix = "";
             string namespaceFromObj = "";
-            if (obj != null && obj is CdmContainerDefinition)
+            if (obj != null && obj is CdmContainerDefinition container)
             {
-                prefix = ((CdmContainerDefinition)obj).FolderPath;
-                namespaceFromObj = ((CdmContainerDefinition)obj).Namespace;
+                prefix = container.FolderPath;
+                namespaceFromObj = container.Namespace;
             }
             else if (obj != null)
             {
-                prefix = ((CdmDocumentDefinition)obj.InDocument).FolderPath;
-                namespaceFromObj = ((CdmDocumentDefinition)obj.InDocument).Namespace;
+                prefix = obj.InDocument.FolderPath;
+                namespaceFromObj = obj.InDocument.Namespace;
             }
 
             if (prefix != null && this.ContainsUnsupportedPathFormat(prefix))

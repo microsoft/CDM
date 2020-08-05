@@ -195,7 +195,7 @@ public class TraitToPropertyMap {
    */
   @Deprecated
   private CdmTraitReference fetchTraitReferenceName(final Object traitName, final boolean onlyFromProperty) {
-    final int traitIndex = this.getTraits().indexOf(traitName.toString(), onlyFromProperty);
+    final int traitIndex = this.getTraits() != null ? this.getTraits().indexOf(traitName.toString(), onlyFromProperty) : -1;
     return (traitIndex == -1) ? null : this.getTraits().get(traitIndex);
   }
 
@@ -367,12 +367,8 @@ public class TraitToPropertyMap {
     return null;
   }
 
-  private CdmTraitReference fetchOrCreateTrait(final Object trait) {
-    return this.fetchOrCreateTrait(trait, false);
-  }
-
   private CdmTraitReference fetchOrCreateTrait(Object traitName, final boolean simpleRef) {
-    Object trait;
+    CdmTraitReference trait;
     if (traitName instanceof String) {
       traitName = traitName.toString();
     } else if (traitName instanceof Enum) {
@@ -381,18 +377,11 @@ public class TraitToPropertyMap {
 
     trait = fetchTraitReferenceName(traitName, true);
     if (trait == null) {
-      trait = this.getCtx().getCorpus().makeObject(CdmObjectType.TraitRef, (String) traitName, false);
-
-      if (this.host instanceof CdmObjectReference) {
-        ((CdmObjectReference) this.host).getAppliedTraits().add((CdmTraitReference) trait);
-      } else if (this.host instanceof CdmTypeAttributeDefinition) {
-        ((CdmTypeAttributeDefinition) this.host).getAppliedTraits().add((CdmTraitReference) trait);
-      } else {
-        ((CdmObjectDefinition) this.host).getExhibitsTraits().add((CdmTraitReference) trait);
-      }
+      trait = this.getCtx().getCorpus().makeObject(CdmObjectType.TraitRef, (String) traitName, simpleRef);
+      trait.setFromProperty(true);
+      this.getTraits().add(trait);
     }
-    ((CdmTraitReference) trait).setFromProperty(true);
-    return (CdmTraitReference) trait;
+    return trait;
   }
 
   private List<String> getSingleAttTraitTable(final Object trait, final String argName,
@@ -519,16 +508,7 @@ public class TraitToPropertyMap {
   }
 
   private void removeTrait(final String traitName) {
-    if (this.getHost() instanceof CdmObjectReference) {
-      ((CdmObjectReference) this.getHost())
-          .getAppliedTraits().remove(traitName, true); // validate a known prop?
-    } else if (this.getHost() instanceof CdmAttribute) {
-      ((CdmAttribute) this.getHost())
-          .getAppliedTraits().remove(traitName, true); // validate a known prop?
-    } else {
-      ((CdmObjectDefinition) this.getHost())
-          .getExhibitsTraits().remove(traitName, true); // validate a known prop?
-    }
+    this.getTraits().remove(traitName, true);
   }
 
   private void setBooleanTrait(final Enum traitName, final boolean value) {

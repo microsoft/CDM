@@ -33,7 +33,7 @@ export class CdmAttributeContextReference extends CdmObjectReferenceBase {
             return host.copyToHost(this.ctx, refTo, simpleReference);
         }
     }
-    
+
     /**
      * @internal
      */

@@ -99,7 +99,7 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmLocalEntityDeclarationDefinition {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmLocalEntityDeclarationDefinition;
@@ -180,10 +180,6 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false; // makes no sense
     }
 

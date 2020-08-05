@@ -1,0 +1,115 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResSize.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Group/EcoResProductDimensionAttribute.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductMaster.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResProductMasterDimensionValue.1.0.cdm.json",
+      "moniker": "base_EcoResProductMasterDimensionValue"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResProductMasterSize",
+      "extendsEntity": "base_EcoResProductMasterDimensionValue/EcoResProductMasterDimensionValue",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Size",
+          "dataType": "EcoResSizeRecId",
+          "description": ""
+        },
+        {
+          "name": "SizeProductDimensionAttribute",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "SizeProductMaster",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ExtensionSizeDimensionGroupId",
+          "dataType": "RetailDimensionGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResSize"
+          },
+          "name": "Relationship_EcoResSizeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductDimensionAttribute"
+          },
+          "name": "Relationship_SizeEcoResProductDimensionAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductMaster"
+          },
+          "name": "Relationship_SizeEcoResProductMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sizes assigned to product masters"
+    },
+    {
+      "dataTypeName": "EcoResSizeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailDimensionGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

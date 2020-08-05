@@ -48,7 +48,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Elevated = instance.Elevated == true ? (bool?)true : null,
                 Ugly = instance.Ugly == true ? (bool?)true : null,
                 AssociatedProperties = instance.AssociatedProperties
-            }; ;
+            };
         }
     }
 }

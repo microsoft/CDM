@@ -1,0 +1,97 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PCComponentControl.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PCSubComponent.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PCComponentControlSubComponent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ComponentControl",
+          "dataType": "RefRecId",
+          "displayName": "Component control",
+          "description": ""
+        },
+        {
+          "name": "ParentComponentControl",
+          "dataType": "RefRecId",
+          "displayName": "Parent component control",
+          "description": ""
+        },
+        {
+          "name": "SubComponent",
+          "dataType": "RefRecId",
+          "displayName": "Sub component",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PCComponentControl"
+          },
+          "name": "Relationship_PCComponentControlRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCComponentControl"
+          },
+          "name": "Relationship_PCComponentControl_ParentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PCSubComponent"
+          },
+          "name": "Relationship_PCSubComponentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sub component UI definition"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -65,7 +65,7 @@ export class TypeAttributePersistence {
             'cdm:traits': undefined
         };
 
-        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, attribute, instance.appliedTraits);
+        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, attribute, instance.appliedTraits);
 
         const t2pm: traitToPropertyMap = new traitToPropertyMap(instance);
         const isHiddenTrait: CdmTraitReference = t2pm.fetchTraitReference('is.hidden');
@@ -86,6 +86,10 @@ export class TypeAttributePersistence {
                 return cdmDataFormat.int64;
             case 'double':
                 return cdmDataFormat.double;
+            case 'date':
+                return cdmDataFormat.date;
+            case 'time':
+                return cdmDataFormat.time;
             case 'datetime':
                 return cdmDataFormat.dateTime;
             case 'datetimeoffset':
@@ -121,7 +125,9 @@ export class TypeAttributePersistence {
             case cdmDataFormat.binary:
                 return 'boolean';
             case cdmDataFormat.time:
+                return 'time';
             case cdmDataFormat.date:
+                return 'date';
             case cdmDataFormat.dateTime:
                 return 'dateTime';
             case cdmDataFormat.dateTimeOffset:

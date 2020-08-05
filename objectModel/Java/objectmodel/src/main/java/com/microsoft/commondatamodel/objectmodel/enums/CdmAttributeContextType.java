@@ -18,5 +18,18 @@ public enum CdmAttributeContextType {
   EntityReferenceExtends,
   GeneratedRound,
   GeneratedSet,
-  PassThrough
+  PassThrough,
+  Projection,
+  Source,
+  Operations,
+  OperationAddCountAttribute,
+  OperationAddSupportingAttribute,
+  OperationAddTypeAttribute,
+  OperationExcludeAttributes,
+  OperationArrayExpansion,
+  OperationCombineAttributes,
+  OperationRenameAttributes,
+  OperationReplaceAsForeignKey,
+  OperationIncludeAttributes,
+  OperationAddAttributeGroup
 }

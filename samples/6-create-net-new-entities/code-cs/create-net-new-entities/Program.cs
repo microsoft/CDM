@@ -54,7 +54,7 @@ namespace create_net_new_entities
             cdmCorpus.Storage.Mount("local", new LocalAdapter(pathFromExeToExampleRoot + "6-create-net-new-entities/sample-data"));
             cdmCorpus.Storage.DefaultNamespace = "local"; // local is our default. so any paths that start out navigating without a device tag will assume local
 
-            // Fake cdm, normaly use the github adapter
+            // Fake cdm, normaly use the CDM Standards adapter
             // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 

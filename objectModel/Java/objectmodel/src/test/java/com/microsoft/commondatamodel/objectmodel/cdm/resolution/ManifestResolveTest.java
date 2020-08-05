@@ -20,7 +20,7 @@ public class ManifestResolveTest {
   /**
    * Test if a manifest resolves correctly a referenced entity declaration.
    */
-   @Test
+  //@Test
   public void testReferencedEntityDeclarationResolution() {
        final CdmCorpusDefinition cdmCorpus = new CdmCorpusDefinition();
        cdmCorpus.getStorage().mount("cdm", new LocalAdapter(TestHelper.SCHEMA_DOCS_ROOT));

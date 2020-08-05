@@ -1,0 +1,122 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysPolicy.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/Workflow/Reference/SysPolicyRuleType.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysPolicyRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsInherited",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Include parent rule",
+          "description": ""
+        },
+        {
+          "name": "Policy",
+          "dataType": "RefRecId",
+          "displayName": "Policy",
+          "description": ""
+        },
+        {
+          "name": "PolicyRuleType",
+          "dataType": "RefRecId",
+          "displayName": "Policy rule type:",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysPolicy"
+          },
+          "name": "Relationship_PolicyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysPolicyRuleType"
+          },
+          "name": "Relationship_PolicyRulesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Policy rules"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ValidFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

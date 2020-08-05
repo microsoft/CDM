@@ -141,7 +141,7 @@ export async function processAnnotationsFromData(ctx: CdmCorpusContext, object: 
     }
 }
 
-export async function processTraitsAndAnnotationsToData(
+export function processTraitsAndAnnotationsToData(
     ctx: CdmCorpusContext,
     entityObject: MetadataObject,
     traits: CdmTraitCollection): Promise<void> {

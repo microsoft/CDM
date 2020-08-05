@@ -1,0 +1,78 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Miscellaneous/RetailRelyingParty.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailServerResource",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RelyingPartyId",
+          "dataType": "RetailRelyingPartyId",
+          "description": ""
+        },
+        {
+          "name": "ServerResourceId",
+          "dataType": "RetailServerResourceId",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "RetailAuthName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailRelyingParty"
+          },
+          "name": "Relationship_RetailRelyingPartyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Server resource"
+    },
+    {
+      "dataTypeName": "RetailRelyingPartyId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailServerResourceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailAuthName",
+      "extendsDataType": "string"
+    }
+  ]
+}

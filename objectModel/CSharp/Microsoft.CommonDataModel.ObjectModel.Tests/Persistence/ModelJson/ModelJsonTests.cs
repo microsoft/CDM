@@ -17,6 +17,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Persistence;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Storage;
 
     /// <summary>
     /// The model json tests.
@@ -69,7 +70,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             watch.Restart();
             var obtainedModelJson = await ManifestPersistence.ToData(cdmManifest, null, null);
             watch.Stop();
-            Assert.Performance(5000, watch.ElapsedMilliseconds, "Parsing to data");
+            Assert.Performance(9800, watch.ElapsedMilliseconds, "Parsing to data");
 
             this.HandleOutput(nameof(TestLoadingCdmFolderAndModelJsonToData), PersistenceLayer.ModelJsonExtension, obtainedModelJson);
         }
@@ -301,6 +302,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             var obtainedModelJson = await ManifestPersistence.ToData(cdmManifest, null, null);
 
             Assert.AreEqual("test description", obtainedModelJson.Entities[0]["description"].ToString());
+        }
+
+        /// <summary>
+        /// Tests that the "date" and "time" data types are correctly loaded/saved from/to a model.json.
+        /// </summary>
+        [Test]
+        public async Task TestLoadingAndSavingDateAndTimeDataTypes()
+        {
+            var cdmCorpus = TestHelper.GetLocalCorpus(testsSubpath, nameof(TestLoadingAndSavingDateAndTimeDataTypes));
+
+            // Load the manifest and resolve it
+            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local:/default.manifest.cdm.json");
+            var resolvedManifest = await manifest.CreateResolvedManifestAsync("resolved", null);
+
+            // Convert loaded manifest to model.json
+            var modelJson = await ManifestPersistence.ToData(resolvedManifest, null, null);
+
+            // Verify that the attributes' data types were correctly persisted as "date" and "time"
+            Assert.AreEqual("date", modelJson.Entities[0]["attributes"][0]["dataType"].ToString());
+            Assert.AreEqual("time", modelJson.Entities[0]["attributes"][1]["dataType"].ToString());
+
+            // Now check that these attributes' data types are still "date" and "time" when loading the model.json back to manifest
+            // We first need to create a second adapter to the input folder to fool the OM into thinking it's different
+            // This is because there's a bug that currently prevents us from saving and then loading a model.json under the same namespace
+            cdmCorpus.Storage.Mount("local2", new LocalAdapter(TestHelper.GetInputFolderPath(testsSubpath, nameof(TestLoadingAndSavingDateAndTimeDataTypes))));
+
+            var manifestFromModelJson = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>("local2:/model.json");
+            var entity = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(manifestFromModelJson.Entities[0].EntityPath, manifestFromModelJson);
+
+            // Verify that the attributes' data types were correctly loaded as "date" and "time"
+            Assert.AreEqual(CdmDataFormat.Date, (entity.Attributes[0] as CdmTypeAttributeDefinition).DataFormat);
+            Assert.AreEqual(CdmDataFormat.Time, (entity.Attributes[1] as CdmTypeAttributeDefinition).DataFormat);
         }
 
         /// <summary>

@@ -249,25 +249,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         ParameterCollection pc = rt.ParameterValues.PC;
                         List<dynamic> av = rt.ParameterValues.Values;
                         int idx = pc.FetchParameterIndex(paramName);
-                        if (idx >= 0)
+                        if (idx >= 0 && Equals(av[idx], valueWhen))
                         {
-                            try
-                            {
-                                if (av[idx] == valueWhen)
-                                {
-                                    // copy the set and make a deep copy of the trait being set
-                                    traitSetResult = this.ShallowCopyWithException(rt.Trait);
-                                    // assume these are all still true for this copy
-                                    rt = traitSetResult.Set[i];
-                                    av = rt.ParameterValues.Values;
-                                    av[idx] = ParameterValue.FetchReplacementValue(resOpt, av[idx], valueNew, true);
-                                    break;
-                                }
-                            }
-                            catch
-                            {
-
-                            }
+                            // copy the set and make a deep copy of the trait being set
+                            traitSetResult = this.ShallowCopyWithException(rt.Trait);
+                            // assume these are all still true for this copy
+                            rt = traitSetResult.Set[i];
+                            av = rt.ParameterValues.Values;
+                            av[idx] = ParameterValue.FetchReplacementValue(resOpt, av[idx], valueNew, true);
+                            break;
                         }
                     }
                 }

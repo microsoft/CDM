@@ -1,0 +1,182 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/TAMVendRebateTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/TransactionHeader/VendInvoiceInfoTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TAMVendRebateTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalId",
+          "dataType": "LedgerJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RebateAmt",
+          "dataType": "TAMRebateAmt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RebateInvoiceId",
+          "dataType": "VendInvoiceId",
+          "description": ""
+        },
+        {
+          "name": "RebateTransactionType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendRebateId",
+          "dataType": "TAMVendRebateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInvoicing",
+          "dataType": "TAMVendRebateManualInvoicing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceInfoTableParmId",
+          "dataType": "ParmId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceInfoTableTableRefId",
+          "dataType": "TradeLineRefId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TAMVendRebateTable"
+          },
+          "name": "Relationship_TAMVendRebateTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceInfoTable"
+          },
+          "name": "Relationship_VendInvoiceInfoTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Rebate transactions"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TAMRebateAmt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "VendInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TAMVendRebateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TAMVendRebateManualInvoicing",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParmId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeLineRefId",
+      "extendsDataType": "string"
+    }
+  ]
+}

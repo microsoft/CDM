@@ -107,10 +107,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal override bool VisitRef(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
-            if (this.Arguments != null)
-                if (this.Arguments.VisitList(pathFrom + "/arguments/", preChildren, postChildren))
-                    return true;
-            return false;
+            bool result = false;
+            if (this.Arguments?.Count > 0)
+            {
+                // custom enumeration of args to force a path onto these things that just might not have a name
+                int lItem = this.Arguments.Count;
+                for (int iItem = 0; iItem < lItem; iItem++) {
+                    CdmArgumentDefinition element = this.Arguments[iItem];
+                    if (element != null)
+                    {
+                        string argPath = $"{pathFrom}/arguments/a{iItem}";
+                        if (element.Visit(argPath, preChildren, postChildren))
+                        {
+                            result = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return result;
         }
 
         internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)
@@ -141,13 +157,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 rtsTrait = trait.FetchResolvedTraits(resOpt);
             }
 
-            bool cacheByName = true;
+            bool cacheByPath = true;
             if (trait.ThisIsKnownToHaveParameters != null)
             {
-                cacheByName = !((bool)trait.ThisIsKnownToHaveParameters);
+                cacheByPath = !((bool)trait.ThisIsKnownToHaveParameters);
             }
 
-            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
+            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.AtCorpusPath);
             dynamic rtsResult = null;
             if (cacheTag != null)
                 ctx.Cache.TryGetValue(cacheTag, out rtsResult);
@@ -200,7 +216,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 paramFound = param.ResolveParameter(iArg, a.Name);
                                 a.ResolvedParameter = paramFound;
                                 aValue = a.Value;
-                                aValue = ((CdmCorpusDefinition)ctx.Corpus).ConstTypeCheck(resOpt, this.InDocument, paramFound, aValue);
+                                aValue = ctx.Corpus.ConstTypeCheck(resOpt, this.InDocument, paramFound, aValue);
                                 a.Value = aValue;
                                 iArg++;
                             }
@@ -216,10 +232,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
 
                 // register set of possible symbols
-                ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinition>(resOpt), kind, resOpt.SymbolRefSet);
+                ctx.Corpus.RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinition>(resOpt), kind, resOpt.SymbolRefSet);
 
                 // get the new cache tag now that we have the list of symbols
-                cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
+                cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.AtCorpusPath);
                 if (!string.IsNullOrWhiteSpace(cacheTag))
                     ctx.Cache[cacheTag] = rtsResult;
             }

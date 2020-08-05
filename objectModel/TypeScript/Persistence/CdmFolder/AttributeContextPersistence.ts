@@ -102,6 +102,33 @@ export class AttributeContextPersistence {
                 return cdmAttributeContextType.generatedRound;
             case 'generatedSet':
                 return cdmAttributeContextType.generatedSet;
+            case 'projection':
+                return cdmAttributeContextType.projection;
+            case 'source':
+                return cdmAttributeContextType.source;
+            case 'operations':
+                return cdmAttributeContextType.operations;
+            case 'operationAddCountAttribute':
+                return cdmAttributeContextType.operationAddCountAttribute;
+            case 'operationAddSupportingAttribute':
+                return cdmAttributeContextType.operationAddSupportingAttribute;
+            case 'operationAddTypeAttribute':
+                return cdmAttributeContextType.operationAddTypeAttribute;
+            case 'operationExcludeAttributes':
+                return cdmAttributeContextType.operationExcludeAttributes;
+            case 'operationArrayExpansion':
+                return cdmAttributeContextType.operationArrayExpansion;
+            case 'operationCombineAttributes':
+                return cdmAttributeContextType.operationCombineAttributes;
+            case 'operationRenameAttributes':
+                return cdmAttributeContextType.operationRenameAttributes;
+            case 'operationReplaceAsForeignKey':
+                return cdmAttributeContextType.operationReplaceAsForeignKey;
+            case 'operationIncludeAttributes':
+                return cdmAttributeContextType.operationIncludeAttributes;
+            case 'operationAddAttributeGroup':
+                return cdmAttributeContextType.operationAddAttributeGroup;
+
             default:
                 return -1;
         }
@@ -128,6 +155,32 @@ export class AttributeContextPersistence {
                 return 'generatedRound';
             case cdmAttributeContextType.generatedSet:
                 return 'generatedSet';
+            case cdmAttributeContextType.projection:
+                return 'projection';
+            case cdmAttributeContextType.source:
+                return 'source';
+            case cdmAttributeContextType.operations:
+                return 'operations';
+            case cdmAttributeContextType.operationAddCountAttribute:
+                return 'operationAddCountAttribute';
+            case cdmAttributeContextType.operationAddSupportingAttribute:
+                return 'operationAddSupportingAttribute';
+            case cdmAttributeContextType.operationAddTypeAttribute:
+                return 'operationAddTypeAttribute';
+            case cdmAttributeContextType.operationExcludeAttributes:
+                return 'operationExcludeAttributes';
+            case cdmAttributeContextType.operationArrayExpansion:
+                return 'operationArrayExpansion';
+            case cdmAttributeContextType.operationCombineAttributes:
+                return 'operationCombineAttributes';
+            case cdmAttributeContextType.operationRenameAttributes:
+                return 'operationRenameAttributes';
+            case cdmAttributeContextType.operationReplaceAsForeignKey:
+                return 'operationReplaceAsForeignKey';
+            case cdmAttributeContextType.operationIncludeAttributes:
+                return 'operationIncludeAttributes';
+            case cdmAttributeContextType.operationAddAttributeGroup:
+                return 'operationAddAttributeGroup';
             default:
                 return 'unknown';
         }

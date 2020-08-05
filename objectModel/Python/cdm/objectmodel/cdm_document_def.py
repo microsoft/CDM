@@ -23,11 +23,17 @@ class ImportPriorities:
         self.import_priority = {}  # type: Dict[CdmDocumentDefinition, int]
         self.moniker_priority_map = {}  # type: Dict[str, CdmDocumentDefinition]
 
+        # True if one of the document's imports import this document back.
+        # Ex.: A.cdm.json -> B.cdm.json -> A.cdm.json
+        self.has_circular_import = False # type: bool
+
     def copy(self) -> 'ImportPriorities':
         c = ImportPriorities()
         if self.import_priority:
             c.import_priority = self.import_priority.copy()
+        if self.moniker_priority_map:
             c.moniker_priority_map = self.moniker_priority_map.copy()
+        c.has_circular_import = self.has_circular_import
 
         return c
 
@@ -65,13 +71,14 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self._needs_indexing = True
         self._imports = CdmImportCollection(self.ctx, self)
         self._definitions = CdmDefinitionCollection(self.ctx, self)
+        self.is_valid = True  # types: bool
         self._TAG = CdmDocumentDefinition.__name__
 
         self._clear_caches()
 
     @property
     def at_corpus_path(self) -> str:
-        if (self.folder is None):
+        if self.folder is None:
             return 'NULL:/{}'.format(self.name)
 
         return self.folder.at_corpus_path + self.name
@@ -97,7 +104,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         pass
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDocumentDefinition'] = None) -> 'CdmDocumentDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if host is None:
             copy = CdmDocumentDefinition(self.ctx, self.name)
@@ -106,7 +113,10 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             copy.ctx = self.ctx
             copy.name = self.name
             copy.definitions.clear()
+            copy.internal_declarations = {}
+            copy._needs_indexing = True
             copy.imports.clear()
+            copy._imports_indexed = False
 
         copy.in_document = copy
         copy._is_dirty = True
@@ -138,13 +148,14 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # maintain actual current doc
         corpus._document_library._mark_document_for_indexing(self)
 
-        return corpus._index_documents(res_opt, self)
+        return corpus._index_documents(res_opt)
 
     def _get_import_priorities(self) -> 'ImportPriorities':
         if not self._import_priorities:
-            self._import_priorities = ImportPriorities()
-            self._import_priorities.import_priority[self] = 0
-            self._prioritize_imports(set(), self._import_priorities.import_priority, 1, self._import_priorities.moniker_priority_map, False)
+            import_priorities = ImportPriorities()
+            import_priorities.import_priority[self] = 0
+            self._prioritize_imports(set(), import_priorities, 1, False)
+            self._import_priorities = import_priorities
 
         # make a copy so the caller doesn't mess these up
         return self._import_priorities.copy()
@@ -152,9 +163,40 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def get_name(self) -> str:
         return self.name
 
-    def _fetch_object_from_document_path(self, object_path: str) -> 'CdmObject':
+    def _fetch_object_from_document_path(self, object_path: str, res_opt: ResolveOptions) -> 'CdmObject':
         if object_path in self.internal_declarations:
             return self.internal_declarations[object_path]
+        else:
+            # this might be a request for an object def drill through of a reference.
+            # path/(object)/paths
+            # there can be several such requests in one path AND some of the requested
+            # defintions might be defined inline inside a reference meaning the declared path
+            # includes that reference name and could still be inside this document. example:
+            # /path/path/refToInline/(object)/member1/refToSymbol/(object)/member2
+            # the full path is not in this doc but /path/path/refToInline/(object)/member1/refToSymbol
+            # is declared in this document. we then need to go to the doc for refToSymbol and
+            # search for refToSymbol/member2
+
+            # work backward until we find something in this document
+            last_obj = object_path.rindex('/(object)')
+            this_doc_part = object_path
+            while last_obj > 0:
+                this_doc_part = object_path[0, last_obj]
+                if this_doc_part in self.internal_declarations:
+                    this_doc_obj_ref = self.internal_declarations.get(this_doc_part)
+                    that_doc_obj_def = this_doc_obj_ref.fetch_object_definition(res_opt)
+                    if not that_doc_obj_def:
+                        # get from other document.
+                        # but first fix the path to look like it is relative to that object as declared in that doc
+                        that_doc_part = object_path[last_obj + len('/(object)')]
+                        that_doc_part = that_doc_obj_def.declared_path + that_doc_part
+                        if that_doc_part == object_path:
+                            # we got back to were we started. probably because something is just not found.
+                            return None
+                        return that_doc_obj_def.in_document.fetch_object_from_document_path(that_doc_part, res_opt)
+                    return None
+                last_obj = this_doc_part.rindex('/(object)')
+            return None
 
     def _localize_corpus_paths(self, new_folder: 'CdmFolderDefinition') -> bool:
         all_went_well = True
@@ -277,37 +319,48 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         return (new_path, True)
 
-    def _prioritize_imports(self, processed_set: Set['CdmDocumentDefinition'], priority_map: Dict['CdmDocumentDefinition', int], sequence: int,
-                            moniker_map: Dict[str, 'CdmDocumentDefinition'], skip_monikered: bool = False) -> int:
+    def _prioritize_imports(self, processed_set: Set['CdmDocumentDefinition'], import_priorities: 'ImportPriorities', sequence: int, \
+                            skip_monikered: bool) -> int:
         # goal is to make a map from the reverse order of imports (breadth first) to the first (aka last) sequence number in that list.
         # This gives the semantic that the 'last/shallowest' definition for a duplicate symbol wins,
         # the lower in this list a document shows up, the higher priority its definitions are for resolving conflicts.
         # for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
+        # maps document to priority.
+        priority_map = import_priorities.import_priority  # type: Dict[CdmDocumentDefinition, int]
+
+        # maps moniker to document.
+        moniker_map = import_priorities.moniker_priority_map  # type: Dict[str, CdmDocumentDefinition]
+
         # if already in list, don't do this again
         if self in processed_set:
+            # if the first document in the priority map is this then the document was the starting point of the recursion.
+            # and if this document is present in the processedSet we know that there is a cicular list of imports.
+            if self in priority_map and priority_map[self] == 0:
+                import_priorities.has_circular_import = True
             return sequence
 
         processed_set.add(self)
 
         if self.imports:
-            # reverse order
-            # first add the imports done at this level only
-            rev_imp = self.imports[::-1]  # reverse the list
-            for imp in rev_imp:
-                imp_doc = imp._resolved_document  # type: CdmDocumentDefinition
+            # reverse order.
+            # first add the imports done at this level only.
+            reversed_imports = self.imports[::-1]  # reverse the list
+            for imp in reversed_imports:
+                imp_doc = imp._document  # type: CdmDocumentDefinition
                 # don't add the moniker imports to the priority list
-                if imp._resolved_document and not imp.moniker:
-                    if imp_doc not in priority_map:
-                        # add doc
-                        priority_map[imp_doc] = sequence
-                        sequence += 1
+                if imp._document and not imp.moniker and imp_doc not in priority_map:
+                    # add doc
+                    priority_map[imp_doc] = sequence
+                    sequence += 1
 
-            # now add the imports of the imports
-            for imp in rev_imp:
-                imp_doc = imp._resolved_document  # type: CdmDocumentDefinition
+            # now add the imports of the imports.
+            for imp in reversed_imports:
+                imp_doc = imp._document  # type: CdmDocumentDefinition
                 is_moniker = bool(imp.moniker)
-                if imp_doc and imp_doc._import_priorities:
+                # if the document has circular imports its order on the impDoc.ImportPriorities list is not correct
+                # since the document itself will always be the first one on the list.
+                if imp_doc and imp_doc._import_priorities and not imp_doc._import_priorities.has_circular_import:
                     # lucky, already done so avoid recursion and copy
                     imp_pri_sub = imp_doc._get_import_priorities()
                     imp_pri_sub.import_priority.pop(imp_doc)  # because already added above
@@ -319,27 +372,29 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                             priority_map[key] = sequence
                             sequence += 1
 
+                    # if the import is not monikered then merge its monikerMap to this one.
                     if not is_moniker:
                         for key, value in imp_pri_sub.moniker_priority_map.items():
                             moniker_map[key] = value
                 elif imp_doc:
                     # skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies
-                    sequence = imp_doc._prioritize_imports(processed_set, priority_map, sequence, moniker_map, is_moniker)
+                    sequence = imp_doc._prioritize_imports(processed_set, import_priorities, sequence, is_moniker)
 
             if not skip_monikered:
                 # moniker imports are prioritized by the 'closest' use of the moniker to the starting doc.
                 # so last one found in this recursion
                 for imp in self.imports:
-                    if imp._resolved_document and imp.moniker:
-                        moniker_map[imp.moniker] = imp._resolved_document
+                    if imp._document and imp.moniker:
+                        moniker_map[imp.moniker] = imp._document
 
         return sequence
 
     async def refresh_async(self, res_opt: Optional['ResolveOptions'] = None) -> bool:
         """updates indexes for document content, call this after modifying objects in the document"""
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         self._needs_indexing = True
+        self.is_valid = True
         return await self._index_if_needed(res_opt)
 
     async def _reload_async(self) -> None:
@@ -353,7 +408,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         linked from the source doc and that have been modified. existing document names are used for those."""
         options = options if options is not None else CopyOptions()
 
-        index_if_needed = await self._index_if_needed(ResolveOptions(wrt_doc=self))
+        index_if_needed = await self._index_if_needed(ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives))
         if not index_if_needed:
             logger.error(self._TAG, self.ctx, 'Failed to index document prior to save {}.'.format(self.name), self.save_as_async.__name__)
             return False

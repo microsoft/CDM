@@ -106,28 +106,27 @@ public class DataPartitionPersistence {
       );
     }
 
-    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).thenCompose(v -> {
-      final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
+    Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits());
+    final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 
-      if (t2pm.fetchTraitReferenceName("is.hidden") != null) {
-        result.setHidden(true);
+    if (t2pm.fetchTraitReferenceName("is.hidden") != null) {
+      result.setHidden(true);
+    }
+
+    final CdmTraitReference csvTrait = t2pm.fetchTraitReferenceName("is.partition.format.CSV");
+    if (csvTrait != null) {
+      final CsvFormatSettings csvFormatSettings = Utils.createCsvFormatSettings(csvTrait);
+
+      if (csvFormatSettings != null) {
+        result.setFileFormatSettings(csvFormatSettings);
+        result.getFileFormatSettings().setType("CsvFormatSettings");
+      } else {
+        Logger.error(DataPartitionPersistence.class.getSimpleName(), instance.getCtx(), "There was a problem while processing csv format trait inside data partition.");
+
+        return CompletableFuture.completedFuture(null);
       }
+    }
 
-      final CdmTraitReference csvTrait = t2pm.fetchTraitReferenceName("is.partition.format.CSV");
-      if (csvTrait != null) {
-        final CsvFormatSettings csvFormatSettings = Utils.createCsvFormatSettings(csvTrait);
-
-        if (csvFormatSettings != null) {
-          result.setFileFormatSettings(csvFormatSettings);
-          result.getFileFormatSettings().setType("CsvFormatSettings");
-        } else {
-          Logger.error(DataPartitionPersistence.class.getSimpleName(), instance.getCtx(), "There was a problem while processing csv format trait inside data partition.");
-
-          return CompletableFuture.completedFuture(null);
-        }
-      }
-
-      return CompletableFuture.completedFuture(result);
-    });
+    return CompletableFuture.completedFuture(result);
   }
 }

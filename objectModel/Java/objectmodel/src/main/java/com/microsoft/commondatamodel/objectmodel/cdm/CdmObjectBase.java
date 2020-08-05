@@ -268,11 +268,21 @@ public abstract class CdmObjectBase implements CdmObject {
     return;
   }
 
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOptl) {
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOptl) {
     return constructResolvedAttributes(resOptl, null);
   }
 
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
                                                           final CdmAttributeContext under) {
     // Intentionally return null
     return null;

@@ -4,9 +4,9 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
@@ -81,7 +81,15 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     return (String) this.getTraitToPropertyMap().fetchPropertyValue(CdmPropertyName.DISPLAY_NAME);
   }
 
+  /**
+   * @deprecated Please use updateDisplayName instead.
+   */
+  @Deprecated
   public void setDisplayName(final String value) {
+    this.updateDisplayName(value);
+  }
+
+  public void updateDisplayName(final String value) {
     this.getTraitToPropertyMap().updatePropertyValue(CdmPropertyName.DISPLAY_NAME, value);
   }
 
@@ -155,7 +163,15 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     }
   }
 
+  /**
+   * @deprecated Please use updateSourceOrdering instead
+   */
+  @Deprecated
   public void updateSourceOrderingToTrait(final Integer value) {
+    this.updateSourceOrdering(value);
+  }
+
+  public void updateSourceOrdering(final Integer value) {
     this.getTraitToPropertyMap().updatePropertyValue(CdmPropertyName.SOURCE_ORDERING, value);
   }
 
@@ -220,20 +236,57 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   @Override
   public boolean validate() {
+    ArrayList<String> missingFields = new ArrayList<String>();
+
     if (StringUtils.isNullOrTrimEmpty(this.getName())) {
-      Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), new ArrayList<String>(Arrays.asList("name"))));
+      missingFields.add("name");
+    }
+
+    if (this.getCardinality() != null) {
+      if (StringUtils.isNullOrTrimEmpty(this.getCardinality().getMinimum())) {
+        missingFields.add("cardinality.minimum");
+      }
+      if (StringUtils.isNullOrTrimEmpty(this.getCardinality().getMaximum())) {
+        missingFields.add("cardinality.maximum");
+      }
+    }
+
+    if (missingFields.size() > 0) {
+      Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
       return false;
     }
+
+    if (this.getCardinality() != null) {
+      if (!CardinalitySettings.isMinimumValid(this.getCardinality().getMinimum())) {
+        Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid minimum cardinality {0}", this.getCardinality().getMinimum()), "validate");
+        return false;
+      }
+      if (!CardinalitySettings.isMaximumValid(this.getCardinality().getMaximum())) {
+        Logger.error(CdmTypeAttributeDefinition.class.getSimpleName(), this.getCtx(), Logger.format("Invalid maximum cardinality {0}", this.getCardinality().getMaximum()), "validate");
+        return false;
+      }
+    }
+
     return true;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
     // find and cache the complete set of attributes
     // attributes definitions originate from and then get modified by subsequent re-definitions from (in this order):
     // the datatype used as an attribute, traits applied to that datatype,
@@ -346,10 +399,6 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-        resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-    
     return false;
   }
 }

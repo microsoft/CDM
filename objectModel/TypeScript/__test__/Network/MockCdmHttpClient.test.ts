@@ -91,7 +91,7 @@ describe('Network/MockCdmHttpClientTest', () => {
             fail('This test case should\'ve failed and throw an exception due timeout.');
         } catch (err) {
             expect(err)
-                .toBe('Timed out.');
+                .toBe('Request timeout.');
         }
     });
 
@@ -112,7 +112,7 @@ describe('Network/MockCdmHttpClientTest', () => {
             fail('This test case should\'ve failed and throw an exception due timeout.');
         } catch (err) {
             expect(err)
-                .toBe('Timed out.');
+                .toBe('Request timeout.');
         }
     });
 

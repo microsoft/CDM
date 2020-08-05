@@ -27,7 +27,12 @@ import { isLocalEntityDeclarationDefinition, isReferencedEntityDeclarationDefini
 import * as timeUtils from '../Utilities/timeUtils';
 
 const rel2CacheKey = (rel: CdmE2ERelationship): string => {
-    return `${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
+    let nameAndPipe: string = '';
+    if (rel.name) {
+        nameAndPipe = `${rel.name}|`;
+    }
+
+    return `${nameAndPipe}${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
 };
 
 export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmFileStatus {
@@ -67,10 +72,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
     }
 
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 
@@ -154,7 +155,8 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
      */
     public async createResolvedManifestAsync(
         newManifestName: string,
-        newEntityDocumentNameFormat: string): Promise<CdmManifestDefinition> {
+        newEntityDocumentNameFormat: string,
+        directives?: AttributeResolutionDirectiveSet): Promise<CdmManifestDefinition> {
         if (!this.entities) {
             return undefined;
         }
@@ -212,6 +214,13 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         // Using the references present in the resolved entities, get an entity
         // create an imports doc with all the necessary resolved entity references and then resolve it
         const resolvedManifest: CdmManifestDefinition = new CdmManifestDefinition(this.ctx, newManifestName);
+
+        // bring over any imports in this document or other bobbles
+        resolvedManifest.schema = this.schema;
+        resolvedManifest.explanation = this.explanation;
+        for (const imp of this.imports) {
+            resolvedManifest.imports.push(imp.copy());
+        }
 
         // add the new document to the folder
         if (resolvedManifestFolder.documents.push(resolvedManifest) === undefined) {
@@ -273,7 +282,9 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
             }
 
             // Next create the resolved entity
-            const resOpt: resolveOptions = new resolveOptions(entDef.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
+            const withDirectives: AttributeResolutionDirectiveSet = directives !== undefined ? directives :
+                                                                    this.ctx.corpus.defaultResolutionDirectives;
+            const resOpt: resolveOptions = new resolveOptions(entDef.inDocument, withDirectives?.copy());
 
             Logger.debug(
                 'CdmManifestDefinition',
@@ -627,7 +638,7 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
     }
 
     private localizeRelToManifest(rel: CdmE2ERelationship): CdmE2ERelationship {
-        const relCopy: CdmE2ERelationship = this.ctx.corpus.MakeObject<CdmE2ERelationship>(cdmObjectType.e2eRelationshipDef);
+        const relCopy: CdmE2ERelationship = this.ctx.corpus.MakeObject<CdmE2ERelationship>(cdmObjectType.e2eRelationshipDef, rel.name);
         relCopy.toEntity = this.ctx.corpus.storage.createRelativeCorpusPath(rel.toEntity, this);
         relCopy.fromEntity = this.ctx.corpus.storage.createRelativeCorpusPath(rel.fromEntity, this);
         relCopy.toEntityAttribute = rel.toEntityAttribute;

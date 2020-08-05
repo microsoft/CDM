@@ -19,7 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public CdmTraitCollection ExhibitsTraits { get; }
 
-        public CdmObjectDefinitionBase(CdmCorpusContext ctx) 
+        public CdmObjectDefinitionBase(CdmCorpusContext ctx)
             : base(ctx)
         {
             this.ExhibitsTraits = new CdmTraitCollection(this.Ctx, this);
@@ -60,7 +60,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return (dynamic)this;
         }
 
-                internal bool VisitDef(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
+        internal bool VisitDef(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
             if (this.ExhibitsTraits != null)
                 if (this.ExhibitsTraits.VisitList(pathFrom + "/exhibitsTraits/", preChildren, postChildren))

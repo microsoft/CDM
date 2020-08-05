@@ -1,0 +1,200 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AssetDocumentTable_JP.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "AssetImpairmentTestResult_JP.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetImpairmentCGU_JP.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetImpairmentTestResultDocument_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetDocumentTable_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetImpairmentTestResult_JP",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CGU",
+          "dataType": "AssetImpairmentCGURefRecId_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocTestResult",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Test result",
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAdjExceeded",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAdjustment",
+          "dataType": "AssetImpairmentAdjustment_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImpairmentAllocBasis",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastUpdatedDate",
+          "dataType": "AssetTransDate",
+          "isNullable": true,
+          "displayName": "Last update",
+          "description": ""
+        },
+        {
+          "name": "NetBookValue",
+          "dataType": "AssetNetBookValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NotRecoverable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Not recoverable",
+          "description": ""
+        },
+        {
+          "name": "RecoverableAmount",
+          "dataType": "AssetRecoverableAmount_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UndiscountedCashFlow",
+          "dataType": "AssetUndiscountedCashFlow_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDocumentTable_JP"
+          },
+          "name": "Relationship_AssetDocumentTable_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetImpairmentTestResult_JP"
+          },
+          "name": "Relationship_AssetImpairmentTestResult_JPRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetImpairmentCGU_JP"
+          },
+          "name": "Relationship_CGURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Asset impairment test result and document table link table"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetImpairmentCGURefRecId_JP",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetImpairmentAdjustment_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetTransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetNetBookValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetRecoverableAmount_JP",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetUndiscountedCashFlow_JP",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

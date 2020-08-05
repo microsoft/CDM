@@ -21,6 +21,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             Assert.AreEqual(pathWithLeadingSlash, "C:\\some\\dir\\folder");
             Assert.AreEqual(pathWithLeadingSlash, pathWithoutLeadingSlash);
+
+            // A null corpus path should return a null adapter path
+            Assert.IsNull(adapter.CreateAdapterPath(null));
         }
     }
 }

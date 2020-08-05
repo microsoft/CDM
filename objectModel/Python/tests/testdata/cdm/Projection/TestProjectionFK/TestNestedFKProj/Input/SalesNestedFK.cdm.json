@@ -1,0 +1,47 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "SalesNestedFK",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "dataType": "decimal",
+                    "name": "SalesForeignKeyAmount"
+                },
+                {
+                    "name": "SalesForeignKeyProductId",
+                    "entity": {
+                        "source": {
+                            "source": {
+                                "operations": [
+                                    {
+                                        "$type": "replaceAsForeignKey",
+                                        "reference": "ProductId",
+                                        "replaceWith": {
+                                            "dataType": "entityId",
+                                            "name": "FKId"
+                                        }
+                                    }
+                                ],
+                                "source": {
+                                    "source": {
+                                        "source": "Product"
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
+            ],
+            "version": "1.0"
+        }
+    ]
+}

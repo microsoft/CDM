@@ -1,0 +1,92 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WrkCtrActivityRequirement.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WrkCtrCapability.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WrkCtrActivityCapabilityRequirement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityRequirement",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Capability",
+          "dataType": "WrkCtrCapabilityRefRecId",
+          "description": ""
+        },
+        {
+          "name": "MinimumLevelNeeded",
+          "dataType": "WrkCtrCapabilityLevelMinimum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrActivityRequirement"
+          },
+          "name": "Relationship_ActivityRequirementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrCapability"
+          },
+          "name": "Relationship_CapabilityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Capability requirement"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WrkCtrCapabilityRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WrkCtrCapabilityLevelMinimum",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

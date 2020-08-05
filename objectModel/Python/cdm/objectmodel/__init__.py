@@ -21,6 +21,7 @@ from .cdm_data_partition_def import CdmDataPartitionDefinition
 from .cdm_data_partition_pattern_def import CdmDataPartitionPatternDefinition
 from .cdm_data_type_def import CdmDataTypeDefinition
 from .cdm_data_type_ref import CdmDataTypeReference
+from .cdm_document_collection import CdmDocumentCollection
 from .cdm_document_def import CdmDocumentDefinition
 from .cdm_e2e_relationship import CdmE2ERelationship
 from .cdm_entity_attribute_def import CdmEntityAttributeDefinition
@@ -36,7 +37,20 @@ from .cdm_manifest_declaration_def import CdmManifestDeclarationDefinition
 from .cdm_object import CdmObject
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_object_ref import CdmObjectReference
+from .projections.cdm_operation_add_count_attribute import CdmOperationAddCountAttribute
+from .projections.cdm_operation_add_supporting_attribute import CdmOperationAddSupportingAttribute
+from .projections.cdm_operation_add_type_attribute import CdmOperationAddTypeAttribute
+from .projections.cdm_operation_exclude_attributes import CdmOperationExcludeAttributes
+from .projections.cdm_operation_base import CdmOperationBase
+from .projections.cdm_operation_collection import CdmOperationCollection
+from .projections.cdm_operation_array_expansion import CdmOperationArrayExpansion
+from .projections.cdm_operation_combine_attributes import CdmOperationCombineAttributes
+from .projections.cdm_operation_rename_attributes import CdmOperationRenameAttributes
+from .projections.cdm_operation_replace_as_foreign_key import CdmOperationReplaceAsForeignKey
+from .projections.cdm_operation_include_attributes import CdmOperationIncludeAttributes
+from .projections.cdm_operation_add_attribute_group import CdmOperationAddAttributeGroup
 from .cdm_parameter_def import CdmParameterDefinition
+from .projections.cdm_projection import CdmProjection
 from .cdm_purpose_def import CdmPurposeDefinition
 from .cdm_purpose_ref import CdmPurposeReference
 from .cdm_referenced_entity_declaration_def import CdmReferencedEntityDeclarationDefinition
@@ -68,6 +82,7 @@ __all__ = [
     'CdmDataPartitionPatternDefinition',
     'CdmDataTypeDefinition',
     'CdmDataTypeReference',
+    'CdmDocumentCollection',
     'CdmDocumentDefinition',
     'CdmE2ERelationship',
     'CdmEntityAttributeDefinition',
@@ -83,7 +98,20 @@ __all__ = [
     'CdmObject',
     'CdmObjectDefinition',
     'CdmObjectReference',
+    'CdmOperationAddCountAttribute',
+    'CdmOperationAddSupportingAttribute',
+    'CdmOperationAddTypeAttribute',
+    'CdmOperationExcludeAttributes',
+    'CdmOperationBase',
+    'CdmOperationCollection',
+    'CdmOperationArrayExpansion',
+    'CdmOperationCombineAttributes',
+    'CdmOperationRenameAttributes',
+    'CdmOperationReplaceAsForeignKey',
+    'CdmOperationIncludeAttributes',
+    'CdmOperationAddAttributeGroup',
     'CdmParameterDefinition',
+    'CdmProjection',
     'CdmPurposeDefinition',
     'CdmPurposeReference',
     'CdmReferencedEntityDeclarationDefinition',

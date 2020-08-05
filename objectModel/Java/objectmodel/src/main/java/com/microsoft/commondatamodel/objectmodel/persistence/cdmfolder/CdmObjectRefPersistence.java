@@ -44,7 +44,6 @@ public class CdmObjectRefPersistence {
     } else if (instance.getExplicitReference() != null) {
       final Object erCopy = instance.getExplicitReference().copyData(resOpt, options);
       final Object replace = copyRefData(instance, copy, erCopy, resOpt, options);
-
       if (replace != null) {
         copy = replace;
       }

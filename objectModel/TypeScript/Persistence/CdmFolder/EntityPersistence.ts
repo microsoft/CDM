@@ -26,34 +26,28 @@ import * as utils from './utils';
 
 export class EntityPersistence {
     public static fromData(ctx: CdmCorpusContext, object: Entity): CdmEntityDefinition {
+        if (!object) {
+            return undefined;
+        }
+
         const entity: CdmEntityDefinition = ctx.corpus.MakeObject(cdmObjectType.entityDef, object.entityName);
         entity.extendsEntity = CdmFolder.EntityReferencePersistence.fromData(ctx, object.extendsEntity);
         entity.extendsEntityResolutionGuidance =
             CdmFolder.AttributeResolutionGuidancePersistence.fromData(ctx, object.extendsEntityResolutionGuidance);
 
-        if (object.explanation) {
-            entity.explanation = object.explanation;
-        }
+        entity.explanation = utils.propertyFromDataToString(object.explanation);
 
         utils.addArrayToCdmCollection<CdmTraitReference>(
             entity.exhibitsTraits,
             utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
         );
-        if (object.sourceName) {
-            entity.sourceName = object.sourceName;
-        }
-        if (object.displayName) {
-            entity.displayName = object.displayName;
-        }
-        if (object.description && object.description.trim() !== '') {
-            entity.description = object.description;
-        }
-        if (object.version) {
-            entity.version = object.version;
-        }
-        if (object.cdmSchemas) {
-            entity.cdmSchemas = object.cdmSchemas;
-        }
+
+        entity.sourceName = utils.propertyFromDataToString(object.sourceName);
+        entity.displayName = utils.propertyFromDataToString(object.displayName);
+        entity.description = utils.propertyFromDataToString(object.description);
+        entity.version = utils.propertyFromDataToString(object.version);
+        entity.cdmSchemas = object.cdmSchemas;
+
         if (object.attributeContext) {
             entity.attributeContext = CdmFolder.AttributeContextPersistence.fromData(ctx, object.attributeContext);
         }

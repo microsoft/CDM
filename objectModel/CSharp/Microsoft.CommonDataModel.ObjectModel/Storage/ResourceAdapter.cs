@@ -1,15 +1,15 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Microsoft.CommonDataModel.ObjectModel.Storage
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
+    using System.Text;
+    using System.Threading.Tasks;
+
     /// <summary>
     /// The resource adapter, enables the access to the files that are marked as embedded resources.
     /// </summary>
@@ -22,11 +22,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The resource path root (every path will have this as a start).
         /// </summary>
         private readonly string root = "Microsoft.CommonDataModel.ObjectModel.Resources";
-
-        /// <summary>
-        /// The list of folders that resources should contain.
-        /// </summary>
-        private readonly string[] resourceFolders = { "extensions", "ODI_analogs/customer", "ODI_analogs" };
 
         /// <inheritdoc />
         public bool CanRead()
@@ -60,9 +55,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 return null;
             }
 
-            var adapterPath = string.Join(".", corpusPath.Split('/')).Replace("-", "_");
-
-            return $"{root}{adapterPath}";
+            return $"{root}{corpusPath}";
         }
 
         /// <inheritdoc />
@@ -73,30 +66,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 return null;
             }
 
-            var corpusPathWithDots = adapterPath.Substring(root.Length + 1);
-
-            var corpusPathWithDotsArray = corpusPathWithDots.Split('.');
-
-            // Iterate through possible folders.
-            foreach (var folder in resourceFolders)
-            {
-                var folderPathArray = folder.Split('/');
-
-                // Check if the folder and the subfolder match.
-                if (corpusPathWithDotsArray.Length > 1 && folderPathArray.Length > 1
-                    && corpusPathWithDotsArray[0] == folderPathArray[0] && corpusPathWithDotsArray[1] == folderPathArray[1])
-                {
-                    return $"/{folder.Replace("_", "-")}/{corpusPathWithDots.Substring(folder.Length + 1)}";
-                }
-                // Check if just the folder is a match.
-                else if (corpusPathWithDotsArray.Length > 0 && corpusPathWithDotsArray[0] == folder)
-                {
-                    return $"/{folder.Replace("_", "-")}/{corpusPathWithDots.Substring(folder.Length + 1)}";
-                }
-            }
-
-            // If the adapter path doesn't contain any folder.
-            return $"/{corpusPathWithDots}";
+            return adapterPath.Substring(root.Length);
         }
 
         /// <inheritdoc />
@@ -114,12 +84,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public async Task<string> ReadAsync(string corpusPath)
         {
-            var assembly = Assembly.GetExecutingAssembly();
-
             // Convert the corpus path to the resource path.
-            var resourcePath = this.CreateAdapterPath(corpusPath);
+            var resourcePath = this.CreateAdapterPath(corpusPath).Replace('/', '.').Replace('-', '_');
 
             // Get the resource stream.
+            var assembly = Assembly.GetExecutingAssembly();
             var resourceStream = assembly.GetManifestResourceStream(resourcePath);
 
             if (resourceStream == null)

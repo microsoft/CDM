@@ -9,14 +9,12 @@ import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.TypeAttribute;
-import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
@@ -38,6 +36,40 @@ public class TypeAttributePersistence {
 
     typeAttribute.setPurpose(PurposeReferencePersistence.fromData(ctx, obj.get("purpose")));
     typeAttribute.setDataType(DataTypeReferencePersistence.fromData(ctx, obj.get("dataType")));
+
+    if (obj.get("cardinality") != null) {
+      String minCardinality = null;
+      if (obj.get("cardinality").get("minimum") != null) {
+        minCardinality = obj.get("cardinality").get("minimum").asText();
+      }
+
+      String maxCardinality = null;
+      if (obj.get("cardinality").get("maximum") != null) {
+        maxCardinality = obj.get("cardinality").get("maximum").asText();
+      }
+
+      if (StringUtils.isNullOrTrimEmpty(minCardinality) || StringUtils.isNullOrTrimEmpty(maxCardinality)) {
+        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, "Both minimum and maximum are required for the Cardinality property.", "fromData");
+      }
+
+      if (!CardinalitySettings.isMinimumValid(minCardinality)) {
+        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid minimum cardinality {0}.", minCardinality), "fromData");
+      }
+
+      if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
+        Logger.error(TypeAttributePersistence.class.getSimpleName(), ctx, Logger.format("Invalid maximum cardinality {0}.", maxCardinality), "fromData");
+      }
+
+      if (!StringUtils.isNullOrTrimEmpty(minCardinality) &&
+          !StringUtils.isNullOrTrimEmpty(maxCardinality) &&
+          CardinalitySettings.isMinimumValid(minCardinality) &&
+          CardinalitySettings.isMaximumValid(maxCardinality)) {
+        typeAttribute.setCardinality(new CardinalitySettings(typeAttribute));
+        typeAttribute.getCardinality().setMinimum(minCardinality);
+        typeAttribute.getCardinality().setMaximum(maxCardinality);
+      }
+    }
+
     typeAttribute.setAttributeContext(AttributeContextReferencePersistence.fromData(ctx, obj.get("attributeContext")));
     Utils.addListToCdmCollection(typeAttribute.getAppliedTraits(), Utils.createTraitReferenceList(ctx, obj.get("appliedTraits")));
     typeAttribute.setResolutionGuidance(AttributeResolutionGuidancePersistence.fromData(ctx, obj.get("resolutionGuidance")));
@@ -47,57 +79,18 @@ public class TypeAttributePersistence {
       t2pMap.updatePropertyValue(CdmPropertyName.IS_PRIMARY_KEY, entityName + "/(resolvedAttributes)/" + typeAttribute.getName());
     }
 
-    if (obj.has("explanation")) {
-      final String explanation = TypeAttributePersistence.propertyFromDataToString(obj.get("explanation"));
-      if (explanation != null) {
-        typeAttribute.setExplanation(explanation);
-      }
-    }
-    if (obj.has("description")) {
-      final String description = TypeAttributePersistence.propertyFromDataToString(obj.get("description"));
-      if (description != null) {
-        typeAttribute.updateDescription(description);
-      }
-    }
-    if (obj.has("isReadOnly")) {
-      typeAttribute.updateIsReadOnly(TypeAttributePersistence.propertyFromDataToBoolean(obj.get("isReadOnly")));
-    }
-    if (obj.has("isNullable")) {
-      typeAttribute.updateIsNullable(TypeAttributePersistence.propertyFromDataToBoolean(obj.get("isNullable")));
-    }
-    if (obj.has("sourceName")) {
-      final String sourceName = TypeAttributePersistence.propertyFromDataToString(obj.get("sourceName"));
-      if (sourceName != null) {
-        typeAttribute.updateSourceName(sourceName);
-      }
-    }
-    if (obj.has("sourceOrdering")) {
-      typeAttribute.updateSourceOrderingToTrait(TypeAttributePersistence.propertyFromDataToInt(obj.get("sourceOrdering")));
-    }
-    if (obj.has("displayName")) {
-      final String displayName = TypeAttributePersistence.propertyFromDataToString(obj.get("displayName"));
-      if (displayName != null) {
-        typeAttribute.setDisplayName(displayName);
-      }
-    }
-    if (obj.has("valueConstrainedToList")) {
-      typeAttribute.updateValueConstrainedToList(TypeAttributePersistence.propertyFromDataToBoolean(obj.get("valueConstrainedToList")));
-    }
-    if (obj.has("maximumLength")) {
-      typeAttribute.updateMaximumLength(TypeAttributePersistence.propertyFromDataToInt(obj.get("maximumLength")));
-    }
-    if (obj.has("maximumValue")) {
-      final String maximumValue = TypeAttributePersistence.propertyFromDataToString(obj.get("maximumValue"));
-      if (maximumValue != null) {
-        typeAttribute.updateMaximumValue(maximumValue);
-      }
-    }
-    if (obj.has("minimumValue")) {
-      final String minimumValue = TypeAttributePersistence.propertyFromDataToString(obj.get("minimumValue"));
-      if (minimumValue != null) {
-        typeAttribute.updateMinimumValue(minimumValue);
-      }
-    }
+    typeAttribute.setExplanation(Utils.propertyFromDataToString(obj.get("explanation")));
+    typeAttribute.updateDescription(Utils.propertyFromDataToString(obj.get("description")));
+    typeAttribute.updateIsReadOnly(Utils.propertyFromDataToBoolean(obj.get("isReadOnly")));
+    typeAttribute.updateIsNullable(Utils.propertyFromDataToBoolean(obj.get("isNullable")));
+    typeAttribute.updateSourceName(Utils.propertyFromDataToString(obj.get("sourceName")));
+    typeAttribute.updateSourceOrdering(Utils.propertyFromDataToInt(obj.get("sourceOrdering")));
+    typeAttribute.updateDisplayName(Utils.propertyFromDataToString(obj.get("displayName")));
+    typeAttribute.updateValueConstrainedToList(Utils.propertyFromDataToBoolean(obj.get("valueConstrainedToList")));
+    typeAttribute.updateMaximumLength(Utils.propertyFromDataToInt(obj.get("maximumLength")));
+    typeAttribute.updateMaximumValue(Utils.propertyFromDataToString(obj.get("maximumValue")));
+    typeAttribute.updateMinimumValue(Utils.propertyFromDataToString(obj.get("minimumValue")));
+    typeAttribute.updateDefaultValue(obj.get("defaultValue"));
 
     final String dataFormat = obj.has("dataFormat") ? obj.get("dataFormat").asText() : null;
     if (dataFormat != null) {
@@ -113,7 +106,6 @@ public class TypeAttributePersistence {
         );
       }
     }
-    typeAttribute.updateDefaultValue(obj.get("defaultValue"));
 
     return typeAttribute;
   }
@@ -179,96 +171,5 @@ public class TypeAttributePersistence {
     }
 
     return obj;
-  }
-
-  /**
-   * Converts dynamic input into a string for a property (ints are converted to string)
-   * @param value The value that should be converted to a string.
-   * @return The value converted into a string
-   */
-  private static String propertyFromDataToString(final Object value) {
-    final String stringValue = getStringFromJson(value);
-    if (stringValue != null && !stringValue.equals("")) {
-      return stringValue;
-    } 
-
-    final Integer intValue = getIntFromJson(value);
-    if (intValue != null) {
-      return Integer.toString(intValue);
-    }
-
-    return null;
-  }
-
-  /**
-   * Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
-   * @param value The value that should be converted to an Integer.
-   * @return The value converted into an Integer
-   */
-  private static Integer propertyFromDataToInt(final Object value) {
-    final Integer intValue = getIntFromJson(value);
-    if (intValue != null) {
-      return intValue;
-    }
-
-    final String stringValue = getStringFromJson(value);
-    if (stringValue != null) {
-      try{
-        return Integer.valueOf(stringValue);
-      } catch (NumberFormatException ex) {
-      }
-    }
-
-    return null;
-  }
-
-  /**
-   * Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
-   * @param value The value that should be converted to a boolean.
-   * @return The value converted into a boolean
-   */
-  private static Boolean propertyFromDataToBoolean(final Object value) {
-    if (value instanceof Boolean) {
-      return (Boolean)value;
-    } else if (value instanceof BooleanNode) {
-      return ((BooleanNode)value).asBoolean();
-    }
-
-    final String stringValue = getStringFromJson(value);
-    if (stringValue.equals("True") || stringValue.equals("true")) {
-      return true;
-    } else if (stringValue.equals("False") || stringValue.equals("false")) {
-      return false;
-    }
-
-    return null;
-  }
-
-  /**
-   * Helper function to extract string value from a JsonNode object
-   * @param value A JsonNode that contains a string or a JsonNode object
-   * @return The string value inside of the JsonNode
-   */
-  private static String getStringFromJson(final Object value) {
-    if (value instanceof String) {
-      return (String)value;
-    } else if (value instanceof TextNode) {
-      return ((TextNode)value).asText();
-    }
-    return null;
-  }
-
-  /**
-   * Helper function to extract Integer value from a JsonNode object
-   * @param value A JsonNode that contains an Integer or a JsonNode object
-   * @return The Integer value inside of the JsonNode
-   */
-  private static Integer getIntFromJson(final Object value) {
-    if (value instanceof Integer) {
-      return (Integer)value;
-    } else if (value instanceof IntNode) {
-      return (Integer)((IntNode)value).intValue();
-    }
-    return null;
   }
 }

@@ -112,7 +112,7 @@ export class DataPartitionPersistence {
             Logger.warning(DataPartitionPersistence.name, instance.ctx, `Couldn't find data partition's location for partition ${result.name}.`, this.toData.name);
         }
 
-        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (isHiddenTrait) {
             result.isHidden = true;

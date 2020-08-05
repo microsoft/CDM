@@ -177,11 +177,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseName, ResolveOptions resOpt)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            }
-
             return false;
         }
 
@@ -203,17 +198,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 rootCleaned = "";
             }
-            if (rootCleaned.EndsWith("/"))
-            {
-                rootCleaned = rootCleaned.Slice(rootCleaned.Length - 1);
-            }
             string rootCorpus = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(rootCleaned, this.InDocument);
 
             List<string> fileInfoList = null;
             try
             {
+                // Remove namespace from path
+                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(rootCorpus);
+                if (pathTuple == null)
+                {
+                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, "The root corpus path should not be null or empty.", nameof(FileStatusCheckAsync));
+                    return;
+                }
                 // get a list of all corpusPaths under the root
-                fileInfoList = await adapter.FetchAllFilesAsync(rootCorpus);
+                fileInfoList = await adapter.FetchAllFilesAsync(pathTuple.Item2);
             }
             catch (Exception)
             {
@@ -290,7 +288,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 // put the original but cleaned up root back onto the matched doc as the location stored in the partition
                                 string locationCorpusPath = $"{rootCleaned}{fi}";
                                 string fullPath = $"{rootCorpus}{fi}";
-                                DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(fullPath);
+                                // Remove namespace from path
+                                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(fullPath);
+                                if (pathTuple == null)
+                                {
+                                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, "The corpus path should not be null or empty.", nameof(FileStatusCheckAsync));
+                                    return;
+                                }
+                                DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
                                 (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
                             }
                         }

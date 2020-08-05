@@ -1,0 +1,253 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetLine/RTax25RegisterJournalTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25RegisterTrans_OutlayRealTax",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccrualDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Accrual date",
+          "description": ""
+        },
+        {
+          "name": "AmountOrigin",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Amount origin",
+          "description": ""
+        },
+        {
+          "name": "BlockType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line type",
+          "description": ""
+        },
+        {
+          "name": "Corrected",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected",
+          "description": ""
+        },
+        {
+          "name": "ExpenseCode",
+          "dataType": "RTax25ProfitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JournalTransRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDescription",
+          "dataType": "RTax25Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInput",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manual data input",
+          "description": ""
+        },
+        {
+          "name": "ProfitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxType",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Tax type",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTrans"
+          },
+          "name": "Relationship_RTax25RegisterJournalTransRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax register line"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RTax25ProfitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25RegisterLineNum64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxValue",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

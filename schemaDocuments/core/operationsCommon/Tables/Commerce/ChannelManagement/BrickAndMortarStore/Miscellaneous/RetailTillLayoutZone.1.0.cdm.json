@@ -1,0 +1,94 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailDeviceTypes.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailTillLayoutZone",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DeviceType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ZoneId",
+          "dataType": "RetailZoneId",
+          "description": ""
+        },
+        {
+          "name": "ZoneName",
+          "dataType": "RetailZoneName",
+          "description": ""
+        },
+        {
+          "name": "ZoneType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DeviceTypeLegacy",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LayoutType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailDeviceTypes"
+          },
+          "name": "Relationship_RetailDeviceTypesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Layout zones"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailZoneId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailZoneName",
+      "extendsDataType": "string"
+    }
+  ]
+}

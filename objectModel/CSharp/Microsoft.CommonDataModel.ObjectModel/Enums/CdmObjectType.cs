@@ -34,7 +34,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         DataPartitionPatternDef,
         LocalEntityDeclarationDef,
         AttributeResolutionGuidanceDef,
-        E2ERelationshipDef
+        E2ERelationshipDef,
+        OperationAddCountAttributeDef,
+        OperationAddSupportingAttributeDef,
+        OperationAddTypeAttributeDef,
+        OperationExcludeAttributesDef,
+        OperationArrayExpansionDef,
+        OperationCombineAttributesDef,
+        OperationRenameAttributesDef,
+        OperationReplaceAsForeignKeyDef,
+        OperationIncludeAttributesDef,
+        OperationAddAttributeGroupDef,
+        ProjectionDef
     }
 
     public enum CdmValidationStep
@@ -68,6 +79,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         AddedAttributeIdentity,
         AddedAttributeSelectedType,
         AddedAttributeExpansionTotal,
-        PassThrough
+        PassThrough,
+        Projection,
+        Source,
+        Operations,
+        OperationAddCountAttribute,
+        OperationAddSupportingAttribute,
+        OperationAddTypeAttribute,
+        OperationExcludeAttributes,
+        OperationArrayExpansion,
+        OperationCombineAttributes,
+        OperationRenameAttributes,
+        OperationReplaceAsForeignKey,
+        OperationIncludeAttributes,
+        OperationAddAttributeGroup
     }
 }

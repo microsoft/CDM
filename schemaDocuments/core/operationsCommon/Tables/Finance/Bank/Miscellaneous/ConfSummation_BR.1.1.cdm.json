@@ -1,0 +1,148 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ConfTableSelection_BR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ConfSummation_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Average",
+          "dataType": "ConfAverage_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AverageSelected",
+          "dataType": "Line",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfGroupId",
+          "dataType": "ConfGroupId_BR",
+          "description": ""
+        },
+        {
+          "name": "CountAll",
+          "dataType": "ConfCountAll_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CountSelected",
+          "dataType": "Line",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FieldName",
+          "dataType": "FieldName",
+          "description": ""
+        },
+        {
+          "name": "SumAll",
+          "dataType": "ConfSumAll_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SumSelected",
+          "dataType": "Line",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TableName",
+          "dataType": "TableName",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ConfTableSelection_BR"
+          },
+          "name": "Relationship_ConfTableSelectionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Summation on fields"
+    },
+    {
+      "dataTypeName": "ConfAverage_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Line",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ConfGroupId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfCountAll_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FieldName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConfSumAll_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TableName",
+      "extendsDataType": "string"
+    }
+  ]
+}

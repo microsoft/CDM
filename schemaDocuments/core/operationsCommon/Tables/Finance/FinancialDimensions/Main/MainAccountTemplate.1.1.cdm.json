@@ -1,0 +1,323 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/ExchangeRateType.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/MainAccountCategory.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MainAccountTemplate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountDescription",
+          "dataType": "AccountName",
+          "isNullable": true,
+          "displayName": "Name",
+          "description": ""
+        },
+        {
+          "name": "AccountNumber",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "displayName": "Main account",
+          "description": ""
+        },
+        {
+          "name": "Closing",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Close",
+          "description": ""
+        },
+        {
+          "name": "ConsolidationMainAccount",
+          "dataType": "LedgerAccountExt",
+          "isNullable": true,
+          "displayName": "Consolidation account",
+          "description": ""
+        },
+        {
+          "name": "ControlUser",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DebitCreditBalanceDemand",
+          "dataType": "DebCredBalanceDemand",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DebitCreditCheck",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "DB/CR requirement",
+          "description": ""
+        },
+        {
+          "name": "DebitCreditProposal",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "DB/CR proposal",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchangeAdjusted",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Foreign currency revaluation",
+          "description": ""
+        },
+        {
+          "name": "ExchangeAdjustmentRateType",
+          "dataType": "ExchangeRateTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FinancialReportingExchangeRateType",
+          "dataType": "ExchangeRateTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FinancialReportingTranslationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsBlockedForManualEntry",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Do not allow manual entry",
+          "description": ""
+        },
+        {
+          "name": "MainAccountCategory",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MandatoryPaymentReference",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Mandatory reference",
+          "description": ""
+        },
+        {
+          "name": "Monetary",
+          "dataType": "LedgerMonetary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "MainAccountTemplateNum",
+          "description": ""
+        },
+        {
+          "name": "PostingType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReportingAccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserInfoId",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "User",
+          "description": ""
+        },
+        {
+          "name": "ValidateCurrency",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Currency validation rule",
+          "description": ""
+        },
+        {
+          "name": "ValidatePosting",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Posting validation rule",
+          "description": ""
+        },
+        {
+          "name": "ValidateUser",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "User validation rule",
+          "description": ""
+        },
+        {
+          "name": "ReportingExchangeAdjustmentRateType",
+          "dataType": "ExchangeRateTypeRecId",
+          "isNullable": true,
+          "displayName": "Reporting currency exchange rate type",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_FinancialReportingExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MainAccountCategory"
+          },
+          "name": "Relationship_MainAccountCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_ExchangeAdjustmentRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_ReportingExchangeAdjustmentRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Main account templates"
+    },
+    {
+      "dataTypeName": "AccountName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerAccountExt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DebCredBalanceDemand",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ExchangeRateTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerMonetary",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MainAccountTemplateNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    }
+  ]
+}

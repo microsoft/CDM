@@ -1,0 +1,77 @@
+{
+    "$schema": "../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.7",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "TestAllOperations",
+            "displayName": "TestAllOperations",
+            "extendsEntity": {
+                "source": "TestSource",
+                "operations": [
+                    {
+                        "$type": "addAttributeGroup"
+                    },
+                    {
+                        "$type": "addCountAttribute",
+                        "countAttribute": {
+                            "name": "count"
+                        }
+                    },
+                    {
+                        "$type": "addSupportingAttribute",
+                        "supportingAttribute": {
+                            "name": "support"
+                        }
+                    },
+                    {
+                        "$type": "addTypeAttribute",
+                        "typeAttribute": {
+                            "name": "type"
+                        }
+                    },
+                    {
+                        "$type": "excludeAttributes",
+                        "excludeAttributes": [ "A" ]
+                    },
+                    {
+                        "$type": "arrayExpansion",
+                        "startOrdinal": 1,
+                        "endOrdinal": 3
+                    },
+                    {
+                        "$type": "combineAttributes",
+                        "take": [ "A", "A", "A" ],
+                        "mergeInto": {
+                            "name": "combined"
+                        }
+                    },
+                    {
+                        "$type": "renameAttributes",
+                        "renameFormat": "New{M}",
+                        "applyTo": "A"
+                    },
+                    {
+                        "$type": "replaceAsForeignKey",
+                        "reference": "A",
+                        "replaceWith": {
+                            "name": "A_FK"
+                        }
+                    },
+                    {
+                        "$type": "includeAttributes",
+                        "includeAttributes": [
+                            "A"
+                        ]
+                    }
+                ]
+            },
+            "hasAttributes": [
+            ]
+        }
+    ]
+}

@@ -65,7 +65,7 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmConstantEntityDefinition'] = None) -> 'CdmConstantEntityDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmConstantEntityDefinition(self.ctx, self.constant_entity_name)
@@ -81,6 +81,11 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         return copy
 
     def get_name(self) -> str:
+        # make up a name if one not given
+        if not self.constant_entity_name:
+            if self.entity_shape:
+                return 'Constant' + self.entity_shape.fetch_object_definition_name()
+            return 'ConstantEntity'
         return self.constant_entity_name
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:

@@ -1,15 +1,15 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Optional
+from typing import List, Optional
 import os
 import json
 import asyncio
 
-from collections import OrderedDict
 from cdm.enums import CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition
 from cdm.storage import LocalAdapter, RemoteAdapter
+from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 
 
 def async_test(f):
@@ -145,7 +145,7 @@ class TestHelper:
         if expected_data is None and actual_data is None:
             return ''
 
-        if not expected_data or not actual_data:
+        if expected_data is None or actual_data is None:
             return 'Objects do not match. Expected = {}, actual = {}.'.format(expected_data, actual_data)
 
         if isinstance(expected_data, list) and isinstance(actual_data, list):
@@ -153,16 +153,17 @@ class TestHelper:
             actual_list = actual_data.copy()
 
             while expected_list and actual_list:
+                index_in_expected = len(expected_list) - 1
                 found = False
-                for index, actual_item in reversed(list(enumerate(expected_list))):
-                    if TestHelper.compare_same_object_without_none_values(expected_list[index], actual_item) == '':
-                        expected_list.pop(index)
-                        actual_list.pop()
+                for index_in_actual, actual_item in reversed(list(enumerate(actual_list))):
+                    if TestHelper.compare_same_object_without_none_values(expected_list[index_in_expected], actual_item) == '':
+                        expected_list.pop(index_in_expected)
+                        actual_list.pop(index_in_actual)
                         found = True
                         break
 
                 if not found:
-                    return 'Lists do not match. Found list member in expected but not in actual : {}.'.format(expected_list[0])
+                    return 'Lists do not match. Found list member in expected but not in actual : {}.'.format(expected_list[index_in_expected])
 
             if expected_list:
                 return 'Lists do not match. Found list member in expected but not in actual : {}.'.format(expected_list[0])
@@ -195,3 +196,20 @@ class TestHelper:
             return 'Objects do not match. Expected = {}, actual = {}.'.format(expected_data, actual_data)
 
         return ''
+
+
+class TestUtils:
+    @staticmethod
+    async def _get_resolved_entity(corpus: 'CdmCorpusDefinition', input_entity: 'CdmEntityDefinition', resolution_options: List[str]) -> 'CdmEntityDefinition':
+        """A function to resolve an entity"""
+        ro_hash_set = set()
+        for i in range(len(resolution_options)):
+            ro_hash_set.add(resolution_options[i])
+
+        resolved_entity_name = 'Resolved_{}'.format(input_entity.entity_name)
+        ro = ResolveOptions(input_entity.in_document, directives=AttributeResolutionDirectiveSet(ro_hash_set))
+
+        resolved_folder = corpus.storage.fetch_root_folder('output')
+        resolved_entity = await input_entity.create_resolved_entity_async(resolved_entity_name, ro, resolved_folder)
+
+        return resolved_entity

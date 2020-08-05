@@ -1,0 +1,206 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetCycle.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPlanAttachmentDirectory.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPlanTemplate.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/Ledger.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMHierarchyType.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Group/DimensionHierarchy.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanningProcess",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApprovalProcessState",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "BudgetCycle",
+          "dataType": "BudgetCycleRecId",
+          "displayName": "Budget cycle",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanAttachmentDirectory",
+          "dataType": "BudgetPlanAttachmentDirectoryRecId",
+          "isNullable": true,
+          "displayName": "Attachment folder",
+          "description": ""
+        },
+        {
+          "name": "BudgetPlanJustificationTemplate",
+          "dataType": "BudgetPlanTemplateRecId",
+          "isNullable": true,
+          "displayName": "Justification template",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "BudgetPlanningProcessDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Ledger",
+          "dataType": "LedgerRecId",
+          "displayName": "Ledger",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "BudgetPlanningProcessName",
+          "description": ""
+        },
+        {
+          "name": "OrganizationHierarchyType",
+          "dataType": "OrganizationHierarchyTypeRecId",
+          "displayName": "Organization hierarchy",
+          "description": ""
+        },
+        {
+          "name": "AccountStructure",
+          "dataType": "DimensionHierarchyId",
+          "displayName": "Default account structure",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetCycle"
+          },
+          "name": "Relationship_BudgetCycleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanAttachmentDirectory"
+          },
+          "name": "Relationship_BudgetPlanAttachmentDirectoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanTemplate"
+          },
+          "name": "Relationship_BudgetPlanTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Ledger"
+          },
+          "name": "Relationship_LedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMHierarchyType"
+          },
+          "name": "Relationship_OrganizationtHierarchyTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionHierarchy"
+          },
+          "name": "Relationship_AccountStructureRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget planning processes"
+    },
+    {
+      "dataTypeName": "BudgetCycleRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanAttachmentDirectoryRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanTemplateRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningProcessDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanningProcessName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OrganizationHierarchyTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimensionHierarchyId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

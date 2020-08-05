@@ -27,7 +27,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Logger.Error(nameof(ReferencedEntityDeclarationPersistence), ctx, "Couldn't find entity path or similar.", "FromData");
             }
 
-            if (entityPath != null && entityPath.IndexOf(":") == -1)
+            // The entity path has to be absolute.
+            // If the namespace is not present then add the "prefixPath" which has the absolute folder path.
+            if (entityPath != null && entityPath.IndexOf(":/") == -1)
             {
                 entityPath = $"{prefixPath}{entityPath}";
             }

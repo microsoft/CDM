@@ -1,0 +1,290 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Miscellaneous/TaxRegistration.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxIntraCommTable_NL",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ContactPersonId",
+          "dataType": "TaxContactId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonPhone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateTimeCreation",
+          "dataType": "TaxDateTimeCreation",
+          "description": ""
+        },
+        {
+          "name": "FileName",
+          "dataType": "Filename",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalGroup",
+          "dataType": "VATNum",
+          "isNullable": true,
+          "displayName": "Fiscal group",
+          "description": ""
+        },
+        {
+          "name": "IclVatNum",
+          "dataType": "CompanyRegNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntraCommId",
+          "dataType": "TaxIntraCommId",
+          "description": ""
+        },
+        {
+          "name": "MessageID",
+          "dataType": "TaxMessageID",
+          "description": ""
+        },
+        {
+          "name": "MhiMessage",
+          "dataType": "TaxMHIMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RequestId",
+          "dataType": "RequestId_NL",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPeriod",
+          "dataType": "TaxPeriodOfYear",
+          "description": ""
+        },
+        {
+          "name": "TaxStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxVersion",
+          "dataType": "TaxVersion_NL",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxYear",
+          "dataType": "Yr",
+          "isNullable": true,
+          "displayName": "Year",
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "TaxUserId",
+          "description": ""
+        },
+        {
+          "name": "VatNum",
+          "dataType": "VATNum",
+          "description": ""
+        },
+        {
+          "name": "ContactPersonInitials",
+          "dataType": "ContactInitials_NL",
+          "isNullable": true,
+          "displayName": "Contact initials",
+          "description": ""
+        },
+        {
+          "name": "ContactPersonPrefix",
+          "dataType": "ContactPrefix_NL",
+          "isNullable": true,
+          "displayName": "Contact prefix",
+          "description": ""
+        },
+        {
+          "name": "TaxID",
+          "dataType": "TaxRegistrationRecId",
+          "isNullable": true,
+          "displayName": "Company tax registration number",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistration"
+          },
+          "name": "Relationship_TaxIDRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic ICP declaration"
+    },
+    {
+      "dataTypeName": "TaxContactId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Phone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxDateTimeCreation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Filename",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VATNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CompanyRegNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxIntraCommId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxMessageID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxMHIMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RequestId_NL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxPeriodOfYear",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxVersion_NL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Yr",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ContactInitials_NL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ContactPrefix_NL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRegistrationRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

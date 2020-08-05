@@ -9,7 +9,8 @@ from cdm.utilities import ResolveOptions, TraitToPropertyMap, logger, Errors
 from .cdm_attribute_def import CdmAttribute
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmDataTypeReference, CdmObjectReference
+    from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmDataTypeReference, CdmObjectReference, \
+    CardinalitySettings
     from cdm.resolvedmodel import ResolvedAttributeSetBuilder, ResolvedEntityReferenceSet
     from cdm.utilities import FriendlyFormatNode, VisitCallback
 
@@ -24,7 +25,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         # the type attribute data type.
         self.data_type = None  # type: Optional[CdmDataTypeReference]
 
-        # Internal
+        # --- internal ---
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
         self._attribute_count = 1
 
@@ -202,7 +203,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmTypeAttributeDefinition'] = None) -> 'CdmTypeAttributeDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmTypeAttributeDefinition(self.ctx, self.name)
@@ -233,9 +234,26 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         return False
 
     def validate(self) -> bool:
+        missing_fields = []
         if not bool(self.name):
-            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
+            missing_fields.append('name')
+        if bool(self.cardinality):
+            if not bool(self.cardinality.minimum):
+                missing_fields.append('cardinality.minimum')
+            if not bool(self.cardinality.maximum):
+                missing_fields.append('cardinality.maximum')
+
+        if missing_fields:
+            logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
             return False
+
+        if bool(self.cardinality):
+            if not CardinalitySettings._is_minimum_valid(self.cardinality.minimum):
+                logger.error(self._TAG, self.ctx, 'Invalid minimum cardinality {}.'.format(self.cardinality.minimum))
+                return False
+            if not CardinalitySettings._is_maximum_valid(self.cardinality.maximum):
+                logger.error(self._TAG, self.ctx, 'Invalid maximum cardinality {}.'.format(self.cardinality.maximum))
+                return False
         return True
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:

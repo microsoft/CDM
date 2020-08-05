@@ -61,7 +61,21 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
     return unResolvedValue;
   }
 
-  void setResolvedParameter(final CdmParameterDefinition resolvedParameter) {
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public CdmParameterDefinition getResolvedParameter() {
+    return this.resolvedParameter;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void setResolvedParameter(final CdmParameterDefinition resolvedParameter) {
     this.resolvedParameter = resolvedParameter;
   }
 
@@ -100,7 +114,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
       path = this.declaredPath;
 
       if (StringUtils.isNullOrTrimEmpty(path)) {
-        path = pathFrom + (this.getValue() != null ? "value/" : "");
+        path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
         this.declaredPath = path;
       }
     }
@@ -108,9 +122,9 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
     }
-    if (this.getValue() instanceof CdmObject) {
+    if (this.getValue() != null && this.getValue() instanceof CdmObject) {
       final CdmObject value = (CdmObject) this.getValue();
-      if (value.visit(path, preChildren, postChildren)) {
+      if (value.visit(path + "/value/", preChildren, postChildren)) {
         return true;
       }
     }

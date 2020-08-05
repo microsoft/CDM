@@ -376,7 +376,8 @@ const PrimitiveAppliers: ResolutionAppliers = {
             const isNorm: boolean = dir && dir.has('normalized');
             const isArray: boolean = dir && dir.has('isArray');
             const isRefOnly: boolean = dir && dir.has('referenceOnly');
-            const alwaysAdd: boolean = appCtx.resGuide.entityByReference.alwaysIncludeForeignKey;
+            const alwaysAdd: boolean = appCtx.resGuide.entityByReference.foreignKeyAttribute !== undefined &&
+                                        appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
             const doFK: boolean = (alwaysAdd || isRefOnly) && (isNorm === false || isArray === false);
             let visible: boolean = true;
             if (doFK && appCtx.resAttSource) {
@@ -395,7 +396,8 @@ const PrimitiveAppliers: ResolutionAppliers = {
             const isNorm: boolean = dir && dir.has('normalized');
             const isArray: boolean = dir && dir.has('isArray');
             const isRefOnly: boolean = dir && dir.has('referenceOnly');
-            const alwaysAdd: boolean = appCtx.resGuide.entityByReference.alwaysIncludeForeignKey;
+            const alwaysAdd: boolean = appCtx.resGuide.entityByReference.foreignKeyAttribute !== undefined &&
+                                        appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
 
             // add a foreign key and remove everything else when asked to do so.
             // however, avoid doing this for normalized arrays, since they remove all alls anyway
@@ -427,7 +429,8 @@ const PrimitiveAppliers: ResolutionAppliers = {
             const isNorm: boolean = dir && dir.has('normalized');
             const isArray: boolean = dir && dir.has('isArray');
             const isRefOnly: boolean = dir && dir.has('referenceOnly');
-            const alwaysAdd: boolean = appCtx.resGuide.entityByReference.alwaysIncludeForeignKey;
+            const alwaysAdd: boolean = appCtx.resGuide.entityByReference.foreignKeyAttribute !== undefined &&
+                                        appCtx.resGuide.entityByReference.alwaysIncludeForeignKey === true;
 
             return (isRefOnly || alwaysAdd) && (isNorm === false || isArray === false);
         },

@@ -55,7 +55,7 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmArgumentDefinition;
@@ -162,7 +162,7 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
             if (!this.ctx.corpus.blockDeclaredPathChanges) {
                 path = this.declaredPath;
                 if (!path) {
-                    path = pathFrom + (this.value ? 'value/' : '');
+                    path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
                     this.declaredPath = path;
                 }
             }
@@ -170,9 +170,9 @@ export class CdmArgumentDefinition extends cdmObjectSimple {
             if (preChildren && preChildren(this, path)) {
                 return false;
             }
-            if (this.value) {
+            if (this.value !== undefined) {
                 if (typeof (this.value) === 'object' && 'visit' in this.value && typeof (this.value.visit) === 'function') {
-                    if (this.value.visit(path, preChildren, postChildren)) {
+                    if (this.value.visit(`${path}/value/`, preChildren, postChildren)) {
                         return true;
                     }
                 }

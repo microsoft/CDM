@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,14 +114,16 @@ public class LocalAdapter implements StorageAdapter {
   }
 
   public CompletableFuture<Boolean> dirExists(final String folderPath) {
-    return CompletableFuture
-        .supplyAsync(() -> Files.isDirectory(Paths.get(createAdapterPath(folderPath))));
+    return CompletableFuture.supplyAsync(() -> Files.isDirectory(Paths.get(createAdapterPath(folderPath))));
   }
 
   public String createAdapterPath(String corpusPath) {
-    if (corpusPath != null && corpusPath.contains(":")) {
-      corpusPath = StringUtils.slice(corpusPath, corpusPath.indexOf(":") + 1);
+    final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
+    if (pathTuple == null) {
+      return null;
     }
+
+    corpusPath = pathTuple.getRight();
 
     if (Paths.get(this.fullRoot).isAbsolute()) {
       return convertPathToAbsolutePath(Paths.get(this.fullRoot, corpusPath).toString());
@@ -209,8 +213,7 @@ public class LocalAdapter implements StorageAdapter {
    * Returns true if the directory exists from the given path, false otherwise.
    */
   private CompletableFuture<Boolean> dirExistsAsync(final String folderPath) {
-    return CompletableFuture
-            .supplyAsync(() -> Files.isDirectory(Paths.get(this.createAdapterPath(folderPath))));
+    return CompletableFuture.supplyAsync(() -> Files.isDirectory(Paths.get(this.createAdapterPath(folderPath))));
   }
 
   /**

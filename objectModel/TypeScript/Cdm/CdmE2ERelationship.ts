@@ -35,7 +35,7 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmE2ERelationship;
@@ -112,10 +112,6 @@ export class CdmE2ERelationship extends CdmObjectDefinitionBase {
     }
 
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 }

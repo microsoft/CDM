@@ -1,0 +1,145 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/TAMItemVendRebateGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/TAMVendRebateGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendInvoiceTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TAMVendRebateVendInvoiceTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PurchLineCreatedDate",
+          "dataType": "CreationDate",
+          "description": ""
+        },
+        {
+          "name": "PurchLineDeliveryDate",
+          "dataType": "PurchLineDlvDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchLineTAMItemVendRebateGroupId",
+          "dataType": "TAMItemVendRebateGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchTableTAMVendRebateGroupId",
+          "dataType": "TAMVendRebateGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceTransRecId",
+          "dataType": "VendInvoiceTransRefRecId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TAMItemVendRebateGroup"
+          },
+          "name": "Relationship_TAMItemVendRebateGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TAMVendRebateGroup"
+          },
+          "name": "Relationship_TAMVendRebateGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceTrans"
+          },
+          "name": "Relationship_VendInvoiceTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor invoice rebate lines"
+    },
+    {
+      "dataTypeName": "CreationDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchLineDlvDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TAMItemVendRebateGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TAMVendRebateGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendInvoiceTransRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -106,61 +106,59 @@ public class Utils {
     });
   }
 
-  static CompletableFuture<Void> processTraitsAndAnnotationsToData(
+  static void processTraitsAndAnnotationsToData(
       final CdmCorpusContext ctx,
       final MetadataObject obj,
       final CdmTraitCollection traits) {
-    return CompletableFuture.runAsync(() -> {
-      if (traits == null) {
-        return;
-      }
-
-      final List<Annotation> annotations = new ArrayList<>();
-      final List<JsonNode> extensions = new ArrayList<>();
-
-      for (final CdmTraitReference trait : traits) {
-        if (ExtensionHelper.traitRefIsExtension(trait)) {
-          ExtensionHelper.processExtensionTraitToObject(trait, obj);
-          continue;
+        if (traits == null) {
+          return;
         }
-
-        if ("is.modelConversion.otherAnnotations".equals(trait.getNamedReference())) {
-          final Object traitArgument = trait.getArguments().get(0).getValue();
-          Iterable<?> traitArguments = new ArrayList<>();
-          if (traitArgument instanceof List<?>) {
-            traitArguments = (ArrayList<?>) traitArgument;
-          } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
-            traitArguments =  (JsonNode) traitArgument;
-          } else {
-            Logger.error(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
+  
+        final List<Annotation> annotations = new ArrayList<>();
+        final List<JsonNode> extensions = new ArrayList<>();
+  
+        for (final CdmTraitReference trait : traits) {
+          if (ExtensionHelper.traitRefIsExtension(trait)) {
+            ExtensionHelper.processExtensionTraitToObject(trait, obj);
+            continue;
           }
-          for (final Object annotation : traitArguments) {
-            if (annotation instanceof JsonNode) {
-              final JsonNode jAnnotation = (JsonNode) annotation;
-              annotations.add(JMapper.MAP.convertValue(jAnnotation, Annotation.class));
-            } else if (annotation instanceof Annotation) {
-              annotations.add((Annotation) annotation);
+  
+          if ("is.modelConversion.otherAnnotations".equals(trait.getNamedReference())) {
+            final Object traitArgument = trait.getArguments().get(0).getValue();
+            Iterable<?> traitArguments = new ArrayList<>();
+            if (traitArgument instanceof List<?>) {
+              traitArguments = (ArrayList<?>) traitArgument;
+            } else if (traitArgument instanceof JsonNode && ((JsonNode) traitArgument).isArray()) {
+              traitArguments =  (JsonNode) traitArgument;
             } else {
-              Logger.warning(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
+              Logger.error(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
             }
+            for (final Object annotation : traitArguments) {
+              if (annotation instanceof JsonNode) {
+                final JsonNode jAnnotation = (JsonNode) annotation;
+                annotations.add(JMapper.MAP.convertValue(jAnnotation, Annotation.class));
+              } else if (annotation instanceof Annotation) {
+                annotations.add((Annotation) annotation);
+              } else {
+                Logger.warning(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
+              }
+            }
+          } else if (!ignoredTraits.contains(trait.getNamedReference())
+                  && !trait.getNamedReference().startsWith("is.dataFormat")
+                  && !(modelJsonPropertyTraits.contains(trait.getNamedReference()) && trait.isFromProperty())
+          ) {
+            final Object extension = TraitReferencePersistence.toData(trait, null, null);
+            extensions.add(JMapper.MAP.valueToTree(extension));
           }
-        } else if (!ignoredTraits.contains(trait.getNamedReference())
-                && !trait.getNamedReference().startsWith("is.dataFormat")
-                && !(modelJsonPropertyTraits.contains(trait.getNamedReference()) && trait.isFromProperty())
-        ) {
-          final Object extension = TraitReferencePersistence.toData(trait, null, null);
-          extensions.add(JMapper.MAP.valueToTree(extension));
         }
-      }
-
-      if (!annotations.isEmpty()) {
-        obj.setAnnotations(annotations);
-      }
-
-      if (!extensions.isEmpty()) {
-        obj.setTraits(extensions);
-      }
-    });
+  
+        if (!annotations.isEmpty()) {
+          obj.setAnnotations(annotations);
+        }
+  
+        if (!extensions.isEmpty()) {
+          obj.setTraits(extensions);
+        }
   }
 
   private static String traitToAnnotationName(final String traitName) {

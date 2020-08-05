@@ -6,6 +6,7 @@ import json
 import os
 from typing import List, Optional
 
+from cdm.utilities import StorageUtils
 from .base import StorageAdapterBase
 
 
@@ -41,7 +42,13 @@ class LocalAdapter(StorageAdapterBase):
             file.write(data)
 
     def create_adapter_path(self, corpus_path: str) -> str:
-        corpus_path = corpus_path[(corpus_path.find(':') + 1):].lstrip('\\/')
+        path_tuple = StorageUtils.split_namespace_path(corpus_path)
+        if not path_tuple:
+            return None
+
+        corpus_path = path_tuple[1]
+
+        corpus_path = corpus_path.lstrip('\\/')
         return os.path.normpath(os.path.join(self._full_root, corpus_path))
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:

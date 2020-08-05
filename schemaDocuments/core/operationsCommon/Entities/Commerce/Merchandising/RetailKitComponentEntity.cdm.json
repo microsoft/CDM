@@ -1,0 +1,105 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailKitEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Main/RetailKitComponent.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailKitComponentEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DoNotShowAtRegister",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasure",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasureSymbol",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "KitProductNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ComponentProductNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Component product number",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailKitEntity"
+          },
+          "name": "Relationship_RetailKitEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailKitComponent"
+          },
+          "name": "BackingTable_RetailKitComponentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail kit components"
+    }
+  ]
+}

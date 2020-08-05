@@ -12,8 +12,8 @@ import {
 } from '../internal';
 
 /**
-     * @internal
-     */
+ * @internal
+ */
 export class ParameterValueSet {
     public pc: ParameterCollection;
     public values: ArgumentValue[];

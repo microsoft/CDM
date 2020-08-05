@@ -275,10 +275,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool Validate()
         {
+            List<string> missingFields = new List<string>();
             if (string.IsNullOrWhiteSpace(this.Name))
+                missingFields.Add("Name");
+            if (Cardinality != null)
             {
-                Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, new List<string> { "Name" }), nameof(Validate));
+                if (string.IsNullOrWhiteSpace(Cardinality.Minimum))
+                    missingFields.Add("Cardinality.Minimum");
+                if (string.IsNullOrWhiteSpace(Cardinality.Maximum))
+                    missingFields.Add("Cardinality.Maximum");
+            }
+            if (missingFields.Count > 0)
+            {
+                Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
                 return false;
+            }
+            if (Cardinality != null)
+            {
+                if (!CardinalitySettings.IsMinimumValid(Cardinality.Minimum))
+                {
+                    Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, $"Invalid minimum cardinality {Cardinality.Minimum}.", nameof(Validate));
+                    return false;
+                }
+                if (!CardinalitySettings.IsMaximumValid(Cardinality.Maximum))
+                {
+                    Logger.Error(nameof(CdmTypeAttributeDefinition), this.Ctx, $"Invalid maximum cardinality {Cardinality.Maximum}.", nameof(Validate));
+                    return false;
+                }
             }
             return true;
         }
@@ -286,11 +309,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            }
-
             return false;
         }
 

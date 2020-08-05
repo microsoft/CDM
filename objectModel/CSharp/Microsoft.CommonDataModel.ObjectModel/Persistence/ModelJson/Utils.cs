@@ -86,7 +86,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             }
         }
 
-        internal static async Task ProcessTraitsAndAnnotationsToData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
+        internal static void ProcessTraitsAndAnnotationsToData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
             if (traits == null)
             {

@@ -3,7 +3,6 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
-    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using System;
@@ -19,6 +18,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Gets or sets the attribute name.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Cardinality setting for projections
+        /// </summary>
+        public CardinalitySettings Cardinality { get; set; }
 
         /// <summary>
         /// Gets or sets the attribute's resolution guidance.

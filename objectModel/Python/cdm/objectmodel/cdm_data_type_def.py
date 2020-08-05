@@ -37,7 +37,7 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataTypeDefinition'] = None) -> 'CdmDataTypeDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmDataTypeDefinition(self.ctx, self.data_type_name, None)
@@ -85,4 +85,6 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         return False
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
+        if not res_opt:
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
         return self._is_derived_from_def(res_opt, self.extends_data_type, self.get_name(), base)

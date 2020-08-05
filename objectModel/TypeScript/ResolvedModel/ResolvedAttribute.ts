@@ -139,6 +139,12 @@ export class ResolvedAttribute {
             copy.resolvedTraits = this.resolvedTraits.shallowCopy();
             copy.insertOrder = this.insertOrder;
             copy.arc = this.arc;
+
+            if ((copy.target as CdmAttribute).createSimpleReference === undefined && typeof(copy.target) !== 'string') {
+                // deep copy when set contains sets. this copies the resolved att set and the context, etc.
+                copy.target = copy.target.copy(resOpt) as ResolvedAttributeSet;
+            }
+
             if (this.applierState) {
                 copy.applierState = {};
                 Object.assign(copy.applierState, this.applierState);
@@ -169,4 +175,4 @@ export class ResolvedAttribute {
     }
 }
 
-export type ResolutionTarget = (CdmAttribute | ResolvedAttributeSet);
+export type ResolutionTarget = (CdmAttribute | ResolvedAttributeSet | string);

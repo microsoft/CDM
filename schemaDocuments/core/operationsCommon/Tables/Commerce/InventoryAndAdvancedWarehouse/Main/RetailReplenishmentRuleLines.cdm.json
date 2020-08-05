@@ -1,0 +1,177 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMHierarchyRelationship.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.cdm.json"
+    },
+    {
+      "corpusPath": "RetailReplenishmentRuleTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailReplenishmentRuleLines",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultPercent",
+          "dataType": "RetailPercent",
+          "isNullable": true,
+          "displayName": "Default percent",
+          "description": ""
+        },
+        {
+          "name": "DefaultWeight",
+          "dataType": "RetailWeightEx1",
+          "isNullable": true,
+          "displayName": "Default weight",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "RetailDescriptionEx1",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Exclude_DEL",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyPercent",
+          "dataType": "RetailPercent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyWeight",
+          "dataType": "RetailWeightEx1",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelationId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RuleId",
+          "dataType": "RetailReplenishmentRuleId",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "OMHierarchyRelationship"
+          },
+          "name": "Relationship_OMHierarchyRelationshipRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelTable"
+          },
+          "name": "Relationship_RetailChannelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailReplenishmentRuleTable"
+          },
+          "name": "Relationship_RetailReplenishmentRuleTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Replenishment rule lines"
+    },
+    {
+      "dataTypeName": "RetailPercent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailWeightEx1",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailDescriptionEx1",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailReplenishmentRuleId",
+      "extendsDataType": "string"
+    }
+  ]
+}

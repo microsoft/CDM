@@ -66,7 +66,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmTraitDefinition'] = None) -> 'CdmTraitDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmTraitDefinition(self.ctx, self.trait_name, None)
@@ -94,6 +94,8 @@ class CdmTraitDefinition(CdmObjectDefinition):
         from cdm.utilities import SymbolSet
 
         from .cdm_corpus_def import CdmCorpusDefinition
+
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
         kind = 'rtsb'
         ctx = self.ctx
@@ -190,6 +192,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
         return rts_result
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         if base == self.trait_name:
             return True
         return self._is_derived_from_def(res_opt, self.extends_trait, self.trait_name, base)

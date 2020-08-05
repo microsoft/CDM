@@ -1,0 +1,282 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResDistinctProductVariant.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.cdm.json"
+    },
+    {
+      "corpusPath": "RetailPricingSimulatorSalesTransaction.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailPricingSimulatorSalesLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DiscountAmount",
+          "dataType": "DiscAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscPct",
+          "dataType": "DiscPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayProductNumber",
+          "dataType": "ItemIdSmall",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayProductVariantNumber",
+          "dataType": "RetailVariantId",
+          "isNullable": true,
+          "displayName": "Product variant",
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Margin",
+          "dataType": "Percent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OfferName",
+          "dataType": "String255",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginalPrice",
+          "dataType": "Price",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Product",
+          "dataType": "EcoResProductRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "UnitQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetailPricingSimulatorSalesTransaction",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPrice",
+          "dataType": "Price",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UoM",
+          "dataType": "UnitOfMeasureRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Variant",
+          "dataType": "EcoResDistinctProductVariantRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesLineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResDistinctProductVariant"
+          },
+          "name": "Relationship_EcoResDistinctProductVariantRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_EcoResProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailPricingSimulatorSalesTransaction"
+          },
+          "name": "Relationship_RetailPricingSimulatorSalesTransactionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pricing simulator sales transaction lines"
+    },
+    {
+      "dataTypeName": "DiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DiscPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemIdSmall",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailVariantId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "String255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Price",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EcoResProductRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResDistinctProductVariantRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

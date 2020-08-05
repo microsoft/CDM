@@ -13,7 +13,9 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmContainerDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
+import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -49,27 +51,6 @@ public class StorageManager {
 
     systemDefinedNamespaces.add("local");
     systemDefinedNamespaces.add("cdm");
-  }
-
-  /**
-   * @param objectPath
-   * @return
-   * @deprecated This function is extremely likely to be removed in the public interface, and not
-   * meant to be called externally at all. Please refrain from using it.
-   */
-  @Deprecated
-  public ImmutablePair<String, String> splitNamespacePath(final String objectPath) {
-    if (StringUtils.isNullOrTrimEmpty(objectPath)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The object path cannot be null or empty.", "splitNamespacePath");
-      return null;
-    }
-
-    if (objectPath != null && objectPath.contains(":")) {
-      return new ImmutablePair<>(
-          objectPath.substring(0, objectPath.indexOf(":")),
-          objectPath.substring(objectPath.indexOf(":") + 1));
-    }
-    return new ImmutablePair<>("", objectPath);
   }
 
   public void mount(final String nameSpace, final StorageAdapter adapter) {
@@ -253,6 +234,15 @@ public class StorageManager {
   }
 
   public CdmFolderDefinition fetchRootFolder(final String nameSpace) {
+    if (StringUtils.isNullOrTrimEmpty(nameSpace)) {
+      Logger.error(
+          StorageManager.class.getSimpleName(),
+          this.corpus.getCtx(),
+          "The namespace cannot be null or empty.",
+          "fetchRootFolder"
+      );
+      return null;
+    }
     if (this.namespaceFolder.containsKey(nameSpace)) {
       return this.namespaceFolder.get(nameSpace);
     } else if (this.namespaceFolder.containsKey(this.defaultNamespace)) {
@@ -290,7 +280,11 @@ public class StorageManager {
       return null;
     }
 
-    final ImmutablePair<String, String> pathTuple = this.splitNamespacePath(corpusPath);
+    final ImmutablePair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
+    if (pathTuple == null) {
+      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The corpus path cannot be null or empty.", "corpusPathToAdapterPath");
+      return null;
+    }
     final String nameSpace = !StringUtils.isNullOrTrimEmpty(pathTuple.getLeft())
         ? pathTuple.getLeft()
         : this.defaultNamespace;
@@ -320,7 +314,11 @@ public class StorageManager {
       // already called statusRpt when checking for unsupported path format.
       return null;
     }
-    final ImmutablePair<String, String> pathTuple = this.splitNamespacePath(objectPath);
+    final ImmutablePair<String, String> pathTuple = StorageUtils.splitNamespacePath(objectPath);
+    if (pathTuple == null) {
+      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The object path cannot be null or empty.", "createAbsoluteCorpusPath");
+      return null;
+    }
     final String nameSpace = pathTuple.getLeft();
     String newObjectPath = pathTuple.getRight();
     String finalNamespace;

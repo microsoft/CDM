@@ -1,0 +1,109 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailStoreEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Commerce/ChannelManagement/OnlineStore/RetailOnlineChannelEntity.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Miscellaneous/RetailStoreLocatorGroupOwner.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailStoreLocatorGroupOwnerEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Channel",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LocatorGroup",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Locator group",
+          "description": ""
+        },
+        {
+          "name": "StoreLocatorGroupName",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OMOperatingUnitNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OMOperatingUnitID",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreEntity"
+          },
+          "name": "Relationship_RetailStoreEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailOnlineChannelEntity"
+          },
+          "name": "Relationship_RetailOnlineChannelEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreLocatorGroupOwner"
+          },
+          "name": "BackingTable_RetailStoreLocatorGroupOwnerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail locator group owner"
+    }
+  ]
+}

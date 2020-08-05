@@ -71,7 +71,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         /// <inheritdoc />
         public abstract T FetchObjectDefinition<T>(ResolveOptions resOpt = null) where T : CdmObjectDefinition;
-        
+
         protected bool resolvingAttributes = false;
 
         /// <inheritdoc />

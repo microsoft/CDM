@@ -44,11 +44,11 @@ public class TypeAttributePersistence {
     return Utils.processAnnotationsFromData(ctx, obj, attribute.getAppliedTraits())
         .thenCompose(v -> {
           ExtensionHelper.processExtensionFromJson(
-              ctx,
-              obj,
-              attribute.getAppliedTraits(),
-              extensionTraitDefList,
-              localExtensionTraitDefList);
+            ctx,
+            obj,
+            attribute.getAppliedTraits(),
+            extensionTraitDefList,
+            localExtensionTraitDefList);
           return CompletableFuture.completedFuture(attribute);
         });
   }
@@ -60,16 +60,15 @@ public class TypeAttributePersistence {
     attribute.setDataType(dataTypeToData(instance.fetchDataFormat()));
     attribute.setDescription((String) instance.fetchProperty(CdmPropertyName.DESCRIPTION));
 
-    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), attribute, instance.getAppliedTraits()).thenCompose(v -> {
-      final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
-      final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
+    Utils.processTraitsAndAnnotationsToData(instance.getCtx(), attribute, instance.getAppliedTraits());
+    final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
+    final CdmTraitReference isHiddenTrait = t2pm.fetchTraitReferenceName("is.hidden");
 
-      if (isHiddenTrait != null) {
-        attribute.setHidden(true);
-      }
+    if (isHiddenTrait != null) {
+      attribute.setHidden(true);
+    }
 
-      return CompletableFuture.completedFuture(attribute);
-    });
+    return CompletableFuture.completedFuture(attribute);
   }
 
   private static CdmDataFormat dataTypeFromData(final String dataType) {
@@ -80,6 +79,10 @@ public class TypeAttributePersistence {
         return CdmDataFormat.Int64;
       case "double":
         return CdmDataFormat.Double;
+      case "date":
+        return CdmDataFormat.Date;
+      case "time":
+        return CdmDataFormat.Time;
       case "datetime":
         return CdmDataFormat.DateTime;
       case "datetimeoffset":
@@ -114,7 +117,9 @@ public class TypeAttributePersistence {
       case Binary:
         return "boolean";
       case Time:
+        return "time";
       case Date:
+        return "date";
       case DateTime:
         return "dateTime";
       case DateTimeOffset:

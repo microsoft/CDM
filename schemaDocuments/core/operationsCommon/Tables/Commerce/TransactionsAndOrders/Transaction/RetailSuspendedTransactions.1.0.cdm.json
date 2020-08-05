@@ -1,0 +1,171 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailStoreTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Main/RetailTerminalTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailSuspendedTransactions",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "byteLength",
+          "dataType": "RetailByteLength",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "netAmount",
+          "dataType": "RetailNetAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "staffId",
+          "dataType": "RetailStaffId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "storeId",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "suspendedTransactionId",
+          "dataType": "RetailTransactionIdEx5",
+          "displayName": "Suspended transaction id",
+          "description": ""
+        },
+        {
+          "name": "terminalId",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "transactionData",
+          "dataType": "RetailTransactionDataEx3",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transDate",
+          "dataType": "RetailDateEx5",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "transTime",
+          "dataType": "RetailTimeEx5",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStoreTable"
+          },
+          "name": "Relationship_RetailStoreTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTerminalTable"
+          },
+          "name": "Relationship_RetailTerminalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Suspended transactions"
+    },
+    {
+      "dataTypeName": "RetailByteLength",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailNetAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailStaffId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionIdEx5",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionDataEx3",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "RetailDateEx5",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailTimeEx5",
+      "extendsDataType": "time"
+    }
+  ]
+}

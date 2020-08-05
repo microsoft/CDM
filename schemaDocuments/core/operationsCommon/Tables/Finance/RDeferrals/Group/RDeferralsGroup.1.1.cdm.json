@@ -1,0 +1,197 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Main/RDeferralsBookTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Parameter/RDeferralsLedger.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Parameter/RDeferralsProfile.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RDeferralsGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeferralsBookId",
+          "dataType": "RDeferralsBookId",
+          "description": ""
+        },
+        {
+          "name": "DeferralsGroupId",
+          "dataType": "RDeferralsGroupId",
+          "description": ""
+        },
+        {
+          "name": "InitRetirementDate",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InitWriteStartDate",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LifeTime",
+          "dataType": "RDeferralsLifeTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "RDeferralsGroupName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "RDeferralsPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfileId",
+          "dataType": "RDeferralsProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VATRefundingMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsBookTable"
+          },
+          "name": "Relationship_RDeferralsBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsLedger"
+          },
+          "name": "Relationship_RDeferralsLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsProfile"
+          },
+          "name": "Relationship_RDeferralsProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deferrals groups"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RDeferralsBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsLifeTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RDeferralsGroupName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsProfileId",
+      "extendsDataType": "string"
+    }
+  ]
+}

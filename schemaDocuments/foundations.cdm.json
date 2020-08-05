@@ -41,7 +41,6 @@
         {
           "name": "versionNumber",
           "explanation": "semantic version number of the entity",
-          "direction": "both",
           "required": true,
           "dataType": "string"
         }
@@ -58,8 +57,17 @@
       "hasParameters": [
         {
           "name": "groupList",
-          "direction": "both",
-          "dataType": "entity"
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "attributeGroupSet"
+                ]
+              }
+            ]
+          }
         }
       ],
       "associatedProperties": [
@@ -74,7 +82,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
             }
           ]
         }
@@ -97,7 +105,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
             }
           ]
         }
@@ -105,27 +113,15 @@
     },
     {
       "entityName": "entityGroupSet",
-      "explanation": "holds a list of entity references",
-      "extendsEntity": "reference",
-      "hasAttributes": [
-        {
-          "name": "entityReference",
-          "dataType": "entityName",
-          "purpose": "hasA"
-        },
-        {
-          "name": "attributeReference",
-          "dataType": "attributeName",
-          "purpose": "hasA"
-        }
-      ],
+      "explanation": "The 'old' name for this entity before it was fixed to make it type specific",
+      "extendsEntity": "entitySet",
       "exhibitsTraits": [
         {
           "traitReference": "is.CDM.entityVersion",
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
             }
           ]
         }
@@ -139,7 +135,8 @@
         {
           "name": "languageTag",
           "dataType": "languageTag",
-          "purpose": "identifiedBy"
+          "purpose": "identifiedBy",
+          "explanation": "A BCP 47 language tag describing the associated display text"
         },
         {
           "name": "displayText",
@@ -153,7 +150,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
             }
           ]
         }
@@ -166,9 +163,18 @@
       "hasParameters": [
         {
           "name": "localizedDisplayText",
-          "dataType": "entity",
-          "explanation": "a reference to the constant entity holding the list of localized text",
-          "direction": "both"
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "localizedTable"
+                ]
+              }
+            ]
+          },
+          "explanation": "a reference to the constant entity holding the list of localized text"
         }
       ]
     },
@@ -196,12 +202,14 @@
         {
           "name": "attributeValue",
           "dataType": "integer",
-          "purpose": "identifiedBy"
+          "purpose": "identifiedBy",
+          "explanation": "One of the enumerated values for this attribute"
         },
         {
           "name": "displayOrder",
           "dataType": "displayOrder",
-          "purpose": "orderedBy"
+          "purpose": "orderedBy",
+          "explanation": "The presentation order of the enumerated value"
         }
       ],
       "exhibitsTraits": [
@@ -210,7 +218,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
             }
           ]
         }
@@ -234,7 +242,37 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "1.2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entityName": "listLookupStringValues",
+      "explanation": "a localized list of descriptions for possible values in a listLookup type attribute",
+      "extendsEntity": "localizedTable",
+      "hasAttributes": [
+        {
+          "name": "attributeValue",
+          "dataType": "string",
+          "purpose": "identifiedBy",
+          "explanation": "One of the enumerated values for this attribute"
+        },
+        {
+          "name": "displayOrder",
+          "dataType": "displayOrder",
+          "purpose": "orderedBy",
+          "explanation": "The presentation order of the enumerated value"
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.2"
             }
           ]
         }
@@ -248,8 +286,7 @@
         {
           "name": "default",
           "dataType": "any",
-          "required": true,
-          "direction": "both"
+          "required": true
         }
       ],
       "associatedProperties": [
@@ -292,18 +329,15 @@
       "hasParameters": [
         {
           "name": "maximumLength",
-          "dataType": "integer",
-          "direction": "both"
+          "dataType": "integer"
         },
         {
           "name": "minimumValue",
-          "dataType": "decimal",
-          "direction": "both"
+          "dataType": "decimal"
         },
         {
           "name": "maximumValue",
-          "dataType": "decimal",
-          "direction": "both"
+          "dataType": "decimal"
         }
       ],
       "associatedProperties": [
@@ -316,6 +350,70 @@
       "traitName": "is.constrainedList",
       "extendsTrait": "is",
       "explanation": "the values of an attribute are taken from or looked up from a fixed list of possibilities",
+      "hasParameters": [
+        {
+          "name": "defaultList",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "listLookupValues"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "associatedProperties": [
+        "valueConstrainedToList"
+      ]
+    },
+    {
+      "traitName": "is.constrainedList.correlated",
+      "extendsTrait": "is",
+      "explanation": "the values of an attribute are taken from or looked up from a fixed list of possibilities that represent correlated status",
+      "hasParameters": [
+        {
+          "name": "defaultList",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "listLookupCorrelatedValues"
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "associatedProperties": [
+        "valueConstrainedToList"
+      ]
+    },
+    {
+      "traitName": "is.constrainedList.string",
+      "extendsTrait": "is",
+      "explanation": "the values of an attribute are taken from or looked up from a fixed list of possibilities",
+      "hasParameters": [
+        {
+          "name": "defaultList",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "listLookupStringValues"
+                ]
+              }
+            ]
+          }
+        }
+      ],
       "associatedProperties": [
         "valueConstrainedToList"
       ]
@@ -374,6 +472,22 @@
       ]
     },
     {
+      "dataTypeName": "listLookupCorrelated",
+      "extendsDataType": "integer",
+      "explanation": "One integer value from a defined list of possibilities where the list represents correlated status",
+      "exhibitsTraits": [
+        "is.constrainedList.correlated"
+      ]
+    },
+    {
+      "dataTypeName": "listLookupString",
+      "extendsDataType": "string",
+      "explanation": "One string value from a defined list of possibilities",
+      "exhibitsTraits": [
+        "is.constrainedList.string"
+      ]
+    },
+    {
       "traitName": "is.calculationOf",
       "extendsTrait": "is.correlatedWith",
       "explanation": "the attribute value is the result of a calculation on the sourceAttribute"
@@ -419,6 +533,30 @@
           "dataType": "string",
           "defaultValue": "UTF-8",
           "explanation": "The character encoding in the .csv file."
+        },
+        {
+          "name": "escape",
+          "dataType": "char",
+          "defaultValue": "\"",
+          "explanation": "The character used to escape quotes inside a quoted string in the .csv file."
+        },
+        {
+          "name": "newline",
+          "dataType": "char",
+          "defaultValue": "\n",
+          "explanation": "The character used to indicate the end of a record in the .csv file."
+        },
+        {
+          "name": "quote",
+          "dataType": "char",
+          "defaultValue": "\"",
+          "explanation": "The character used to quote text strings in the .csv file."
+        },
+        {
+          "name": "skipLines",
+          "dataType": "integer",
+          "defaultValue": "0",
+          "explanation": "The number of lines to skip over at the start of the .csv file."
         }
       ]
     },

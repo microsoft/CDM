@@ -1,0 +1,203 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SIGReasonCode.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "SysDataBaseLog.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SIGSignatureLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AuditLogRef",
+          "dataType": "SIGAuditLogRef",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Comment",
+          "dataType": "SIGComment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentClassId",
+          "dataType": "SIGDocumentClassId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoginId",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Login ID",
+          "description": ""
+        },
+        {
+          "name": "ReasonCode",
+          "dataType": "SIGReasonCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SerializedDocument",
+          "dataType": "SIGSerializedDocument",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SignatureDateTime",
+          "dataType": "SIGSignatureDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SigneeId",
+          "dataType": "SIGSigneeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SigningCertificate",
+          "dataType": "SIGCertificateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SigningProvider",
+          "dataType": "SIGSigningProviderId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SIGReasonCode"
+          },
+          "name": "Relationship_SIGReasonCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SysDataBaseLog"
+          },
+          "name": "Relationship_SysDataBaseLogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Signature log"
+    },
+    {
+      "dataTypeName": "SIGAuditLogRef",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SIGComment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SIGDocumentClassId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SIGReasonCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SIGSerializedDocument",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "SIGSignatureDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SIGSigneeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SIGCertificateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SIGSigningProviderId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

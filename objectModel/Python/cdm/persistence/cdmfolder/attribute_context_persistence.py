@@ -26,7 +26,20 @@ map_type_name_to_enum = {
     'addedAttributeExpansionTotal': CdmAttributeContextType.ADDED_ATTRIBUTE_EXPANSION_TOTAL,
     'addedAttributeSelectedType': CdmAttributeContextType.ADDED_ATTRIBUTE_SELECTED_TYPE,
     'generatedRound': CdmAttributeContextType.GENERATED_ROUND,
-    'generatedSet': CdmAttributeContextType.GENERATED_SET
+    'generatedSet': CdmAttributeContextType.GENERATED_SET,
+    'projection': CdmAttributeContextType.PROJECTION,
+    'source': CdmAttributeContextType.SOURCE,
+    'operations': CdmAttributeContextType.OPERATIONS,
+    'operationAddCountAttribute': CdmAttributeContextType.OPERATION_ADD_COUNT_ATTRIBUTE,
+    'operationAddSupportingAttribute': CdmAttributeContextType.OPERATION_ADD_SUPPORTING_ATTRIBUTE,
+    'operationAddTypeAttribute': CdmAttributeContextType.OPERATION_ADD_TYPE_ATTRIBUTE,
+    'operationExcludeAttributes': CdmAttributeContextType.OPERATION_EXCLUDE_ATTRIBUTES,
+    'operationArrayExpansion': CdmAttributeContextType.OPERATION_ARRAY_EXPANSION,
+    'operationCombineAttributes': CdmAttributeContextType.OPERATION_COMBINE_ATTRIBUTES,
+    'operationRenameAttributes': CdmAttributeContextType.OPERATION_RENAME_ATTRIBUTES,
+    'operationReplaceAsForeignKey': CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY,
+    'operationIncludeAttributes': CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES,
+    'operationAddAttributeGroup': CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP
 }
 
 map_enum_to_type_name = {
@@ -39,7 +52,20 @@ map_enum_to_type_name = {
     CdmAttributeContextType.ADDED_ATTRIBUTE_EXPANSION_TOTAL: 'addedAttributeExpansionTotal',
     CdmAttributeContextType.ADDED_ATTRIBUTE_SELECTED_TYPE: 'addedAttributeSelectedType',
     CdmAttributeContextType.GENERATED_ROUND: 'generatedRound',
-    CdmAttributeContextType.GENERATED_SET: 'generatedSet'
+    CdmAttributeContextType.GENERATED_SET: 'generatedSet',
+    CdmAttributeContextType.PROJECTION: 'projection',
+    CdmAttributeContextType.SOURCE: 'source',
+    CdmAttributeContextType.OPERATIONS: 'operations',
+    CdmAttributeContextType.OPERATION_ADD_COUNT_ATTRIBUTE: 'operationAddCountAttribute',
+    CdmAttributeContextType.OPERATION_ADD_SUPPORTING_ATTRIBUTE: 'operationAddSupportingAttribute',
+    CdmAttributeContextType.OPERATION_ADD_TYPE_ATTRIBUTE: 'operationAddTypeAttribute',
+    CdmAttributeContextType.OPERATION_EXCLUDE_ATTRIBUTES: 'operationExcludeAttributes',
+    CdmAttributeContextType.OPERATION_ARRAY_EXPANSION: 'operationArrayExpansion',
+    CdmAttributeContextType.OPERATION_COMBINE_ATTRIBUTES: 'operationCombineAttributes',
+    CdmAttributeContextType.OPERATION_RENAME_ATTRIBUTES: 'operationRenameAttributes',
+    CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY: 'operationReplaceAsForeignKey',
+    CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES: 'operationIncludeAttributes',
+    CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP: 'operationAddAttributeGroup'
 }
 
 

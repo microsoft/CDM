@@ -1,0 +1,213 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BankPromissoryNoteTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendPromissoryNoteJour",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApprovalDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Approval date",
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Document date",
+          "description": ""
+        },
+        {
+          "name": "DocumentNum",
+          "dataType": "BankPromissoryNoteNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalTransRecId",
+          "dataType": "LedgerJournalTransRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Open",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Open",
+          "description": ""
+        },
+        {
+          "name": "PromissoryNoteId",
+          "dataType": "VendPromissoryNoteID",
+          "description": ""
+        },
+        {
+          "name": "PromissoryNoteSeqNum",
+          "dataType": "CustVendNegInstSeqNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemittanceDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Remittance date",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "VendPromissoryNoteStatus",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankPromissoryNoteTable"
+          },
+          "name": "Relationship_BankPromissoryNoteTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTrans_LedgerJournalTransRecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Promissory note journal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankPromissoryNoteNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerJournalTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendPromissoryNoteID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendNegInstSeqNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendPromissoryNoteStatus",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

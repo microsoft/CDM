@@ -86,6 +86,6 @@ class ReferencedEntityDeclarationPersistence:
         if properties_trait:
             reference_entity.modelId = properties_trait.arguments[0].value
 
-        await utils.process_traits_and_annotations_to_data(instance.ctx, reference_entity, instance.exhibits_traits)
+        utils.process_traits_and_annotations_to_data(instance.ctx, reference_entity, instance.exhibits_traits)
 
         return reference_entity

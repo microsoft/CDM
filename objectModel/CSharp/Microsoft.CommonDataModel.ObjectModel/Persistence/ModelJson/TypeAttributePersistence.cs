@@ -50,7 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 Description = instance.GetProperty("description")
             };
 
-            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, attribute, instance.AppliedTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
 
@@ -73,6 +73,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                     return CdmDataFormat.Int64;
                 case "double":
                     return CdmDataFormat.Double;
+                case "date":
+                    return CdmDataFormat.Date;
+                case "time":
+                    return CdmDataFormat.Time;
                 case "datetime":
                     return CdmDataFormat.DateTime;
                 case "datetimeoffset":
@@ -109,7 +113,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 case CdmDataFormat.Binary:
                     return "boolean";
                 case CdmDataFormat.Time:
+                    return "time";
                 case CdmDataFormat.Date:
+                    return "date";
                 case CdmDataFormat.DateTime:
                     return "dateTime";
                 case CdmDataFormat.DateTimeOffset:

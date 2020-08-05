@@ -116,10 +116,6 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 
@@ -257,10 +253,6 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @inheritdoc
      */
     public fetchObjectDefinition<T = CdmObjectDefinition>(resOpt?: resolveOptions): T {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return undefined;
     }
 
@@ -269,10 +261,6 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @internal
      */
     public fetchResolvedTraits(resOpt?: resolveOptions): ResolvedTraitSet {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return undefined;
     }
 
@@ -288,10 +276,6 @@ export class CdmFolderDefinition extends CdmObjectDefinitionBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return undefined;
     }
 }

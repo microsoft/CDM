@@ -8,6 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.ProjectionPersistence;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.util.List;
@@ -34,6 +35,9 @@ public class EntityReferencePersistence {
 
     if (!(obj.isValueNode())) {
       appliedTraits = Utils.createTraitReferenceList(ctx, obj.get("appliedTraits"));
+      if (appliedTraits != null) {
+        Utils.addListToCdmCollection(entityReference.getAppliedTraits(), appliedTraits);
+      }
     }
 
     Utils.addListToCdmCollection(entityReference.getAppliedTraits(), appliedTraits);
@@ -46,10 +50,12 @@ public class EntityReferencePersistence {
 
   private static Object getEntityReference(final CdmCorpusContext ctx, final JsonNode obj) {
     Object entity = null;
-    if (obj.get("entityReference").isValueNode()) {
+    if (obj.get("entityReference") != null && obj.get("entityReference").isValueNode()) {
       entity = obj.get("entityReference");
     } else if (obj.get("entityReference") != null && obj.get("entityReference").get("entityShape") != null) {
-        entity = ConstantEntityPersistence.fromData(ctx, obj.get("entityReference"));
+      entity = ConstantEntityPersistence.fromData(ctx, obj.get("entityReference"));
+    } else if (obj.get("source") != null) {
+      entity = ProjectionPersistence.fromData(ctx, obj);
     } else {
       entity = EntityPersistence.fromData(ctx, obj.get("entityReference"));
     }

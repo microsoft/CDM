@@ -45,7 +45,7 @@ class CdmParameterDefinition(CdmObjectSimple):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmParameterDefinition'] = None) -> 'CdmParameterDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmParameterDefinition(self.ctx, self.name)

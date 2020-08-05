@@ -42,7 +42,7 @@ namespace read_local_save_adls
             // ------------------------------------------------------------------------------------------------------------
             // Set up adapters for managing access to different files-system locations
 
-            // Fake cdm, normaly use the github adapter
+            // Fake cdm, normaly use the CDM Standards adapter
             // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 

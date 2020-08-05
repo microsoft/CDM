@@ -71,7 +71,7 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
         let copy: CdmManifestDeclarationDefinition;
         if (!host) {
@@ -154,10 +154,6 @@ export class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false; // makes no sense
     }
 

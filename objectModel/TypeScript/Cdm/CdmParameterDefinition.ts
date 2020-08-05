@@ -47,7 +47,7 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmParameterDefinition;
@@ -116,10 +116,6 @@ export class CdmParameterDefinition extends cdmObjectSimple implements CdmParame
     }
 
     public isDerivedFrom(baseDef: string, resOpt?: resolveOptions) {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 

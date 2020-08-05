@@ -79,11 +79,21 @@ export class EntityPersistence {
             schemas: undefined,
             'cdm:imports': undefined
         };
-        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (instance.attributes !== undefined) {
             result.attributes = [];
             for (const element of instance.attributes.allItems) {
+                if (element.objectType !== cdmObjectType.typeAttributeDef) {
+                    Logger.error(
+                        EntityPersistence.name,
+                        ctx,
+                        `Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.`
+                    );
+
+                    return undefined;
+                }
+
                 const attribute: Attribute =
                     await ModelJson.TypeAttributePersistence.toData(element as CdmTypeAttributeDefinition, resOpt, options);
                 if (attribute !== undefined) {

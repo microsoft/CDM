@@ -1,0 +1,226 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/FinancialDimensions/DimensionCombinationEntity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "LedgerJournalNameEntity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerInterCompany.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerInterCompanyAccountEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OriginatingLegalEntityId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestinationLegalEntityId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostCashDiscount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Post cash discount",
+          "description": ""
+        },
+        {
+          "name": "PostCurrencyExchangeGainOrLoss",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Post currency exchange gain or loss",
+          "description": ""
+        },
+        {
+          "name": "PostFine",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Post fine",
+          "description": ""
+        },
+        {
+          "name": "PostInterest",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Post interest",
+          "description": ""
+        },
+        {
+          "name": "Journal",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Journal",
+          "description": ""
+        },
+        {
+          "name": "OriginatingCreditAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Credit account",
+          "description": ""
+        },
+        {
+          "name": "OriginatingDebitAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Debit account",
+          "description": ""
+        },
+        {
+          "name": "OriginatingCreditAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Originating company credit account",
+          "description": ""
+        },
+        {
+          "name": "OriginatingDebitAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Originating company debit account",
+          "description": ""
+        },
+        {
+          "name": "DestinationCreditAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Credit account",
+          "description": ""
+        },
+        {
+          "name": "DestinationDebitAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Debit account",
+          "description": ""
+        },
+        {
+          "name": "DestinationCreditAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Destination company credit account",
+          "description": ""
+        },
+        {
+          "name": "DestinationDebitAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Destination company debit account",
+          "description": ""
+        },
+        {
+          "name": "VendorPaymentPostFine",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorPaymentPostFinancialInterest",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_OriginatingCreditAccountCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_OriginatingDebitAccountCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_DestinationCreditAccountCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_DestinationDebitAccountCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalNameEntity"
+          },
+          "name": "Relationship_LedgerJournalNameEntityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerInterCompany"
+          },
+          "name": "BackingTable_LedgerInterCompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Intercompany accounting"
+    }
+  ]
+}

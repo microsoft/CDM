@@ -101,22 +101,20 @@ class CdmHttpClient:
                             cdm_response.is_successful = response.status // 100 == 2
 
                         if hasattr(response, 'getheaders'):
-                            cdm_response.response_headers = response.getheaders()
-            except urllib.error.URLError:
+                            cdm_response.response_headers = dict(response.getheaders())
+            except urllib.error.URLError as exception:
                 has_failed = True
-                raise
-            except Exception as exception:
-
-                has_failed = True
-
                 if callback is None or retry_number == cdm_request.number_of_retries:
                     if retry_number != 0:
-                        raise CdmNumberOfRetriesExceededException
+                        raise CdmNumberOfRetriesExceededException(exception)
                     else:
                         if exception.args and exception.args[0].args and exception.args[0].args[0] == 'timed out':
-                            raise CdmTimedOutException
+                            raise CdmTimedOutException(exception)
                         else:
                             raise exception
+            except Exception as exception:
+                has_failed = True
+                raise
 
             # Check whether we have a callback function set and whether this is not our last retry.
             if callback is not None and retry_number != cdm_request.number_of_retries:

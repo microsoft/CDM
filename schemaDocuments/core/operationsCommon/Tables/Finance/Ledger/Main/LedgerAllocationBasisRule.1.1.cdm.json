@@ -1,0 +1,129 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerPeriodCode.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerAllocationBasisRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BasisActive",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "BasisId",
+          "dataType": "LedgerAllocationBasisNum",
+          "displayName": "Basis ID",
+          "description": ""
+        },
+        {
+          "name": "DateInterval",
+          "dataType": "DateCode",
+          "isNullable": true,
+          "displayName": "Date interval",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EffectiveEndDate",
+          "dataType": "EndDate",
+          "isNullable": true,
+          "displayName": "Expiration date",
+          "description": ""
+        },
+        {
+          "name": "EffectiveStartDate",
+          "dataType": "StartDate",
+          "isNullable": true,
+          "displayName": "Effective date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerPeriodCode"
+          },
+          "name": "Relationship_LedgerPeriodCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger allocation basis"
+    },
+    {
+      "dataTypeName": "LedgerAllocationBasisNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DateCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EndDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

@@ -1,0 +1,157 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FBBookingPeriod_BR.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBFiscalPrinterDailyReport_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingDate",
+          "dataType": "AccountingDate",
+          "description": ""
+        },
+        {
+          "name": "CanceledAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Canceled amount",
+          "description": ""
+        },
+        {
+          "name": "DiscountAmount",
+          "dataType": "DiscAmount",
+          "isNullable": true,
+          "displayName": "Discount amount",
+          "description": ""
+        },
+        {
+          "name": "ExemptBaseAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Exempt base amount",
+          "description": ""
+        },
+        {
+          "name": "FBBookingPeriod_BR",
+          "dataType": "FBBookingPeriodRecId_BR",
+          "description": ""
+        },
+        {
+          "name": "GrossAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Gross amount",
+          "description": ""
+        },
+        {
+          "name": "ISSTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "ISS tax amount",
+          "description": ""
+        },
+        {
+          "name": "NetAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Net amount",
+          "description": ""
+        },
+        {
+          "name": "Number",
+          "dataType": "PositiveNumber",
+          "displayName": "Report number",
+          "description": ""
+        },
+        {
+          "name": "STAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Tributary substitution amount",
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmount",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Tax base amount",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "FBBookingPeriod_BR"
+          },
+          "name": "Relationship_FBBookingPeriod_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "ECF daily operations report"
+    },
+    {
+      "dataTypeName": "AccountingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DiscAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBBookingPeriodRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PositiveNumber",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxBaseCur",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -320,7 +320,7 @@ def _does_reference_entity_via_builder():
         is_norm = dirs is not None and dirs.has('normalized')
         is_array = dirs is not None and dirs.has('isArray')
         is_ref_only = dirs is not None and dirs.has('referenceOnly')
-        always_add = app_ctx.res_guide.entity_by_reference.always_include_foreign_key
+        always_add = app_ctx.res_guide.entity_by_reference.foreign_key_attribute is not None and app_ctx.res_guide.entity_by_reference.always_include_foreign_key
         do_fk = (always_add or is_ref_only) and (not is_norm or not is_array)
 
         visible = True
@@ -335,7 +335,7 @@ def _does_reference_entity_via_builder():
         is_norm = dirs is not None and dirs.has('normalized')
         is_array = dirs is not None and dirs.has('isArray')
         is_ref_only = dirs is not None and dirs.has('referenceOnly')
-        always_add = app_ctx.res_guide.entity_by_reference.always_include_foreign_key is True
+        always_add = app_ctx.res_guide.entity_by_reference.foreign_key_attribute is not None and app_ctx.res_guide.entity_by_reference.always_include_foreign_key is True
 
         # Add a foreign key and remove everything else when asked to do so. However, avoid doing this for normalized
         # arrays, since they remove all atts anyway.
@@ -367,7 +367,7 @@ def _does_reference_entity_via_builder():
         is_norm = dirs is not None and dirs.has('normalized')
         is_array = dirs is not None and dirs.has('isArray')
         is_ref_only = dirs is not None and dirs.has('referenceOnly')
-        always_add = app_ctx.res_guide.entity_by_reference.always_include_foreign_key
+        always_add = app_ctx.res_guide.entity_by_reference.foreign_key_attribute is not None and app_ctx.res_guide.entity_by_reference.always_include_foreign_key
 
         return (is_ref_only or always_add) and (not is_norm or not is_array)
 

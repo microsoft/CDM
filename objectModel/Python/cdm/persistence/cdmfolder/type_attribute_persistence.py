@@ -4,6 +4,7 @@
 from typing import Optional
 
 from cdm.objectmodel import CdmCorpusContext, CdmTypeAttributeDefinition
+from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.utilities import logger, ResolveOptions, CopyOptions, TraitToPropertyMap, copy_data_utils
 
@@ -14,6 +15,8 @@ from .data_type_reference_persistence import DataTypeReferencePersistence
 from .purpose_reference_persistence import PurposeReferencePersistence
 from .types import TypeAttribute
 
+_TAG = 'TypeAttributePersistence'
+
 
 class TypeAttributePersistence:
     @staticmethod
@@ -21,6 +24,30 @@ class TypeAttributePersistence:
         type_attribute = ctx.corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, data.get('name'))
         type_attribute.purpose = PurposeReferencePersistence.from_data(ctx, data.get('purpose'))
         type_attribute.data_type = DataTypeReferencePersistence.from_data(ctx, data.get('dataType'))
+
+        if data.get('cardinality'):
+            min_cardinality = None
+            if data.get('cardinality').get('minimum'):
+                min_cardinality = data.get('cardinality').get('minimum')
+
+            max_cardinality = None
+            if data.get('cardinality').get('maximum'):
+                max_cardinality = data.get('cardinality').get('maximum')
+
+            if not min_cardinality or not max_cardinality:
+                logger.error(_TAG, ctx, 'Both minimum and maximum are required for the Cardinality property.')
+
+            if not CardinalitySettings._is_minimum_valid(min_cardinality):
+                logger.error(_TAG, ctx, 'Invalid minimum cardinality {}.'.format(min_cardinality))
+
+            if not CardinalitySettings._is_maximum_valid(max_cardinality):
+                logger.error(_TAG, ctx, 'Invalid maximum cardinality {}.'.format(max_cardinality))
+
+            if min_cardinality and max_cardinality and CardinalitySettings._is_minimum_valid(min_cardinality) and CardinalitySettings._is_maximum_valid(max_cardinality):
+                type_attribute.cardinality = CardinalitySettings(type_attribute)
+                type_attribute.cardinality.minimum = min_cardinality
+                type_attribute.cardinality.maximum = max_cardinality
+
         type_attribute.attribute_context = AttributeContextReferencePersistence.from_data(ctx, data.get('attributeContext'))
         type_attribute.resolution_guidance = AttributeResolutionGuidancePersistence.from_data(ctx, data.get('resolutionGuidance'))
 
@@ -31,37 +58,18 @@ class TypeAttributePersistence:
             t2p_map = TraitToPropertyMap(type_attribute)
             t2p_map._update_property_value('isPrimaryKey', entity_name + '/(resolvedAttributes)/' + type_attribute.name)
         
-        type_attribute.explanation = data.get('explanation')
-
-        if data.get('isReadOnly') is not None:
-            type_attribute.is_read_only = TypeAttributePersistence._property_from_data_to_bool(data.isReadOnly)
-
-        if data.get('isNullable') is not None:
-            type_attribute.is_nullable = TypeAttributePersistence._property_from_data_to_bool(data.isNullable)
-
-        if data.get('sourceName'):
-            type_attribute.source_name = TypeAttributePersistence._property_from_data_to_string(data.sourceName)
-
-        if data.get('sourceOrdering') is not None:
-            type_attribute.source_ordering = TypeAttributePersistence._property_from_data_to_int(data.sourceOrdering)
-
-        if data.get('displayName'):
-            type_attribute.display_name = TypeAttributePersistence._property_from_data_to_string(data.displayName)
-
-        if data.get('description'):
-            type_attribute.description = TypeAttributePersistence._property_from_data_to_string(data.description)
-
-        if data.get('valueConstrainedToList') is not None:
-            type_attribute.value_constrained_to_list = TypeAttributePersistence._property_from_data_to_bool(data.valueConstrainedToList)
-
-        if data.get('maximumLength') is not None:
-            type_attribute.maximum_length = TypeAttributePersistence._property_from_data_to_int(data.maximumLength)
-
-        if data.get('maximumValue') is not None:
-            type_attribute.maximum_value = TypeAttributePersistence._property_from_data_to_string(data.maximumValue)
-
-        if data.get('minimumValue') is not None:
-            type_attribute.minimum_value = TypeAttributePersistence._property_from_data_to_string(data.minimumValue)
+        type_attribute.explanation = data.explanation
+        type_attribute.is_read_only = utils._property_from_data_to_bool(data.isReadOnly)
+        type_attribute.is_nullable = utils._property_from_data_to_bool(data.isNullable)
+        type_attribute.source_name = utils._property_from_data_to_string(data.sourceName)
+        type_attribute.source_ordering = utils._property_from_data_to_int(data.sourceOrdering)
+        type_attribute.display_name = utils._property_from_data_to_string(data.displayName)
+        type_attribute.description = utils._property_from_data_to_string(data.description)
+        type_attribute.value_constrained_to_list = utils._property_from_data_to_bool(data.valueConstrainedToList)
+        type_attribute.maximum_length = utils._property_from_data_to_int(data.maximumLength)
+        type_attribute.maximum_value = utils._property_from_data_to_string(data.maximumValue)
+        type_attribute.minimum_value = utils._property_from_data_to_string(data.minimumValue)
+        type_attribute.default_value = data.defaultValue
 
         if data.get('dataFormat') is not None:
             try:
@@ -70,8 +78,6 @@ class TypeAttributePersistence:
                 logger.warning(TypeAttributePersistence.__name__, ctx, 'Couldn\'t find an enum value for {}.'.format(
                     data.dataFormat), TypeAttributePersistence.from_data.__name__)
 
-        if data.get('defaultValue') is not None:
-            type_attribute.default_value = data.defaultValue
 
         return type_attribute
 
@@ -130,37 +136,6 @@ class TypeAttributePersistence:
             data.defaultValue = default_value
 
         return data
-
-    @staticmethod
-    def _property_from_data_to_string(value) -> Optional[str]:
-        if isinstance(value, str) and value is not '':
-            return value
-        elif isinstance(value, int):
-            return str(value)
-        return None
-
-    @staticmethod
-    def _property_from_data_to_int(value) -> Optional[int]:
-        if isinstance(value, int):
-            return value
-        elif isinstance(value, str):
-            try:
-                return int(value)
-            except ValueError:
-                # string is not a valid number
-                pass
-        return None
-
-    @staticmethod
-    def _property_from_data_to_bool(value) -> Optional[bool]:
-        if isinstance(value, bool):
-            return value
-        elif isinstance(value, str):
-            if value in ['True', 'true']:
-                return True
-            elif value in ['False', 'false']:
-                return False
-        return None
 
     @staticmethod
     def _data_type_from_data(data_type: str) -> CdmDataFormat:

@@ -1,0 +1,114 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSGenericEngine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultEngine",
+          "dataType": "TMSDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Engine",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EngineAssembly",
+          "dataType": "TMSEngineAssembly",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EngineType",
+          "dataType": "TMSEngineType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GenericEngineCode",
+          "dataType": "TMSGenericEngineCode",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TMSName",
+          "description": ""
+        },
+        {
+          "name": "EngineTypeSource",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Generic engine"
+    },
+    {
+      "dataTypeName": "TMSDefault",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSEngineAssembly",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSEngineType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSGenericEngineCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSName",
+      "extendsDataType": "string"
+    }
+  ]
+}

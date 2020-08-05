@@ -47,7 +47,7 @@ class TypeAttributePersistence:
             result.description = description
         result.dataType = TypeAttributePersistence._data_type_to_data(instance.data_format)
 
-        await utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.applied_traits)
+        utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.applied_traits)
 
         t2pm = TraitToPropertyMap(instance)
 
@@ -61,6 +61,8 @@ class TypeAttributePersistence:
             'string': CdmDataFormat.STRING,
             'int64': CdmDataFormat.INT64,
             'double': CdmDataFormat.DOUBLE,
+            'date': CdmDataFormat.DATE,
+            'time': CdmDataFormat.TIME,
             'datetime': CdmDataFormat.DATE_TIME,
             'datetimeoffset': CdmDataFormat.DATE_TIME_OFFSET,
             'decimal': CdmDataFormat.DECIMAL,
@@ -83,8 +85,8 @@ class TypeAttributePersistence:
             CdmDataFormat.STRING: 'string',
             CdmDataFormat.GUID: 'guid',
             CdmDataFormat.BINARY: 'boolean',
-            CdmDataFormat.TIME: 'dateTime',
-            CdmDataFormat.DATE: 'dateTime',
+            CdmDataFormat.TIME: 'time',
+            CdmDataFormat.DATE: 'date',
             CdmDataFormat.DATE_TIME: 'dateTime',
             CdmDataFormat.DATE_TIME_OFFSET: 'dateTimeOffset',
             CdmDataFormat.BOOLEAN: 'boolean',

@@ -125,6 +125,31 @@ public class DataPartitionPatternTest {
   }
 
   /**
+   * Testing that patterns behave correctly with variations to rootLocation
+   */
+  @Test
+  public void testVariationsInRootLocation() throws IOException, InterruptedException {
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestVariationsInRootLocation", null);
+    CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("pattern.manifest.cdm.json").join();
+    manifest.fileStatusCheckAsync().join();
+
+    CdmLocalEntityDeclarationDefinition startsWithSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(0);
+    Assert.assertEquals(startsWithSlash.getDataPartitionPatterns().get(0).getRegularExpression(), ".*testfile.csv");
+    Assert.assertEquals(startsWithSlash.getDataPartitions().size(), 1);
+    Assert.assertEquals(startsWithSlash.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+
+    CdmLocalEntityDeclarationDefinition endsWithSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(1);
+    Assert.assertEquals(endsWithSlash.getDataPartitionPatterns().get(0).getRegularExpression(), ".*testfile.csv");
+    Assert.assertEquals(endsWithSlash.getDataPartitions().size(), 1);
+    Assert.assertEquals(endsWithSlash.getDataPartitions().get(0).getLocation(), "partitions/testfile.csv");
+
+    CdmLocalEntityDeclarationDefinition noSlash = (CdmLocalEntityDeclarationDefinition)manifest.getEntities().get(2);
+    Assert.assertEquals(noSlash.getDataPartitionPatterns().get(0).getRegularExpression(), ".*testfile.csv");
+    Assert.assertEquals(noSlash.getDataPartitions().size(), 1);
+    Assert.assertEquals(noSlash.getDataPartitions().get(0).getLocation(), "partitions/testfile.csv");
+  }
+
+  /**
    * Testing data partition patterns that use glob patterns
    */
   @Test

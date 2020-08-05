@@ -29,7 +29,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.IsNotNull(doc);
             Assert.AreEqual(1, doc.Imports.Count);
             Assert.AreEqual("missing.cdm.json", doc.Imports[0].CorpusPath);
-            Assert.IsNull((doc.Imports[0] as CdmImport).Doc);
+            Assert.IsNull((doc.Imports[0] as CdmImport).Document);
         }
 
         [TestMethod]
@@ -41,10 +41,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/missingNestedImport.cdm.json");
             Assert.IsNotNull(doc);
             Assert.AreEqual(1, doc.Imports.Count);
-            var firstImport = (doc.Imports[0] as CdmImport).Doc;
+            var firstImport = (doc.Imports[0] as CdmImport).Document;
             Assert.AreEqual(1, firstImport.Imports.Count);
             Assert.AreEqual("notMissing.cdm.json", firstImport.Name);
-            var nestedImport = (firstImport.Imports[0] as CdmImport).Doc;
+            var nestedImport = (firstImport.Imports[0] as CdmImport).Document;
             Assert.IsNull(nestedImport);
         }
 
@@ -57,10 +57,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/multipleImports.cdm.json");
             Assert.IsNotNull(doc);
             Assert.AreEqual(2, doc.Imports.Count);
-            var firstImport = (doc.Imports[0] as CdmImport).Doc;
+            var firstImport = (doc.Imports[0] as CdmImport).Document;
             Assert.AreEqual("missingImport.cdm.json", firstImport.Name);
             Assert.AreEqual(1, firstImport.Imports.Count);
-            var secondImport = (doc.Imports[1] as CdmImport).Doc;
+            var secondImport = (doc.Imports[1] as CdmImport).Document;
             Assert.AreEqual("notMissing.cdm.json", secondImport.Name);
         }
 
@@ -98,16 +98,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.IsNotNull(mainDoc);
             Assert.AreEqual(2, mainDoc.Imports.Count);
 
-            CdmDocumentDefinition firstImport = mainDoc.Imports[0].Doc;
-            CdmDocumentDefinition secondImport = mainDoc.Imports[1].Doc;
+            CdmDocumentDefinition firstImport = mainDoc.Imports[0].Document;
+            CdmDocumentDefinition secondImport = mainDoc.Imports[1].Document;
 
             // since these two imports are loaded asynchronously, we need to make sure that
             // the import that they share (targetImport) was loaded, and that the
             // targetImport doc is attached to both of these import objects
             Assert.AreEqual(1, firstImport.Imports.Count);
-            Assert.IsNotNull(firstImport.Imports[0].Doc);
+            Assert.IsNotNull(firstImport.Imports[0].Document);
             Assert.AreEqual(1, secondImport.Imports.Count);
-            Assert.IsNotNull(secondImport.Imports[0].Doc);
+            Assert.IsNotNull(secondImport.Imports[0].Document);
         }
 
         /// <summary>
@@ -124,14 +124,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.AreEqual(2, mainDoc.Imports.Count);
 
             // make sure imports loaded correctly, despite them missing imports
-            CdmDocumentDefinition firstImport = mainDoc.Imports[0].Doc;
-            CdmDocumentDefinition secondImport = mainDoc.Imports[1].Doc;
+            CdmDocumentDefinition firstImport = mainDoc.Imports[0].Document;
+            CdmDocumentDefinition secondImport = mainDoc.Imports[1].Document;
 
             Assert.AreEqual(1, firstImport.Imports.Count);
-            Assert.IsNull(firstImport.Imports[0].Doc);
+            Assert.IsNull(firstImport.Imports[0].Document);
 
             Assert.AreEqual(1, secondImport.Imports.Count);
-            Assert.IsNull(firstImport.Imports[0].Doc);
+            Assert.IsNull(firstImport.Imports[0].Document);
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.IsNotNull(mainDoc);
             Assert.AreEqual(1, mainDoc.Imports.Count);
 
-            CdmDocumentDefinition importDoc = mainDoc.Imports[0].Doc;
+            CdmDocumentDefinition importDoc = mainDoc.Imports[0].Document;
             Assert.IsNotNull(importDoc);
 
             // now load the second doc, which uses the same import
@@ -157,7 +157,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.IsNotNull(secondDoc);
             Assert.AreEqual(1, secondDoc.Imports.Count);
 
-            CdmDocumentDefinition secondImportDoc = mainDoc.Imports[0].Doc;
+            CdmDocumentDefinition secondImportDoc = mainDoc.Imports[0].Document;
             Assert.IsNotNull(secondImportDoc);
 
             Assert.AreSame(importDoc, secondImportDoc);

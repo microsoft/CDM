@@ -80,7 +80,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 Logger.Warning(nameof(DataPartitionPersistence), instance.Ctx, $"Couldn't find data partition's location for partition {result.Name}.", nameof(ToData));
             }
 
-            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
 

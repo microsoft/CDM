@@ -1,0 +1,405 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/PlTaxDueTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxWithholdGroupHeading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TransportationDocument.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxRegistrationNumbers_IN.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SalesTable_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BankAccount_LV",
+          "dataType": "CompanyBankAccountId",
+          "isNullable": true,
+          "displayName": "Primary company bank account",
+          "description": ""
+        },
+        {
+          "name": "ConsTarget_JP",
+          "dataType": "CustConsTarget_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditNoteReasonCode",
+          "dataType": "ReasonTableRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurBankAccount_LV",
+          "dataType": "CompanyBankAccountId",
+          "isNullable": true,
+          "displayName": "Bank code for additional currency",
+          "description": ""
+        },
+        {
+          "name": "CustBankAccount_LV",
+          "dataType": "CustBankAccountId",
+          "isNullable": true,
+          "displayName": "Customer bank account",
+          "description": ""
+        },
+        {
+          "name": "CustomsExportOrder_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Export order",
+          "description": ""
+        },
+        {
+          "name": "CustomsShippingBill_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Shipping bill",
+          "description": ""
+        },
+        {
+          "name": "EntryCertificateRequired_W",
+          "dataType": "EntryCertificateRequired_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocType_PL",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntrastatAddValue_LV",
+          "dataType": "LvIntrastatAddValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssueOwnEntryCertificate_W",
+          "dataType": "IssueOwnEntryCertificate_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NatureOfAssessee_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPeriodPaymentCode_PL",
+          "dataType": "PlTaxPeriodPaymentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TCSGroup_IN",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TCS group",
+          "description": ""
+        },
+        {
+          "name": "TDSGroup_IN",
+          "dataType": "TaxWithholdGroup",
+          "isNullable": true,
+          "displayName": "TDS group",
+          "description": ""
+        },
+        {
+          "name": "TransportationDocument",
+          "dataType": "TransportationDocumentRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitedVATInvoice_LT",
+          "dataType": "UnitedVATInvoice_LT",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceType_MY",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProvisionalAssessment_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Provisional assessment",
+          "description": ""
+        },
+        {
+          "name": "MerchantID_IN",
+          "dataType": "MerchantID_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ECommerceSale_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "E-Commerce sales",
+          "description": ""
+        },
+        {
+          "name": "ECommerceOperatorGSTIN_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "GSTIN of the E-Commerce operator",
+          "description": ""
+        },
+        {
+          "name": "ECommerceOperator_IN",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "displayName": "E-Commerce operator",
+          "description": ""
+        },
+        {
+          "name": "WithIGSTPayment_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "With tax payment",
+          "description": ""
+        },
+        {
+          "name": "WouldYouClaimRefund_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Would you claim refund",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccount_LVRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_CurBankAccount_LVRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlTaxDueTable"
+          },
+          "name": "Relationship_PlTaxDueTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingTCS_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdGroupHeading"
+          },
+          "name": "Relationship_TaxWithholdGroupHeadingTDS_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TransportationDocument"
+          },
+          "name": "Relationship_TransportationDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_ECommerceOperatorGSTINRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "SalesOrderCountryExt"
+    },
+    {
+      "dataTypeName": "CompanyBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustConsTarget_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReasonTableRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CustBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EntryCertificateRequired_W",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LvIntrastatAddValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "IssueOwnEntryCertificate_W",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PlTaxPeriodPaymentCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransportationDocumentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UnitedVATInvoice_LT",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MerchantID_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -20,7 +20,18 @@ import {
     Folder,
     Import,
     ManifestDeclaration,
+    OperationAddAttributeGroup,
+    OperationAddCountAttribute,
+    OperationAddSupportingAttribute,
+    OperationAddTypeAttribute,
+    OperationArrayExpansion,
+    OperationCombineAttributes,
+    OperationExcludeAttributes,
+    OperationIncludeAttributes,
+    OperationRenameAttributes,
+    OperationReplaceAsForeignKey,
     Parameter,
+    Projection,
     Purpose,
     PurposeReference,
     Trait,
@@ -46,11 +57,22 @@ export type CdmJsonType = (
     EntityAttribute |
     EntityReferenceDefinition |
     ManifestDeclaration |
+    OperationAddCountAttribute |
+    OperationAddSupportingAttribute |
+    OperationAddTypeAttribute |
+    OperationExcludeAttributes |
+    OperationArrayExpansion |
+    OperationCombineAttributes |
+    OperationRenameAttributes |
+    OperationReplaceAsForeignKey |
+    OperationIncludeAttributes |
+    OperationAddAttributeGroup |
     Folder |
     ManifestDeclaration |
     Import |
     EntityDeclarationDefinition |
     Parameter |
+    Projection |
     Purpose |
     PurposeReference |
     Trait |

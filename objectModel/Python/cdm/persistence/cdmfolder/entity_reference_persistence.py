@@ -9,6 +9,7 @@ from cdm.objectmodel import CdmCorpusContext, CdmEntityReference
 from . import utils
 from .cdm_object_ref_persistence import CdmObjectRefPersistence
 from .constant_entity_persistence import ConstantEntityPersistence
+from .projections.projection_persistence import ProjectionPersistence
 from .types import EntityReference
 
 
@@ -29,8 +30,10 @@ class EntityReferencePersistence(CdmObjectRefPersistence):
             simple_reference = False
             if isinstance(data.entityReference, str):
                 entity = data.entityReference
-            elif data.entityReference.get('entityShape'):
+            elif data.entityReference and data.entityReference.get('entityShape'):
                 entity = ConstantEntityPersistence.from_data(ctx, data.entityReference)
+            elif data.get('source'):
+                entity = ProjectionPersistence.from_data(ctx, data)
             else:
                 entity = EntityPersistence.from_data(ctx, data.entityReference)
 
@@ -38,6 +41,7 @@ class EntityReferencePersistence(CdmObjectRefPersistence):
 
         if not isinstance(data, str) and entity_reference:
             applied_traits = utils.create_trait_reference_array(ctx, data.get('appliedTraits'))
-            entity_reference.applied_traits.extend(applied_traits)
+            if applied_traits is not None:
+                entity_reference.applied_traits.extend(applied_traits)
 
         return entity_reference

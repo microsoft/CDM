@@ -1,0 +1,261 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSLoadBuildSession.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSLoadBuildStrategyInputSet.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSProposedLoad.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/InventTransferLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSProposedLoadContent",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadBuildSession",
+          "dataType": "TMSLoadBuildSessionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadBuildStrategyInputSet",
+          "dataType": "TMSLoadBuildStrategyInputId",
+          "description": ""
+        },
+        {
+          "name": "Pieces",
+          "dataType": "TMSProposedPieces",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PiecesUOM",
+          "dataType": "WHSUOM",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProposedLoad",
+          "dataType": "TMSProposedLoadId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipmentId",
+          "dataType": "WHSShipmentId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SupplyDemandType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "TotalVolume",
+          "dataType": "TMSProposedTotalVolume",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalWeight",
+          "dataType": "TMSProposedTotalWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSLoadBuildSession"
+          },
+          "name": "Relationship_LoadBuildSessionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSLoadBuildStrategyInputSet"
+          },
+          "name": "Relationship_LoadBuildStrategyInputSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSProposedLoad"
+          },
+          "name": "Relationship_ProposedLoadRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferLine"
+          },
+          "name": "Relationship_TransferLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Proposed load content"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSLoadBuildSessionId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TMSLoadBuildStrategyInputId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TMSProposedPieces",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSUOM",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSProposedLoadId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSShipmentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSProposedTotalVolume",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSProposedTotalWeight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

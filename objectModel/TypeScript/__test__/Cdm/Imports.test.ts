@@ -29,7 +29,7 @@ describe('Cdm/ImportsTest', () => {
             .toBe(1);
         expect(doc.imports.allItems[0].corpusPath)
             .toBe('missing.cdm.json');
-        expect((doc.imports.allItems[0]).doc)
+        expect((doc.imports.allItems[0]).document)
             .toBeUndefined();
     });
 
@@ -46,12 +46,12 @@ describe('Cdm/ImportsTest', () => {
             .toBeUndefined();
         expect(doc.imports.length)
             .toBe(1);
-        const firstImport: CdmDocumentDefinition = (doc.imports.allItems[0]).doc;
+        const firstImport: CdmDocumentDefinition = (doc.imports.allItems[0]).document;
         expect(firstImport.imports.length)
             .toBe(1);
         expect(firstImport.name)
             .toBe('notMissing.cdm.json');
-        const nestedImport: CdmDocumentDefinition = (firstImport.imports.allItems[0]).doc;
+        const nestedImport: CdmDocumentDefinition = (firstImport.imports.allItems[0]).document;
         expect(nestedImport)
             .toBeUndefined();
     });
@@ -69,12 +69,12 @@ describe('Cdm/ImportsTest', () => {
             .toBeUndefined();
         expect(doc.imports.length)
             .toBe(2);
-        const firstImport: CdmDocumentDefinition = (doc.imports.allItems[0]).doc;
+        const firstImport: CdmDocumentDefinition = (doc.imports.allItems[0]).document;
         expect(firstImport.name)
             .toBe('missingImport.cdm.json');
         expect(firstImport.imports.length)
             .toBe(1);
-        const secondImport: CdmDocumentDefinition = (doc.imports.allItems[1]).doc;
+        const secondImport: CdmDocumentDefinition = (doc.imports.allItems[1]).document;
         expect(secondImport.name)
             .toBe('notMissing.cdm.json');
     });
@@ -113,20 +113,20 @@ describe('Cdm/ImportsTest', () => {
             .toBeUndefined();
         expect(mainDoc.imports.length)
             .toBe(2);
-        const firstImport: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).doc;
-        const secondImport: CdmDocumentDefinition = (mainDoc.imports.allItems[1]).doc;
+        const firstImport: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).document;
+        const secondImport: CdmDocumentDefinition = (mainDoc.imports.allItems[1]).document;
 
         // since these two imports are loaded asyncronously, we need to make sure that
         // the import that they share (targetImport) was loaded, and that the
         // targetImport doc is attached to both of these import objects
         expect(firstImport.imports.length)
             .toBe(1);
-        expect(firstImport.imports.allItems[0].doc)
+        expect(firstImport.imports.allItems[0].document)
             .toBeDefined();
 
         expect(secondImport.imports.length)
             .toBe(1);
-        expect(secondImport.imports.allItems[0].doc)
+        expect(secondImport.imports.allItems[0].document)
             .toBeDefined();
     });
 
@@ -145,17 +145,17 @@ describe('Cdm/ImportsTest', () => {
             .toBe(2);
 
         // make sure imports loaded correctly, despite them missing imports
-        const firstImport: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).doc;
-        const secondImport: CdmDocumentDefinition = (mainDoc.imports.allItems[1]).doc;
+        const firstImport: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).document;
+        const secondImport: CdmDocumentDefinition = (mainDoc.imports.allItems[1]).document;
 
         expect(firstImport.imports.length)
             .toBe(1);
-        expect(firstImport.imports.allItems[0].doc)
+        expect(firstImport.imports.allItems[0].document)
             .toBeUndefined();
 
         expect(secondImport.imports.length)
             .toBe(1);
-        expect(firstImport.imports.allItems[0].doc)
+        expect(firstImport.imports.allItems[0].document)
             .toBeUndefined();
     });
 
@@ -174,7 +174,7 @@ describe('Cdm/ImportsTest', () => {
         expect(mainDoc.imports.length)
             .toBe(1);
 
-        const importDoc: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).doc;
+        const importDoc: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).document;
         expect(importDoc)
             .toBeDefined();
 
@@ -187,7 +187,7 @@ describe('Cdm/ImportsTest', () => {
         expect(secondDoc.imports.length)
             .toBe(1);
 
-        const secondImportDoc: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).doc;
+        const secondImportDoc: CdmDocumentDefinition = (mainDoc.imports.allItems[0]).document;
         expect(secondImportDoc)
             .toBeDefined();
 

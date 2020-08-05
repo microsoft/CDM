@@ -79,7 +79,7 @@ class DataPartitionPersistence:
 
         # filter description since it is mapped to a property
         exhibits_traits = filter(lambda t: t.named_reference != 'is.localized.describedAs', instance.exhibits_traits)
-        await utils.process_traits_and_annotations_to_data(instance.ctx, result, exhibits_traits)
+        utils.process_traits_and_annotations_to_data(instance.ctx, result, exhibits_traits)
 
         t2pm = TraitToPropertyMap(instance)
 

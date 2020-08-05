@@ -72,26 +72,29 @@ public class EntityPersistence {
     result.setDescription((String) instance.getProperty(CdmPropertyName.DESCRIPTION));
     result.setType(EntityDeclaration.EntityDeclarationDefinitionType.LocalEntity);
 
-    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).thenApply(v -> {
-      if (instance.getAttributes() != null) {
-        result.setAttributes(new ArrayList<>());
-        for (final CdmAttributeItem element : instance.getAttributes()) {
-          // TODO-BQ: verify if the order of attribute being added is important.
-          // TODO: handle when attribute is something else other than CdmTypeAttributeDefinition.
-          if (element instanceof CdmTypeAttributeDefinition) {
-            final Attribute attribute = TypeAttributePersistence
-                .toData((CdmTypeAttributeDefinition) element, resOpt, options).join();
-            if (attribute != null) {
-              result.getAttributes().add(attribute);
-            } else {
-              Logger.error(EntityPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert model.json attribute to cdm attribute.");
-              return null;
-            }
+    Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits());
+    if (instance.getAttributes() != null) {
+      result.setAttributes(new ArrayList<>());
+      for (final CdmAttributeItem element : instance.getAttributes()) {
+        if (element.getObjectType() != CdmObjectType.TypeAttributeDef) {
+          Logger.error(EntityPersistence.class.getSimpleName(), ctx, "Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.");
+          return null;
+        }
+        // TODO-BQ: verify if the order of attribute being added is important.
+        // TODO: handle when attribute is something else other than CdmTypeAttributeDefinition.
+        if (element instanceof CdmTypeAttributeDefinition) {
+          final Attribute attribute = TypeAttributePersistence
+              .toData((CdmTypeAttributeDefinition) element, resOpt, options).join();
+          if (attribute != null) {
+            result.getAttributes().add(attribute);
+          } else {
+            Logger.error(EntityPersistence.class.getSimpleName(), ctx, "There was an error while trying to convert model.json attribute to cdm attribute.");
+            return null;
           }
         }
       }
+    }
 
-      return result;
-    });
+    return CompletableFuture.completedFuture(result);
   }
 }

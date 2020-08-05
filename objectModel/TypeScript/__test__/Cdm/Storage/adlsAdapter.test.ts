@@ -36,6 +36,25 @@ describe('Cdm.Storage.AdlsAdapter', () => {
         expect(adlsAdapter.createAdapterPath(corpusPath3)).toBe(adapterPath3);
         expect(adlsAdapter.createAdapterPath(corpusPath4)).toBe(adapterPath4);
 
+        // Check that an adapter path is correctly created from a corpus path with any namespace
+        const corpusPathWithNamespace1: string = 'adls:/test.json';
+        const corpusPathWithNamespace2: string = 'mylake:/test.json';
+        const expectedAdapterPath: string = 'https://storageaccount.dfs.core.windows.net/fs/test.json';
+
+        expect(adlsAdapter.createAdapterPath(corpusPathWithNamespace1))
+            .toBe(expectedAdapterPath);
+        expect(adlsAdapter.createAdapterPath(corpusPathWithNamespace2))
+            .toBe(expectedAdapterPath);
+
+        // Check that an adapter path is correctly created from a corpus path with colons
+        const corpusPathWithColons: string = 'namespace:/a/path:with:colons/some-file.json';
+        expect(adlsAdapter.createAdapterPath(corpusPathWithColons))
+            .toBe('https://storageaccount.dfs.core.windows.net/fs/a/path:with:colons/some-file.json');
+
+        // Check that an adapter path is null if the corpus path provided is null
+        expect(adlsAdapter.createAdapterPath(undefined))
+            .toBeUndefined();
+
         const host2: string = 'storageaccount.blob.core.windows.net:8888';
         adlsAdapter = new MockADLSAdapter(host2, root, 'test');
 
@@ -49,5 +68,28 @@ describe('Cdm.Storage.AdlsAdapter', () => {
         .toBe('/a/6.csv');
         expect(adlsAdapter.createCorpusPath(adapterPath7))
         .toBeUndefined();
+    });
+
+    /**
+     * The secret property is not saved to the config.json file for security reasons.
+     * When constructing and ADLS adapter from config, the user should be able to set the secret after the adapter is constructed.
+     */
+    it('TestConfigAndUpdateConfigWithoutSecret', () => {
+        const adlsAdapter = new MockADLSAdapter();
+        const config =  {
+            'root': 'root',
+            'hostname': 'hostname',
+            'tenant': 'tenant',
+            'clientId': 'clientId',
+        };
+
+        try {
+            adlsAdapter.updateConfig( JSON.stringify(config));
+            adlsAdapter.secret = 'secret';
+            adlsAdapter.sharedKey = 'sharedKey';
+        }
+        catch {
+            fail('adlsAdapter initialized without secret shouldn\'t throw exception when updating config.')
+        }
     });
 });

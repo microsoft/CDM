@@ -5,12 +5,9 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
-import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -98,10 +95,6 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 
@@ -274,16 +267,18 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         rootCleaned = "";
       }
 
-      if (rootCleaned.endsWith("/")) {
-        rootCleaned = StringUtils.slice(rootCleaned, rootCleaned.length() - 1);
-      }
-
       final String rootCorpus = getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(rootCleaned, getInDocument());
 
       List<String> fileInfoList = null;
       try {
+        // Remove namespace from path
+        final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(rootCorpus);
+        if (pathTuple == null) {
+          Logger.error(CdmDataPartitionPatternDefinition.class.getSimpleName(), this.getCtx(), "The root corpus path should not be null or empty.", "fileStatusCheckAsync");
+          return;
+        }
         // get a list of all corpusPaths under the root
-        fileInfoList = adapter.fetchAllFilesAsync(rootCorpus).join();
+        fileInfoList = adapter.fetchAllFilesAsync(pathTuple.getRight()).join();
       } catch (Exception e) {
         Logger.warning(
             CdmDataPartitionPatternDefinition.class.getSimpleName(),
@@ -349,8 +344,14 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                 // put the original but cleaned up root back onto the matched doc as the location stored in the partition
                 final String locationCorpusPath = rootCleaned + fi;
                 final String fullPath = rootCorpus + fi;
+                // Remove namespace from path
+                final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(fullPath);
+                if (pathTuple == null) {
+                  Logger.error(CdmDataPartitionPatternDefinition.class.getSimpleName(), this.getCtx(), "The corpus path should not be null or empty.", "fileStatusCheckAsync");
+                  return;
+                }
                 final OffsetDateTime lastModifiedTime =
-                    adapter.computeLastModifiedTimeAsync(fullPath).join();
+                    adapter.computeLastModifiedTimeAsync(pathTuple.getRight()).join();
                 ((CdmLocalEntityDeclarationDefinition) getOwner()).createDataPartitionFromPattern(
                         locationCorpusPath, getExhibitsTraits(), args, getSpecializedSchema(), lastModifiedTime);
               }

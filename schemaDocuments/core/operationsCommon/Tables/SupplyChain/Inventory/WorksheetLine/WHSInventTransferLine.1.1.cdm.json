@@ -1,0 +1,138 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InventTransferLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSInventTransferLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CrossDock",
+          "dataType": "WHSCrossDock",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransferLine",
+          "dataType": "InventTransferLineRecId",
+          "description": ""
+        },
+        {
+          "name": "OnWave",
+          "dataType": "WHSOnWave",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnWaveQty",
+          "dataType": "WHSOnWaveQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackingQty",
+          "dataType": "WHSPackingQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyLeftToLoad",
+          "dataType": "WHSQtyLeftToLoad",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReleasedQty",
+          "dataType": "WHSReleasedQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransferLine"
+          },
+          "name": "Relationship_InventTransferLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Invent Transfer Additional Fields"
+    },
+    {
+      "dataTypeName": "WHSCrossDock",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "InventTransferLineRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSOnWave",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSOnWaveQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSPackingQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSQtyLeftToLoad",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSReleasedQty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

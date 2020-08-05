@@ -1,0 +1,46 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "SalesForeignKeyAlways",
+            "extendsEntity": "CdmEntity",
+            "hasAttributes": [
+                {
+                    "dataType": "decimal",
+                    "name": "SalesForeignKeyAmount"
+                },
+                {
+                    "name": "SalesForeignKeyProductId",
+                    "entity": {
+                        "entityReference": "Product",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "Product/(resolvedAttributes)/ProductId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "entityByReference": {
+                            "allowReference": true,
+                            "alwaysIncludeForeignKey": true,
+                            "foreignKeyAttribute": {
+                                "dataType": "entityId",
+                                "name": "FKId"
+                            }
+                        }
+                    }
+                }
+            ],
+            "version": "1.0"
+        }
+    ]
+}

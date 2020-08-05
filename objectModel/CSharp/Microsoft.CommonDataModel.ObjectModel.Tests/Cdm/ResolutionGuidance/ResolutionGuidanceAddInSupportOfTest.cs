@@ -858,7 +858,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
-        /// Resolution Guidance Test - AddInSupportOf wITH IsCorrelatedWith
+        /// Resolution Guidance Test - AddInSupportOf with IsCorrelatedWith
         /// </summary>
         [TestMethod]
         public async Task TestAddInSupportOfWithIsCorrelatedWith()
@@ -1855,4 +1855,3 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
     }
 }
-

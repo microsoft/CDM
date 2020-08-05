@@ -165,3 +165,53 @@ export function copyIdentifierRef(objRef: CdmObjectReference, resOpt: resolveOpt
         identifier: identifier
     };
 }
+
+/**
+ * Converts dynamic input into a string for a property (ints are converted to string)
+ * @param value The value that should be converted to a string.
+ */
+export function propertyFromDataToString(value): string {
+    if (typeof value === 'string' && value.trim() !== '') {
+        return value;
+    } else if (typeof value === 'number') {
+        return value.toString();
+    }
+
+    return undefined;
+}
+
+/**
+ * Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
+ * @param value The value that should be converted to an int.
+ */
+export function propertyFromDataToInt(value): number {
+    if (typeof value === 'number') {
+        return value;
+    } else if (typeof value === 'string') {
+        const numberValue: number = Number(value);
+        if (!isNaN(numberValue)) {
+            return numberValue;
+        }
+    }
+
+    return undefined;
+}
+
+/**
+ * Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
+ * @param value The value that should be converted to a boolean.
+ */
+export function propertyFromDataToBool(value): boolean {
+    if (typeof value === 'boolean') {
+        return value;
+    } else if (typeof value === 'string') {
+        if (value === 'true' || value === 'True') {
+            return true;
+        } else if (value === 'false' || value === 'False') {
+            return false;
+        }
+    }
+
+    return undefined;
+}
+

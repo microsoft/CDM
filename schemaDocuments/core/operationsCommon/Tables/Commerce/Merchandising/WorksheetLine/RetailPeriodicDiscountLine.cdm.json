@@ -1,0 +1,174 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/WorksheetHeader/RetailPeriodicDiscount.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailPeriodicDiscountLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "RetailMemo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscountPercentOrValue",
+          "dataType": "RetailDiscountPercentValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsDiscountCodeRequired",
+          "dataType": "RetailDiscountCodeRequired",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OfferId",
+          "dataType": "RetailOfferIdEx3",
+          "description": ""
+        },
+        {
+          "name": "RetailGroupMemberLine",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitOfMeasure",
+          "dataType": "UnitOfMeasureRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineType",
+          "dataType": "RetailDiscountLineType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailPeriodicDiscount"
+          },
+          "name": "Relationship_OfferIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Periodic discount line"
+    },
+    {
+      "dataTypeName": "RetailMemo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDiscountPercentValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailDiscountCodeRequired",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailOfferIdEx3",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailDiscountLineType",
+      "extendsDataType": "integer"
+    }
+  ]
+}

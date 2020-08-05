@@ -4,6 +4,7 @@
 import {
     ArgumentValue,
     CdmArgumentCollection,
+    CdmArgumentDefinition,
     CdmAttributeContext,
     CdmCorpusContext,
     CdmCorpusDefinition,
@@ -85,13 +86,23 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
     public visitRef(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
-            if (this.arguments) {
-                if (this.arguments.visitArray(`${pathFrom}/arguments/`, preChildren, postChildren)) {
-                    return true;
+            let result: boolean = false;
+            if (this.arguments && this.arguments.allItems && this.arguments.allItems.length > 0) {
+                // custom enumeration of args to force a path onto these things that just might not have a name
+                const lItem: number = this.arguments.allItems.length;
+                for (let iItem: number = 0; iItem < lItem; iItem++) {
+                    const element: CdmArgumentDefinition = this.arguments.allItems[iItem];
+                    if (element) {
+                        const argPath: string = `${pathFrom}/arguments/a${iItem}`;
+                        if (element.visit(argPath, preChildren, postChildren)) {
+                            result = true;
+                            break;
+                        }
+                    }
                 }
             }
 
-            return false;
+            return result;
         }
         // return p.measure(bodyCode);
     }
@@ -139,7 +150,7 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             const kind: string = 'rtsb';
@@ -158,11 +169,11 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
                 rtsTrait = trait.fetchResolvedTraits(resOpt);
             }
 
-            let cacheByName: boolean = true;
+            let cacheByPath: boolean = true;
             if (trait.thisIsKnownToHaveParameters) {
-                cacheByName = !trait.thisIsKnownToHaveParameters;
+                cacheByPath = !trait.thisIsKnownToHaveParameters;
             }
-            let cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, '', cacheByName);
+            let cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, '', cacheByPath, trait.atCorpusPath);
             let rtsResult: ResolvedTraitSet = cacheTag ? ctx.cache.get(cacheTag) : undefined;
 
             // store the previous reference symbol set, we will need to add it with
@@ -218,7 +229,7 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
                 ctx.corpus.registerDefinitionReferenceSymbols(this.fetchObjectDefinition(resOpt), kind, resOpt.symbolRefSet);
 
                 // get the new cache tag now that we have the list of docs
-                cacheTag = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, '', cacheByName);
+                cacheTag = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, '', cacheByPath, trait.atCorpusPath);
                 if (cacheTag) {
                     ctx.cache.set(cacheTag, rtsResult);
                 }

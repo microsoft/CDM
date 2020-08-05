@@ -11,6 +11,7 @@ from .entity_reference import EntityReference
 from .attribute_group_reference import AttributeGroupReference
 from .type_attribute import TypeAttribute
 from .entity_attribute import EntityAttribute
+from .projections.projection import Projection
 
 
 class Entity(JObject):
@@ -19,7 +20,7 @@ class Entity(JObject):
 
         self.explanation = None  # type: str
         self.entityName = None  # type: str
-        self.extendsEntity = None  # type: Union[str, EntityReference]
+        self.extendsEntity = None  # type: Union[str, EntityReference, Projection]
         self.ExtendsEntityResolutionGuidance = None  # type: Optional[AttributeResolutionGuidance]
         self.exhibitsTraits = None  # type: List[Union[str, TraitReference]]
         self.attributeContext = None  # type: AttributeContext

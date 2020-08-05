@@ -1,0 +1,122 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TMSCarrier.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSTransportationStatusMaster.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSCarrierTransportationStatus",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CarrierCode",
+          "dataType": "TMSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierServiceCode",
+          "dataType": "TMSCarrierServiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExternalCode",
+          "dataType": "TMSExternalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportStatusMasterCode",
+          "dataType": "TMSTransportStatusMasterCode",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSTransportationStatusMaster"
+          },
+          "name": "Relationship_TMSTransportationStatusMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Carrier transportation status"
+    },
+    {
+      "dataTypeName": "TMSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierServiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSExternalCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSTransportStatusMasterCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

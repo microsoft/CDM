@@ -44,7 +44,7 @@ public class PerformanceTest {
   /**
    * Test the time taken to resolve the corpus
    */
-  @Test(retryAnalyzer = RetryTest.class)
+  //@Test(retryAnalyzer = RetryTest.class)
   public void resolveCorpus() {
     Assert.assertTrue(
         (Files.isDirectory(

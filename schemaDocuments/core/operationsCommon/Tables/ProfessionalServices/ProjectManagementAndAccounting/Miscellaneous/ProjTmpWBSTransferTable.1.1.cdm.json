@@ -1,0 +1,167 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjTmpWBSTransferTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityDuration",
+          "dataType": "Hours",
+          "isNullable": true,
+          "displayName": "Duration",
+          "description": ""
+        },
+        {
+          "name": "ActivityNumber",
+          "dataType": "smmActivityNumber",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CostAtComplete",
+          "dataType": "ProjTotalCostAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Effort",
+          "dataType": "Hours",
+          "isNullable": true,
+          "displayName": "Effort in hours",
+          "description": ""
+        },
+        {
+          "name": "EffortAtComplete",
+          "dataType": "Hours",
+          "isNullable": true,
+          "displayName": "Effort in hours",
+          "description": ""
+        },
+        {
+          "name": "ElementNumber",
+          "dataType": "ElementNumber",
+          "description": ""
+        },
+        {
+          "name": "HierarchyId",
+          "dataType": "HierarchyIdBase",
+          "description": ""
+        },
+        {
+          "name": "Level",
+          "dataType": "Integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Path",
+          "dataType": "HierarchyPath",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSASchedEnd",
+          "dataType": "SchedToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSASchedStart",
+          "dataType": "SchedFromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SiblingNumber",
+          "dataType": "LineNum",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Temporary hierarchy tree table with path and level"
+    },
+    {
+      "dataTypeName": "Hours",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "smmActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTotalCostAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ElementNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HierarchyIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Integer",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "HierarchyPath",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SchedToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "SchedFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -106,7 +106,7 @@ export class ReferencedEntityDeclarationPersistence {
             referenceEntity.isHidden = true;
         }
 
-        await processTraitsAndAnnotationsToData(instance.ctx, referenceEntity, instance.exhibitsTraits);
+        processTraitsAndAnnotationsToData(instance.ctx, referenceEntity, instance.exhibitsTraits);
 
         if (propertiesTrait) {
             referenceEntity.modelId = propertiesTrait.arguments.allItems[0].value as string;

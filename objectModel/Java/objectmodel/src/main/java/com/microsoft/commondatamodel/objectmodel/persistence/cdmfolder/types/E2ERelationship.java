@@ -10,11 +10,26 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class E2ERelationship {
+    private String name;
     private String fromEntity;
     private String fromEntityAttribute;
     private String toEntity;
     private String toEntityAttribute;
-    
+
+    /**
+     * Gets the name of the relationship
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Sets the name of the relationship
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
     /**
      * Gets the absolute corpus path of the referencing entity.
      * @return

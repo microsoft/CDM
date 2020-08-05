@@ -1,7 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Any, Callable, List, TYPE_CHECKING
+from typing import Any, Callable, List, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType
 from cdm.resolvedmodel.resolved_trait import ResolvedTrait
@@ -42,13 +42,7 @@ data_format_trait_names = [
 ]
 
 
-def _has_applied_traits(obj: 'CdmObject'):
-    from cdm.objectmodel import CdmAttribute, CdmObjectReference
-
-    return isinstance(obj, (CdmObjectReference, CdmAttribute))
-
-
-def _get_trait_ref_argument_value(trait_ref_or_def: 'CdmTraitDefOrRef', arg_name: str) -> Any:
+def _fetch_trait_ref_argument_value(trait_ref_or_def: 'CdmTraitDefOrRef', arg_name: str) -> Any:
     if trait_ref_or_def is None:
         return None
 
@@ -69,7 +63,8 @@ class TraitToPropertyMap:
 
     @property
     def _traits(self) -> 'CdmTraitCollection':
-        if _has_applied_traits(self._host):
+        from cdm.objectmodel import CdmAttribute, CdmObjectReference
+        if isinstance(self._host, (CdmObjectReference, CdmAttribute)):
             return self._host.applied_traits
         return self._host.exhibits_traits
 
@@ -119,9 +114,9 @@ class TraitToPropertyMap:
         from cdm.objectmodel import CdmTypeAttributeDefinition
 
         if property_name == 'version':
-            return _get_trait_ref_argument_value(self._fetch_trait_reference('is.CDM.entityVersion', only_from_property), 'versionNumber')
+            return _fetch_trait_ref_argument_value(self._fetch_trait_reference('is.CDM.entityVersion', only_from_property), 'versionNumber')
         elif property_name == 'sourceName':
-            return _get_trait_ref_argument_value(self._fetch_trait_reference('is.CDS.sourceNamed', only_from_property), 'name')
+            return _fetch_trait_ref_argument_value(self._fetch_trait_reference('is.CDS.sourceNamed', only_from_property), 'name')
         elif property_name == 'displayName':
             return self._fetch_localized_trait_table('is.localized.displayedAs', only_from_property)
         elif property_name == 'description':
@@ -129,7 +124,7 @@ class TraitToPropertyMap:
         elif property_name == 'cdmSchemas':
             return self._fetch_single_attribute_trait_table('is.CDM.attributeGroup', 'groupList', only_from_property)
         elif property_name == 'sourceOrdering':
-            return int(_get_trait_ref_argument_value(self._fetch_trait_reference('is.CDS.ordered'), 'ordinal') or 0)
+            return int(_fetch_trait_ref_argument_value(self._fetch_trait_reference('is.CDS.ordered'), 'ordinal') or 0)
         elif property_name == 'isPrimaryKey':
             if not only_from_property and isinstance(self._host, CdmTypeAttributeDefinition) and self._host.purpose and self._host.purpose.named_reference == 'identifiedBy':
                 return True
@@ -141,17 +136,17 @@ class TraitToPropertyMap:
         elif property_name == 'valueConstrainedToList':
             return self._fetch_trait_reference('is.constrainedList', only_from_property) is not None
         elif property_name == 'maximumValue':
-            return _get_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'maximumValue')
+            return _fetch_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'maximumValue')
         elif property_name == 'minimumValue':
-            return _get_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'minimumValue')
+            return _fetch_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'minimumValue')
         elif property_name == 'maximumLength':
-            temp = _get_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'maximumLength')
+            temp = _fetch_trait_ref_argument_value(self._fetch_trait_reference('is.constrained', only_from_property), 'maximumLength')
             if temp is not None:
                 return int(temp)
         elif property_name == 'dataFormat':
             return self._traits_to_data_format(only_from_property)
         elif property_name == 'primaryKey':
-            att_ref = _get_trait_ref_argument_value(self._fetch_trait_reference('is.identifiedBy', only_from_property), 'attribute')
+            att_ref = _fetch_trait_ref_argument_value(self._fetch_trait_reference('is.identifiedBy', only_from_property), 'attribute')
             if att_ref is not None:
                 return att_ref.fetch_object_definition_name()
         elif property_name == 'defaultValue':
@@ -159,21 +154,13 @@ class TraitToPropertyMap:
 
         return None
 
-    def _fetch_trait_reference(self, trait: str, only_from_property: bool = False) -> 'CdmTraitReference':
+    def _fetch_trait_reference(self, trait_name: str, only_from_property: bool = False) -> Optional['CdmTraitReference']:
         """Fetch a trait based on name from the array of traits."""
-
-        resultant_trait = trait
-        if isinstance(trait, str):
-            idx = self._traits.index(trait, only_from_property)
-            resultant_trait = self._traits[idx] if idx != -1 else None
-
-        return resultant_trait
+        trait_index = self._traits.index(trait_name, only_from_property)
+        return self._traits[trait_index] if trait_index != -1 else None
 
     def _remove_trait(self, trait_name: str) -> None:
-        if _has_applied_traits(self._host):
-            self._host.applied_traits.remove(trait_name, True)
-        else:
-            self._host.exhibits_traits.remove(trait_name, True)
+        self._traits.remove(trait_name, True)
 
     def _update_boolean_trait(self, trait_name: str, value: bool) -> None:
         if value:
@@ -328,21 +315,15 @@ class TraitToPropertyMap:
 
         return base_type
 
-    def _fetch_or_create_trait(self, trait: Any, simple_ref: bool = False) -> 'CdmTraitReference':
+    def _fetch_or_create_trait(self, trait_name: str, simple_ref: bool) -> 'CdmTraitReference':
+        trait = self._fetch_trait_reference(trait_name, True)  # type: Optional[CdmTraitReference]
 
-        trait_name = trait if isinstance(trait, str) else None
-        resultant_trait = self._fetch_trait_reference(trait, True)
+        if trait is None:
+            trait = self._ctx.corpus.make_object(CdmObjectType.TRAIT_REF, trait_name, simple_ref)
+            self._traits.append(trait)
+            trait.is_from_property = True
 
-        if resultant_trait is None:
-            resultant_trait = trait_name if simple_ref else self._ctx.corpus.make_object(CdmObjectType.TRAIT_REF, trait_name, False)
-
-            if _has_applied_traits(self._host):
-                resultant_trait = self._host.applied_traits.append(resultant_trait, False)
-            else:
-                resultant_trait = self._host.exhibits_traits.append(resultant_trait, False)
-
-        resultant_trait.is_from_property = True
-        return resultant_trait
+        return trait
 
     def _update_trait_argument(self, trait_name: str, arg_name: str, value: Any) -> None:
         """sets the value of a trait argument where the argument name matches the passed name"""
@@ -382,7 +363,7 @@ class TraitToPropertyMap:
             action(c_ent, True)
             trait.arguments.append(arg_name, self._ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, c_ent, False))
         else:
-            loc_ent_ref = _get_trait_ref_argument_value(trait, arg_name)
+            loc_ent_ref = _fetch_trait_ref_argument_value(trait, arg_name)
             if loc_ent_ref is not None:
                 loc_ent = loc_ent_ref.fetch_object_definition(None)
                 if loc_ent is not None:
@@ -399,7 +380,7 @@ class TraitToPropertyMap:
             else:
                 return None
 
-        loc_ent_ref = _get_trait_ref_argument_value(trait, arg_name)
+        loc_ent_ref = _fetch_trait_ref_argument_value(trait, arg_name)
         return None if loc_ent_ref is None else loc_ent_ref.fetch_object_definition(None)
 
     def _construct_localized_trait_table(self, trait_name: str, source_text) -> None:
@@ -415,23 +396,23 @@ class TraitToPropertyMap:
 
         self._update_trait_table(trait_name, 'localizedDisplayText', 'localizedTable', action)
 
-    def _fetch_localized_trait_table(self, trait: Any, only_from_property: bool) -> Any:
-        c_ent = self._fetch_trait_table(trait, 'localizedDisplayText', only_from_property)
+    def _fetch_localized_trait_table(self, trait_name: str, only_from_property: bool) -> Any:
+        c_ent = self._fetch_trait_table(trait_name, 'localizedDisplayText', only_from_property)
         # search for a match
         # -1 on order gets us the last row that matches. needed because inheritence
         # chain with different descriptions stacks these up
         # need to use ordinals because no binding done yet
         return None if c_ent is None else c_ent._fetch_constant_value(None, 1, 0, 'en', -1)
 
-    def _update_single_attribute_trait_table(self, trait: Any, arg_name: str, entity_name: str, source_text: List[str]) -> None:
+    def _update_single_attribute_trait_table(self, trait_name: str, arg_name: str, entity_name: str, source_text: List[str]) -> None:
         def action(c_ent, created):  # pylint: disable=unused-argument
             # Turn list of strings into list of list of strings.
             c_ent.constant_values = [[v] for v in source_text]
 
-        self._update_trait_table(trait, arg_name, entity_name, action)
+        self._update_trait_table(trait_name, arg_name, entity_name, action)
 
-    def _fetch_single_attribute_trait_table(self, trait: Any, arg_name: str, only_from_property: bool) -> List[str]:
-        c_ent = self._fetch_trait_table(trait, arg_name, only_from_property)
+    def _fetch_single_attribute_trait_table(self, trait_name: str, arg_name: str, only_from_property: bool) -> List[str]:
+        c_ent = self._fetch_trait_table(trait_name, arg_name, only_from_property)
         # Turn list of list of strings into a single list of strings.
         return None if c_ent is None else [v[0] for v in c_ent.constant_values]
 
@@ -440,7 +421,7 @@ class TraitToPropertyMap:
         if trait is None:
             return None
 
-        def_val = _get_trait_ref_argument_value(trait, 'default')
+        def_val = _fetch_trait_ref_argument_value(trait, 'default')
         if def_val is not None:
             if isinstance(def_val, str):
                 return def_val

@@ -34,7 +34,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal override CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference, CdmObjectReferenceBase host = null)
         {
             if (host == null)
+            {
+                // for inline attribute group definition, the owner information is lost here when a ref object created
+                // updating it here
+                if (this.ExplicitReference != null &&
+                    this.ExplicitReference.ObjectType == CdmObjectType.AttributeGroupDef &&
+                    this.ExplicitReference.Owner == null)
+                {
+                    this.ExplicitReference.Owner = this.Owner;
+                }
+
                 return new CdmAttributeGroupReference(this.Ctx, refTo, simpleReference);
+            }
             else
                 return host.CopyToHost(this.Ctx, refTo, simpleReference);
         }
@@ -57,7 +68,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            CdmObjectDefinition cdmObjectDef = this.FetchResolvedReference(resOpt);
+            CdmObject cdmObjectDef = this.FetchResolvedReference(resOpt);
             if (cdmObjectDef != null)
                 return (cdmObjectDef as CdmAttributeGroupDefinition).FetchResolvedEntityReferences(resOpt);
             if (this.ExplicitReference != null)

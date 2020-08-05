@@ -96,10 +96,6 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 

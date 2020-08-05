@@ -32,5 +32,5 @@ export interface CdmObjectReference extends CdmObject {
     /**
      * @deprecated Only for internal use.
      */
-    fetchResolvedReference(resOpt?: resolveOptions): CdmObjectDefinition;
+    fetchResolvedReference(resOpt?: resolveOptions): CdmObject;
 }

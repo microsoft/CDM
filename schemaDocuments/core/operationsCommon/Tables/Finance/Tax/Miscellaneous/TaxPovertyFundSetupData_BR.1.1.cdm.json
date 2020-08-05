@@ -1,0 +1,262 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Group/FiscalEstablishmentGroup_BR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalEstablishment_BR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventItemGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxPovertyFundSetupHeading_BR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Group/VendGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxPovertyFundSetupData_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Account code",
+          "description": ""
+        },
+        {
+          "name": "AccountRelation",
+          "dataType": "InventCustVendRel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustVendType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "ItemCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Item code",
+          "description": ""
+        },
+        {
+          "name": "ItemRelation",
+          "dataType": "InventItemRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxFromDate",
+          "dataType": "TaxValidDate",
+          "isNullable": true,
+          "displayName": "From date",
+          "description": ""
+        },
+        {
+          "name": "TaxPercentage",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "FCP %",
+          "description": ""
+        },
+        {
+          "name": "TaxPovertyFundSetupHeading_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "FCP setup",
+          "description": ""
+        },
+        {
+          "name": "TaxToDate",
+          "dataType": "TaxValidDate",
+          "isNullable": true,
+          "displayName": "To date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustGroup"
+          },
+          "name": "Relationship_CustGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishmentGroup_BR"
+          },
+          "name": "Relationship_FiscalEstablishmentGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishment_BR"
+          },
+          "name": "Relationship_FiscalEstablishmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemGroup"
+          },
+          "name": "Relationship_InventItemGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxPovertyFundSetupHeading_BR"
+          },
+          "name": "Relationship_TaxPovertyFundSetupHeading_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendGroup"
+          },
+          "name": "Relationship_VendGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "FCP setup data"
+    },
+    {
+      "dataTypeName": "InventCustVendRel",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventItemRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxValidDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "KeyVaultCertificateTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "XmlCertificate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Active",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "CertificateSubject",
+          "dataType": "DigitalCertificateSubject",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssuedBy",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Issued by",
+          "description": ""
+        },
+        {
+          "name": "IssuedTo",
+          "dataType": "Name",
+          "isNullable": true,
+          "displayName": "Issued to",
+          "description": ""
+        },
+        {
+          "name": "RefId",
+          "dataType": "Num",
+          "isNullable": true,
+          "displayName": "User",
+          "description": ""
+        },
+        {
+          "name": "RefType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "displayName": "Effective date",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "TransDateTime",
+          "isNullable": true,
+          "displayName": "Expiration date",
+          "description": ""
+        },
+        {
+          "name": "KeyVaultCertificate",
+          "dataType": "KeyVaultCertificateRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseAdvCertificateStore",
+          "dataType": "UseAdvCertificateStore",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "KeyVaultCertificateTable"
+          },
+          "name": "Relationship_KeyVaultCertificateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic signature certificates"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DigitalCertificateSubject",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Num",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KeyVaultCertificateRef",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UseAdvCertificateStore",
+      "extendsDataType": "integer"
+    }
+  ]
+}

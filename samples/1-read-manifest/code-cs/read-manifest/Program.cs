@@ -41,7 +41,7 @@ namespace read_manifest
             cdmCorpus.Storage.DefaultNamespace = "local";
 
             // Storage adapter pointing to the example public standards.
-            // This is a fake 'cdm'; normally the Github adapter would be used to point at the real public standards.
+            // This is a fake 'cdm'; normally the CDM Standards adapter would be used to point at the real public standards.
             // Mount it as the 'cdm' device, not the default, so that we must use "cdm:<folder-path>" to get there.
             cdmCorpus.Storage.Mount("cdm", new LocalAdapter(pathFromExeToExampleRoot + "example-public-standards"));
 

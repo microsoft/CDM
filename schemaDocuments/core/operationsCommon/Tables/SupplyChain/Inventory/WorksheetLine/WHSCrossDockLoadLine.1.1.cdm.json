@@ -1,0 +1,165 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WHSLoadLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSCrossDockTemplate.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSCrossDockLoadLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LoadLineRecId",
+          "dataType": "WHSLoadLineRefRecId",
+          "description": ""
+        },
+        {
+          "name": "InventTransIdDemand",
+          "dataType": "InventTransId",
+          "description": ""
+        },
+        {
+          "name": "InventTransOriginIdSupply",
+          "dataType": "InventTransOriginIdMarked",
+          "description": ""
+        },
+        {
+          "name": "InventHandlingQty",
+          "dataType": "InventHandlingQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventHandlingQtyRemain",
+          "dataType": "InventHandlingQtyRemain",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CrossDockTemplateId",
+          "dataType": "WHSCrossDockTemplateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadLine"
+          },
+          "name": "Relationship_WHSLoadLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSCrossDockTemplate"
+          },
+          "name": "Relationship_WHSCrossDockTemplateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransIdDemandRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Load line marking"
+    },
+    {
+      "dataTypeName": "WHSLoadLineRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransOriginIdMarked",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventHandlingQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventHandlingQtyRemain",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSCrossDockTemplateId",
+      "extendsDataType": "string"
+    }
+  ]
+}

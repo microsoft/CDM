@@ -50,7 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
             await EntityResolutionTests.ListAllResolved(cdmCorpus, directives, manifest);
             watch.Stop();
-            Assert.Performance(25000, watch.ElapsedMilliseconds);
+            Assert.Performance(70000, watch.ElapsedMilliseconds);
         }
 
         /// <summary>

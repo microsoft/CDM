@@ -39,7 +39,9 @@ export class ReferencedEntityDeclarationPersistence {
             Logger.error(ReferencedEntityDeclarationPersistence.name, ctx, 'Couldn\'t find entity path or similar.', 'FromData');
         }
 
-        if (entityPath !== undefined && entityPath.indexOf(':') === -1) {
+        // The entity path has to be absolute.
+        // If the namespace is not present then add the "prefixPath" which has the absolute folder path.
+        if (entityPath !== undefined && entityPath.indexOf(':/') === -1) {
             entityPath = `${prefixPath}${entityPath}`;
         }
 

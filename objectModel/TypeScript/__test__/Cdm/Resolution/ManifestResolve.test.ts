@@ -22,6 +22,9 @@ describe('Cdm/Resolution/ManifestResolve', () => {
      * Test if a manifest resolves correctly a referenced entity declaration
      */
     it('TestReferencedEntityDeclarationResolution', async () => {
+        // this test takes more time than jest expects tests to take
+        jest.setTimeout(15000);
+
         const cdmCorpus: CdmCorpusDefinition = new CdmCorpusDefinition();
         cdmCorpus.storage.mount('cdm', new LocalAdapter(schemaDocsPath));
         cdmCorpus.setEventCallback(() => { }, cdmStatusLevel.error);
@@ -50,7 +53,10 @@ describe('Cdm/Resolution/ManifestResolve', () => {
         expect(resolvedManifest.entities.allItems[0].entityPath)
             .toBe('core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/resolved/Account.cdm.json/Account');
         expect(resolvedManifest.entities.allItems[1].entityPath)
-            .toBe('cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/electronicMedicalRecords.manifest.cdm.json/Address');        
+            .toBe('cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/electronicMedicalRecords.manifest.cdm.json/Address');
+
+        // setting back expected test timeout.
+        jest.setTimeout(5000);
     });
 
     /**

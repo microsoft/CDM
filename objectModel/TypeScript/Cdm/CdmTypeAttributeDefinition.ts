@@ -4,6 +4,7 @@
 import { cdmDataFormat } from '../Enums/cdmDataFormat';
 import {
     AttributeResolutionContext,
+    CardinalitySettings,
     CdmAttribute,
     CdmAttributeContext,
     CdmAttributeContextReference,
@@ -109,7 +110,6 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public attributeContext?: CdmAttributeContextReference;
 
     private readonly traitToPropertyMap: traitToPropertyMap;
-    private readonly t2pm: traitToPropertyMap;
 
     constructor(ctx: CdmCorpusContext, name: string) {
         super(ctx, name);
@@ -141,7 +141,7 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmTypeAttributeDefinition;
@@ -164,15 +164,36 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public validate(): boolean {
         // let bodyCode = () =>
         {
+            const missingFields: string[] = [];
             if (!this.name) {
-                Logger.error(
-                    CdmTypeAttributeDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, ['name']),
-                    this.validate.name
-                );
+                missingFields.push('name');
+            }
+            if (this.cardinality) {
+                if (!this.cardinality.minimum) {
+                    missingFields.push('cardinality.minimum');
+                }
+                if (!this.cardinality.maximum) {
+                    missingFields.push('cardinality.maximum');
+                }
+            }
+
+            if (missingFields.length > 0) {
+                Logger.error(CdmTypeAttributeDefinition.name, this.ctx, Errors.validateErrorString(this.atCorpusPath, missingFields), this.validate.name);
 
                 return false;
+            }
+
+            if (this.cardinality) {
+                if (!CardinalitySettings.isMinimumValid(this.cardinality.minimum)) {
+                    Logger.error(CdmTypeAttributeDefinition.name, this.ctx, `Invalid minimum cardinality ${this.cardinality.minimum}`, this.validate.name);
+
+                    return false;
+                }
+                if (!CardinalitySettings.isMaximumValid(this.cardinality.maximum)) {
+                    Logger.error(CdmTypeAttributeDefinition.name, this.ctx, `Invalid maximum cardinality ${this.cardinality.maximum}`, this.validate.name);
+
+                    return false;
+                }
             }
 
             return true;
@@ -183,10 +204,6 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return false;
         }
         // return p.measure(bodyCode);
@@ -333,10 +350,6 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
     public fetchResolvedEntityReference(resOpt: resolveOptions): ResolvedEntityReferenceSet {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return undefined;
         }
         // return p.measure(bodyCode);

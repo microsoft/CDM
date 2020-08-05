@@ -8,6 +8,8 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.storage.AdlsAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
@@ -19,10 +21,10 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class AdlsAdapterTest {
-  private final static String TEST_ADLS_CLIENT_ID = System.getProperty("testAdlsClientId");
+  private final static String TEST_ADLS_CLIENT_ID = System.getProperty("testAdlsClientId", "clientId");
   private final static String TEST_ADLS_SECRET = System.getProperty("testAdlsSecret");
   private final static String TEST_ADLS_ACCOUNT_NAME = System.getProperty("testAdlsAccountName");
-  private final static String TEST_ADLS_ROOT = System.getProperty("testAdlsRoot");
+  private final static String TEST_ADLS_ROOT = System.getProperty("testAdlsRoot", "/root");
   private final static String TEST_ADLS_TENANT = "72f988bf-86f1-41af-91ab-2d7cd011db47";
   private final static String TEST_ADLS_SHARED_KEY = System.getProperty("testAdlsSharedKey");
   private final static String TEST_ADLS_TOKEN = System.getProperty("testAdlsToken");
@@ -108,6 +110,21 @@ public class AdlsAdapterTest {
     assertEquals(adlsAdapter.createAdapterPath(corpusPath3), adapterPath3);
     assertEquals(adlsAdapter.createAdapterPath(corpusPath4), adapterPath4);
 
+    // Check that an adapter path is correctly created from a corpus path with any namespace
+    final String corpusPathWithNamespace1 = "adls:/test.json";
+    final String corpusPathWithNamespace2 = "mylake:/test.json";
+    final String expectedAdapterPath = "https://storageaccount.dfs.core.windows.net/fs/test.json";
+
+    assertEquals(adlsAdapter.createAdapterPath(corpusPathWithNamespace1), expectedAdapterPath);
+    assertEquals(adlsAdapter.createAdapterPath(corpusPathWithNamespace2), expectedAdapterPath);
+
+    // Check that an adapter path is correctly created from a corpus path with colons
+    final String corpusPathWithColons = "namespace:/a/path:with:colons/some-file.json";
+    Assert.assertEquals(adlsAdapter.createAdapterPath(corpusPathWithColons), "https://storageaccount.dfs.core.windows.net/fs/a/path:with:colons/some-file.json");
+
+    // Check that an adapter path is null if the corpus path provided is null
+    Assert.assertNull(adlsAdapter.createAdapterPath(null));
+
     final String host2 = "storageaccount.blob.core.windows.net:8888";
     adlsAdapter = new AdlsAdapter(host2, root, "", "", "");
 
@@ -130,6 +147,29 @@ public class AdlsAdapterTest {
       adlsAdapter.updateConfig(adapterConfigJson.get("config").asText());
     } catch (final Exception ex) {
       fail("AdlsAdapter initialized with token provider shouldn't throw exception when updating config.");
+    }
+  }
+
+  /**
+  * The secret property is not saved to the config.json file for security reasons.
+  * When constructing and ADLS adapter from config, the user should be able to set the secret after the adapter is constructed.
+  */
+  @Test
+  public void fetchConfigAndUpdateConfigWithoutSecret() {
+    final AdlsAdapter adlsAdapter = new AdlsAdapter();
+
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      ObjectNode config = mapper.createObjectNode();
+      config.put("root", TEST_ADLS_ROOT);
+      config.put("hostname", TEST_ADLS_ACCOUNT_NAME + ".dfs.core.windows.net");
+      config.put("tenant", TEST_ADLS_TENANT);
+      config.put("clientId", TEST_ADLS_CLIENT_ID);
+      adlsAdapter.updateConfig(config.toString());
+      adlsAdapter.setClientId("clientId");
+      adlsAdapter.setSharedKey("sharedKey");
+    } catch (final Exception ex) {
+      fail("AdlsAdapter initialized without secret shouldn't throw exception when updating config.");
     }
   }
 }

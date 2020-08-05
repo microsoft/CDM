@@ -1,0 +1,184 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/ExpressionTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowTable.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkflowVersionTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivationConditionId",
+          "dataType": "ExpressionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActivationConditionType",
+          "dataType": "WorkflowActivationConditionType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfigurationId",
+          "dataType": "WorkflowConfigurationId",
+          "description": ""
+        },
+        {
+          "name": "Enabled",
+          "dataType": "WorkflowConfigurationEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Owner",
+          "dataType": "WorkflowOwner",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Valid",
+          "dataType": "WorkflowVersionValid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionIdBuild",
+          "dataType": "WorkflowConfigurationVersionBuild",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionIdMajor",
+          "dataType": "WorkflowConfigurationVersionMajor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionIdMinor",
+          "dataType": "WorkflowConfigurationVersionMinor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionIdRevision",
+          "dataType": "WorkflowConfigurationVersionRevision",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkItemEmailId",
+          "dataType": "WorkItemEmailId",
+          "isNullable": true,
+          "displayName": "Workflow notifications",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ExpressionTable"
+          },
+          "name": "Relationship_ExpressionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowTable"
+          },
+          "name": "Relationship_WorkflowTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Workflow configurations"
+    },
+    {
+      "dataTypeName": "ExpressionId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowActivationConditionType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowOwner",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WorkflowVersionValid",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationVersionBuild",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationVersionMajor",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationVersionMinor",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WorkflowConfigurationVersionRevision",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WorkItemEmailId",
+      "extendsDataType": "string"
+    }
+  ]
+}

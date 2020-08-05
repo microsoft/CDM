@@ -427,8 +427,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
             {
                 var oldDocumentPath = doc.DocumentPath;
                 var newDocumentPath = oldDocumentPath.Substring(0, oldDocumentPath.Length - OdiExtension.Length) + newName;
+                // Remove namespace from path
+                Tuple<string, string> pathTuple = StorageUtils.SplitNamespacePath(newDocumentPath);
+                if (pathTuple == null)
+                {
+                    Logger.Error(nameof(PersistenceLayer), this.Ctx, "The object path cannot be null or empty.", nameof(SaveOdiDocuments));
+                    return;
+                }
                 var content = JsonConvert.SerializeObject(doc, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
-                await adapter.WriteAsync(newDocumentPath, content);
+                await adapter.WriteAsync(pathTuple.Item2, content);
             }
             catch (Exception e)
             {

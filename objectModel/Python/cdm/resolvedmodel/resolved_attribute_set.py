@@ -127,7 +127,8 @@ class ResolvedAttributeSet(RefCounted):
         self._resolved_name_to_resolved_attribute = {}  # rebuild with smaller set
         self._set = new_set
         for ra in new_set:
-            self._resolved_name_to_resolved_attribute[ra.resolved_name] = ra
+            if ra.resolved_name not in self._resolved_name_to_resolved_attribute:
+                self._resolved_name_to_resolved_attribute[ra.resolved_name] = ra
 
     def copy_att_ctx_mappings_into(self, rattr_to_attctxset: Dict['ResolvedAttribute', Set['CdmAttributeContext']],
                                    attctx_to_rattr: Dict['CdmAttributeContext', 'ResolvedAttribute'],
@@ -455,7 +456,7 @@ class ResolvedAttributeSet(RefCounted):
         copy.attribute_context = self.attribute_context
 
         # Save the mappings to overwrite. Maps from merge may not be correct.
-        new_rattr_to_attctxset = {}  # type: Dict[ResolvedAttribute, Set[CdmAttributeContext]]
+        new_rattr_to_attctxset = defaultdict(set)  # type: Dict[ResolvedAttribute, Set[CdmAttributeContext]]
         new_attctx_to_rattr = {}  # type: Dict[CdmAttributeContext, ResolvedAttribute]
 
         for source_ra in self._set:

@@ -15,23 +15,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     {
         public static CdmEntityDefinition FromData(CdmCorpusContext ctx, JToken obj)
         {
+            if (obj == null)
+            {
+                return null;
+            }
+
             var entity = ctx.Corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, (string)obj["entityName"]);
             entity.ExtendsEntity = EntityReferencePersistence.FromData(ctx, obj["extendsEntity"]);
             entity.ExtendsEntityResolutionGuidance = AttributeResolutionGuidancePersistence.FromData(ctx, obj["extendsEntityResolutionGuidance"]);
 
-            if (obj["explanation"] != null)
-                entity.Explanation = (string)obj["explanation"];
+            entity.Explanation = Utils.PropertyFromDataToString(obj["explanation"]);
 
             Utils.AddListToCdmCollection(entity.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, obj["exhibitsTraits"]));
             if (obj["attributeContext"] != null)
                 entity.AttributeContext = AttributeContextPersistence.FromData(ctx, obj["attributeContext"]);
 
             Utils.AddListToCdmCollection(entity.Attributes, Utils.CreateAttributeList(ctx, obj["hasAttributes"], entity.EntityName));
-            entity.SourceName = (string)obj["sourceName"];
-            entity.DisplayName = (string)obj["displayName"];
-            if (!string.IsNullOrWhiteSpace((string)obj["description"]))
-                entity.Description = (string)obj["description"];
-            entity.Version = (string)obj["version"];
+            entity.SourceName = Utils.PropertyFromDataToString(obj["sourceName"]);
+            entity.DisplayName = Utils.PropertyFromDataToString(obj["displayName"]);
+            entity.Description = Utils.PropertyFromDataToString(obj["description"]);
+            entity.Version = Utils.PropertyFromDataToString(obj["version"]);
             entity.CdmSchemas = obj["cdmSchemas"]?.ToObject<List<string>>();
 
             return entity;

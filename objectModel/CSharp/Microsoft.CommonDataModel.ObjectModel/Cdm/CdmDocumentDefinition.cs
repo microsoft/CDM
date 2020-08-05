@@ -18,11 +18,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     {
         internal IDictionary<CdmDocumentDefinition, int> ImportPriority;
         internal IDictionary<string, CdmDocumentDefinition> MonikerPriorityMap;
+        
+        /// <summary>
+        /// True if one of the document's imports import this document back.
+        /// Ex.: A.cdm.json -> B.cdm.json -> A.cdm.json
+        /// </summary>
+        internal bool hasCircularImport;
 
         internal ImportPriorities()
         {
             this.ImportPriority = new Dictionary<CdmDocumentDefinition, int>();
             this.MonikerPriorityMap = new Dictionary<string, CdmDocumentDefinition>();
+            this.hasCircularImport = false;
         }
 
         internal ImportPriorities Copy()
@@ -32,16 +39,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 foreach (KeyValuePair<CdmDocumentDefinition, int> pair in this.ImportPriority)
                     copy.ImportPriority[pair.Key] = pair.Value;
+            }
+            if (this.MonikerPriorityMap != null)
+            {
                 foreach (KeyValuePair<string, CdmDocumentDefinition> pair in this.MonikerPriorityMap)
                     copy.MonikerPriorityMap[pair.Key] = pair.Value;
             }
+            copy.hasCircularImport = this.hasCircularImport;
             return copy;
         }
     }
 
     public class CdmDocumentDefinition : CdmObjectSimple, CdmContainerDefinition
     {
-        internal ConcurrentDictionary<string, CdmObjectDefinitionBase> InternalDeclarations;
+        internal ConcurrentDictionary<string, CdmObjectBase> InternalDeclarations;
         internal ImportPriorities ImportPriorities;
         internal bool NeedsIndexing;
         internal bool IsDirty = true;
@@ -53,6 +64,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string Namespace { get; set; }
         internal bool ImportsIndexed { get; set; }
         internal bool CurrentlyIndexing { get; set; }
+        internal bool IsValid { get; set; }
         internal DateTimeOffset? _fileSystemModifiedTime { get; set; }
 
         /// <summary>
@@ -71,6 +83,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.IsDirty = true;
             this.ImportsIndexed = false;
             this.CurrentlyIndexing = false;
+            this.IsValid = true;
 
             this.ClearCaches();
 
@@ -109,7 +122,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal void ClearCaches()
         {
-            this.InternalDeclarations = new ConcurrentDictionary<string, CdmObjectDefinitionBase>();
+            this.InternalDeclarations = new ConcurrentDictionary<string, CdmObjectBase>();
             // remove all of the cached paths
             this.Visit("", null, new VisitCallback
             {
@@ -145,45 +158,45 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     switch (iObject.ObjectType)
                     {
                         case CdmObjectType.Import:
-                        {
-                            CdmImport typeObj = iObject as CdmImport;
-                            typeObj.CorpusPath = LocalizeCorpusPath(typeObj.CorpusPath, newFolder, ref allWentWell) ?? typeObj.CorpusPath;
-                            break;
-                        }
+                            {
+                                CdmImport typeObj = iObject as CdmImport;
+                                typeObj.CorpusPath = LocalizeCorpusPath(typeObj.CorpusPath, newFolder, ref allWentWell) ?? typeObj.CorpusPath;
+                                break;
+                            }
                         case CdmObjectType.LocalEntityDeclarationDef:
                         case CdmObjectType.ReferencedEntityDeclarationDef:
-                        {
-                            CdmEntityDeclarationDefinition typeObj = iObject as CdmEntityDeclarationDefinition;
-                            typeObj.EntityPath = LocalizeCorpusPath(typeObj.EntityPath, newFolder, ref allWentWell) ?? typeObj.EntityPath;
-                            break;
-                        }
+                            {
+                                CdmEntityDeclarationDefinition typeObj = iObject as CdmEntityDeclarationDefinition;
+                                typeObj.EntityPath = LocalizeCorpusPath(typeObj.EntityPath, newFolder, ref allWentWell) ?? typeObj.EntityPath;
+                                break;
+                            }
                         case CdmObjectType.DataPartitionDef:
-                        {
-                            CdmDataPartitionDefinition typeObj = iObject as CdmDataPartitionDefinition;
-                            typeObj.Location = LocalizeCorpusPath(typeObj.Location, newFolder, ref allWentWell) ?? typeObj.Location;
-                            typeObj.SpecializedSchema = LocalizeCorpusPath(typeObj.SpecializedSchema, newFolder, ref allWentWell) ?? typeObj.SpecializedSchema;
-                            break;
-                        }
+                            {
+                                CdmDataPartitionDefinition typeObj = iObject as CdmDataPartitionDefinition;
+                                typeObj.Location = LocalizeCorpusPath(typeObj.Location, newFolder, ref allWentWell) ?? typeObj.Location;
+                                typeObj.SpecializedSchema = LocalizeCorpusPath(typeObj.SpecializedSchema, newFolder, ref allWentWell) ?? typeObj.SpecializedSchema;
+                                break;
+                            }
                         case CdmObjectType.DataPartitionPatternDef:
-                        {
-                            CdmDataPartitionPatternDefinition typeObj = iObject as CdmDataPartitionPatternDefinition;
-                            typeObj.RootLocation = LocalizeCorpusPath(typeObj.RootLocation, newFolder, ref allWentWell) ?? typeObj.RootLocation;
-                            typeObj.SpecializedSchema = LocalizeCorpusPath(typeObj.SpecializedSchema, newFolder, ref allWentWell) ?? typeObj.SpecializedSchema;
-                            break;
-                        }
+                            {
+                                CdmDataPartitionPatternDefinition typeObj = iObject as CdmDataPartitionPatternDefinition;
+                                typeObj.RootLocation = LocalizeCorpusPath(typeObj.RootLocation, newFolder, ref allWentWell) ?? typeObj.RootLocation;
+                                typeObj.SpecializedSchema = LocalizeCorpusPath(typeObj.SpecializedSchema, newFolder, ref allWentWell) ?? typeObj.SpecializedSchema;
+                                break;
+                            }
                         case CdmObjectType.E2ERelationshipDef:
-                        {
-                            CdmE2ERelationship typeObj = iObject as CdmE2ERelationship;
-                            typeObj.ToEntity = LocalizeCorpusPath(typeObj.ToEntity, newFolder, ref allWentWell) ?? typeObj.ToEntity;
-                            typeObj.FromEntity = LocalizeCorpusPath(typeObj.FromEntity, newFolder, ref allWentWell) ?? typeObj.FromEntity;
-                            break;
-                        }
+                            {
+                                CdmE2ERelationship typeObj = iObject as CdmE2ERelationship;
+                                typeObj.ToEntity = LocalizeCorpusPath(typeObj.ToEntity, newFolder, ref allWentWell) ?? typeObj.ToEntity;
+                                typeObj.FromEntity = LocalizeCorpusPath(typeObj.FromEntity, newFolder, ref allWentWell) ?? typeObj.FromEntity;
+                                break;
+                            }
                         case CdmObjectType.ManifestDeclarationDef:
-                        {
-                            CdmManifestDeclarationDefinition typeObj = iObject as CdmManifestDeclarationDefinition;
-                            typeObj.Definition = LocalizeCorpusPath(typeObj.Definition, newFolder, ref allWentWell) ?? typeObj.Definition;
-                            break;
-                        }
+                            {
+                                CdmManifestDeclarationDefinition typeObj = iObject as CdmManifestDeclarationDefinition;
+                                typeObj.Definition = LocalizeCorpusPath(typeObj.Definition, newFolder, ref allWentWell) ?? typeObj.Definition;
+                                break;
+                            }
                     }
                     return false;
                 }
@@ -229,7 +242,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 allWentWell = false;
             }
-            
+
             return newPath;
         }
 
@@ -253,7 +266,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
                 copy.Definitions.Clear();
+                copy.InternalDeclarations = new ConcurrentDictionary<string, CdmObjectBase>();
+                copy.NeedsIndexing = true;
                 copy.Imports.Clear();
+                copy.ImportsIndexed = false;
+                copy.ImportPriorities = null;
             }
 
             copy.InDocument = copy;
@@ -275,11 +292,53 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return CdmObjectBase.CopyData<CdmDocumentDefinition>(this, resOpt, options);
         }
 
-        internal CdmObject FetchObjectFromDocumentPath(string objectPath)
+        internal CdmObject FetchObjectFromDocumentPath(string objectPath, ResolveOptions resOpt)
         {
             // in current document?
             if (this.InternalDeclarations.ContainsKey(objectPath))
                 return this.InternalDeclarations[objectPath];
+            else
+            {
+                // this might be a request for an object def drill through of a reference.
+                // path/(object)/paths
+                // there can be several such requests in one path AND some of the requested
+                // defintions might be defined inline inside a reference meaning the declared path
+                // includes that reference name and could still be inside this document. example:
+                // /path/path/refToInline/(object)/member1/refToSymbol/(object)/member2
+                // the full path is not in this doc but /path/path/refToInline/(object)/member1/refToSymbol
+                // is declared in this document. we then need to go to the doc for refToSymbol and
+                // search for refToSymbol/member2
+
+                // work backward until we find something in this document
+                int lastObj = objectPath.LastIndexOf("/(object)");
+                string thisDocPart = objectPath;
+                while (lastObj > 0)
+                {
+                    thisDocPart = objectPath.Substring(0, lastObj);
+                    if (this.InternalDeclarations.ContainsKey(thisDocPart))
+                    {
+                        CdmObjectReferenceBase thisDocObjRef = this.InternalDeclarations[thisDocPart] as CdmObjectReferenceBase;
+                        CdmObjectDefinitionBase thatDocObjDef = thisDocObjRef.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
+                        if (thatDocObjDef != null)
+                        {
+                            // get from other document.
+                            // but first fix the path to look like it is relative to that object as declared in that doc
+                            string thatDocPart = objectPath.Substring(lastObj + "/(object)".Length);
+                            thatDocPart = $"{thatDocObjDef.DeclaredPath}{thatDocPart}";
+                            if (thatDocPart == objectPath)
+                            {
+                                // we got back to were we started. probably because something is just not found.
+                                return null;
+                            }
+
+                            return thatDocObjDef.InDocument.FetchObjectFromDocumentPath(thatDocPart, resOpt);
+                        }
+
+                        return null;
+                    }
+                    lastObj = thisDocPart.LastIndexOf("/(object)");
+                }
+            }
             return null;
         }
 
@@ -384,6 +443,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             this.NeedsIndexing = true;
+            this.IsValid = true;
+
             return await this.IndexIfNeeded(resOpt);
         }
 
@@ -396,15 +457,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Document '{this.Name}' is not in a folder", nameof(IndexIfNeeded));
                     return false;
                 }
-                // make the corpus internal machinery pay attention to this document for this call
-                CdmCorpusDefinition corpus = (this.Folder as CdmFolderDefinition).Corpus;
+                // make the corpus internal machinery pay attention to this document for this call.
+                var corpus = this.Folder.Corpus;
 
                 await corpus.ResolveImportsAsync(this, resOpt);
 
                 // maintain actual current doc
                 corpus.documentLibrary.MarkDocumentForIndexing(this);
 
-                return corpus.IndexDocuments(resOpt, this);
+                return corpus.IndexDocuments(resOpt);
             }
 
             return true;
@@ -430,69 +491,86 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (this.ImportPriorities == null)
             {
-                this.ImportPriorities = new ImportPriorities();
-                this.ImportPriorities.ImportPriority.Add(this, 0);
-                this.PrioritizeImports(new HashSet<CdmDocumentDefinition>(), this.ImportPriorities.ImportPriority, 1, this.ImportPriorities.MonikerPriorityMap, false);
+                var importPriorities = new ImportPriorities();
+                importPriorities.ImportPriority.Add(this, 0);
+                this.PrioritizeImports(new HashSet<CdmDocumentDefinition>(), importPriorities, 1, false);
+                this.ImportPriorities = importPriorities;
             }
             // make a copy so the caller doesn't mess these up
             return this.ImportPriorities.Copy();
         }
 
-        private int PrioritizeImports(HashSet<CdmDocumentDefinition> processedSet, IDictionary<CdmDocumentDefinition, int> priorityMap, int sequence, IDictionary<string, CdmDocumentDefinition> monikerMap, bool skipMonikered = false)
+        private int PrioritizeImports(HashSet<CdmDocumentDefinition> processedSet, ImportPriorities importPriorities, int sequence, bool skipMonikered)
         {
             // goal is to make a map from the reverse order of imports (breadth first) to the first (aka last) sequence number in that list.
             // This gives the semantic that the 'last/shallowest' definition for a duplicate symbol wins,
             // the lower in this list a document shows up, the higher priority its definitions are for resolving conflicts.
             // for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
+            // maps document to priority.
+            IDictionary<CdmDocumentDefinition, int> priorityMap = importPriorities.ImportPriority;
+
+            // maps moniker to document.
+            IDictionary<string, CdmDocumentDefinition> monikerMap = importPriorities.MonikerPriorityMap;
+
             // if already in list, don't do this again
             if (processedSet.Contains(this))
+            {
+                // if the first document in the priority map is this then the document was the starting point of the recursion.
+                // and if this document is present in the processedSet we know that there is a cicular list of imports.
+                if (priorityMap.ContainsKey(this) && priorityMap[this] == 0)
+                {
+                    importPriorities.hasCircularImport = true;
+                }
+
                 return sequence;
+            }
             processedSet.Add(this);
 
             if (this.Imports != null)
             {
-                // first add the imports done at this level only
-                int l = this.Imports.Count;
-                // reverse order
-                for (int i = l - 1; i >= 0; i--)
+                var reversedImports = this.Imports.Reverse();
+
+                // first add the imports done at this level only in reverse order.
+                foreach (var imp in reversedImports)
                 {
-                    CdmImport imp = this.Imports.AllItems[i];
-                    CdmDocumentDefinition impDoc = imp.ResolvedDocument as CdmDocumentDefinition;
-                    // don't add the moniker imports to the priority list
+                    var impDoc = imp.Document;
                     bool isMoniker = !string.IsNullOrWhiteSpace(imp.Moniker);
-                    if (imp.ResolvedDocument != null && !isMoniker)
+
+                    // don't add the moniker imports to the priority list.
+                    if (impDoc != null && !isMoniker && !priorityMap.ContainsKey(impDoc))
                     {
-                        if (priorityMap.ContainsKey(impDoc) == false)
-                        {
-                            // add doc
-                            priorityMap.Add(impDoc, sequence);
-                            sequence++;
-                        }
+                        // add doc.
+                        priorityMap.Add(impDoc, sequence);
+                        sequence++;
                     }
                 }
 
-                // now add the imports of the imports
-                for (int i = l - 1; i >= 0; i--)
+                // now add the imports of the imports.
+                foreach (var imp in reversedImports)
                 {
-                    CdmImport imp = this.Imports.AllItems[i];
-                    CdmDocumentDefinition impDoc = imp.ResolvedDocument as CdmDocumentDefinition;
-                    // don't add the moniker imports to the priority list
+                    CdmDocumentDefinition impDoc = imp.Document;
                     bool isMoniker = !string.IsNullOrWhiteSpace(imp.Moniker);
-                    if (impDoc?.ImportPriorities != null)
+
+                    // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
+                    // since the document itself will always be the first one on the list.
+                    if (impDoc?.ImportPriorities != null && impDoc?.ImportPriorities.hasCircularImport == false)
                     {
-                        // lucky, already done so avoid recursion and copy
+                        // lucky, already done so avoid recursion and copy.
                         ImportPriorities impPriSub = impDoc.GetImportPriorities();
-                        impPriSub.ImportPriority.Remove(impDoc); // because already added above
+                        impPriSub.ImportPriority.Remove(impDoc); // because already added above.
+
                         foreach (var ip in impPriSub.ImportPriority)
                         {
                             if (priorityMap.ContainsKey(ip.Key) == false)
                             {
-                                // add doc
+                                // add doc.
                                 priorityMap.Add(ip.Key, sequence);
                                 sequence++;
                             }
                         }
+
+                        // if the import is not monikered then merge its monikerMap to this one.
                         if (!isMoniker)
                         {
                             foreach (var mp in impPriSub.MonikerPriorityMap)
@@ -503,24 +581,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     }
                     else if (impDoc != null)
                     {
-                        // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies
-                        sequence = impDoc.PrioritizeImports(processedSet, priorityMap, sequence, monikerMap, isMoniker);
+                        // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies.
+                        sequence = impDoc.PrioritizeImports(processedSet, importPriorities, sequence, isMoniker);
                     }
                 }
-                // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies
+
+                // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies.
                 if (!skipMonikered)
                 {
-                    // moniker imports are prioritized by the 'closest' use of the moniker to the starting doc. so last one found in this recursion
-                    for (int i = 0; i < l; i++)
+                    // moniker imports are prioritized by the 'closest' use of the moniker to the starting doc. so last one found in this recursion.
+                    foreach (var imp in this.Imports)
                     {
-                        CdmImport imp = this.Imports.AllItems[i];
-                        if (imp.ResolvedDocument != null && imp.Moniker != null)
+                        bool isMoniker = !string.IsNullOrWhiteSpace(imp.Moniker);
+                        if (imp.Document != null && isMoniker)
                         {
-                            monikerMap[imp.Moniker] = imp.ResolvedDocument as CdmDocumentDefinition;
+                            monikerMap[imp.Moniker] = imp.Document;
                         }
                     }
                 }
             }
+
             return sequence;
         }
 

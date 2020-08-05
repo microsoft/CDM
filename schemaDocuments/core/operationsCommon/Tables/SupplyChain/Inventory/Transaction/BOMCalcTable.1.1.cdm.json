@@ -1,0 +1,378 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/BOMTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/BOMVersion.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/LeanProductionFlowReference.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/RouteTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesQuotationLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ServiceManagement/WorksheetLine/SMAServiceOrderLine.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BOMCalcTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PriceCalcId",
+          "dataType": "PriceCalcId",
+          "description": ""
+        },
+        {
+          "name": "BOMCalcType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BOMId",
+          "dataType": "BOMId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostCalculationMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostMarkup",
+          "dataType": "BOMCalcCostMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostMarkupSecCur_RU",
+          "dataType": "InventPriceMarkupSecCur_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostPrice",
+          "dataType": "CostAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostPriceSecCur_RU",
+          "dataType": "CostPriceSecCur_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "LeanProductionFlowReference",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NetWeight",
+          "dataType": "ItemNetWeight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfBomVersion",
+          "dataType": "PmfBOMVersionRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfParentCalcId",
+          "dataType": "PmfPriceCalcId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfitSet",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteId",
+          "dataType": "RouteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesMarkup",
+          "dataType": "BOMCalcSalesMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPrice",
+          "dataType": "SalesAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMTable"
+          },
+          "name": "Relationship_BOMTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BOMVersion"
+          },
+          "name": "Relationship_BOMVersionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LeanProductionFlowReference"
+          },
+          "name": "Relationship_LeanProductionFlowReferenceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RouteTable"
+          },
+          "name": "Relationship_RouteTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesQuotationLine"
+          },
+          "name": "Relationship_SalesQuotationLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SMAServiceOrderLine"
+          },
+          "name": "Relationship_SMAServiceOrderLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Calculation"
+    },
+    {
+      "dataTypeName": "PriceCalcId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMCalcCostMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventPriceMarkupSecCur_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostPriceSecCur_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ItemNetWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PmfBOMVersionRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PmfPriceCalcId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RouteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BOMCalcSalesMarkup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    }
+  ]
+}

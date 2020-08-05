@@ -78,7 +78,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 LastFileStatusCheckTime = instance.LastFileStatusCheckTime
             };
 
-            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, referenceEntity, instance.ExhibitsTraits);
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, referenceEntity, instance.ExhibitsTraits);
 
             var t2pm = new TraitToPropertyMap(instance);
             

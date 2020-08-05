@@ -39,10 +39,10 @@ class AdlsAdapterAuthenticator {
   // The MS version key, used during shared key auth.
   private static final String HTTP_XMS_VERSION = "x-ms-version";
 
-  private final String sharedKey;
+  private String sharedKey;
   private final String tenant;
-  private final String clientId;
-  private final String secret;
+  private String clientId;
+  private String secret;
   private AuthenticationResult lastAuthenticationResult;
   private TokenProvider tokenProvider;
 
@@ -57,8 +57,8 @@ class AdlsAdapterAuthenticator {
   }
 
   AdlsAdapterAuthenticator(final String tenant, final String clientId, final String secret) {
-    if ( tenant == null || clientId == null || secret == null) {
-      throw new IllegalArgumentException("tenant or clientId or secret is null");
+    if ( tenant == null || clientId == null) {
+      throw new IllegalArgumentException("tenant or clientId is null");
     }
     this.sharedKey = null;
     this.tenant = tenant;
@@ -145,7 +145,7 @@ class AdlsAdapterAuthenticator {
     // Append canonicalized resource.
     final String accountName = uri.getHost().split("\\.")[0];
     builder.append("/").append(accountName);
-    builder.append(uri.getPath());
+    builder.append(uri.getRawPath());
     // Append canonicalized queries.
     if (!Strings.isNullOrEmpty(uri.getQuery())) {
       final String queryParameters = uri.getQuery();
@@ -217,6 +217,10 @@ class AdlsAdapterAuthenticator {
     return sharedKey;
   }
 
+  void setSharedKey(String sharedKey) {
+    this.sharedKey = sharedKey;
+  }
+
   String getTenant() {
     return tenant;
   }
@@ -225,7 +229,23 @@ class AdlsAdapterAuthenticator {
     return clientId;
   }
 
+  void setClientId(String clientId) {
+    this.clientId = clientId;
+  }
+
   String getSecret() {
     return secret;
+  }
+
+  void setSecret(String secret) {
+    this.secret = secret;
+  }
+
+  TokenProvider getTokenProvider() {
+    return tokenProvider;
+  }
+
+  void setTokenProvider(TokenProvider tokenProvider) {
+    this.tokenProvider = tokenProvider;
   }
 }

@@ -30,6 +30,8 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarat
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.*;
 import com.microsoft.commondatamodel.objectmodel.persistence.common.InterfaceToImpl;
 import com.microsoft.commondatamodel.objectmodel.persistence.common.PersistenceType;
 
@@ -70,6 +72,17 @@ public class CdmFolderType implements PersistenceType {
     registeredClasses.register(CdmTraitDefinition.class, TraitPersistence.class);
     registeredClasses.register(CdmTraitReference.class, TraitReferencePersistence.class);
     registeredClasses.register(CdmTypeAttributeDefinition.class, TypeAttributePersistence.class);
+    registeredClasses.register(CdmProjection.class, ProjectionPersistence.class);
+    registeredClasses.register(CdmOperationAddCountAttribute.class, OperationAddCountAttributePersistence.class);
+    registeredClasses.register(CdmOperationAddSupportingAttribute.class, OperationAddSupportingAttributePersistence.class);
+    registeredClasses.register(CdmOperationAddTypeAttribute.class, OperationAddTypeAttributePersistence.class);
+    registeredClasses.register(CdmOperationExcludeAttributes.class, OperationExcludeAttributesPersistence.class);
+    registeredClasses.register(CdmOperationArrayExpansion.class, OperationArrayExpansionPersistence.class);
+    registeredClasses.register(CdmOperationCombineAttributes.class, OperationCombineAttributesPersistence.class);
+    registeredClasses.register(CdmOperationRenameAttributes.class, OperationRenameAttributesPersistence.class);
+    registeredClasses.register(CdmOperationReplaceAsForeignKey.class, OperationReplaceAsForeignKeyPersistence.class);
+    registeredClasses.register(CdmOperationIncludeAttributes.class, OperationIncludeAttributesPersistence.class);
+    registeredClasses.register(CdmOperationAddAttributeGroup.class, OperationAddAttributeGroupPersistence.class);
   }
 
   @Override

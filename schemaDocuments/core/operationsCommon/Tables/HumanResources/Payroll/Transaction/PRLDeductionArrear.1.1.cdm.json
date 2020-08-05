@@ -1,0 +1,108 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/HumanResources/Payroll/WorksheetHeader/PayrollPayStatement.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PRLDeductionArrear",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingCurrencyAmount",
+          "dataType": "PayrollStatementAccountingCurrencyAmount",
+          "description": ""
+        },
+        {
+          "name": "Benefit",
+          "dataType": "HcmBenefitRecId",
+          "description": ""
+        },
+        {
+          "name": "FullyRecovered",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Fully recovered",
+          "description": ""
+        },
+        {
+          "name": "PayStatement",
+          "dataType": "PayrollPayStatementRecId",
+          "displayName": "Pay Statement",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PayrollPayStatement"
+          },
+          "name": "Relationship_PayStatement_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Worker arrears"
+    },
+    {
+      "dataTypeName": "PayrollStatementAccountingCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "HcmBenefitRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PayrollPayStatementRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -66,7 +66,7 @@ class CdmAttributeContext(CdmObjectDefinition):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmAttributeContext'] = None) -> 'CdmAttributeContext':
         if not res_opt:
-            ResolveOptions(wrt_doc=self)
+            ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = self.copy_node(res_opt)

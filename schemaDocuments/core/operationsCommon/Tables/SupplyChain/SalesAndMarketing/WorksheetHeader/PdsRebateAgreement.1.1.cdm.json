@@ -1,0 +1,567 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjPeriodTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PdsRebateProgramTMATable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PdsCustRebateGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/PdsFreightGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/PdsItemRebateGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/PdsRebate.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/TAMMerchandisingEvent.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PdsRebateAgreement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "description": ""
+        },
+        {
+          "name": "IsTaxable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Taxable",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "displayName": "Rebate program accrual account",
+          "description": ""
+        },
+        {
+          "name": "Note",
+          "dataType": "Notes",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OffsetLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "displayName": "Rebate program expense account",
+          "description": ""
+        },
+        {
+          "name": "PdsApprovalRequired",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Approval required",
+          "description": ""
+        },
+        {
+          "name": "PdsCumulateSalesBy",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCustRebateCode",
+          "dataType": "PdsCustRebateCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCustRebateRelation",
+          "dataType": "PdsCustRebateRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "pdsFindNext",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Find next",
+          "description": ""
+        },
+        {
+          "name": "PdsItemRebateCode",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsItemRebateRelation",
+          "dataType": "PdsItemRebateRelation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsPaymtType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "PdsRebateLineBreakType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsRebateMinAmt",
+          "dataType": "PdsRebateMinAmt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsRebateMinQty",
+          "dataType": "PdsMinQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsRebateProgramType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsRebateTakenFrom",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsRebateType",
+          "dataType": "PdsRebateType",
+          "description": ""
+        },
+        {
+          "name": "PdsRebateUnit",
+          "dataType": "UnitOfMeasureSymbol",
+          "description": ""
+        },
+        {
+          "name": "PdsUnitType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "RebateCalcDateType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RebateCurrency",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "RebateCustomizedPeriodType",
+          "dataType": "PdsRebateCustomizedPeriodType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RebateGenericCurrency",
+          "dataType": "PdsRebateGenericCurrency",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RebateUOMOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TAMCustRebateApprovalStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TAMMerchandisingEventID",
+          "dataType": "MCRMerchandisingEventID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TAMPaymentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TAMVendPayTo",
+          "dataType": "TAMVendPayTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Validated",
+          "dataType": "PdsRebateValidated",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDate",
+          "isNullable": true,
+          "displayName": "Expiry date",
+          "description": ""
+        },
+        {
+          "name": "Verifier",
+          "dataType": "PdsRebateVerifier",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RebateAgreementId",
+          "dataType": "PdsRebateAgreementId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTable"
+          },
+          "name": "Relationship_CustomizedPeriodTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_OffsetLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsRebateProgramTMATable"
+          },
+          "name": "Relationship_PdsCustomerTMAGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsCustRebateGroup"
+          },
+          "name": "Relationship_PdsCustRebateGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsFreightGroup"
+          },
+          "name": "Relationship_PdsItemRebateGroupFreightRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsItemRebateGroup"
+          },
+          "name": "Relationship_PdsItemRebateGroupRebateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsItemRebateGroup"
+          },
+          "name": "Relationship_PdsItemRebateGroupTMARelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PdsRebate"
+          },
+          "name": "Relationship_PdsRebateRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TAMMerchandisingEvent"
+          },
+          "name": "Relationship_TAMMerchandisingEventRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Rebate agreements"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsCustRebateCode",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsCustRebateRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsItemRebateRelation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsRebateMinAmt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsMinQty",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsRebateType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsRebateCustomizedPeriodType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsRebateGenericCurrency",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRMerchandisingEventID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TAMVendPayTo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsRebateValidated",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PdsRebateVerifier",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PdsRebateAgreementId",
+      "extendsDataType": "string"
+    }
+  ]
+}

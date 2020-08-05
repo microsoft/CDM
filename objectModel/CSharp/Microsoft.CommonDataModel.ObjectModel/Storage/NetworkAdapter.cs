@@ -44,8 +44,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The network adapter constructor called when the object is created through a JSON config.
         /// </summary>
         protected NetworkAdapter(string configs)
+        {   
+        }
+
+        ~NetworkAdapter()
         {
-           
+            this.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -62,7 +67,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 this.timeout = value;
             }
         }
-
 
         /// <summary>
         /// The maximum timeout for all retried HTTP requests.
@@ -102,33 +106,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         public async Task<CdmHttpResponse> ExecuteRequest(CdmHttpRequest httpRequest)
         {
-            try
+            var response = await this.httpClient.SendAsync(httpRequest, this.WaitTimeCallback);
+
+            if (response == null)
             {
-                var res = await this.httpClient.SendAsync(httpRequest, this.WaitTimeCallback);
-
-                if (res == null)
-                {
-                    throw new Exception("The result of a request is undefined.");
-                }
-
-                if (!res.IsSuccessful)
-                {
-                    throw new HttpRequestException(
-                        $"HTTP {res.StatusCode} - {res.Reason}. Response headers: {string.Join(", ", res.ResponseHeaders.Select(m => m.Key + ":" + m.Value).ToArray())}. URL: {httpRequest.RequestedUrl}");
-                }
-
-                return res;
+                throw new Exception("The result of a request is undefined.");
             }
-            catch (Exception err)
+
+            if (!response.IsSuccessful)
             {
-                throw (err);
+                throw new HttpRequestException(
+                    $"HTTP {response.StatusCode} - {response.Reason}. Response headers: {string.Join(", ", response.ResponseHeaders.Select(m => m.Key + ":" + m.Value).ToArray())}. URL: {httpRequest.RequestedUrl}");
             }
-        }
 
-        ~NetworkAdapter()
-        {
-            this.Dispose();
-            GC.SuppressFinalize(this);
+            return response;
         }
 
         /// <summary>

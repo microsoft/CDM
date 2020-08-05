@@ -113,10 +113,6 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 
@@ -205,13 +201,23 @@ public class CdmManifestDeclarationDefinition extends CdmObjectDefinitionBase im
   }
 
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
                                                           final CdmAttributeContext under) {
     // return null intentionally
     return null;

@@ -184,5 +184,54 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             return casted;
         }
+
+        /// <summary>
+        /// Converts dynamic input into a string for a property (ints are converted to string)
+        /// </summary>
+        /// <param name="value">The value that should be converted to a string.</param>
+        internal static string PropertyFromDataToString(dynamic value)
+        {
+            string stringValue = (string)value;
+            if (!string.IsNullOrWhiteSpace(stringValue))
+            {
+                return stringValue;
+            }
+            else if (value is int)
+            {
+                return value.ToString();
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
+        /// </summary>
+        /// <param name="value">The value that should be converted to an int.</param>
+        internal static int? PropertyFromDataToInt(dynamic value)
+        {
+            if (value is int)
+            {
+                return value;
+            }
+            string stringValue = (string)value;
+            if (!string.IsNullOrWhiteSpace(stringValue) && int.TryParse(stringValue, out int intValue))
+            {
+                return intValue;
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
+        /// </summary>
+        /// <param name="value">The value that should be converted to a boolean.</param>
+        internal static bool? PropertyFromDataToBool(dynamic value)
+        {
+            if (value is bool)
+                return value;
+            if (bool.TryParse((string)value, out bool boolValue))
+                return boolValue;
+            return null;
+        }
     }
 }

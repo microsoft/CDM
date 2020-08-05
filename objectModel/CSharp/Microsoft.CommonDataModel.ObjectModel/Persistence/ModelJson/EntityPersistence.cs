@@ -55,13 +55,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 Type = "LocalEntity"
             };
 
-            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             if (instance.Attributes != null)
             {
                 result.Attributes = new List<Attribute>();
-                foreach (dynamic element in instance.Attributes)
+                foreach (CdmAttributeItem element in instance.Attributes)
                 {
+                    if (element.ObjectType != CdmObjectType.TypeAttributeDef)
+                    {
+                        Logger.Error(nameof(EntityPersistence), (ResolveContext)ctx, "Saving a manifest, with an entity containing an entity attribute, to model.json format is currently not supported.");
+
+                        return null;
+                    }
+
                     // TODO: handle when attribute is something else other than CdmTypeAttributeDefinition.
                     var attribute = await TypeAttributePersistence.ToData(element as CdmTypeAttributeDefinition, resOpt, options);
                     if (attribute != null)

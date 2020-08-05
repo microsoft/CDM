@@ -194,7 +194,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             CreateExtensionDocAndAddToFolderAndImports(ctx, extensionTraitDefList, folder);
             #endregion
 
-
             return manifest;
         }
 
@@ -294,7 +293,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 }
             }
 
-            await Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
+            Utils.ProcessTraitsAndAnnotationsToData(instance.Ctx, result, instance.ExhibitsTraits);
 
             if (instance.Entities != null && instance.Entities.Count > 0)
             {

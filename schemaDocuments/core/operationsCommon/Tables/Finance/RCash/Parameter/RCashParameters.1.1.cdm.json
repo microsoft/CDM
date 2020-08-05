@@ -1,0 +1,279 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Reference/DimensionAttribute.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCash/Main/RCashTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCash/Group/RCashLedger.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RCashParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AnalysisDimensionAttribute",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Analysis code",
+          "description": ""
+        },
+        {
+          "name": "CheckAgreement",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CheckReuseDoc",
+          "dataType": "RCashReuseDoc",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfirmationEnabled",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Use confirm status",
+          "description": ""
+        },
+        {
+          "name": "DefaultAccountNum",
+          "dataType": "RCashAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepartmentDimensionAttribute",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Department code",
+          "description": ""
+        },
+        {
+          "name": "EarlierDatePosting",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Posting on earlier date",
+          "description": ""
+        },
+        {
+          "name": "ExchDiffCalcType_PL",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchOutflowType_HU",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MandatoryPaymentLimit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Check operations limit",
+          "description": ""
+        },
+        {
+          "name": "PaymentMax",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Operations limit",
+          "description": ""
+        },
+        {
+          "name": "PayTransLag",
+          "dataType": "Days",
+          "isNullable": true,
+          "displayName": "Quantity of days",
+          "description": ""
+        },
+        {
+          "name": "PeriodClosedPosting_HU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Disallow posting earlier than cash report closing date",
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "RCashPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurposeDimensionAttribute",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Purpose code",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttribute"
+          },
+          "name": "Relationship_AnalysisDimensionAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RCashTable"
+          },
+          "name": "Relationship_DefaultAccountNumRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttribute"
+          },
+          "name": "Relationship_DepartmentDimensionAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RCashLedger"
+          },
+          "name": "Relationship_PostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttribute"
+          },
+          "name": "Relationship_PurposeDimensionAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RCashLedger"
+          },
+          "name": "Relationship_RCashLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RCashTable"
+          },
+          "name": "Relationship_RCashTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Table of setup Cash operations"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RCashReuseDoc",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RCashAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Days",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RCashPostingProfile",
+      "extendsDataType": "string"
+    }
+  ]
+}

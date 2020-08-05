@@ -159,7 +159,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
 
                 Func<Task> func = async () => await cdmHttpClient.SendAsync(cdmHttpRequest, DefaultGetWaitTime);
 
-                func.Should().Throw<CdmTimedOutException>();
+                func.Should().Throw<CdmTimedOutException>("Request timeout.");
             }
         }
 

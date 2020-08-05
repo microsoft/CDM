@@ -1,0 +1,273 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "ProjInvoiceJour.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "ProjProposalJour.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Miscellaneous/PSAContractLineItems.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PSAContractInvoiceRetain",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CompletePercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "% complete",
+          "description": ""
+        },
+        {
+          "name": "ContractLineNum",
+          "dataType": "PSAContractLineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContractValue",
+          "dataType": "PSAContractValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Invoiced",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Invoiced",
+          "description": ""
+        },
+        {
+          "name": "InvoiceDate",
+          "dataType": "InvoiceDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoicedNow",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Now invoiced",
+          "description": ""
+        },
+        {
+          "name": "IsRelease",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Release",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjInvoiceId",
+          "dataType": "ProjInvoiceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjProposalId",
+          "dataType": "ProjProposalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReleasedAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Amount to invoice",
+          "description": ""
+        },
+        {
+          "name": "ReleasedPercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "% to invoice",
+          "description": ""
+        },
+        {
+          "name": "Retained",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Retainage balance",
+          "description": ""
+        },
+        {
+          "name": "RetainedAmount",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Amount to retain",
+          "description": ""
+        },
+        {
+          "name": "RetainedNow",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Invoice (Retainage) Amount",
+          "description": ""
+        },
+        {
+          "name": "RetainedPercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "% to retain",
+          "description": ""
+        },
+        {
+          "name": "ScheduleId",
+          "dataType": "PSAProjRetainScheduleId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjInvoiceJour"
+          },
+          "name": "Relationship_ProjInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjProposalJour"
+          },
+          "name": "Relationship_ProjProposalJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PSAContractLineItems"
+          },
+          "name": "Relationship_PSAContractLineItemsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retainage records at the contract line level for an invoice"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PSAContractLineNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSAContractValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjInvoiceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjProposalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSAProjRetainScheduleId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Miscellaneous/NGPCodesTable_FR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PurchLine.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchLineForeignTradeCategory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "IsDeleted",
+          "dataType": "VersioningIsDeleted",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsModified",
+          "dataType": "VersioningIsModified",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NGPCodesTable_FR",
+          "dataType": "NGPCodesTableFRId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchLineDataAreaId",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "name": "PurchLineInventTransId",
+          "dataType": "TradeInventTransId",
+          "description": ""
+        },
+        {
+          "name": "UnitWeight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "displayName": "Unit weight",
+          "description": ""
+        },
+        {
+          "name": "ItemCodeId",
+          "dataType": "DEL_IntrastatItemCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigCountryRegionId",
+          "dataType": "ItemOrigCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigStateId",
+          "dataType": "ItemOrigStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "NGPCodesTable_FR"
+          },
+          "name": "Relationship_NGPCodesTable_FRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Order line foreign trade category"
+    },
+    {
+      "dataTypeName": "VersioningIsDeleted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VersioningIsModified",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NGPCodesTableFRId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeInventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DEL_IntrastatItemCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemOrigCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemOrigStateId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -39,7 +39,7 @@ class CdmPurposeDefinition(CdmObjectDefinition):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmPurposeDefinition'] = None) -> 'CdmPurposeDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmPurposeDefinition(self.ctx, self.purpose_name, None)
@@ -59,6 +59,7 @@ class CdmPurposeDefinition(CdmObjectDefinition):
         return self.purpose_name
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         return self._is_derived_from_def(res_opt, self.extends_purpose, self.get_name(), base)
 
     def validate(self) -> bool:

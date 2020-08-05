@@ -19,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System.Security.Cryptography;
     using Newtonsoft.Json.Linq;
     using System.Diagnostics;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities;
 
     public class ADLSAdapter : NetworkAdapter, StorageAdapter
     {
@@ -68,17 +69,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <summary>
         /// The client ID of an application accessing ADLS.
         /// </summary>
-        public string ClientId { get; private set; }
+        public string ClientId { get; set; }
 
         /// <summary>
         /// The secret for the app accessing ADLS.
         /// </summary>
-        public string Secret { get; private set; }
+        public string Secret { get; set; }
 
         /// <summary>
         /// The account/shared key.
         /// </summary>
-        public string SharedKey { get; private set; }
+        public string SharedKey { get; set; }
+
+        /// <summary>
+        /// The user-defined token provider.
+        /// </summary>
+        public TokenProvider TokenProvider { get; set; }
 
         /// <inheritdoc />
         public string LocationHint { get; set; }
@@ -123,11 +129,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         private const string HttpXmsVersion = "x-ms-version";
 
-        /// <summary>
-        /// The user-defined token provider.
-        /// </summary>
-        private TokenProvider tokenProvider;
-
         internal const string Type = "adls";
 
         /// <summary>
@@ -170,7 +171,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             this.Hostname = hostname;
             this.Root = root;
-            this.tokenProvider = tokenProvider;
+            this.TokenProvider = tokenProvider;
             this.httpClient = new CdmHttpClient();
         }
 
@@ -183,12 +184,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public async Task<string> ReadAsync(string corpusPath)
         {
-            String url = this.CreateAdapterPath(corpusPath);
-            var request = await this.BuildRequest(url, HttpMethod.Get);
+            string url = this.CreateAdapterPath(corpusPath);
 
-            var cdmResponse = await base.ExecuteRequest(request);
+            var httpRequest = await this.BuildRequest(url, HttpMethod.Get);
 
-            return await cdmResponse.Content.ReadAsStringAsync();
+            using (var cdmResponse = await base.ExecuteRequest(httpRequest))
+            {
+                return await cdmResponse.Content.ReadAsStringAsync();
+            }
         }
 
         /// <inheritdoc />
@@ -200,7 +203,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public async Task WriteAsync(string corpusPath, string data)
         {
-            if (ensurePath($"{this.Root}{corpusPath}") == false)
+            if (EnsurePath($"{this.Root}{corpusPath}") == false)
             {
                 throw new Exception($"Could not create folder for document '{corpusPath}'");
             }
@@ -224,8 +227,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public string CreateAdapterPath(string corpusPath)
         {
             var formattedCorpusPath = this.FormatCorpusPath(corpusPath);
+            if (formattedCorpusPath == null)
+            {
+                return null;
+            }
 
-            if(adapterPaths.ContainsKey(formattedCorpusPath))
+            if (adapterPaths.ContainsKey(formattedCorpusPath))
             {
                 return adapterPaths[formattedCorpusPath];
             } 
@@ -276,15 +283,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             var adapterPath = this.CreateAdapterPath(corpusPath);
 
-            var request = await this.BuildRequest(adapterPath, HttpMethod.Head);
+            var httpRequest = await this.BuildRequest(adapterPath, HttpMethod.Head);
 
             try
             {
-                CdmHttpResponse cdmResponse = await base.ExecuteRequest(request);
-
-                if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                using (var cdmResponse = await base.ExecuteRequest(httpRequest))
                 {
-                    return cdmResponse.Content.Headers.LastModified;
+                    if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                    {
+                        return cdmResponse.Content.Headers.LastModified;
+                    }
                 }
             }
             catch (HttpRequestException ex)
@@ -299,6 +307,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public async Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
         {
+            if (folderCorpusPath == null)
+            {
+                return null;
+            }
+
             var url = $"https://{this.Hostname}/{this.fileSystem}";
 
             var directory = $"{this.subPath}{FormatCorpusPath(folderCorpusPath)}";
@@ -308,10 +321,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
 
             var request = await this.BuildRequest($"{url}?directory={directory}&recursive=True&resource=filesystem", HttpMethod.Get);
-            CdmHttpResponse cdmResponse = await base.ExecuteRequest(request);
 
-            if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+
+            using (var cdmResponse = await base.ExecuteRequest(request))
             {
+                if (!cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                {
+                    return null;
+                }
+
                 string json = await cdmResponse.Content.ReadAsStringAsync();
                 JObject jObject1 = JObject.Parse(json);
 
@@ -331,11 +349,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                         result.Add(this.FormatCorpusPath(nameWithoutSubPath));
                     }
                 }
-
+                
                 return result;
             }
-
-            return null;
         }
 
         /// <summary>
@@ -401,7 +417,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
 
             // Hash the payload.
-            byte[] dataToHash = System.Text.Encoding.UTF8.GetBytes(builder.ToString().TrimEnd('\n'));
+            byte[] dataToHash = Encoding.UTF8.GetBytes(builder.ToString().TrimEnd('\n'));
             if (!TryFromBase64String(sharedKey, out byte[] bytes))
             {
                 throw new Exception("Couldn't encode the shared key.");
@@ -409,7 +425,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
             using (HMACSHA256 hmac = new HMACSHA256(bytes))
             {
-                string signedString = $"SharedKey {accountName}:{System.Convert.ToBase64String(hmac.ComputeHash(dataToHash))}";
+                string signedString = $"SharedKey {accountName}:{Convert.ToBase64String(hmac.ComputeHash(dataToHash))}";
 
                 headers.Add(HttpAuthorization, signedString);
             }
@@ -457,11 +473,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <returns></returns>
         private string FormatCorpusPath(string corpusPath)
         {
-            if (corpusPath.StartsWith("adls:"))
+            var pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
+            if (pathTuple == null)
             {
-                corpusPath = corpusPath.Substring(5);
+                return null;
             }
-            else if (corpusPath.Length > 0 && corpusPath[0] != '/')
+
+            corpusPath = pathTuple.Item2;
+
+            if (corpusPath.Length > 0 && corpusPath[0] != '/')
             {
                 corpusPath = $"/{corpusPath}";
             }
@@ -523,7 +543,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <param name="content">The string content.</param>
         /// <param name="contentType">The content type.</param>
         /// <returns>The constructed Cdm Http request.</returns>
-        private async Task<CdmHttpRequest> BuildRequest(String url, HttpMethod method, string content = null, string contentType = null)
+        private async Task<CdmHttpRequest> BuildRequest(string url, HttpMethod method, string content = null, string contentType = null)
         {
             CdmHttpRequest request;
 
@@ -538,9 +558,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
                 request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{token.AccessTokenType} {token.AccessToken}" } }, method);
             }
-            else if (this.tokenProvider != null)
+            else if (this.TokenProvider != null)
             {
-                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{this.tokenProvider.GetToken()}" } }, method);
+                request = this.SetUpCdmRequest(url, new Dictionary<string, string> { { "authorization", $"{this.TokenProvider.GetToken()}" } }, method);
             }
             else
             {
@@ -556,7 +576,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             return request;
         }
 
-        private bool ensurePath(string pathFor)
+        private bool EnsurePath(string pathFor)
         {
             if (pathFor.LastIndexOf("/") == -1)
                 return false;

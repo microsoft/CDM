@@ -1,0 +1,223 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResProduct.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailProductWarehouseInventory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfigId",
+          "dataType": "EcoResItemConfigurationName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventColorId",
+          "dataType": "EcoResItemColorName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSizeId",
+          "dataType": "EcoResItemSizeName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventStyleId",
+          "dataType": "EcoResItemStyleName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventVersionId",
+          "dataType": "EcoResItemVersionName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhysicalInventory",
+          "dataType": "InventQtyPhysicalOnhand",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PhysicalReserved",
+          "dataType": "InventQtyReservPhysical",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrderedInTotal",
+          "dataType": "InventQtyOnOrder",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TotalAvailable",
+          "dataType": "InventQtyTotal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnprocessedQty",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProduct"
+          },
+          "name": "Relationship_ProductIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "RetailProductWarehouseInventory"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemConfigurationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemColorName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemSizeName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemStyleName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EcoResItemVersionName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQtyPhysicalOnhand",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyReservPhysical",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyOnOrder",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventQtyTotal",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -127,12 +127,12 @@ async def process_annotations_from_data(ctx: 'CdmCorpusContext', obj: 'MetadataO
             other_annotations_trait.arguments.append(annotations_argument)
             traits.append(other_annotations_trait)
 
-        if obj.get('traits'):
-            for trait in obj.get('traits'):
-                traits.append(TraitReferencePersistence.from_data(ctx, trait))
+    if obj.get('traits'):
+        for trait in obj.get('traits'):
+            traits.append(TraitReferencePersistence.from_data(ctx, trait))
 
 
-async def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'MetadataObject', traits: 'CdmTraitCollection'):
+def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_object: 'MetadataObject', traits: 'CdmTraitCollection'):
     if traits is None:
         return
 

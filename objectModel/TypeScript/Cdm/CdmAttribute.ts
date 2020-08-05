@@ -2,6 +2,7 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    CardinalitySettings,
     CdmAttributeItem,
     CdmAttributeResolutionGuidance,
     CdmCorpusContext,
@@ -27,6 +28,11 @@ export abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
      */
     public attributeCount: number;
     public resolutionGuidance: CdmAttributeResolutionGuidance;
+
+    /**
+     * Cardinality setting for projections
+     */
+    public cardinality: CardinalitySettings;
 
     constructor(ctx: CdmCorpusContext, name: string) {
         super(ctx);

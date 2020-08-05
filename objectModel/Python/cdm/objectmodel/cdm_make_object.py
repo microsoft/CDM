@@ -32,6 +32,17 @@ from .cdm_argument_def import CdmArgumentDefinition
 from .cdm_parameter_def import CdmParameterDefinition
 from .cdm_purpose_def import CdmPurposeDefinition
 from .cdm_purpose_ref import CdmPurposeReference
+from cdm.objectmodel.projections.cdm_projection import CdmProjection
+from cdm.objectmodel.projections.cdm_operation_add_count_attribute import CdmOperationAddCountAttribute
+from cdm.objectmodel.projections.cdm_operation_add_supporting_attribute import CdmOperationAddSupportingAttribute
+from cdm.objectmodel.projections.cdm_operation_add_type_attribute import CdmOperationAddTypeAttribute
+from cdm.objectmodel.projections.cdm_operation_exclude_attributes import CdmOperationExcludeAttributes
+from cdm.objectmodel.projections.cdm_operation_array_expansion import CdmOperationArrayExpansion
+from cdm.objectmodel.projections.cdm_operation_combine_attributes import CdmOperationCombineAttributes
+from cdm.objectmodel.projections.cdm_operation_rename_attributes import CdmOperationRenameAttributes
+from cdm.objectmodel.projections.cdm_operation_replace_as_foreign_key import CdmOperationReplaceAsForeignKey
+from cdm.objectmodel.projections.cdm_operation_include_attributes import CdmOperationIncludeAttributes
+from cdm.objectmodel.projections.cdm_operation_add_attribute_group import CdmOperationAddAttributeGroup
 
 switcher = {
     CdmObjectType.ARGUMENT_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmArgumentDefinition(ctx, name_or_ref),
@@ -64,6 +75,17 @@ switcher = {
     CdmObjectType.PARAMETER_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmParameterDefinition(ctx, name_or_ref),
     CdmObjectType.PURPOSE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmPurposeDefinition(ctx, name_or_ref, None),
     CdmObjectType.PURPOSE_REF: lambda ctx, name_or_ref, simple_name_ref: CdmPurposeReference(ctx, name_or_ref, simple_name_ref),
+    CdmObjectType.PROJECTION_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmProjection(ctx),
+    CdmObjectType.OPERATION_ADD_COUNT_ATTRIBUTE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddCountAttribute(ctx),
+    CdmObjectType.OPERATION_ADD_SUPPORTING_ATTRIBUTE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddSupportingAttribute(ctx),
+    CdmObjectType.OPERATION_ADD_TYPE_ATTRIBUTE_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddTypeAttribute(ctx),
+    CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationExcludeAttributes(ctx),
+    CdmObjectType.OPERATION_ARRAY_EXPANSION_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationArrayExpansion(ctx),
+    CdmObjectType.OPERATION_COMBINE_ATTRIBUTES_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationCombineAttributes(ctx),
+    CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationRenameAttributes(ctx),
+    CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationReplaceAsForeignKey(ctx),
+    CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationIncludeAttributes(ctx),
+    CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF: lambda ctx, name_or_ref, simple_name_ref: CdmOperationAddAttributeGroup(ctx)
 }
 
 

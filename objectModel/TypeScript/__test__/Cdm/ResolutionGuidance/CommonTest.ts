@@ -35,24 +35,24 @@ export class CommonTest {
         testName: string,
         sourceEntityName: string,
 
-        expectedContext_default : AttributeContextExpectedValue,
-        expectedContext_normalized : AttributeContextExpectedValue,
-        expectedContext_referenceOnly : AttributeContextExpectedValue,
-        expectedContext_structured : AttributeContextExpectedValue,
-        expectedContext_normalized_structured : AttributeContextExpectedValue,
-        expectedContext_referenceOnly_normalized : AttributeContextExpectedValue,
-        expectedContext_referenceOnly_structured : AttributeContextExpectedValue,
-        expectedContext_referenceOnly_normalized_structured : AttributeContextExpectedValue,
+        expectedContext_default: AttributeContextExpectedValue,
+        expectedContext_normalized: AttributeContextExpectedValue,
+        expectedContext_referenceOnly: AttributeContextExpectedValue,
+        expectedContext_structured: AttributeContextExpectedValue,
+        expectedContext_normalized_structured: AttributeContextExpectedValue,
+        expectedContext_referenceOnly_normalized: AttributeContextExpectedValue,
+        expectedContext_referenceOnly_structured: AttributeContextExpectedValue,
+        expectedContext_referenceOnly_normalized_structured: AttributeContextExpectedValue,
 
-        expected_default : AttributeExpectedValue[],
-        expected_normalized : AttributeExpectedValue[],
-        expected_referenceOnly : AttributeExpectedValue[],
-        expected_structured : AttributeExpectedValue[],
-        expected_normalized_structured : AttributeExpectedValue[],
-        expected_referenceOnly_normalized : AttributeExpectedValue[],
-        expected_referenceOnly_structured : AttributeExpectedValue[],
-        expected_referenceOnly_normalized_structured : AttributeExpectedValue[],
-    ) : Promise<void> {
+        expected_default: AttributeExpectedValue[],
+        expected_normalized: AttributeExpectedValue[],
+        expected_referenceOnly: AttributeExpectedValue[],
+        expected_structured: AttributeExpectedValue[],
+        expected_normalized_structured: AttributeExpectedValue[],
+        expected_referenceOnly_normalized: AttributeExpectedValue[],
+        expected_referenceOnly_structured: AttributeExpectedValue[],
+        expected_referenceOnly_normalized_structured: AttributeExpectedValue[],
+    ): Promise<void> {
         try {
             const testInputPath: string = testHelper.getInputFolderPath(this.testsSubpath, testName);
 
@@ -153,7 +153,7 @@ export class CommonTest {
     /**
      * Runs validation to test actual output vs expected output for attributes collection vs attribute context.
      */
-    protected static validateOutputWithValues(expectedContext: AttributeContextExpectedValue, expectedAttributes: AttributeExpectedValue[], actualResolvedEntityDef: CdmEntityDefinition) : void {
+    protected static validateOutputWithValues(expectedContext: AttributeContextExpectedValue, expectedAttributes: AttributeExpectedValue[], actualResolvedEntityDef: CdmEntityDefinition): void {
         ObjectValidator.validateAttributesCollection(expectedAttributes, actualResolvedEntityDef.attributes);
         ObjectValidator.validateAttributeContext(expectedContext, actualResolvedEntityDef.attributeContext);
     }

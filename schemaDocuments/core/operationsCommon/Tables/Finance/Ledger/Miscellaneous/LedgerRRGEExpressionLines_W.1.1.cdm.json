@@ -1,0 +1,152 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerRRGEProperties_W.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerRRGEQueries_W.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerRRGEExpressionLines_W",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FieldNum",
+          "dataType": "FieldId",
+          "isReadOnly": true,
+          "displayName": "Field name",
+          "description": ""
+        },
+        {
+          "name": "LedgerRRGEProperties_W",
+          "dataType": "LedgerRRGEPropertyRecId_W",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerRRGEQueries_W",
+          "dataType": "LedgerRRGEQueryRecId_W",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Postfix",
+          "dataType": "LedgerRRGEExpressionStr_W",
+          "isNullable": true,
+          "displayName": "Postfix",
+          "description": ""
+        },
+        {
+          "name": "Prefix",
+          "dataType": "LedgerRRGEExpressionStr_W",
+          "isNullable": true,
+          "displayName": "Prefix",
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerRRGEProperties_W"
+          },
+          "name": "Relationship_LedgerRRGEProperties_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerRRGEQueries_W"
+          },
+          "name": "Relationship_LedgerRRGEQueries_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Expression lines"
+    },
+    {
+      "dataTypeName": "FieldId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerRRGEPropertyRecId_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerRRGEQueryRecId_W",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerRRGEExpressionStr_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -8,12 +8,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URISyntaxException;
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,26 +19,8 @@ import org.slf4j.LoggerFactory;
  */
 public class ResourceAdapter implements StorageAdapter {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceAdapter.class);
-
+    private static final String ROOT = "Microsoft.CommonDataModel.ObjectModel.Resources";
     private String locationHint;
-    private String root;
-    private static final String[] resourceFolders = {
-        "extensions",
-        "ODI_analogs/customer",
-        "ODI_analogs"};
-
-    public ResourceAdapter() {
-        try {
-            this.root =
-                ResourceAdapter.class.getProtectionDomain()
-                    .getCodeSource()
-                    .getLocation()
-                    .toURI()
-                    .getPath();
-        } catch (URISyntaxException e) {
-            LOGGER.error("There was an issue with constructing the root path for resources.");
-        }
-    }
 
     @Override
     public void setLocationHint(String locationHint) {
@@ -93,42 +72,17 @@ public class ResourceAdapter implements StorageAdapter {
         if (Strings.isNullOrEmpty(corpusPath)) {
             return null;
         }
-
-        String adapterPath = corpusPath.replace("-", "_");
-
-        if (adapterPath.startsWith("/")) {
-            adapterPath = StringUtils.stripStart(adapterPath, "/");
-        }
-        return root + adapterPath;
+        
+        return ROOT + corpusPath;
     }
 
     @Override
     public String createCorpusPath(String adapterPath) {
-        if (Strings.isNullOrEmpty(adapterPath) || !adapterPath.startsWith(this.root)) {
+        if (Strings.isNullOrEmpty(adapterPath) || !adapterPath.startsWith(ROOT)) {
             return null;
         }
 
-        final String corpusPathWithSlashes = adapterPath.substring(root.length());
-
-        final String[] corpusPathWithSlashesArray = corpusPathWithSlashes.split("/");
-
-        // Iterate through possible folders.
-        for (final String folder : resourceFolders) {
-            final String[] folderPathArray = folder.split("/");
-
-            // Check if the folder and the subfolder match.
-            if ((corpusPathWithSlashesArray.length > 1 && folderPathArray.length > 1
-                && Objects.equals(corpusPathWithSlashesArray[0], folderPathArray[0])
-                && Objects.equals(corpusPathWithSlashesArray[1], folderPathArray[1]))
-                || (corpusPathWithSlashesArray.length > 0
-                && Objects.equals(corpusPathWithSlashesArray[0], folder))) {
-                return "/" + folder.replace("_", "-")
-                    + "/" + corpusPathWithSlashes.substring(folder.length() + 1);
-            }
-        }
-
-        // If the adapter path doesn't contain any folder.
-        return "/" + corpusPathWithSlashes;
+        return adapterPath.substring(ROOT.length());
     }
 
     @Override

@@ -15,7 +15,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the document that has been resolved for this import.
         /// </summary>
-        internal CdmDocumentDefinition Doc { get; set; }
+        internal CdmDocumentDefinition Document { get; set; }
 
         /// <summary>
         /// Gets or sets the import path.
@@ -74,7 +74,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.Moniker = this.Moniker;
             }
 
-            copy.Doc = this.Doc;
+            copy.Document = this.Document;
             return copy;
         }
 
@@ -103,15 +103,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (postChildren != null && postChildren.Invoke(this, pathFrom))
                 return true;
             return false;
-        }
-
-        // Returns the document that has been resolved for this import.
-        internal CdmDocumentDefinition ResolvedDocument
-        {
-             get
-             {
-                 return this.Doc;
-             }
         }
     }
 }

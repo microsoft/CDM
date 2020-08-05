@@ -1,0 +1,124 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailChannelEntity.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/SupplyChain/ProductInformationManagement/EcoResProductCategoryEntity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/SupplyChain/ProductInformationManagement/EcoResProductAttributeEntity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Miscellaneous/RetailChannelCategoryAttribute.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailChannelCategoryAttributeEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RetailChannelId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductCategoryHierarchyName",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProductCategoryName",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AttributeName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Attribute name",
+          "description": ""
+        },
+        {
+          "name": "AttributeTypeName",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Attribute type name",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelEntity"
+          },
+          "name": "Relationship_ChannelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductCategoryEntity"
+          },
+          "name": "Relationship_ProductCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResProductAttributeEntity"
+          },
+          "name": "Relationship_AttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelCategoryAttribute"
+          },
+          "name": "BackingTable_RetailChannelCategoryAttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Channel category attribute"
+    }
+  ]
+}

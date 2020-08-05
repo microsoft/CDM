@@ -1,0 +1,87 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailExternalGiftCardTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MaskedCardNumber",
+          "dataType": "RetailGiftCardId",
+          "isNullable": true,
+          "displayName": "Masked gift card number",
+          "description": ""
+        },
+        {
+          "name": "HistoricBalance",
+          "dataType": "RetailBalance",
+          "isNullable": true,
+          "displayName": "Historic gift card balance",
+          "description": ""
+        },
+        {
+          "name": "CreditCardProcessors",
+          "dataType": "CreditCardProcessorsId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "RetailGiftCardId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailBalance",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CreditCardProcessorsId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}
