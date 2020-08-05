@@ -1,0 +1,71 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AuditPolicyCaseGroup.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AuditPolicyCaseGroupAttribute",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AuditPolicyCaseGroup",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Audit policy case group",
+          "description": ""
+        },
+        {
+          "name": "SourceAttribute",
+          "dataType": "RefFieldName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AuditPolicyCaseGroup"
+          },
+          "name": "Relationship_AuditPolicyCaseGroupFKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Audit policy case group attribute"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefFieldName",
+      "extendsDataType": "string"
+    }
+  ]
+}

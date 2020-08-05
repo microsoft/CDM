@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
@@ -27,8 +26,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContainerDefinition {
-  protected Map<String, CdmObjectDefinitionBase> internalDeclarations;
+  protected Map<String, CdmObjectBase> internalDeclarations;
   protected boolean isDirty = true;
+  protected boolean isValid;
   private ImportPriorities importPriorities;
   private boolean needsIndexing;
   private CdmDefinitionCollection definitions;
@@ -56,6 +56,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.isDirty = true;
     this.importsIndexed = false;
     this.currentlyIndexing = false;
+    this.isValid = true;
 
     this.clearCaches();
 
@@ -368,6 +369,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     }
 
     this.needsIndexing = true;
+    this.isValid = true;
     return this.indexIfNeededAsync(resOpt);
   }
 
@@ -393,7 +395,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
         corpus.resolveImportsAsync(this, resOpt).join();
         corpus.getDocumentLibrary().markDocumentForIndexing(this);
-        return corpus.indexDocuments(resOpt, this);
+        return corpus.indexDocuments(resOpt);
       }
 
       return true;
@@ -436,10 +438,44 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return this.getCtx().getCorpus().getPersistence().saveDocumentAsAsync(this, newName, saveReferenced, options);
   }
 
-  CdmObject fetchObjectFromDocumentPath(final String objectPath) {
+  CdmObject fetchObjectFromDocumentPath(final String objectPath, final ResolveOptions resOpt) {
     // in current document?
     if (this.internalDeclarations.containsKey(objectPath)) {
       return this.internalDeclarations.get(objectPath);
+    } else {
+      // this might be a request for an object def drill through of a reference.
+      // path/(object)/paths
+      // there can be several such requests in one path AND some of the requested
+      // defintions might be defined inline inside a reference meaning the declared path
+      // includes that reference name and could still be inside this document. example:
+      // /path/path/refToInline/(object)/member1/refToSymbol/(object)/member2
+      // the full path is not in this doc but /path/path/refToInline/(object)/member1/refToSymbol
+      // is declared in this document. we then need to go to the doc for refToSymbol and
+      // search for refToSymbol/member2
+
+      // work backward until we find something in this document
+      int lastObj = objectPath.lastIndexOf("/(object)");
+      String thisDocPart = objectPath;
+      while (lastObj > 0) {
+        thisDocPart = objectPath.substring(0, lastObj);
+        if (this.internalDeclarations.containsKey(thisDocPart)) {
+          CdmObjectReferenceBase thisDocObjRef = (CdmObjectReferenceBase)this.internalDeclarations.get(thisDocPart);
+          CdmObjectDefinitionBase thatDocObjDef = thisDocObjRef.fetchObjectDefinition(resOpt);
+          if (thatDocObjDef != null) {
+            // get from other document.
+            // but first fix the path to look like it is relative to that object as declared in that doc
+            String thatDocPart = objectPath.substring(lastObj + "/(object)".length());
+            thatDocPart = thatDocObjDef.getDeclaredPath() + thatDocPart;
+            if (thatDocPart == objectPath) {
+              // we got back to were we started. probably because something is just not found.
+              return null;
+            }
+            return thatDocObjDef.getInDocument().fetchObjectFromDocumentPath(thatDocPart, resOpt);
+          }
+          return null;
+        }
+        lastObj = thisDocPart.lastIndexOf("/(object)");
+      }
     }
     return null;
   }
@@ -511,7 +547,11 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       copy.setCtx(this.getCtx());
       copy.setName(this.getName());
       copy.getDefinitions().clear();
+      copy.internalDeclarations = new LinkedHashMap<>();
+      copy.needsIndexing = true;
       copy.getImports().clear();
+      copy.importsIndexed = false;
+      copy.importPriorities = null;
     }
 
     copy.setInDocument(copy);
@@ -531,13 +571,23 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return copy;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
     // return null intentionally
     return null;
   }
@@ -562,52 +612,61 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this._fileSystemModifiedTime = _fileSystemModifiedTime;
   }
 
-  private int prioritizeImports(final LinkedHashSet<CdmDocumentDefinition> processedSet, final Map<CdmDocumentDefinition, Integer> priorityMap,
-                                final int sequence, final Map<String, CdmDocumentDefinition> monikerMap) {
-    return prioritizeImports(processedSet, priorityMap, sequence, monikerMap, false);
-  }
-
-  private int prioritizeImports(final LinkedHashSet<CdmDocumentDefinition> processedSet, final Map<CdmDocumentDefinition, Integer> priorityMap,
-                                int sequence, final Map<String, CdmDocumentDefinition> monikerMap, final boolean skipMonikered) {
+  private int prioritizeImports(final LinkedHashSet<CdmDocumentDefinition> processedSet, final ImportPriorities importPriorities,
+                                int sequence, final boolean skipMonikered) {
     // goal is to make a map from the reverse order of imports (breadth first) to the first (aka last) sequence number in that list.
     // This gives the semantic that the 'last/shallowest' definition for a duplicate symbol wins,
     // the lower in this list a document shows up, the higher priority its definitions are for resolving conflicts.
     // for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
+    // maps document to priority.
+    final Map<CdmDocumentDefinition, Integer> priorityMap = importPriorities.getImportPriority();
+
+    // maps moniker to document.
+    final Map<String, CdmDocumentDefinition> monikerMap = importPriorities.getMonikerPriorityMap();
+
     // if already in list, don't do this again
     if (processedSet.contains(this)) {
+      // if the first document in the priority map is this then the document was the starting point of the recursion.
+      // and if this document is present in the processedSet we know that there is a cicular list of imports.
+      if (priorityMap.containsKey(this) && priorityMap.get(this) == 0) {
+          importPriorities.setHasCircularImport(true);
+      }
+
       return sequence;
     }
     processedSet.add(this);
 
     if (this.getImports() != null) {
-      // first add the imports done at this level only
+
+      // first add the imports done at this level only.
       final int l = this.getImports().getCount();
       // reverse order
       for (int i = l - 1; i >= 0; i--) {
-        final CdmImport imp = this.getImports().getAllItems().get(i);
-        final CdmDocumentDefinition impDoc = imp.getResolvedDocument();
-        // don't add the moniker imports to the priority list
+        final CdmImport imp = this.getImports().get(i);
+        final CdmDocumentDefinition impDoc = imp.getDocument();
+        // don't add the moniker imports to the priority list.
         final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
-        if (imp.getResolvedDocument() != null && !isMoniker) {
-          if (!priorityMap.containsKey(impDoc)) {
-            // add doc
-            priorityMap.put(impDoc, sequence);
-            sequence++;
-          }
+        if (imp.getDocument() != null && !isMoniker && !priorityMap.containsKey(impDoc)) {
+          // add doc.
+          priorityMap.put(impDoc, sequence);
+          sequence++;
         }
       }
 
-      // now add the imports of the imports
+      // now add the imports of the imports.
       for (int i = l - 1; i >= 0; i--) {
-        final CdmImport imp = this.getImports().getAllItems().get(i);
-        final CdmDocumentDefinition impDoc = imp.getResolvedDocument();
-        // don't add the moniker imports to the priority list
+        final CdmImport imp = this.getImports().get(i);
+        final CdmDocumentDefinition impDoc = imp.getDocument();
+        // don't add the moniker imports to the priority list.
         final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
-        if (impDoc != null && impDoc.importPriorities != null) {
-          // lucky, already done so avoid recursion and copy
+        
+        // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
+        // since the document itself will always be the first one on the list.
+        if (impDoc != null && impDoc.importPriorities != null && !impDoc.importPriorities.getHasCircularImport()) {
+          // lucky, already done so avoid recursion and copy.
           final ImportPriorities impPriSub = impDoc.getImportPriorities();
-          impPriSub.getImportPriority().remove(impDoc); // because already added above
+          impPriSub.getImportPriority().remove(impDoc); // because already added above.
           for (final Map.Entry<CdmDocumentDefinition, Integer> ip : impPriSub.getImportPriority().entrySet()
               .stream().sorted(
                   Comparator.comparing(entry -> entry.getKey().getName()))
@@ -619,23 +678,26 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
             }
           }
 
+          // if the import is not monikered then merge its monikerMap to this one.
           if (!isMoniker) {
             impPriSub.getMonikerPriorityMap().entrySet().forEach(mp -> {
               monikerMap.put(mp.getKey(), mp.getValue());
             });
           }
         } else if (impDoc != null) {
-          // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies
-          sequence = impDoc.prioritizeImports(processedSet, priorityMap, sequence, monikerMap, isMoniker);
+          // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies.
+          sequence = impDoc.prioritizeImports(processedSet, importPriorities, sequence, isMoniker);
         }
       }
-      // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies
+
+      // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies.
       if (!skipMonikered) {
-        // moniker imports are prioritized by the 'closest' use of the moniker to the starting doc. so last one found in this recursion
+        // moniker imports are prioritized by the 'closest' use of the moniker to the starting doc. so last one found in this recursion.
         for (int i = 0; i < l; i++) {
-          final CdmImport imp = this.getImports().getAllItems().get(i);
-          if (imp.getResolvedDocument() != null && imp.getMoniker() != null) {
-            monikerMap.put(imp.getMoniker(), imp.getResolvedDocument());
+          final CdmImport imp = this.getImports().get(i);
+          final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
+          if (imp.getDocument() != null && isMoniker) {
+            monikerMap.put(imp.getMoniker(), imp.getDocument());
           }
         }
       }
@@ -694,10 +756,10 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   ImportPriorities getImportPriorities() {
     if (this.importPriorities == null) {
-      this.importPriorities = new ImportPriorities();
-      this.importPriorities.getImportPriority().put(this, 0);
-      this.prioritizeImports(new LinkedHashSet<>(), this.importPriorities.getImportPriority(), 1,
-          this.importPriorities.getMonikerPriorityMap(), false);
+      final ImportPriorities importPriorities = new ImportPriorities();
+      importPriorities.getImportPriority().put(this, 0);
+      this.prioritizeImports(new LinkedHashSet<>(), importPriorities, 1, false);
+      this.importPriorities = importPriorities;
     }
     // make a copy so the caller doesn't mess these up
     return this.importPriorities.copy();

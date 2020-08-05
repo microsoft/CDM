@@ -1,0 +1,176 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/WorksheetHeader/RetailStatementTable.cdm.json"
+    },
+    {
+      "corpusPath": "RetailStatementTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCashDeclaration",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "lineNum",
+          "dataType": "LineNum",
+          "displayName": "Statement line number",
+          "description": ""
+        },
+        {
+          "name": "qty",
+          "dataType": "RetailQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "statementId",
+          "dataType": "RetailStatementId",
+          "description": ""
+        },
+        {
+          "name": "totalAmount",
+          "dataType": "RetailTotalAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "totalLine",
+          "dataType": "RetailTotalLine",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "type",
+          "dataType": "RetailCoinNoteTotal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStatementTable"
+          },
+          "name": "Relationship_RetailStatementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailStatementTrans"
+          },
+          "name": "Relationship_RetailStatementTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Cash declaration"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailStatementId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTotalAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailTotalLine",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailCoinNoteTotal",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -12,5 +12,18 @@ export enum cdmAttributeContextType {
     addedAttributeIdentity,
     addedAttributeSelectedType,
     addedAttributeExpansionTotal,
-    passThrough
+    passThrough,
+    projection,
+    source,
+    operations,
+    operationAddCountAttribute,
+    operationAddSupportingAttribute,
+    operationAddTypeAttribute,
+    operationExcludeAttributes,
+    operationArrayExpansion,
+    operationCombineAttributes,
+    operationRenameAttributes,
+    operationReplaceAsForeignKey,
+    operationIncludeAttributes,
+    operationAddAttributeGroup
 }

@@ -1,0 +1,682 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventSite.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCountryRegion.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrier.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Transportation/Main/TMSCarrierGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSCarrierService.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSHubMaster.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSEquipment.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSMode.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSRouteConfig.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSZoneMaster.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSRouteGuide",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OriginCountryRegion",
+          "dataType": "TMSCountryRegion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginHubCode",
+          "dataType": "TMSHubMasterCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginZoneMasterCode",
+          "dataType": "TMSZoneMasterCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Active",
+          "dataType": "TMSActive",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierCode",
+          "dataType": "TMSCarrierCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierGroupCode",
+          "dataType": "TMSCarrierGroupCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CarrierServiceCode",
+          "dataType": "TMSCarrierServiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContainerHigh",
+          "dataType": "TMSContainerHigh",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContainerLow",
+          "dataType": "TMSContainerLow",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerCode",
+          "dataType": "TMSCustomerCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerInvoiceCode",
+          "dataType": "TMSCustomerInvoiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestCountryRegion",
+          "dataType": "TMSCountryRegion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestCountryRegionISOCode",
+          "dataType": "TMSCountryRegionISOCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestHubCode",
+          "dataType": "TMSHubMasterCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestPostalCodeHigh",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "displayName": "ZIP/postal code to",
+          "description": ""
+        },
+        {
+          "name": "DestPostalCodeLow",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "displayName": "ZIP/postal code from",
+          "description": ""
+        },
+        {
+          "name": "DestZone",
+          "dataType": "TMSZone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestZoneMasterCode",
+          "dataType": "TMSZoneMasterCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Direction",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EffectiveUTCDateTimeFrom",
+          "dataType": "TMSEffectiveUTCDateTimeFrom",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EffectiveUTCDateTimeTo",
+          "dataType": "TMSEffectiveUTCDateTimeTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EquipmentCode",
+          "dataType": "TMSEquipmentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EquipmentCodeRslt",
+          "dataType": "TMSEquipmentCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FreightTermCode",
+          "dataType": "TMSFreightTermCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventSiteId",
+          "dataType": "InventSiteId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModeCode",
+          "dataType": "TMSModeCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "TMSName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginCountryRegionISOCode",
+          "dataType": "TMSCountryRegionISOCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginPostalCode",
+          "dataType": "TMSPostalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginZone",
+          "dataType": "TMSZone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Residential",
+          "dataType": "TMSResidential",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteConfigCode",
+          "dataType": "TMSRouteConfigCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RouteGuideCode",
+          "dataType": "TMSRouteGuideCode",
+          "description": ""
+        },
+        {
+          "name": "VendorCode",
+          "dataType": "TMSVendorCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendorInvoiceCode",
+          "dataType": "TMSVendorInvoiceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VolumeHigh",
+          "dataType": "TMSVolumeHigh",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VolumeLow",
+          "dataType": "TMSVolumeLow",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WeightHigh",
+          "dataType": "TMSWeightHigh",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WeightLow",
+          "dataType": "TMSWeightLow",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableInvoiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventSite"
+          },
+          "name": "Relationship_InventSiteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionDestRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCountryRegion"
+          },
+          "name": "Relationship_LogisticsAddressCountryRegionOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrier"
+          },
+          "name": "Relationship_TMSCarrierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierGroup"
+          },
+          "name": "Relationship_TMSCarrierGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSCarrierService"
+          },
+          "name": "Relationship_TMSCarrierServiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSHubMaster"
+          },
+          "name": "Relationship_TMSDestHubCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSEquipment"
+          },
+          "name": "Relationship_TMSEquipmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSEquipment"
+          },
+          "name": "Relationship_TMSEquipmentRsltRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSHubMaster"
+          },
+          "name": "Relationship_TMSHubMasterDestRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSMode"
+          },
+          "name": "Relationship_TMSModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSRouteConfig"
+          },
+          "name": "Relationship_TMSRouteConfigRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSZoneMaster"
+          },
+          "name": "Relationship_TMSZoneMasterDestRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSZoneMaster"
+          },
+          "name": "Relationship_TMSZoneMasterOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableInvoiceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Route guides"
+    },
+    {
+      "dataTypeName": "TMSCountryRegion",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSHubMasterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSZoneMasterCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSActive",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSCarrierCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierGroupCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCarrierServiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSContainerHigh",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TMSContainerLow",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TMSCustomerCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCustomerInvoiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSCountryRegionISOCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSPostalCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSZone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSEffectiveUTCDateTimeFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSEffectiveUTCDateTimeTo",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSEquipmentCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSFreightTermCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventSiteId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSModeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSResidential",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSRouteConfigCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRouteGuideCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSVendorCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSVendorInvoiceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSVolumeHigh",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSVolumeLow",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSWeightHigh",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TMSWeightLow",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

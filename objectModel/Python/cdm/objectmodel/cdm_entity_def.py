@@ -14,11 +14,15 @@ from .cdm_collection import CdmCollection
 from .cdm_object import CdmObject
 from .cdm_object_def import CdmObjectDefinition
 from .cdm_references_entities import CdmReferencesEntities
+from ..resolvedmodel.projections.projection_directive import ProjectionDirective
+from ..utilities.string_utils import StringUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmAttributeGroupDefinition, CdmAttributeGroupReference, \
-        CdmAttributeItem, CdmAttributeReference, CdmAttributeResolutionGuidanceDefinition, CdmCollection, CdmCorpusContext, CdmDocumentDefinition, \
-        CdmEntityAttributeDefinition, CdmEntityReference, CdmFolderDefinition, CdmTraitReference, CdmTypeAttributeDefinition
+        CdmAttributeItem, CdmAttributeReference, CdmAttributeResolutionGuidanceDefinition, CdmCollection, \
+        CdmCorpusContext, CdmDocumentDefinition, \
+        CdmEntityAttributeDefinition, CdmEntityReference, CdmFolderDefinition, CdmTraitReference, \
+        CdmTypeAttributeDefinition
     from cdm.resolvedmodel import ResolvedAttribute, ResolvedAttributeSetBuilder, ResolvedEntityReferenceSet, \
         ResolvedTraitSetBuilder, TraitSpec
     from cdm.utilities import FriendlyFormatNode, TraitToPropertyMap, VisitCallback
@@ -130,6 +134,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             ext_ref = self.extends_entity
             extends_ref_under = None
             acp_ext_ent = None
+
             if under:
                 acp_ext = AttributeContextParameters(
                     under=under,
@@ -138,38 +143,62 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                     regarding=None,
                     include_traits=False)
                 extends_ref_under = self._rasb.ras.create_attribute_context(res_opt, acp_ext)
-                acp_ext_ent = AttributeContextParameters(
-                    under=extends_ref_under,
-                    type=CdmAttributeContextType.ENTITY,
-                    name=ext_ref.named_reference,
-                    regarding=ext_ref,
-                    include_traits=False)
 
-            # save moniker, extended entity may attach a different moniker that we do not
-            # want to pass along to getting this entities attributes
-            old_moniker = res_opt._from_moniker
+            if ext_ref.explicit_reference and ext_ref.fetch_object_definition(res_opt).object_type == CdmObjectType.PROJECTION_DEF:
+                # A Projection
 
-            self._rasb.merge_attributes(self.extends_entity._fetch_resolved_attributes(res_opt, acp_ext_ent))
+                ext_ref_obj_def = ext_ref.fetch_object_definition(res_opt)
+                if extends_ref_under:
+                    acp_ext_ent = AttributeContextParameters(
+                        under=extends_ref_under,
+                        type=CdmAttributeContextType.PROJECTION,
+                        name=ext_ref_obj_def.get_name(),
+                        regarding=ext_ref,
+                        include_traits=False
+                    )
 
-            if not res_opt._check_attribute_count(self._rasb.ras._resolved_attribute_count):
-                logger.error(self._TAG, self.ctx, 'Maximum number of resolved attributes reached for the entity: {}.'.format(self.entity_name))
-                return None
+                proj_directive = ProjectionDirective(res_opt, self, ext_ref)
+                proj_def = ext_ref_obj_def
+                proj_ctx = proj_def._construct_projection_context(proj_directive, extends_ref_under)
 
-            if self.extends_entity_resolution_guidance:
-                # some guidance was given on how to integrate the base attributes into the set. apply that guidance
-                rts_base = self._fetch_resolved_traits(res_opt)  # type: ResolvedTraitSet
+                self._rasb.ras = proj_def._extract_resolved_attributes(proj_ctx)
+            else:
+                # An Entity Reference
 
-                # this context object holds all of the info about what needs to happen to resolve these attributes.
-                # make a copy and set defaults if needed
-                res_guide = self.extends_entity_resolution_guidance.copy(res_opt)  # CdmAttributeResolutionGuidanceDefinition
-                res_guide._update_attribute_defaults(res_guide.fetch_object_definition_name())
-                # holds all the info needed by the resolver code
-                arc = AttributeResolutionContext(res_opt, res_guide, rts_base)  # type: AttributeResolutionContext
+                if extends_ref_under:
+                    acp_ext_ent = AttributeContextParameters(
+                        under=extends_ref_under,
+                        type=CdmAttributeContextType.ENTITY,
+                        name=ext_ref.named_reference if ext_ref.named_reference else ext_ref.explicit_reference.get_name(),
+                        regarding=ext_ref,
+                        include_traits=False
+                    )
 
-                self._rasb.generate_applier_attributes(arc, False)  # true = apply the prepared traits to new atts
+                # save moniker, extended entity may attach a different moniker that we do not
+                # want to pass along to getting this entities attributes
+                old_moniker = res_opt._from_moniker
 
-            # reset to the old moniker
-            res_opt._from_moniker = old_moniker
+                self._rasb.merge_attributes(self.extends_entity._fetch_resolved_attributes(res_opt, acp_ext_ent))
+
+                if not res_opt._check_attribute_count(self._rasb.ras._resolved_attribute_count):
+                    logger.error(self._TAG, self.ctx, 'Maximum number of resolved attributes reached for the entity: {}.'.format(self.entity_name))
+                    return None
+
+                if self.extends_entity_resolution_guidance:
+                    # some guidance was given on how to integrate the base attributes into the set. apply that guidance
+                    rts_base = self._fetch_resolved_traits(res_opt)  # type: ResolvedTraitSet
+
+                    # this context object holds all of the info about what needs to happen to resolve these attributes.
+                    # make a copy and set defaults if needed
+                    res_guide = self.extends_entity_resolution_guidance.copy(res_opt)  # CdmAttributeResolutionGuidanceDefinition
+                    res_guide._update_attribute_defaults(res_guide.fetch_object_definition_name())
+                    # holds all the info needed by the resolver code
+                    arc = AttributeResolutionContext(res_opt, res_guide, rts_base)  # type: AttributeResolutionContext
+
+                    self._rasb.generate_applier_attributes(arc, False)  # true = apply the prepared traits to new atts
+
+                # reset to the old moniker
+                res_opt._from_moniker = old_moniker
 
         self._rasb.mark_inherited()
         self._rasb.ras.attribute_context = under
@@ -218,7 +247,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmEntityDefinition'] = None) -> 'CdmEntityDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmEntityDefinition(self.ctx, self.entity_name, None)
@@ -245,7 +274,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         """Create a resolved copy of the entity."""
 
         if not res_opt:
-            res_opt = ResolveOptions(self)
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
         if not res_opt.wrt_doc:
             logger.error(self._TAG, self.ctx, 'No WRT document was supplied.', self.create_resolved_entity_async.__name__)
@@ -261,7 +290,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         # Don't overwite the source document.
         target_at_corpus_path = self.ctx.corpus.storage.create_absolute_corpus_path(folder.at_corpus_path, folder) + file_name
-        if target_at_corpus_path == orig_doc:
+        if StringUtils.equals_with_ignore_case(target_at_corpus_path, orig_doc):
             logger.error(self._TAG, self.ctx, 'Attempting to replace source entity\'s document \'{}\''.format(
                 target_at_corpus_path), self.create_resolved_entity_async.__name__)
             return None
@@ -497,7 +526,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                     att_grp_ref.explicit_reference = att_grp
                     container._add_attribute_def(att_grp_ref)
                     # isn't this where ...
-                    add_attributes(cast('ResolvedAttributeSet', ra.target), att_grp, att_path + '/members/')
+                    add_attributes(cast('ResolvedAttributeSet', ra.target), att_grp, att_path + '/(object)/members/')
                 else:
                     att = self.ctx.corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, ra.resolved_name)  # type: CdmTypeAttributeDefinition
                     att.attribute_context = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_CONTEXT_REF, ra_ctx.at_corpus_path, True)
@@ -588,7 +617,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
             return None
 
         # Get a fresh ref.
-        ent_resolved = cast('CdmEntityDefinition', doc_res._fetch_object_from_document_path(ent_name))
+        ent_resolved = cast('CdmEntityDefinition', doc_res._fetch_object_from_document_path(ent_name, res_opt_new))
 
         self.ctx.corpus._res_ent_map[self.at_corpus_path] = ent_resolved.at_corpus_path
 
@@ -626,7 +655,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         self.ctx.corpus._is_currently_resolving = True
 
         if not res_opt:
-            res_opt = ResolveOptions(self)
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
         res_opt = CdmObject._copy_resolve_options(res_opt)
         res_opt.directives = AttributeResolutionDirectiveSet(set(['normalized', 'referenceOnly']))
@@ -665,6 +694,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         return ent_ref_set_cache
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
+        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
         return self._is_derived_from_def(res_opt, self.extends_entity, self.get_name(), base)
 
     async def _query_on_traits_async(self, query_spec: Union[str, object]) -> Iterable[object]:

@@ -1,0 +1,292 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/ConsignmentReplenishmentOrderHeader.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ConsignmentReplenishmentOrderLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AddressRefTableId",
+          "dataType": "AddressRefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AddressRefRecId",
+          "dataType": "AddressRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConfirmedDeliveryDate",
+          "dataType": "ConsignmentConfirmedDeliveryDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryAddressName",
+          "dataType": "LogisticsAddressName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeliveryPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemIdSmall",
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "TradeInventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "TradeLineNumber",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentInventoryQuantity",
+          "dataType": "ConsignmentReplenishmentInventoryQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentOrderLineStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentOrderNumber",
+          "dataType": "ConsignmentReplenishmentOrderNumber",
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentQuantity",
+          "dataType": "ConsignmentReplenishmentQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplenishmentUnitId",
+          "dataType": "UnitOfMeasureSymbol",
+          "description": ""
+        },
+        {
+          "name": "RequestedDeliveryDate",
+          "dataType": "ConsignmentRequestedDeliveryDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemainingInventoryPhysicalQuantity",
+          "dataType": "ConsignmentRemainingInventoryPhysicalQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemainingReplenishmentPhysicalQuantity",
+          "dataType": "ConsignmentRemainingReplenishmentPhysicalQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiveReplenishmentQuantityNow",
+          "dataType": "ConsignmentReplenishmentQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiveInventoryQuantityNow",
+          "dataType": "ConsignmentReplenishmentInventoryQuantity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_DeliveryPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventoryDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_ItemRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ConsignmentReplenishmentOrderHeader"
+          },
+          "name": "Relationship_ReplenishmentOrderHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Consignment replenishment order lines"
+    },
+    {
+      "dataTypeName": "AddressRefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AddressRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ConsignmentConfirmedDeliveryDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LogisticsAddressName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemIdSmall",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeInventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeLineNumber",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ConsignmentReplenishmentInventoryQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ConsignmentReplenishmentOrderNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConsignmentReplenishmentQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ConsignmentRequestedDeliveryDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ConsignmentRemainingInventoryPhysicalQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ConsignmentRemainingReplenishmentPhysicalQuantity",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

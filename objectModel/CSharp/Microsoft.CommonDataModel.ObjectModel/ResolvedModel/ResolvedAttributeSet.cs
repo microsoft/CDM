@@ -295,7 +295,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     under = appliedAttSet.AttributeContext,
                     type = Enums.CdmAttributeContextType.GeneratedSet,
                     Name = "_generatedAttributeSet"
-
                 };
                 appliedAttSet.AttributeContext = CdmAttributeContext.CreateChildUnder(traits.ResOpt, acp);
                 acp = new AttributeContextParameters

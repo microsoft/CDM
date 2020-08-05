@@ -7,7 +7,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
+    using System.Linq;
+    using System.Runtime.CompilerServices;
 
     class EntityAttributePersistence
     {
@@ -15,14 +18,72 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         {
             var entityAttribute = ctx.Corpus.MakeObject<CdmEntityAttributeDefinition>(CdmObjectType.EntityAttributeDef, (string)obj["name"]);
 
-            if (obj["explanation"] != null)
-                entityAttribute.Explanation = (string)obj["explanation"];
+            entityAttribute.Description = Utils.PropertyFromDataToString(obj["description"]);
+            entityAttribute.DisplayName = Utils.PropertyFromDataToString(obj["displayName"]);
+            entityAttribute.Explanation = Utils.PropertyFromDataToString(obj["explanation"]);
 
-            entityAttribute.Entity = EntityReferencePersistence.FromData(ctx, obj["entity"]);
+            if (obj["cardinality"] != null)
+            {
+                string minCardinality = null;
+                if (obj["cardinality"]["minimum"] != null)
+                    minCardinality = (string)obj["cardinality"]["minimum"];
+
+                string maxCardinality = null;
+                if (obj["cardinality"]["maximum"] != null)
+                    maxCardinality = (string)obj["cardinality"]["maximum"];
+
+                if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
+                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Both minimum and maximum are required for the Cardinality property.", nameof(FromData));
+
+                if (!CardinalitySettings.IsMinimumValid(minCardinality))
+                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Invalid minimum cardinality {minCardinality}.", nameof(FromData));
+
+                if (!CardinalitySettings.IsMaximumValid(maxCardinality))
+                    Logger.Error(nameof(EntityAttributePersistence), ctx, $"Invalid maximum cardinality {maxCardinality}.", nameof(FromData));
+
+                if (!string.IsNullOrWhiteSpace(minCardinality) &&
+                    !string.IsNullOrWhiteSpace(maxCardinality) &&
+                    CardinalitySettings.IsMinimumValid(minCardinality) &&
+                    CardinalitySettings.IsMinimumValid(maxCardinality))
+                {
+                    entityAttribute.Cardinality = new CardinalitySettings(entityAttribute)
+                    {
+                        Minimum = minCardinality,
+                        Maximum = maxCardinality
+                    };
+                }
+            }
+
+            entityAttribute.IsPolymorphicSource = (bool?)obj["isPolymorphicSource"];
+
+            bool isProjection = obj["entity"] != null &&
+                !(obj["entity"] is JValue) &&
+                obj["entity"]["source"] != null;
+            if (isProjection)
+            {
+                CdmProjection projection = ProjectionPersistence.FromData(ctx, obj["entity"]);
+                projection.Owner = entityAttribute;
+
+                CdmEntityReference inlineEntityRef = ctx.Corpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, null);
+                inlineEntityRef.ExplicitReference = projection;
+                entityAttribute.Entity = inlineEntityRef;
+            }
+            else
+            {
+                entityAttribute.Entity = EntityReferencePersistence.FromData(ctx, obj["entity"]);
+            }
 
             entityAttribute.Purpose = PurposeReferencePersistence.FromData(ctx, obj["purpose"]);
             Utils.AddListToCdmCollection(entityAttribute.AppliedTraits, Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]));
-            entityAttribute.ResolutionGuidance = AttributeResolutionGuidancePersistence.FromData(ctx, obj["resolutionGuidance"]);
+            // ignore resolution guidance if the entity is a projection
+            if (obj["resolutionGuidance"] != null && isProjection)
+            {
+                Logger.Error(nameof(EntityAttributePersistence), ctx, $"The EntityAttribute {entityAttribute.Name} is projection based. Resolution guidance is not supported with a projection.");
+            }
+            else
+            {
+                entityAttribute.ResolutionGuidance = AttributeResolutionGuidancePersistence.FromData(ctx, obj["resolutionGuidance"]);
+            }
             return entityAttribute;
         }
 
@@ -32,10 +93,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 Explanation = instance.Explanation,
                 Name = instance.Name,
+                IsPolymorphicSource = instance.IsPolymorphicSource,
                 Entity = Utils.JsonForm(instance.Entity, resOpt, options),
                 Purpose = Utils.JsonForm(instance.Purpose, resOpt, options),
-                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits, options),
-                ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options)
+                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty), options),
+                ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options),
+                DisplayName = instance.GetProperty("displayName"),
+                Description = instance.GetProperty("description")
             };
         }
     }

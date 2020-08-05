@@ -44,10 +44,6 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 
@@ -182,13 +178,23 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     return copy;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, CdmAttributeContext under) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, CdmAttributeContext under) {
     final ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
     if (under != null) {
       final AttributeContextParameters acpAttGrp = new AttributeContextParameters();

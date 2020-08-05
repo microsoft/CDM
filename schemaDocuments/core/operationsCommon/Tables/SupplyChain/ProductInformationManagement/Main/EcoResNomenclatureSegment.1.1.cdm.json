@@ -1,0 +1,78 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Miscellaneous/EcoResNomenclature.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResNomenclatureSegment",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Nomenclature",
+          "dataType": "EcoResNomenclatureRecId",
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SegmentNumber",
+          "dataType": "EcoResNomenclatureSegmentNumber",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResNomenclature"
+          },
+          "name": "Relationship_NomenclatureRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Nomenclature segment"
+    },
+    {
+      "dataTypeName": "EcoResNomenclatureRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResNomenclatureSegmentNumber",
+      "extendsDataType": "integer"
+    }
+  ]
+}

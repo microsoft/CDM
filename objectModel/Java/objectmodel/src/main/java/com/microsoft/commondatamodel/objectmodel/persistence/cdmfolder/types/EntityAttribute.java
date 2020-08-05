@@ -11,8 +11,11 @@ public class EntityAttribute {
     private JsonNode purpose;
     private JsonNode entity;
     private String name;
+    private String description;
+    private String displayName;
     private ArrayNode appliedTraits;
     private JsonNode resolutionGuidance;
+    private Boolean isPolymorphicSource;
 
     public String getExplanation() {
         return explanation;
@@ -46,6 +49,22 @@ public class EntityAttribute {
         this.name = name;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(final String description) {
+        this.description = description;
+    }
+
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    public void setDisplayName(final String displayName) {
+        this.displayName = displayName;
+    }
+
     public ArrayNode getAppliedTraits() {
         return appliedTraits;
     }
@@ -60,6 +79,14 @@ public class EntityAttribute {
 
     public void setResolutionGuidance(final JsonNode resolutionGuidance) {
         this.resolutionGuidance = resolutionGuidance;
+    }
+
+    public Boolean getIsPolymorphicSource() {
+        return isPolymorphicSource;
+    }
+
+    public void setIsPolymorphicSource(final Boolean polymorphicSource) {
+        isPolymorphicSource = polymorphicSource;
     }
 }
 

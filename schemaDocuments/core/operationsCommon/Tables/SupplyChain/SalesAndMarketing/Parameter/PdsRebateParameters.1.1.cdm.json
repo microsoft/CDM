@@ -1,0 +1,224 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PdsRebateParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualPaymPost",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Manual posting",
+          "description": ""
+        },
+        {
+          "name": "PdsARConsumptionJournalId",
+          "dataType": "PdsARConsumptionJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsFreightJournalId",
+          "dataType": "PdsFreightJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsInvoiceJournalNameId",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "AP invoice journal",
+          "description": ""
+        },
+        {
+          "name": "PdsInvoiceJournalPaymentTerm",
+          "dataType": "PaymTermId",
+          "isNullable": true,
+          "displayName": "Terms of payment on invoice",
+          "description": ""
+        },
+        {
+          "name": "PdsLedgerAccrualJournalNameId",
+          "dataType": "PdsLedgerAccrualJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsRebateAtInvoicing",
+          "dataType": "PdsRebateAtInvoicing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsStartingDayOfWeekPeriod",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Starting day of week",
+          "description": ""
+        },
+        {
+          "name": "PdsTradeSpendingJournalNameId",
+          "dataType": "PdsTradeSpendingJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_ARConsumptionJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_FreightJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_InvoiceJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerAccrualJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_TradeSpendingJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Rebate module parameters"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsARConsumptionJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsFreightJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsLedgerAccrualJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PdsRebateAtInvoicing",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PdsTradeSpendingJournalId",
+      "extendsDataType": "string"
+    }
+  ]
+}

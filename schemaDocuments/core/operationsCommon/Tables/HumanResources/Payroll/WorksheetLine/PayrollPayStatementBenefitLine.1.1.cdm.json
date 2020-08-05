@@ -1,0 +1,104 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PayrollPayStatementLine.1.1.cdm.json",
+      "moniker": "base_PayrollPayStatementLine"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollPayStatementBenefitLine",
+      "extendsEntity": "base_PayrollPayStatementLine/PayrollPayStatementLine",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BaseTimeEarningBaseAmount",
+          "dataType": "PayrollStatementAccountingCurrencyAmount",
+          "isNullable": true,
+          "displayName": "Base earning amount",
+          "description": ""
+        },
+        {
+          "name": "BaseTimeEarningBaseHours",
+          "dataType": "PayrollEarningQuantity",
+          "isNullable": true,
+          "displayName": "Base earning hours",
+          "description": ""
+        },
+        {
+          "name": "Benefit",
+          "dataType": "HcmBenefitRecId",
+          "description": ""
+        },
+        {
+          "name": "PremiumEarningBaseAmount",
+          "dataType": "PayrollStatementAccountingCurrencyAmount",
+          "isNullable": true,
+          "displayName": "Premium earning amount",
+          "description": ""
+        },
+        {
+          "name": "PremiumEarningBaseHours",
+          "dataType": "PayrollEarningQuantity",
+          "isNullable": true,
+          "displayName": "Premium earning hours",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pay statement benefit lines"
+    },
+    {
+      "dataTypeName": "PayrollStatementAccountingCurrencyAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PayrollEarningQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "HcmBenefitRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

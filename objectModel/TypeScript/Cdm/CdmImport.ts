@@ -19,7 +19,7 @@ export class CdmImport extends cdmObjectSimple {
     /**
      * @internal
      */
-    public doc: CdmDocumentDefinition;
+    public document: CdmDocumentDefinition;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.import;
@@ -48,7 +48,7 @@ export class CdmImport extends cdmObjectSimple {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmImport;
@@ -60,7 +60,7 @@ export class CdmImport extends cdmObjectSimple {
                 copy.corpusPath = this.corpusPath;
                 copy.moniker = this.moniker;
             }
-            copy.doc = this.doc;
+            copy.document = this.document;
 
             return copy;
         }
@@ -100,12 +100,5 @@ export class CdmImport extends cdmObjectSimple {
             return false;
         }
         // return p.measure(bodyCode);
-    }
-
-    /**
-     * @internal
-     */
-    public get resolvedDocument(): CdmDocumentDefinition {
-        return this.doc;
     }
 }

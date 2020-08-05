@@ -6,11 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.TimeUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.time.OffsetDateTime;
@@ -395,10 +391,6 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 
@@ -408,8 +400,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
       return false;
     }
 
-    if (this.getDefinitions() != null && this.getDefinitions()
-        .visitList(pathFrom, preChildren, postChildren)) {
+    if (this.getDefinitions() != null && this.getDefinitions().visitList(pathFrom, preChildren, postChildren)) {
       return true;
     }
 
@@ -420,7 +411,9 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     }
 
     if (this.getRelationships() != null) {
-      this.getSubManifests().visitList(pathFrom + "/relationships/", preChildren, postChildren);
+      if (this.getRelationships().visitList(pathFrom + "/relationships/", preChildren, postChildren)) {
+        return true;
+      }
     }
 
     if (this.getSubManifests() != null) {
@@ -428,7 +421,11 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         return true;
       }
     }
-    return postChildren != null && postChildren.invoke(this, pathFrom);
+    if (postChildren != null && postChildren.invoke(this, pathFrom)) {
+      return true;
+    }
+
+    return false;
   }
 
   @Override
@@ -465,8 +462,8 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
   /**
    * Creates a resolved copy of the manifest.
-   * newEntityDocumentNameFormat specifies a pattern to use when creating documents for resolved entites.
-   * The default is "{f}resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as the manifest. 
+   * newEntityDocumentNameFormat specifies a pattern to use when creating documents for resolved entities.
+   * The default is "{f}resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as the manifest.
    * Every instance of the string {n} is replaced with the entity name from the source manifest.
    * Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
    * (if there is one that is possible as a relative location, else nothing).
@@ -479,8 +476,8 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
   /**
    * Creates a resolved copy of the manifest.
-   * newEntityDocumentNameFormat specifies a pattern to use when creating documents for resolved entites.
-   * The default is "{f}resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as the manifest. 
+   * newEntityDocumentNameFormat specifies a pattern to use when creating documents for resolved entities.
+   * The default is "{f}resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as the manifest.
    * Every instance of the string {n} is replaced with the entity name from the source manifest.
    * Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
    * (if there is one that is possible as a relative location, else nothing).
@@ -553,6 +550,13 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     // Create an imports doc with all the necessary resolved entity references and then resolve it.
     final CdmManifestDefinition resolvedManifest = new CdmManifestDefinition(this.getCtx(), newManifestName);
 
+    // bring over any imports in this document or other bobbles
+    resolvedManifest.setSchema(this.getSchema());
+    resolvedManifest.setExplanation(this.explanation);
+    for (CdmImport imp: this.getImports()) {
+      resolvedManifest.getImports().add((CdmImport)imp.copy());
+    }
+
     // Add the new document to the folder.
     if (resolvedManifestFolder.getDocuments().add(resolvedManifest) == null) {
       // When would this happen?
@@ -613,7 +617,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         }
 
         // Next create the resolved entity.
-        AttributeResolutionDirectiveSet withDirectives = 
+        AttributeResolutionDirectiveSet withDirectives =
           directives != null ? directives : this.getCtx().getCorpus().getDefaultResolutionDirectives();
         final ResolveOptions resOpt = new ResolveOptions(entDef.getInDocument(), withDirectives != null ? withDirectives.copy() : null);
         Logger.debug(
@@ -755,7 +759,7 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     final CdmE2ERelationship relCopy = this
         .getCtx()
         .getCorpus()
-        .makeObject(CdmObjectType.E2ERelationshipDef);
+        .makeObject(CdmObjectType.E2ERelationshipDef, rel.getName());
 
     relCopy.setToEntity(this
         .getCtx()
@@ -775,6 +779,10 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   // standardized way of turning a relationship object into a key for caching
   // without using the object itself as a key (could be duplicate relationship objects)
   String rel2CacheKey(final CdmE2ERelationship rel) {
-    return rel.getToEntity() + "|" + rel.getToEntityAttribute() + "|" + rel.getFromEntity() + "|" + rel.getFromEntityAttribute();
+    String nameAndPipe = "";
+    if (!StringUtils.isNullOrTrimEmpty(rel.getName())) {
+      nameAndPipe = rel.getName() + "|";
+    }
+    return nameAndPipe + rel.getToEntity() + "|" + rel.getToEntityAttribute() + "|" + rel.getFromEntity() + "|" + rel.getFromEntityAttribute();
   }
 }

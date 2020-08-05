@@ -14,7 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     /// <summary>
     /// An adapter pre-configured to read the standard schema files published by CDM.
     /// </summary>
-    class CdmStandardsAdapter : NetworkAdapter, StorageAdapter
+    public class CdmStandardsAdapter : NetworkAdapter, StorageAdapter
     {
         internal const string Type = "cdm-standards";
         private const string STANDARDS_ENDPOINT = "https://cdm-schema.microsoft.com";
@@ -131,9 +131,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         {
             var httpRequest = this.SetUpCdmRequest(Root + corpusPath, null, HttpMethod.Get);
 
-            var cdmResponse = await base.ExecuteRequest(httpRequest);
-
-            return await cdmResponse.Content.ReadAsStringAsync();
+            using (var cdmResponse = await base.ExecuteRequest(httpRequest))
+            {
+                return await cdmResponse.Content.ReadAsStringAsync();
+            }
         }
 
         /// <inheritdoc />

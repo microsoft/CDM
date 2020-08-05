@@ -5,6 +5,7 @@ import { Stopwatch } from 'ts-stopwatch';
 import {
     CdmConstants,
     CdmCorpusDefinition,
+    cdmDataFormat,
     CdmDocumentDefinition,
     CdmEntityDeclarationDefinition,
     CdmEntityDefinition,
@@ -13,7 +14,8 @@ import {
     cdmObjectType,
     CdmReferencedEntityDeclarationDefinition,
     cdmStatusLevel,
-    CdmTraitReference
+    CdmTraitReference,
+    CdmTypeAttributeDefinition
 } from '../../../internal';
 import { CdmFolder, ModelJson } from '../../../Persistence';
 import {
@@ -22,7 +24,8 @@ import {
     Import,
     ManifestContent
 } from '../../../Persistence/CdmFolder/types';
-import { Model } from '../../../Persistence/ModelJson/types';
+import { LocalEntity, Model } from '../../../Persistence/ModelJson/types';
+import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
 
 /**
@@ -76,7 +79,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         stopwatch.stop();
 
         expect(stopwatch.getTime())
-            .toBeLessThan(5000);
+            .toBeLessThan(8500);
         stopwatch.reset();
 
         stopwatch.start();
@@ -86,7 +89,7 @@ describe('Persistence.ModelJson.ModelJson', () => {
         HandleOutput('TestLoadingCdmFolderAndModelJsonToData', modelJsonExtension, obtainedModelJson);
 
         expect(stopwatch.getTime())
-            .toBeLessThan(5000);
+            .toBeLessThan(8500);
     });
 
     /**
@@ -329,6 +332,40 @@ describe('Persistence.ModelJson.ModelJson', () => {
 
         expect(obtainedModelJson.entities[0].description)
             .toEqual('test description');
+    });
+
+    /**
+     * Tests that the "date" and "time" data types are correctly loaded/saved from/to a model.json.
+     */
+    it('TestLoadingAndSavingDateAndTimeDataTypes', async () => {
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestLoadingAndSavingDateAndTimeDataTypes');
+
+        // Load the manifest and resolve it
+        const manifest: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
+        const resolvedManifest: CdmManifestDefinition = await manifest.createResolvedManifestAsync('resolved', undefined);
+
+        // Convert loaded manifest to model.json
+        const modelJson: Model = await ModelJson.ManifestPersistence.toData(resolvedManifest, undefined, undefined);
+
+        // Verify that the attributes' data types were correctly persisted as "date" and "time"
+        expect((modelJson.entities[0] as LocalEntity).attributes[0].dataType)
+            .toEqual('date');
+        expect((modelJson.entities[0] as LocalEntity).attributes[1].dataType)
+            .toEqual('time');
+
+        // Now check that these attributes' data types are still "date" and "time" when loading the model.json back to manifest
+        // We first need to create a second adapter to the input folder to fool the OM into thinking it's different
+        // This is because there's a bug that currently prevents us from saving and then loading a model.json under the same namespace
+        cdmCorpus.storage.mount('local2', new LocalAdapter(testHelper.getInputFolderPath(testsSubpath, 'TestLoadingAndSavingDateAndTimeDataTypes')));
+
+        const manifestFromModelJson: CdmManifestDefinition = await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local2:/model.json');
+        const entity: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(manifestFromModelJson.entities.allItems[0].entityPath, manifestFromModelJson);
+
+        // Verify that the attributes' data types were correctly loaded as "date" and "time"
+        expect((entity.attributes.allItems[0] as CdmTypeAttributeDefinition).dataFormat)
+            .toEqual(cdmDataFormat.date);
+        expect((entity.attributes.allItems[1] as CdmTypeAttributeDefinition).dataFormat)
+            .toEqual(cdmDataFormat.time);
     });
 
     /**

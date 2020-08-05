@@ -23,3 +23,13 @@ def tckprint(msg, color, pre_tabs=0, the_end='\n'):
 def kvprint(key, value, color, pre_tabs=0):
     tckprint(key+': ', color, pre_tabs, '')
     print(value)
+
+
+class StringUtils:
+    @staticmethod
+    def equals_with_ignore_case(a: str, b: str) -> bool:
+        return a.lower() == b.lower()
+
+    @staticmethod
+    def equals_with_case(a: str, b: str) -> bool:
+        return a == b

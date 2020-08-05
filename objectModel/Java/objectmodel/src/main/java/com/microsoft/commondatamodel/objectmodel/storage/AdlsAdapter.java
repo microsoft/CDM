@@ -9,10 +9,10 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpClient;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequest;
-import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequestException;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
 import java.io.IOException;
@@ -103,6 +103,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     return CompletableFuture.supplyAsync(() -> {
       final CdmHttpRequest cdmHttpRequest;
       final String url = this.createAdapterPath(corpusPath);
+
       cdmHttpRequest = this.buildRequest(url, "GET");
       try {
         final CdmHttpResponse res = this.executeRequest(cdmHttpRequest).get();
@@ -123,6 +124,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     }
     return CompletableFuture.runAsync(() -> {
       final String url = this.createAdapterPath(corpusPath);
+
       try {
         CdmHttpRequest request = this.buildRequest(url + "?resource=file", "PUT");
         this.executeRequest(request).get();
@@ -141,7 +143,11 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
 
   public String createAdapterPath(final String corpusPath) {
     final String formattedCorpusPath = this.formatCorpusPath(corpusPath);
-    if(adapterPaths.containsKey(formattedCorpusPath)) {
+    if (formattedCorpusPath == null) {
+      return null;
+    }
+
+    if (adapterPaths.containsKey(formattedCorpusPath)) {
       return adapterPaths.get(formattedCorpusPath);
     }
     return "https://" + hostname + root + this.formatCorpusPath(corpusPath);
@@ -183,7 +189,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
         CdmHttpResponse cdmResponse = executeRequest(request).join();
 
         if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
-          return DateUtils.parseDate(cdmResponse.getResponseHeaders().get("Date"))
+          return DateUtils.parseDate(cdmResponse.getResponseHeaders().get("Last-Modified"))
               .toInstant()
               .atOffset(ZoneOffset.UTC);
         }
@@ -199,6 +205,10 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
 
   public CompletableFuture<List<String>> fetchAllFilesAsync(final String folderCorpusPath) {
     return CompletableFuture.supplyAsync(() -> {
+      if (folderCorpusPath == null) {
+        return null;
+      }
+
       final String url = "https://" + this.hostname + "/" + this.fileSystem;
       String directory = this.subPath + this.formatCorpusPath(folderCorpusPath);
       if (directory.startsWith("/")) {
@@ -279,10 +289,14 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
    * @return The formatted corpus path.
    */
   private String formatCorpusPath(String corpusPath) {
-    final String adls = "adls:";
-    if (corpusPath.startsWith(adls)) {
-      corpusPath = corpusPath.substring(adls.length());
-    } else if (corpusPath.length() > 0 && !corpusPath.startsWith("/")) {
+    final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
+    if (pathTuple == null) {
+      return null;
+    }
+
+    corpusPath = pathTuple.getRight();
+
+    if (corpusPath.length() > 0 && !corpusPath.startsWith("/")) {
       corpusPath = "/" + corpusPath;
     }
 
@@ -458,11 +472,31 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     return this.adlsAdapterAuthenticator.getClientId();
   }
 
+  public void setClientId(String clientId) {
+    this.adlsAdapterAuthenticator.setClientId(clientId);
+  }
+
   public String getSecret() {
     return this.adlsAdapterAuthenticator.getSecret();
   }
 
+  public void setSecret(String secret) {
+    this.adlsAdapterAuthenticator.setSecret(secret);
+  }
+
   public String getSharedKey() {
     return this.adlsAdapterAuthenticator.getSharedKey();
+  }
+
+  public void setSharedKey(String sharedKey) {
+    this.adlsAdapterAuthenticator.setSharedKey(sharedKey);
+  }
+
+  public TokenProvider getTokenProvider() {
+    return this.adlsAdapterAuthenticator.getTokenProvider();
+  }
+
+  public void setTokenProvider(TokenProvider tokenProvider) {
+    this.adlsAdapterAuthenticator.setTokenProvider(tokenProvider);
   }
 }

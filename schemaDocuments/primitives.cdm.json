@@ -1,6 +1,11 @@
 {
   "$schema": "./schema.cdm.json",
   "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "uri": "/foundations.cdm.json"
+    }
+  ],
   "definitions": [
     {
       "traitName": "is",
@@ -15,6 +20,11 @@
       "traitName": "means",
       "extendsTrait": "is",
       "explanation": "a root with a more meaningful base name for certain semantic meaning traits"
+    },
+    {
+      "traitName": "has",
+      "extendsTrait": "is",
+      "explanation": "a root for traits that describe properties of an object"
     },
     {
       "dataTypeName": "any",
@@ -81,6 +91,7 @@
     },
     {
       "dataTypeName": "integer",
+      "explanation": "Whole numbers, assumed to correspond with a 32 bit signed int",
       "extendsDataType": "any",
       "exhibitsTraits": [
         "is.dataFormat.integer"
@@ -89,6 +100,7 @@
     {
       "dataTypeName": "float",
       "extendsDataType": "any",
+      "explanation": "Fractional numbers, assumed to correspond with a 32 bit float IEEE approximation.",
       "exhibitsTraits": [
         "is.dataFormat.floatingPoint"
       ]
@@ -101,19 +113,18 @@
         {
           "name": "precision",
           "explanation": "the total number of significant digits",
-          "dataType": "integer",
-          "direction": "both"
+          "dataType": "integer"
         },
         {
           "name": "scale",
           "explanation": "the number of digits to the right of the decimal place",
-          "dataType": "integer",
-          "direction": "both"
+          "dataType": "integer"
         }
       ]
     },
     {
       "dataTypeName": "decimal",
+      "explanation": "A precice fractional number with a specific precision and scale",
       "extendsDataType": "any",
       "exhibitsTraits": [
         "is.dataFormat.numeric.shaped"
@@ -225,21 +236,43 @@
       "explanation": "types for trait parameters that take objects as values"
     },
     {
-      "dataTypeName": "entity",
-      "extendsDataType": "cdmObject",
-      "explanation": "types for trait parameters that take objects as values"
+      "traitName": "means.entityName",
+      "extendsTrait": "means",
+      "explanation": "a string value is the name of a CDM entity."
     },
     {
       "dataTypeName": "entityName",
       "extendsDataType": "string",
-      "explanation": "type for trait parameters that take attribute names as values",
+      "explanation": "type for trait parameters that take entity names as values",
       "exhibitsTraits": [
         {
           "traitReference": {
             "traitName": "means.entityName",
-            "extendsTrait": "means"
+            "extendsTrait": "means",
+            "explanation": "[deprecated] use the standalone 'means.entityName' trait instead."
           }
+        },
+        "means.entityName"
+      ]
+    },
+    {
+      "traitName": "means.entityName.specific",
+      "extendsTrait": "means.entityName",
+      "explanation": "holds the name of specific CDM entity as a parameter of the trait.",
+      "hasParameters": [
+        {
+          "name": "entity",
+          "dataType": "entityName",
+          "explanation": "the name of a specific CDM entity."
         }
+      ]
+    },
+    {
+      "dataTypeName": "entity",
+      "extendsDataType": "cdmObject",
+      "explanation": "types for trait parameters that take objects as values",
+      "exhibitsTraits": [
+        "means.entityName.specific"
       ]
     },
     {
@@ -327,7 +360,18 @@
     },
     {
       "entityName": "reference",
-      "explanation": "a root entity for constant reference tables"
+      "explanation": "a root entity for constant reference tables",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ]
     },
     {
       "purposeName": "hasA",
@@ -359,8 +403,7 @@
           "name": "attribute",
           "dataType": "attribute",
           "defaultValue": "this.attribute",
-          "required": true,
-          "direction": "both"
+          "required": true
         }
       ]
     },
@@ -434,13 +477,51 @@
       "explanation": "base for traits that are used to decorate the attributes and artifacts created by the traits on the hasFlexibleRelationshipWithEntity relationship."
     },
     {
+      "entityName": "entitySet",
+      "explanation": "holds a list of entity references",
+      "extendsEntity": "reference",
+      "hasAttributes": [
+        {
+          "name": "entityReference",
+          "dataType": "entityName",
+          "purpose": "hasA"
+        },
+        {
+          "name": "attributeReference",
+          "dataType": "attributeName",
+          "purpose": "hasA"
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "traitName": "is.linkedEntity.identifier",
       "extendsTrait": "is.linkedEntity",
       "explanation": "Marks the attribute(s) that hold foreign key references to a linked (used as an attribute) entity. This attribute is added to the resolved entity to enumerate the referenced entities.",
       "hasParameters": [
         {
           "name": "entityReferences",
-          "dataType": "entity",
+          "dataType": {
+            "dataTypeReference": "entity",
+            "appliedTraits": [
+              {
+                "traitReference": "means.entityName.specific",
+                "arguments": [
+                  "entitySet"
+                ]
+              }
+            ]
+          },
           "explanation": "a reference to the constant entity holding the list of entity references"
         }
       ]

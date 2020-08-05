@@ -33,7 +33,9 @@ class ResolveOptions:
 
         # Set of string flags that direct how attribute resolving traits behave.
         # avoid one to many relationship nesting and to use foreign keys for many to one refs.
-        self.directives = directives or AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'})  # type: AttributeResolutionDirectiveSet
+        # Provided or default to 'avoid one to many relationship nesting and to use foreign keys for many to one refs'.
+        # this is for back compat with behavior before the corpus has a default directive property
+        self.directives = directives.copy() if directives else AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'})  # type: AttributeResolutionDirectiveSet
 
         # When enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead.
         self.shallow_validation = None  # type: Optional[bool]
@@ -66,5 +68,3 @@ class ResolveOptions:
             if amount > self._resolved_attribute_limit:
                 return False
         return True
-
-

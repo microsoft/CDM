@@ -137,6 +137,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
         }
 
         /// <summary>
+        /// Testing that patterns behave correctly with variations to rootLocation
+        /// </summary>
+        [TestMethod]
+        public async Task TestVariationsInRootLocation()
+        {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestVariationsInRootLocation");
+            CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("pattern.manifest.cdm.json");
+            await manifest.FileStatusCheckAsync();
+
+            CdmLocalEntityDeclarationDefinition startsWithSlash = manifest.Entities[0] as CdmLocalEntityDeclarationDefinition;
+            Assert.AreEqual(".*testfile.csv", startsWithSlash.DataPartitionPatterns[0].RegularExpression);
+            Assert.AreEqual(1, startsWithSlash.DataPartitions.Count);
+            Assert.AreEqual("/partitions/testfile.csv", startsWithSlash.DataPartitions[0].Location);
+
+            CdmLocalEntityDeclarationDefinition endsWithSlash = manifest.Entities[1] as CdmLocalEntityDeclarationDefinition;
+            Assert.AreEqual(".*testfile.csv", endsWithSlash.DataPartitionPatterns[0].RegularExpression);
+            Assert.AreEqual(1, endsWithSlash.DataPartitions.Count);
+            Assert.AreEqual("partitions/testfile.csv", endsWithSlash.DataPartitions[0].Location);
+
+            CdmLocalEntityDeclarationDefinition noSlash = manifest.Entities[2] as CdmLocalEntityDeclarationDefinition;
+            Assert.AreEqual(".*testfile.csv", noSlash.DataPartitionPatterns[0].RegularExpression);
+            Assert.AreEqual(1, noSlash.DataPartitions.Count);
+            Assert.AreEqual("partitions/testfile.csv", noSlash.DataPartitions[0].Location);
+        }
+
+        /// <summary>
         /// Testing data partition patterns that use glob patterns
         /// </summary>
         [TestMethod]

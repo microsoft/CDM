@@ -19,6 +19,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmAttributeContextType? Type { get; set; }
 
         /// <summary>
+        /// Gets or sets the attribute context name.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the attribute context's parent.
         /// </summary>
         public CdmObjectReference Parent { get; set; }
@@ -38,10 +43,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public new string AtCorpusPath { get; set; }
 
-        /// <summary>
-        /// Gets or sets the attribute context name.
-        /// </summary>
-        public string Name { get; set; }
         internal int? LowestOrder { get; set; }
 
         /// <summary>
@@ -74,11 +75,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            }
-
             return false;
         }
 

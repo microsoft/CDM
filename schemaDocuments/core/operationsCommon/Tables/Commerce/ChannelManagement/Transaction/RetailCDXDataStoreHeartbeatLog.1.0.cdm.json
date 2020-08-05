@@ -1,0 +1,70 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailConnDatabaseProfile.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCDXDataStoreHeartbeatLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DataStore",
+          "dataType": "RetailCDXDataStoreRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateLastHeartbeatRecorded",
+          "dataType": "RetailCDXDateLastHeartbeatRecorded",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnDatabaseProfile"
+          },
+          "name": "Relationship_RetailConnDatabaseProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Channel client connection status"
+    },
+    {
+      "dataTypeName": "RetailCDXDataStoreRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXDateLastHeartbeatRecorded",
+      "extendsDataType": "date"
+    }
+  ]
+}

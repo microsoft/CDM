@@ -1,0 +1,258 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CreditCardAuthTrans.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Transaction/CustPackingSlipJour.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WMSPickingRoute.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailEventNotificationLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultLanguage",
+          "dataType": "LanguageId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EmailMessage",
+          "dataType": "SysEmailContents",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EmailSubject",
+          "dataType": "SysEmailSubject",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EventNotificationType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiverEmailAddress",
+          "dataType": "SysEmailAddress",
+          "isNullable": true,
+          "displayName": "Receiver email",
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesOrder",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SenderEmailAddress",
+          "dataType": "SysEmailAddress",
+          "isNullable": true,
+          "displayName": "Sender email",
+          "description": ""
+        },
+        {
+          "name": "SentDateTime",
+          "dataType": "UTCTimestamp",
+          "isNullable": true,
+          "displayName": "Date and time sent",
+          "description": ""
+        },
+        {
+          "name": "SentSuccessfully",
+          "dataType": "RetailEmailSentSuccessfully",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorMessage",
+          "dataType": "RetailEventNotificationErrorMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EmailConstructedSuccessfully",
+          "dataType": "RetailEventNotificationEmailConstructedSuccessfully",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CreditCardAuthTrans"
+          },
+          "name": "Relationship_CreditCardAuthTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPackingSlipJour"
+          },
+          "name": "Relationship_CustPackingSlipJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_MainSalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_RefSalesTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_RefSalesTable2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSPickingRoute"
+          },
+          "name": "Relationship_WMSPickingRouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail Email notification log"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailContents",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailSubject",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailAddress",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailEmailSentSuccessfully",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailEventNotificationErrorMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailEventNotificationEmailConstructedSuccessfully",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -14,16 +14,25 @@ import java.util.Map;
 public class ImportPriorities {
   private final Map<CdmDocumentDefinition, Integer> importPriority;
   private final Map<String, CdmDocumentDefinition> monikerPriorityMap;
+  private boolean hasCircularImport;
 
   ImportPriorities() {
     this.importPriority = new LinkedHashMap<>();
     this.monikerPriorityMap = new LinkedHashMap<>();
+    this.hasCircularImport = false;
   }
 
   public ImportPriorities copy() {
     final ImportPriorities copy = new ImportPriorities();
-    this.importPriority.forEach(copy.importPriority::put);
-    this.monikerPriorityMap.forEach(copy.monikerPriorityMap::put);
+    if (this.importPriority != null) {
+      this.importPriority.forEach(copy.importPriority::put);
+    }
+
+    if (this.monikerPriorityMap != null) {
+      this.monikerPriorityMap.forEach(copy.monikerPriorityMap::put);
+    }
+
+    copy.hasCircularImport = this.hasCircularImport;
     return copy;
   }
 
@@ -33,5 +42,13 @@ public class ImportPriorities {
 
   Map<CdmDocumentDefinition, Integer> getImportPriority() {
     return importPriority;
+  }
+
+  boolean getHasCircularImport() {
+    return hasCircularImport;
+  }
+
+  void setHasCircularImport(boolean value) {
+    this.hasCircularImport = value;
   }
 }

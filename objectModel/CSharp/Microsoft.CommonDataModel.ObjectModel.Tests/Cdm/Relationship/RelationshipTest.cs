@@ -222,6 +222,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             VerifyRelationships(manifest, expectedRels);
         }
 
+        /// <summary>
+        /// Test that multiple relationships are generated when there are references to multiple entities
+        /// </summary>
+        [TestMethod]
+        public async Task TestRelationshipToMultipleEntities()
+        {
+            var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestRelationshipToMultipleEntities", "expectedRels.json")).ToObject<List<E2ERelationship>>();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipToMultipleEntities");
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
+            var ent = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/A.cdm.json/A");
+            var resEnt = await ent.CreateResolvedEntityAsync("resA");
+            await resEnt.InDocument.SaveAsAsync("resA.cdm.json");
+
+            await corpus.CalculateEntityGraphAsync(manifest);
+            await manifest.PopulateManifestRelationshipsAsync();
+
+            // check that each relationship has been created correctly
+            VerifyRelationships(manifest, expectedRels);
+        }
+
         private static void VerifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships)
         {
             Assert.AreEqual(manifest.Relationships.Count, expectedRelationships.Count);

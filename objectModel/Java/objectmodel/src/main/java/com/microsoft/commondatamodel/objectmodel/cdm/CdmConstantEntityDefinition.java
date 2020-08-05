@@ -28,6 +28,13 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public String getName() {
+    // make up a name if one not given
+    if (this.constantEntityName == null) {
+      if (this.entityShape != null) {
+        return "Constant" + this.entityShape.fetchObjectDefinitionName();
+      }
+      return "ConstantEntity";
+    }
     return this.constantEntityName;
   }
 
@@ -72,13 +79,23 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     return;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
     final com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
     AttributeContextParameters acpEnt = null;
     if (under != null) {
@@ -156,10 +173,6 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 

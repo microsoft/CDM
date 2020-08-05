@@ -55,9 +55,18 @@ class CdmTraitReference(CdmObjectReference):
         return copy
 
     def _visit_ref(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
-        if self.arguments and self.arguments._visit_array('{}/arguments/'.format(path_from), pre_children, post_children):
-            return True
-        return False
+        result = False
+        if self.arguments is not None and len(self.arguments) > 0:
+            # custom enumeration of args to force a path onto these things that just might not have a name
+            lItem = len(self.arguments)
+            for iItem in range(lItem):
+                element = self.arguments[iItem]
+                if element:
+                    argPath = path_from + '/arguments/a' + str(iItem)
+                    if element.visit(argPath, pre_children, post_children):
+                        result = True
+                        break
+        return result
 
     def fetch_argument_value(self, name: str) -> 'CdmArgumentValue':
         if not self.arguments:
@@ -77,6 +86,7 @@ class CdmTraitReference(CdmObjectReference):
         from cdm.utilities import SymbolSet
         from .cdm_corpus_def import CdmCorpusDefinition
 
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         kind = 'rtsb'
         ctx = self.ctx
         # get referenced trait
@@ -91,8 +101,11 @@ class CdmTraitReference(CdmObjectReference):
             # never been resolved, it will happen soon, so why not now?
             rts_trait = trait._fetch_resolved_traits(res_opt)
 
-        cache_by_name = not trait._this_is_known_to_have_parameters
-        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_name)
+        cache_by_path = True
+        if trait._this_is_known_to_have_parameters is not None:
+            cache_by_path = not trait._this_is_known_to_have_parameters
+
+        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_path, trait.at_corpus_path)
         rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
@@ -141,7 +154,7 @@ class CdmTraitReference(CdmObjectReference):
             ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
 
             # get the new cache tag now that we have the list of docs
-            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_name)
+            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_path, trait.at_corpus_path)
             if cache_tag:
                 ctx._cache[cache_tag] = rts_result
         else:

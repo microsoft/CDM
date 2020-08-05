@@ -242,21 +242,15 @@ public class ResolvedTraitSet {
           List<Object> av = rt.getParameterValues().getValues();
           final int idx = pc.fetchParameterIndex(paramName);
 
-          if (idx >= 0) {
-            try {
-              if (Objects.equals(av.get(idx), valueWhen)) {
-                // copy the set and make a deep copy of the trait being set
-                traitSetResult = shallowCopyWithException(rt.getTrait());
-                // assume these are all still true for this copy
-                rt = traitSetResult.getSet().get(i);
-                av = rt.getParameterValues().getValues();
-                av.set(idx,
-                    ParameterValue.fetchReplacementValue(resOpt, av.get(idx), valueNew, true));
-                break;
-              }
-            } catch (final Exception ex) {
-              // Do nothing?
-            }
+          if (idx >= 0 && Objects.equals(av.get(idx), valueWhen)) {
+            // copy the set and make a deep copy of the trait being set
+            traitSetResult = shallowCopyWithException(rt.getTrait());
+            // assume these are all still true for this copy
+            rt = traitSetResult.getSet().get(i);
+            av = rt.getParameterValues().getValues();
+            av.set(idx,
+                ParameterValue.fetchReplacementValue(resOpt, av.get(idx), valueNew, true));
+            break;
           }
         }
       }

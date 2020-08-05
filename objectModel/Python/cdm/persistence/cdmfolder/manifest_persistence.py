@@ -80,17 +80,17 @@ class ManifestPersistence:
         if data.get('definitions'):
             for definition in data.definitions:
                 if 'dataTypeName' in definition:
-                    manifest.definitions.append(DataTypePersistence.fromData(ctx, definition))
+                    manifest.definitions.append(DataTypePersistence.from_data(ctx, definition))
                 elif 'purposeName' in definition:
-                    manifest.definitions.append(PurposePersistence.fromData(ctx, definition))
+                    manifest.definitions.append(PurposePersistence.from_data(ctx, definition))
                 elif 'attributeGroupName' in definition:
-                    manifest.definitions.append(AttributeGroupPersistence.fromData(ctx, definition))
+                    manifest.definitions.append(AttributeGroupPersistence.from_data(ctx, definition))
                 elif 'traitName' in definition:
-                    manifest.definitions.append(TraitPersistence.fromData(ctx, definition))
+                    manifest.definitions.append(TraitPersistence.from_data(ctx, definition))
                 elif 'entityShape' in definition:
-                    manifest.definitions.append(ConstantEntityPersistence.fromData(ctx, definition))
+                    manifest.definitions.append(ConstantEntityPersistence.from_data(ctx, definition))
                 elif 'entityName' in definition:
-                    manifest.definitions.append(EntityPersistence.fromData(ctx, definition))
+                    manifest.definitions.append(EntityPersistence.from_data(ctx, definition))
 
         if data.get('lastFileStatusCheckTime'):
             manifest.last_file_status_check_time = dateutil.parser.parse(data.lastFileStatusCheckTime)

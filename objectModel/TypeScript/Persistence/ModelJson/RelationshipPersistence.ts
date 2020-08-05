@@ -65,7 +65,7 @@ export class RelationshipPersistence {
 
         result.description = instance.explanation;
         result.name = instance.name;
-        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         return result;
     }

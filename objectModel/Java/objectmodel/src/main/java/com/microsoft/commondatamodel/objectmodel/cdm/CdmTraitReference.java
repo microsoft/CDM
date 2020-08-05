@@ -44,8 +44,22 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   @Override
   @Deprecated
   public boolean visitRef(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
-    return (this.arguments != null && this.arguments
-        .visitList(pathFrom + "/arguments/", preChildren, postChildren));
+    boolean result = false;
+    if (this.arguments != null && this.arguments.size() > 0) {
+      // custom enumeration of args to force a path onto these things that just might not have a name
+      int lItem = this.arguments.size();
+      for (int iItem = 0; iItem < lItem; iItem++) {
+        CdmArgumentDefinition element = this.arguments.get(iItem);
+        if (element != null) {
+          String argPath = pathFrom + "/arguments/a" + iItem;
+          if (element.visit(argPath, preChildren, postChildren)) {
+            result = true;
+            break;
+          }
+        }
+      }
+    }
+    return result;
   }
 
   /**
@@ -133,11 +147,11 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
       rtsTrait = trait.fetchResolvedTraits(resOpt);
     }
 
-    final boolean cacheByName = trait.thisIsKnownToHaveParameters == null
+    final boolean cacheByPath = trait.thisIsKnownToHaveParameters == null
         ? true
-        : trait.thisIsKnownToHaveParameters;
+        : !trait.thisIsKnownToHaveParameters;
     String cacheTag = ctx.getCorpus()
-        .createDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
+        .createDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.getAtCorpusPath());
     Object rtsResult = null;
 
     if (null != cacheTag) {
@@ -215,8 +229,8 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
 
       // Get the new getCache() tag now that we have the list of symbols.
       cacheTag = ctx.getCorpus()
-          .createDefinitionCacheTag(resOpt, this, kind, "", cacheByName);
-      if (null != cacheTag && " ".equalsIgnoreCase(cacheTag)) {
+          .createDefinitionCacheTag(resOpt, this, kind, "", cacheByPath, trait.getAtCorpusPath());
+      if (null != cacheTag && cacheTag.trim().length() > 0) {
         ctx.getCache().put(cacheTag, rtsResult);
       }
     } else {
@@ -286,13 +300,23 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     return copy;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
                                                           final CdmAttributeContext under) {
     // return null intentionally
     return null;

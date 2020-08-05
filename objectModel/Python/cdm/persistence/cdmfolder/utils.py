@@ -109,3 +109,31 @@ def copy_identifier_ref(obj_ref: CdmObjectReference, res_opt: ResolveOptions, op
     ident_ref.identifier = identifier
 
     return ident_ref
+
+def _property_from_data_to_string(value) -> Optional[str]:
+    if value is not None and value != '' and isinstance(value, str):
+        return value
+    if isinstance(value, int):
+        return str(value)
+    return None
+
+def _property_from_data_to_int(value) -> Optional[int]:
+    if value is None or isinstance(value, int):
+        return value
+    if isinstance(value, str):
+        try:
+            return int(value)
+        except ValueError:
+            # string is not a valid number
+            pass
+    return None
+
+def _property_from_data_to_bool(value) -> Optional[bool]:
+    if value is None or isinstance(value, bool):
+        return value
+    if isinstance(value, str):
+        if value in ['True', 'true']:
+            return True
+        elif value in ['False', 'false']:
+            return False
+    return None

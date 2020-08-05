@@ -84,8 +84,9 @@ public class RelationshipPersistence {
     result.setFromAttribute(fromAttribute);
     result.setToAttribute(toAttribute);
 
-    return Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits())
-        .thenApply(v -> result);
+    Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits());
+    
+    return CompletableFuture.completedFuture(result);
   }
 
   private static String getEntityName(final String corpusPath) {

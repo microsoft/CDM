@@ -1,0 +1,93 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailChannelTable.cdm.json",
+      "moniker": "base_RetailChannelTable"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailMCRChannelTable",
+      "extendsEntity": "base_RetailChannelTable/RetailChannelTable",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MCRCustomerCreditRetailInfocodeId",
+          "dataType": "RetailInfocodeId",
+          "displayName": "Credit",
+          "description": ""
+        },
+        {
+          "name": "MCREnableDirectedSelling",
+          "dataType": "MCREnableDirectedSelling",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCREnableOrderCompletion",
+          "dataType": "MCREnableOrderCompletion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCREnableOrderPriceControl",
+          "dataType": "MCREnableOrderPriceControl",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRPriceOverrideRetailInfocodeId",
+          "dataType": "RetailInfocodeId",
+          "isNullable": true,
+          "displayName": "Price override",
+          "description": ""
+        },
+        {
+          "name": "MCRReasonCodeRetailInfocodeId",
+          "dataType": "RetailInfocodeId",
+          "displayName": "Hold code",
+          "description": ""
+        }
+      ],
+      "displayName": "Call center channel"
+    },
+    {
+      "dataTypeName": "RetailInfocodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCREnableDirectedSelling",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCREnableOrderCompletion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCREnableOrderPriceControl",
+      "extendsDataType": "integer"
+    }
+  ]
+}

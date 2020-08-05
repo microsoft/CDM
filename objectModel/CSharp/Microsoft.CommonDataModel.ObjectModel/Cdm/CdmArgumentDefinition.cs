@@ -114,7 +114,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 path = this.DeclaredPath;
                 if (string.IsNullOrEmpty(path))
                 {
-                    path = pathFrom + (this.Value != null ? "value/" : "");
+                    path = pathFrom; // name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
                     this.DeclaredPath = path;
                 }
             }
@@ -127,7 +127,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 Type valueType = this.Value.GetType();
                 if (this.Value is CdmObject valueAsJObject)
                 {
-                    if (valueAsJObject.Visit(path, preChildren, postChildren))
+                    if (valueAsJObject.Visit($"{path}/value/", preChildren, postChildren))
                         return true;
                 }
             }

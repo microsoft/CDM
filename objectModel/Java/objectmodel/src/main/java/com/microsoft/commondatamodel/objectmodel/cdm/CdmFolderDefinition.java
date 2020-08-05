@@ -172,10 +172,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
   @Override
   public <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return null;
   }
 
@@ -186,10 +182,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   @Override
   @Deprecated
   public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return null;
   }
 
@@ -281,10 +273,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 
@@ -324,10 +312,6 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
   @Override
   public CdmObject copy(ResolveOptions resOpt, final CdmObject host) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return null;
   }
 }

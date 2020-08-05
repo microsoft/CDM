@@ -44,13 +44,14 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
     public explanation: string;
     public elevated: boolean;
     public traitName: string;
-    public extendsTrait: CdmTraitReference;
+    public extendsTrait?: CdmTraitReference;
     public ugly: boolean;
-    public _parameters: CdmCollection<CdmParameterDefinition>;
     /**
      * @internal
      */
     public thisIsKnownToHaveParameters: boolean;
+
+    private _parameters: CdmCollection<CdmParameterDefinition>;
     private allParameters: ParameterCollection;
     private hasSetFlags: boolean;
     private baseIsKnownToHaveParameters: boolean;
@@ -79,7 +80,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             let copy: CdmTraitDefinition;
             if (!host) {
@@ -156,7 +157,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             if (base === this.traitName) {
@@ -209,7 +210,7 @@ export class CdmTraitDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             const kind: string = 'rtsb';
             const ctx: resolveContext = this.ctx as resolveContext;

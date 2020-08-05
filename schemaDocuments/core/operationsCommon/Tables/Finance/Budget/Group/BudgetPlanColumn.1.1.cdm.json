@@ -1,0 +1,89 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "BudgetPlanScenario.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "BudgetPlanElementDefinition.1.0.cdm.json",
+      "moniker": "base_BudgetPlanElementDefinition"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetPlanColumn",
+      "extendsEntity": "base_BudgetPlanElementDefinition/BudgetPlanElementDefinition",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Scenario",
+          "dataType": "BudgetPlanScenarioRecId",
+          "description": ""
+        },
+        {
+          "name": "ColumnPeriodLength",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ColumnPeriodLengthValue",
+          "dataType": "BudgetPlanColumnPeriodLengthValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "YearOffset",
+          "dataType": "BudgetPlanColumnPeriodLengthYearOffset",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetPlanScenario"
+          },
+          "name": "Relationship_BudgetPlanScenarioRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Columns"
+    },
+    {
+      "dataTypeName": "BudgetPlanScenarioRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "BudgetPlanColumnPeriodLengthValue",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BudgetPlanColumnPeriodLengthYearOffset",
+      "extendsDataType": "integer"
+    }
+  ]
+}

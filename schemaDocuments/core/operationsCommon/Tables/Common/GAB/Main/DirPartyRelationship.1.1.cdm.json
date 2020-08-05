@@ -1,0 +1,129 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DirPartyTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Reference/DirRelationshipTypeTable.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DirPartyRelationship",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChildParty",
+          "dataType": "DirPartyRecId",
+          "description": ""
+        },
+        {
+          "name": "LegalEntityDataAreaId",
+          "dataType": "DirDataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParentParty",
+          "dataType": "DirPartyRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RelationshipTypeId",
+          "dataType": "DirRelationshipTypeId",
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "EffectiveDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ExpirationDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTableChild_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTableParent_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirRelationshipTypeTable"
+          },
+          "name": "Relationship_DirRelationshipTypeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Party relationships"
+    },
+    {
+      "dataTypeName": "DirPartyRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DirDataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DirRelationshipTypeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EffectiveDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ExpirationDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

@@ -231,7 +231,7 @@ function getTestFolderPath(testSubpath: string, testName: string, use: testFolde
     const testFolderPath: string = `${testHelper.testDataPath}/${testSubpath}/${testName}/${folderName}`;
 
     if (use === testFolders.ActualOutput && !fs.existsSync(testFolderPath)) {
-        fs.mkdirSync(testFolderPath, { recursive: true});
+        fs.mkdirSync(testFolderPath, { recursive: true });
     }
     // expectFileSystemPathToExist(testFolderPath, `Was unable to find direcotry ${testFolderPath}`);
 

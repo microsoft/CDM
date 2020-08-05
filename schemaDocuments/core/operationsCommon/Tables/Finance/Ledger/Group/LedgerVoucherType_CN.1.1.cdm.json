@@ -1,0 +1,201 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Reference/LedgerPrintLayoutGroup_CN.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerVoucherType_CN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultApprover",
+          "dataType": "HcmApprover",
+          "isNullable": true,
+          "displayName": "Default approved by",
+          "description": ""
+        },
+        {
+          "name": "DefaultJournal",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultPreparedByWorker",
+          "dataType": "HcmWorkerRecId",
+          "isNullable": true,
+          "displayName": "Default prepared by",
+          "description": ""
+        },
+        {
+          "name": "DefaultType",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Default",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Id",
+          "dataType": "LedgerVoucherTypeId_CN",
+          "description": ""
+        },
+        {
+          "name": "LedgerPrintLayoutGroup",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Print layout group",
+          "description": ""
+        },
+        {
+          "name": "Num",
+          "dataType": "LedgerVoucherTypeNumber_CN",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceTable",
+          "dataType": "RefRecId",
+          "displayName": "Number sequence code",
+          "description": ""
+        },
+        {
+          "name": "Priority",
+          "dataType": "VoucherTypePriority_CN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RestrictionType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerPrintLayoutGroup_CN"
+          },
+          "name": "Relationship_LedgerPrintLayoutGroup_CNRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_NumberSequenceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Voucher type"
+    },
+    {
+      "dataTypeName": "HcmApprover",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerVoucherTypeId_CN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerVoucherTypeNumber_CN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VoucherTypePriority_CN",
+      "extendsDataType": "integer"
+    }
+  ]
+}

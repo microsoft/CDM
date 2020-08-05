@@ -71,4 +71,12 @@ public class StringUtils {
     else
       return str.substring(0, 1).toUpperCase() + str.substring(1);
   }
+
+  public static boolean equalsWithIgnoreCase(final String strA, final String strB) {
+    return strA.equalsIgnoreCase(strB);
+  }
+
+  public static boolean equalsWithCase(final String strA, final String strB) {
+    return strA.equals(strB);
+  }
 }

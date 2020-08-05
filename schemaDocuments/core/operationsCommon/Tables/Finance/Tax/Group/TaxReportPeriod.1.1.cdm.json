@@ -1,0 +1,198 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TaxPeriodHead.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxReportPeriod",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Availed_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Availed",
+          "description": ""
+        },
+        {
+          "name": "Closed",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Closed",
+          "description": ""
+        },
+        {
+          "name": "Closed_CZ",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Closed",
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "TaxPeriodDate",
+          "displayName": "From date",
+          "description": ""
+        },
+        {
+          "name": "LastPageNumPurch",
+          "dataType": "PageNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastPageNumSales",
+          "dataType": "PageNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastPeriod",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Last period",
+          "description": ""
+        },
+        {
+          "name": "Reported_HU",
+          "dataType": "TaxPeriodDate",
+          "isNullable": true,
+          "displayName": "Sales tax reporting",
+          "description": ""
+        },
+        {
+          "name": "TaxPeriod",
+          "dataType": "TaxPeriod",
+          "description": ""
+        },
+        {
+          "name": "TaxReportingDate_RU",
+          "dataType": "TaxPeriodDate",
+          "isNullable": true,
+          "displayName": "Reporting date",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdVersion_BR",
+          "dataType": "TaxWithholdVersion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "TaxPeriodDate",
+          "displayName": "To date",
+          "description": ""
+        },
+        {
+          "name": "VersionNum",
+          "dataType": "TaxVersion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SettlementPeriodInProcessBy",
+          "dataType": "UserId",
+          "isNullable": true,
+          "displayName": "Blocked for settlement process by",
+          "description": ""
+        },
+        {
+          "name": "TaxReportPeriodCode_NO",
+          "dataType": "TaxReportPeriodCode_NO",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxPeriodHead"
+          },
+          "name": "Relationship_TaxPeriodHeadRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales tax period setup"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxPeriodDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PageNo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxPeriod",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdVersion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxVersion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxReportPeriodCode_NO",
+      "extendsDataType": "string"
+    }
+  ]
+}

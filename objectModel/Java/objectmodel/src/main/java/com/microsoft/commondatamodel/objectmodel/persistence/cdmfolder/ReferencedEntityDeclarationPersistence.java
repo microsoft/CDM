@@ -32,7 +32,9 @@ public class ReferencedEntityDeclarationPersistence {
       Logger.error(ReferencedEntityDeclarationPersistence.class.getSimpleName(), ctx, "Couldn't find entity path or similar.", "fromData");
     }
 
-    if (entityPath != null && !entityPath.contains(":")) {
+    // The entity path has to be absolute.
+    // If the namespace is not present then add the "prefixPath" which has the absolute folder path.
+    if (entityPath != null && !entityPath.contains(":/")) {
       entityPath = prefixPath + entityPath;
     }
 

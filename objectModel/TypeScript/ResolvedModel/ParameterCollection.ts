@@ -4,8 +4,8 @@
 import { CdmParameterDefinition } from '../internal';
 
 /**
-     * @internal
-     */
+ * @internal
+ */
 export class ParameterCollection {
     public sequence: CdmParameterDefinition[];
     public lookup: Map<string, CdmParameterDefinition>;

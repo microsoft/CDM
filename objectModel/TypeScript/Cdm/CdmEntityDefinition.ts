@@ -26,11 +26,14 @@ import {
     CdmObjectDefinitionBase,
     CdmObjectReference,
     cdmObjectType,
+    CdmProjection,
     CdmTraitCollection,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
     Errors,
     Logger,
+    ProjectionContext,
+    ProjectionDirective,
     resolveContext,
     ResolvedAttribute,
     ResolvedAttributeSet,
@@ -42,6 +45,7 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    StringUtils,
     TraitSpec,
     traitToPropertyMap,
     VisitCallback
@@ -135,7 +139,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmEntityDefinition;
@@ -278,7 +282,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             return this.isDerivedFromDef(resOpt, this.getExtendsEntityRef(), this.getName(), base);
@@ -334,6 +338,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                 const extRef: CdmObjectReference = this.getExtendsEntityRef();
                 let extendsRefUnder: CdmAttributeContext;
                 let acpExtEnt: AttributeContextParameters;
+
                 if (under) {
                     const acpExt: AttributeContextParameters = {
                         under: under,
@@ -343,49 +348,76 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                         includeTraits: false
                     };
                     extendsRefUnder = this.rasb.ras.createAttributeContext(resOpt, acpExt);
-                    acpExtEnt = {
-                        under: extendsRefUnder,
-                        type: cdmAttributeContextType.entity,
-                        name: extRef.namedReference,
-                        regarding: extRef,
-                        includeTraits: false
-                    };
-                }
-                // save moniker, extended entity may attach a different moniker that we do not
-                // want to pass along to getting this entities attributes
-                const oldMoniker: string = resOpt.fromMoniker;
-
-                this.rasb.mergeAttributes(this.getExtendsEntityRef()
-                    .fetchResolvedAttributes(resOpt, acpExtEnt));
-
-                if (!resOpt.checkAttributeCount(this.rasb.ras.resolvedAttributeCount)) {
-                    Logger.error(CdmEntityDefinition.name, this.ctx, `Maximum number of resolved attributes reached for the entity:${this.entityName}`);
-
-                    return undefined;
                 }
 
-                if (this.extendsEntityResolutionGuidance) {
-                    /**
-                     * some guidance was given on how to integrate the base attributes into the set. Apply that guidance
-                     */
-                    const rtsBase: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
-                    /**
-                     * this context object holds all of the info about what needs to happen to resolve these attributes
-                     * make a copy and set defaults if needed.
-                     */
-                    const resGuide: CdmAttributeResolutionGuidance = this.extendsEntityResolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
-                    resGuide.updateAttributeDefaults(resGuide.fetchObjectDefinitionName());
+                if (extRef.explicitReference && extRef.fetchObjectDefinition<CdmObjectDefinition>(resOpt).objectType === cdmObjectType.projectionDef) {
+                    // A Projection
 
-                    /**
-                     * holds all the info needed by the resolver code
-                     */
-                    const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuide, rtsBase);
+                    const extRefObjDef: CdmObjectDefinition = extRef.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
+                    if (extendsRefUnder) {
+                        acpExtEnt = {
+                            under: extendsRefUnder,
+                            type: cdmAttributeContextType.projection,
+                            name: extRefObjDef.getName(),
+                            regarding: extRef,
+                            includeTraits: false
+                        };
+                    }
 
-                    this.rasb.generateApplierAttributes(arc, false); /** true = apply the prepared traits to new atts */
+                    const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, extRef);
+                    const projDef: CdmProjection = extRefObjDef as CdmProjection;
+                    const projCtx: ProjectionContext = projDef.constructProjectionContext(projDirective, extendsRefUnder);
+
+                    this.rasb.ras = projDef.extractResolvedAttributes(projCtx);
+                } else {
+                    // An Entity Reference
+
+                    if (extendsRefUnder) {
+                        acpExtEnt = {
+                            under: extendsRefUnder,
+                            type: cdmAttributeContextType.entity,
+                            name: extRef.namedReference ?? extRef.explicitReference.getName(),
+                            regarding: extRef,
+                            includeTraits: false
+                        };
+                    }
+
+                    // save moniker, extended entity may attach a different moniker that we do not
+                    // want to pass along to getting this entities attributes
+                    const oldMoniker: string = resOpt.fromMoniker;
+
+                    this.rasb.mergeAttributes(this.getExtendsEntityRef()
+                                                  .fetchResolvedAttributes(resOpt, acpExtEnt));
+
+                    if (!resOpt.checkAttributeCount(this.rasb.ras.resolvedAttributeCount)) {
+                        Logger.error(CdmEntityDefinition.name, this.ctx, `Maximum number of resolved attributes reached for the entity:${this.entityName}`);
+
+                        return undefined;
+                    }
+
+                    if (this.extendsEntityResolutionGuidance) {
+                        /**
+                         * some guidance was given on how to integrate the base attributes into the set. Apply that guidance
+                         */
+                        const rtsBase: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
+                        /**
+                         * this context object holds all of the info about what needs to happen to resolve these attributes
+                         * make a copy and set defaults if needed.
+                         */
+                        const resGuide: CdmAttributeResolutionGuidance = this.extendsEntityResolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
+                        resGuide.updateAttributeDefaults(resGuide.fetchObjectDefinitionName());
+
+                        /**
+                         * holds all the info needed by the resolver code
+                         */
+                        const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuide, rtsBase);
+
+                        this.rasb.generateApplierAttributes(arc, false); /** true = apply the prepared traits to new atts */
+                    }
+
+                    // reset to the old moniker
+                    resOpt.fromMoniker = oldMoniker;
                 }
-
-                // reset to the old moniker
-                resOpt.fromMoniker = oldMoniker;
             }
             this.rasb.markInherited();
             this.rasb.ras.setAttributeContext(under);
@@ -438,9 +470,9 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
     }
     /**
      * @internal
+     * @deprecated
      */
-    /** @deprecated */
-    public getResolvedEntity(resOpt: resolveOptions): ResolvedEntity {
+     public getResolvedEntity(resOpt: resolveOptions): ResolvedEntity {
         return new ResolvedEntity(resOpt, this);
     }
 
@@ -450,7 +482,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             const wasPreviouslyResolving: boolean = this.ctx.corpus.isCurrentlyResolving;
             this.ctx.corpus.isCurrentlyResolving = true;
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             // this whole resolved entity ref goo will go away when resolved documents are done.
@@ -534,7 +566,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             // if the wrtDoc needs to be indexed (like it was just modified) then do that first
@@ -570,7 +602,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             // Don't overwite the source document
             const targetAtCorpusPath: string =
                 `${this.ctx.corpus.storage.createAbsoluteCorpusPath(folder.atCorpusPath, folder)}${fileName}`;
-            if (targetAtCorpusPath === origDoc) {
+            if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
                 Logger.error(
                     CdmEntityDefinition.name,
                     this.ctx as resolveContext,
@@ -716,8 +748,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             pointContextAtResolvedAtts(ras, `${entName}/hasAttributes/`);
 
             // generated attribute structures may end up with 0 attributes after that. prune them
-            const cleanSubGroup: (subItem: any, underGenerated: boolean) => boolean =
-                (subItem: any, underGenerated: boolean) => {
+            const cleanSubGroup: (subItem: CdmObject, underGenerated: boolean) => boolean =
+                (subItem: CdmObject, underGenerated: boolean) => {
                     if (isAttributeReference(subItem)) {
                         return true; // not empty
                     }
@@ -826,7 +858,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                         const raCtxSet: Set<CdmAttributeContext> = rasSub.ra2attCtxSet.get(ra);
                         let raCtx: CdmAttributeContext;
                         // find the correct attCtx for this copy
-                        // (interate over the shortest list)                    
+                        // (interate over the shortest list)
                         if (allAttCtx.size < raCtxSet.size) {
                             for (const currAttCtx of allAttCtx) {
                                 if (raCtxSet.has(currAttCtx)) {
@@ -993,7 +1025,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                 return undefined;
             }
             // get a fresh ref
-            entResolved = docRes.fetchObjectFromDocumentPath(entName) as CdmEntityDefinition;
+            entResolved = docRes.fetchObjectFromDocumentPath(entName, resOptNew) as CdmEntityDefinition;
 
             this.ctx.corpus.resEntMap.set(this.atCorpusPath, entResolved.atCorpusPath);
 

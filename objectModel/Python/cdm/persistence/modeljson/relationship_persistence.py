@@ -58,7 +58,7 @@ class RelationshipPersistence:
 
         result.description = instance.explanation
         result.name = instance.relationship_name
-        await utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
+        utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
 
         return result
 

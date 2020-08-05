@@ -63,8 +63,11 @@ export class resolveOptions {
                 this.wrtDoc = parameter.owner.inDocument;
             }
         }
+
+        // provided or default to 'avoid one to many relationship nesting and to use foreign keys for many to one refs'.
+        // this is for back compat with behavior before the corpus has a default directive property
         if (directives) {
-            this.directives = directives;
+            this.directives = directives.copy();
         } else {
             const directivesSet: Set<string> = new Set<string>();
             directivesSet.add('normalized');

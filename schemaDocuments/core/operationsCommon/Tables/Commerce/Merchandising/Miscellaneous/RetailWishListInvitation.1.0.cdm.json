@@ -1,0 +1,133 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailWishListTable.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailWishListInvitation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Invitee",
+          "dataType": "RetailWishListInvitee",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsSent",
+          "dataType": "integer",
+          "displayName": "Is sent",
+          "description": ""
+        },
+        {
+          "name": "LastRequestDateTime",
+          "dataType": "CreatedDateTime",
+          "displayName": "Invitation date time",
+          "description": ""
+        },
+        {
+          "name": "LastSentDateTime",
+          "dataType": "DateTimeSent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Token",
+          "dataType": "RetailWishListInvitationToken",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "WishListId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailWishListTable"
+          },
+          "name": "Relationship_RetailWishListTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Invitation"
+    },
+    {
+      "dataTypeName": "RetailWishListInvitee",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CreatedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DateTimeSent",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailWishListInvitationToken",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

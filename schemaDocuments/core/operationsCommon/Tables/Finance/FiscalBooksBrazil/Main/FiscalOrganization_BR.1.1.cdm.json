@@ -1,0 +1,258 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "FiscalEstablishment_BR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Miscellaneous/FBTaxClassificationCode_BR.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FiscalOrganization_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssessmentContributionType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssessmentCriteria",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssessmentRegimen",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CofinsSalesTaxExpenseLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Sales tax COFINS expense",
+          "description": ""
+        },
+        {
+          "name": "ConstitutionArchiveDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Constitution archive date",
+          "description": ""
+        },
+        {
+          "name": "ConversionArchiveDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Conversion archive date",
+          "description": ""
+        },
+        {
+          "name": "CreditAllocationMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishmentDataArea",
+          "dataType": "DataAreaId",
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishmentId",
+          "dataType": "FBFiscalEstablishmentId_BR",
+          "displayName": "Root fiscal establishment",
+          "description": ""
+        },
+        {
+          "name": "LegalEntityType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Version",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompanyType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsLargeCompany",
+          "dataType": "FBIsLargeCompany_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LegalNature",
+          "dataType": "FBLegalNature_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PisSalesTaxExpenseLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Sales tax PIS expense",
+          "description": ""
+        },
+        {
+          "name": "SCPCode",
+          "dataType": "FBSCPCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SCPType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HasAgreementOnExemptionOfFines",
+          "dataType": "FBHasAgreementOnExemptionOfFines_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsCPRB",
+          "dataType": "FBIsCPRB_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxClassificationCode",
+          "dataType": "FBTaxClassificationCodeId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CofinsSalesTaxExpenseLedgerDimension_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishment_BR"
+          },
+          "name": "Relationship_FiscalEstablishment_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_PisSalesTaxExpenseLedgerDimension_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBTaxClassificationCode_BR"
+          },
+          "name": "Relationship_FBTaxClassificationCode_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal organization"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBFiscalEstablishmentId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBIsLargeCompany_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FBLegalNature_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBSCPCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBHasAgreementOnExemptionOfFines_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FBIsCPRB_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "FBTaxClassificationCodeId_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgJobReportDeviationUpdateParam",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "UserId",
+          "dataType": "UserId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Resource",
+          "dataType": "WrkCtrId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ResourceGroup",
+          "dataType": "WrkCtrGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProdUnit",
+          "dataType": "ProdUnitId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "FromDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "ToDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConsumptionDeviationThreshold",
+          "dataType": "JmgJobDeviationThreshold",
+          "isNullable": true,
+          "displayName": "Threshold for consumption deviation %",
+          "description": ""
+        },
+        {
+          "name": "ReportedDeviationThreshold",
+          "dataType": "JmgJobDeviationThreshold",
+          "isNullable": true,
+          "displayName": "Threshold for reported quantity deviation %",
+          "description": ""
+        },
+        {
+          "name": "HoursDeviationThreshold",
+          "dataType": "JmgJobDeviationThreshold",
+          "isNullable": true,
+          "displayName": "Threshold for hours deviation %",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deviation calculation parameter"
+    },
+    {
+      "dataTypeName": "UserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WrkCtrId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WrkCtrGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgJobDeviationThreshold",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

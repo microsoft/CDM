@@ -93,11 +93,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public new bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            }
-
             return false;
         }
 
@@ -210,7 +205,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // Using the references present in the resolved entities, get an entity
             // create an imports doc with all the necessary resolved entity references and then resolve it
             var resolvedManifest = new CdmManifestDefinition(this.Ctx, newManifestName);
-            
+
+            // bring over any imports in this document or other bobbles
+            resolvedManifest.Schema = this.Schema;
+            resolvedManifest.Explanation = this.Explanation;
+            foreach (CdmImport imp in this.Imports) {
+                resolvedManifest.Imports.Add((CdmImport)imp.Copy());
+            }
+
             // add the new document to the folder
             if (resolvedManifestFolder.Documents.Add(resolvedManifest) == null)
             {
@@ -397,9 +399,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     foreach (CdmManifestDeclarationDefinition subManifestDef in this.SubManifests)
                     {
-                        string corpusPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, this);
-                        CdmManifestDefinition subManifest = await this.Ctx.Corpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
-                        await (subManifest as CdmManifestDefinition).PopulateManifestRelationshipsAsync(option);
+                        var corpusPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(subManifestDef.Definition, this);
+                        var subManifest = await this.Ctx.Corpus.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
+                        await subManifest.PopulateManifestRelationshipsAsync(option);
                     }
                 }
             }
@@ -464,7 +466,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).GetLastModifiedTimeAsyncFromObject(this);
+            DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromObject(this);
 
             foreach (var entity in this.Entities)
                 await entity.FileStatusCheckAsync();
@@ -627,12 +629,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         // without using the object itself as a key (could be duplicate relationship objects).
         internal string rel2CacheKey(CdmE2ERelationship rel)
         {
-            return $"{rel.ToEntity}|{rel.ToEntityAttribute}|{rel.FromEntity}|{rel.FromEntityAttribute}";
+            string nameAndPipe = string.Empty;
+            if (!string.IsNullOrWhiteSpace(rel.Name))
+            {
+                nameAndPipe = $"{rel.Name}|";
+            }
+            return $"{nameAndPipe}{rel.ToEntity}|{rel.ToEntityAttribute}|{rel.FromEntity}|{rel.FromEntityAttribute}";
         }
 
         internal CdmE2ERelationship LocalizeRelToManifest(CdmE2ERelationship rel)
         {
-            CdmE2ERelationship relCopy = this.Ctx.Corpus.MakeObject<CdmE2ERelationship>(CdmObjectType.E2ERelationshipDef);
+            CdmE2ERelationship relCopy = this.Ctx.Corpus.MakeObject<CdmE2ERelationship>(CdmObjectType.E2ERelationshipDef, rel.Name);
             relCopy.ToEntity = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(rel.ToEntity, this);
             relCopy.FromEntity = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(rel.FromEntity, this);
             relCopy.ToEntityAttribute = rel.ToEntityAttribute;

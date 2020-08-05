@@ -108,7 +108,7 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             let copy: CdmAttributeResolutionGuidance;
             if (!host) {

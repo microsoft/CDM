@@ -47,7 +47,7 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmDataTypeDefinition;
@@ -139,7 +139,7 @@ export class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             return this.isDerivedFromDef(resOpt, this.getExtendsDataTypeRef(), this.getName(), base);

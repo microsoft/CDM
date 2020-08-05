@@ -90,6 +90,27 @@ class _data_partition_patternTest(unittest.TestCase):
         self.assertIsNotNone(cdmManifest.entities[0].data_partition_patterns[0].last_file_status_check_time)
 
     @async_test
+    async def test_variations_in_root_location(self):
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'TestVariationsInRootLocation')
+        manifest = await corpus.fetch_object_async('pattern.manifest.cdm.json')  # type: CdmManifestDefinition
+        await manifest.file_status_check_async()
+
+        starts_with_slash = manifest.entities[0]  # type: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(starts_with_slash.data_partition_patterns[0].regular_expression, '.*testfile.csv')
+        self.assertEqual(len(starts_with_slash.data_partitions), 1)
+        self.assertEqual(starts_with_slash.data_partitions[0].location, '/partitions/testfile.csv')
+
+        ends_with_slash = manifest.entities[1]  # type: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(ends_with_slash.data_partition_patterns[0].regular_expression, '.*testfile.csv')
+        self.assertEqual(len(ends_with_slash.data_partitions), 1)
+        self.assertEqual(ends_with_slash.data_partitions[0].location, 'partitions/testfile.csv')
+
+        no_slash = manifest.entities[2]  # types: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(no_slash.data_partition_patterns[0].regular_expression, '.*testfile.csv')
+        self.assertEqual(len(no_slash.data_partitions), 1)
+        self.assertEqual(no_slash.data_partitions[0].location, 'partitions/testfile.csv')
+
+    @async_test
     async def test_partition_pattern_with_glob(self):
         corpus = TestHelper.get_local_corpus(self.test_subpath, 'TestPartitionPatternWithGlob')
 

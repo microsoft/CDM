@@ -1,0 +1,104 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "MCRCoupon.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRCouponDiscount",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "MCRCouponAmount",
+          "dataType": "MCRCouponAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRCouponDiscAttr",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MCRCouponId",
+          "dataType": "MCRCouponId",
+          "description": ""
+        },
+        {
+          "name": "MCRCouponValue",
+          "dataType": "MCRCouponValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "MCRCoupon"
+          },
+          "name": "Relationship_MCRCouponRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Coupon discount"
+    },
+    {
+      "dataTypeName": "MCRCouponAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRCouponId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRCouponValue",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

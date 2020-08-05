@@ -45,6 +45,21 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(adls_adapter.create_adapter_path(corpus_path_3), adapter_path_3)
         self.assertEqual(adls_adapter.create_adapter_path(corpus_path_4), adapter_path_4)
 
+        # Check that an adapter path is correctly created from a corpus path with any namespace
+        corpus_path_with_namespace_1 = 'adls:/test.json'
+        corpus_path_with_namespace_2 = 'mylake:/test.json'
+        expected_adapter_path = 'https://storageaccount.dfs.core.windows.net/fs/test.json'
+
+        self.assertEqual(expected_adapter_path, adls_adapter.create_adapter_path(corpus_path_with_namespace_1))
+        self.assertEqual(expected_adapter_path, adls_adapter.create_adapter_path(corpus_path_with_namespace_2))
+
+        # Check that an adapter path is correctly created from a corpus path with colons
+        corpus_path_with_colons = 'namespace:/a/path:with:colons/some-file.json'
+        self.assertEqual('https://storageaccount.dfs.core.windows.net/fs/a/path:with:colons/some-file.json', adls_adapter.create_adapter_path(corpus_path_with_colons))
+
+        # Check that an adapter path is null if the corpus path provided is null
+        self.assertIsNone(adls_adapter.create_adapter_path(None))
+
         host_2 = 'storageaccount.blob.core.windows.net:8888'
         adls_adapter = ADLSAdapter(root=root, hostname=host_2, tenant='dummyTenant', resource='dummyResource',
                                    client_id='dummyClientId', secret='dummySecret')
@@ -160,6 +175,26 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
                 self.assertEqual(mock_urlopen.call_args[0][0].full_url,
                                  'https://dummy.dfs.core.windows.net/fs?directory=&recursive=True&resource=filesystem')
+
+    def test_config_and_update_config_without_secret(self):
+        """
+        The secret property is not saved to the config.json file for security reasons.
+        When constructing and ADLS adapter from config, the user should be able to set the secret after the adapter is constructed.
+        """
+        adls_adapter = ADLSAdapter()
+
+        try:
+            config = {
+                'root': 'root',
+                'hostname': 'hostname',
+                'tenant': 'tenant',
+                'clientId': 'clientId',
+            }
+            adls_adapter.update_config(json.dumps(config))
+            adls_adapter.secret = 'secret'
+            adls_adapter.shared_key = 'sharedKey'
+        except Exception:
+            self.fail('adls_adapter initialized without secret shouldn\'t throw exception when updating config.')
 
 
 if __name__ == '__main__':

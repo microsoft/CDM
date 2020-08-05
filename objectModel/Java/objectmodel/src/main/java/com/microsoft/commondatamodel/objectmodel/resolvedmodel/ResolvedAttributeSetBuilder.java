@@ -455,14 +455,21 @@ public class ResolvedAttributeSetBuilder {
   }
 
   /**
-   *
-   * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
   public ResolvedAttributeSet getResolvedAttributeSet() {
     return resolvedAttributeSet;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void setResolvedAttributeSet(final ResolvedAttributeSet resolvedAttributeSet) {
+    this.resolvedAttributeSet = resolvedAttributeSet;
   }
 
   public int getInheritedMark() {

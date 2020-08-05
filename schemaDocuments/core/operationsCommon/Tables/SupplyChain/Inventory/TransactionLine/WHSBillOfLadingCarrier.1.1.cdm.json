@@ -1,0 +1,193 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/TransactionHeader/WHSBillOfLading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSLTLClass.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WHSNMFC.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSBillOfLadingCarrier",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BillOfLadingId",
+          "dataType": "WHSBillOfLadingId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "HandlingQty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Handling quantity",
+          "description": ""
+        },
+        {
+          "name": "HandlingType",
+          "dataType": "WHSDefaultHandlingType",
+          "isNullable": true,
+          "displayName": "Handling unit",
+          "description": ""
+        },
+        {
+          "name": "HazardousMaterial",
+          "dataType": "WMSHazardousMaterial",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LTLClassCode",
+          "dataType": "WHSLTLClassCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NMFCCode",
+          "dataType": "WHSNMFCCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackageQty",
+          "dataType": "InventQty",
+          "isNullable": true,
+          "displayName": "Package quantity",
+          "description": ""
+        },
+        {
+          "name": "PackageType",
+          "dataType": "WHSDefaultHandlingType",
+          "isNullable": true,
+          "displayName": "Package unit",
+          "description": ""
+        },
+        {
+          "name": "Weight",
+          "dataType": "Weight",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSBillOfLading"
+          },
+          "name": "Relationship_WHSBillOfLadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLTLClass"
+          },
+          "name": "Relationship_WHSLTLClassRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSNMFC"
+          },
+          "name": "Relationship_WHSNMFCRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Bill of lading items"
+    },
+    {
+      "dataTypeName": "WHSBillOfLadingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSDefaultHandlingType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WMSHazardousMaterial",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSLTLClassCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSNMFCCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Weight",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

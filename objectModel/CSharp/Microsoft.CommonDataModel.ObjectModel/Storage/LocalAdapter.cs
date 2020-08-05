@@ -6,7 +6,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
-    using Newtonsoft.Json.Serialization;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -99,10 +98,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// <inheritdoc />
         public string CreateAdapterPath(string corpusPath)
         {
-            if (corpusPath.Contains(":"))
+            var pathTuple = StorageUtils.SplitNamespacePath(corpusPath);
+            if (pathTuple == null)
             {
-                corpusPath = StringUtils.Slice(corpusPath, corpusPath.IndexOf(":") + 1);
+                return null;
             }
+
+            corpusPath = pathTuple.Item2;
 
             if (corpusPath.StartsWith("/"))
             {

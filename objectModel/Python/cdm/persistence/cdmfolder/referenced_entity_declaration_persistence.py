@@ -23,7 +23,9 @@ class ReferencedEntityDeclarationPersistence:
         if not entity_path:
             logger.error(_TAG, ctx, 'Couldn\'t find entity path or similar.', ReferencedEntityDeclarationPersistence.from_data.__name__)
 
-        if entity_path and entity_path.find(':') == -1:
+        # The entity path has to be absolute.
+        # If the namespace is not present then add the "prefixPath" which has the absolute folder path.
+        if entity_path and entity_path.find(':/') == -1:
             entity_path = '{}{}'.format(prefix_path, entity_path)
 
         referenced_entity.entity_path = entity_path

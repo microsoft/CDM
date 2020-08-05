@@ -1,0 +1,178 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WorkflowElementTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowSubWorkflow.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowParallelBranchTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "WorkflowVersionTable.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WorkflowElementLinkTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Level",
+          "dataType": "Level",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ParallelBranchTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "WorkflowSequence",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Previous element",
+          "description": ""
+        },
+        {
+          "name": "SourceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Previous element type",
+          "description": ""
+        },
+        {
+          "name": "TargetId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Next element",
+          "description": ""
+        },
+        {
+          "name": "TargetType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Next element type",
+          "description": ""
+        },
+        {
+          "name": "WorkflowVersionTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowElementTable"
+          },
+          "name": "Relationship_SourceElementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowSubWorkflow"
+          },
+          "name": "Relationship_SourceSubWorkflowTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowElementTable"
+          },
+          "name": "Relationship_TargetElementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowSubWorkflow"
+          },
+          "name": "Relationship_TargetSubWorkflowTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowParallelBranchTable"
+          },
+          "name": "Relationship_WorkflowParallelBranchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowVersionTable"
+          },
+          "name": "Relationship_WorkflowVersionTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Element link"
+    },
+    {
+      "dataTypeName": "Level",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WorkflowSequence",
+      "extendsDataType": "integer"
+    }
+  ]
+}

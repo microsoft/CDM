@@ -2,15 +2,16 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional, TYPE_CHECKING
+import warnings
 
+from cdm.utilities import logger, Errors, ResolveOptions
 from cdm.enums import CdmObjectType
 
 from .cdm_object_simple import CdmObjectSimple
-from cdm.utilities import logger, Errors
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition
-    from cdm.utilities import FriendlyFormatNode, ResolveOptions, VisitCallback
+    from cdm.utilities import FriendlyFormatNode, VisitCallback
 
 
 class CdmImport(CdmObjectSimple):
@@ -20,23 +21,23 @@ class CdmImport(CdmObjectSimple):
         self.corpus_path = corpus_path  # type: str
         self.moniker = moniker  # type: str
 
-        # internal
-        self.doc = None  # type: Optional[CdmDocumentDefinition]
+        # --- internal ---
+        self._document = None  # type: Optional[CdmDocumentDefinition]
 
         self._TAG = CdmImport.__name__
+
+    @property
+    def doc(self) -> Optional['CdmDocumentDefinition']:
+        warnings.warn('This property is deprecated and it is likely to be removed soon..', DeprecationWarning)
+        return self._document
 
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.IMPORT
 
-    @property
-    def _resolved_document(self) -> Optional['CdmDocumentDefinition']:
-        """returns the document that has been resolved for this import"""
-        return self.doc
-
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmImport'] = None) -> 'CdmImport':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmImport(self.ctx, self.corpus_path, self.moniker)
@@ -46,7 +47,7 @@ class CdmImport(CdmObjectSimple):
             copy.corpus_path = self.corpus_path
             copy.moniker = self.moniker
 
-        copy.doc = self.doc
+        copy._document = self._document
 
         return copy
 

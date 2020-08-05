@@ -1,0 +1,107 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailCustomerSearchFieldTranslation.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCustomerSearchField",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "RetailCustomerSearchFieldEnumValue",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "IsShortcut",
+          "dataType": "integer",
+          "displayName": "Display as shortcut",
+          "description": ""
+        },
+        {
+          "name": "RetailCustomerSearchFieldEnumLabel",
+          "dataType": "FieldLabelValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayOrder",
+          "dataType": "RetailDisplayOrder",
+          "isNullable": true,
+          "displayName": "Shortcut display order",
+          "description": ""
+        },
+        {
+          "name": "CanBeRefined",
+          "dataType": "integer",
+          "displayName": "Can be refined",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCustomerSearchFieldTranslation"
+          },
+          "name": "Relationship_RetailCustomerSearchFieldRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Customer search criteria"
+    },
+    {
+      "dataTypeName": "FieldLabelValue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDisplayOrder",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

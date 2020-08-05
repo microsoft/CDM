@@ -1,0 +1,785 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/TransactionHeader/AgreementHeaderExt_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "BankAccountTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankClientDocumentType_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "BankPaymentOrderJour_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/BankTransType.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustLedger.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetHeader/LedgerJournalTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxItemGroupHeading.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BankClientPayment_RU",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountID",
+          "dataType": "CompanyBankAccountId",
+          "description": ""
+        },
+        {
+          "name": "AgreementBlocked",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Agreement number locking",
+          "description": ""
+        },
+        {
+          "name": "AgreementHeaderExt",
+          "dataType": "AgreementHeaderExtRecId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AmountCur",
+          "dataType": "AmountCur",
+          "displayName": "Amount",
+          "description": ""
+        },
+        {
+          "name": "BankCurrencyDealCourse",
+          "dataType": "BankCurrencyDealCourse_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BankTransactionType",
+          "dataType": "BankTransactionType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "CustVendAC",
+          "dataType": "CustVendAC",
+          "isNullable": true,
+          "displayName": "Counteragent",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "description": ""
+        },
+        {
+          "name": "DocumentNumber",
+          "dataType": "BankPaymentOrderBase_RU",
+          "displayName": "Document number",
+          "description": ""
+        },
+        {
+          "name": "DocumentTypeId",
+          "dataType": "BankClientDocumentTypeId_RU",
+          "isNullable": true,
+          "displayName": "Document type",
+          "description": ""
+        },
+        {
+          "name": "ExchRate",
+          "dataType": "ExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Include",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Include",
+          "description": ""
+        },
+        {
+          "name": "JournalNum",
+          "dataType": "LedgerJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PartnerType",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Counteragent type",
+          "description": ""
+        },
+        {
+          "name": "PayeeAccount",
+          "dataType": "BankAccount",
+          "description": ""
+        },
+        {
+          "name": "PayeeBankAccount",
+          "dataType": "BankAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayeeBankAddress",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayeeBankBIC",
+          "dataType": "BankBIC_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayeeBankCorrAccount",
+          "dataType": "BankCorrAccount_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayeeBankName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayeeINN",
+          "dataType": "INN_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayeeName",
+          "dataType": "VendName",
+          "isNullable": true,
+          "displayName": "Recipient",
+          "description": ""
+        },
+        {
+          "name": "PayeeRRC",
+          "dataType": "KPPU_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayerAccount",
+          "dataType": "BankAccount",
+          "description": ""
+        },
+        {
+          "name": "PayerBankAccount",
+          "dataType": "BankAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayerBankAddress",
+          "dataType": "Addressing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayerBankBIC",
+          "dataType": "BankBIC_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayerBankCorrAccount",
+          "dataType": "BankCorrAccount_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayerBankName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayerINN",
+          "dataType": "INN_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PayerName",
+          "dataType": "CustName",
+          "isNullable": true,
+          "displayName": "Payer",
+          "description": ""
+        },
+        {
+          "name": "PayerRRC",
+          "dataType": "KPPU_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentDirection",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentPurpose",
+          "dataType": "BankCentralBankPurposeText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "Posted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "PostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Prepayment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prepayment journal voucher",
+          "description": ""
+        },
+        {
+          "name": "ReceiptDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Receipt date",
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SlipContents",
+          "dataType": "BankCentralBankPurposeText",
+          "isNullable": true,
+          "displayName": "Quittance content",
+          "description": ""
+        },
+        {
+          "name": "SlipDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Quittance date",
+          "description": ""
+        },
+        {
+          "name": "SlipTime",
+          "dataType": "BankClientSlipTime_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "TaxItemGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Transaction date",
+          "description": ""
+        },
+        {
+          "name": "TransferCurrencyCode",
+          "dataType": "CurrencyCode",
+          "isNullable": true,
+          "displayName": "Currency of conversion",
+          "description": ""
+        },
+        {
+          "name": "UnidentifiedText",
+          "dataType": "BankClientUnidentifiedText_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnrecognitionCause",
+          "dataType": "BankClientUnrecognitionCause_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Unrecognized",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Error",
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WriteoffDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Withdrawal date",
+          "description": ""
+        },
+        {
+          "name": "UIN",
+          "dataType": "UIN_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AgreementHeaderExt_RU"
+          },
+          "name": "Relationship_AgreementHeaderExtRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTrans"
+          },
+          "name": "Relationship_BankAccountTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankClientDocumentType_RU"
+          },
+          "name": "Relationship_BankClientDocumentType_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankPaymentOrderJour_RU"
+          },
+          "name": "Relationship_BankPaymentOrderJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BankTransType"
+          },
+          "name": "Relationship_BankTransTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustLedger"
+          },
+          "name": "Relationship_CustPostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTable"
+          },
+          "name": "Relationship_LedgerJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRefRecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxItemGroupHeading"
+          },
+          "name": "Relationship_TaxItemGroupHeadingRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_TransferCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendPostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payments by Client-Bank data"
+    },
+    {
+      "dataTypeName": "CompanyBankAccountId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AgreementHeaderExtRecId_RU",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankCurrencyDealCourse_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "BankTransactionType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustVendAC",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankPaymentOrderBase_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankClientDocumentTypeId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Addressing",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankBIC_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankCorrAccount_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "INN_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VendName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KPPU_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankCentralBankPurposeText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Posted",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BankClientSlipTime_RU",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxItemGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankClientUnidentifiedText_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankClientUnrecognitionCause_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UIN_RU",
+      "extendsDataType": "string"
+    }
+  ]
+}

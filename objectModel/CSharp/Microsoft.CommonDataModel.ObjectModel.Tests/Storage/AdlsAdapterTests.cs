@@ -5,6 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 {
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Newtonsoft.Json.Linq;
 
     [TestClass]
     public class AdlsAdapterTests
@@ -39,6 +40,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             Assert.AreEqual(adapterPath3, adlsAdapter.CreateAdapterPath(corpusPath3));
             Assert.AreEqual(adapterPath4, adlsAdapter.CreateAdapterPath(corpusPath4));
 
+            // Check that an adapter path is correctly created from a corpus path with any namespace
+            var corpusPathWithNamespace1 = "adls:/test.json";
+            var corpusPathWithNamespace2 = "mylake:/test.json";
+            var expectedAdapterPath = "https://storageaccount.dfs.core.windows.net/fs/test.json";
+
+            Assert.AreEqual(expectedAdapterPath, adlsAdapter.CreateAdapterPath(corpusPathWithNamespace1));
+            Assert.AreEqual(expectedAdapterPath, adlsAdapter.CreateAdapterPath(corpusPathWithNamespace2));
+
+            // Check that an adapter path is correctly created from a corpus path with colons
+            var corpusPathWithColons = "namespace:/a/path:with:colons/some-file.json";
+            Assert.AreEqual("https://storageaccount.dfs.core.windows.net/fs/a/path:with:colons/some-file.json", adlsAdapter.CreateAdapterPath(corpusPathWithColons));
+
+            // Check that an adapter path is null if the corpus path provided is null
+            Assert.IsNull(adlsAdapter.CreateAdapterPath(null));
+
             var host2 = "storageaccount.blob.core.windows.net:8888";
             adlsAdapter = new ADLSAdapter(host2, root, string.Empty);
 
@@ -49,6 +65,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
             Assert.AreEqual("/a/5.csv", adlsAdapter.CreateCorpusPath(adapterPath5));
             Assert.AreEqual("/a/6.csv", adlsAdapter.CreateCorpusPath(adapterPath6));
             Assert.AreEqual(null, adlsAdapter.CreateCorpusPath(adapterPath7));
+        }
+
+
+        /// <summary>
+        /// The secret property is not saved to the config.json file for security reasons.
+        /// When constructing and ADLS adapter from config, the user should be able to set the authentication details after the adapter is constructed.
+        /// </summary>
+        [TestMethod]
+        public void TestConfigAndUpdateConfigWithoutAuthenticationDetails()
+        {
+            var adlsAdapter = new ADLSAdapter();
+
+            try
+            {
+                var config = new JObject
+                {
+                    { "root", "root" },
+                    { "hostname", "hostname" },
+                    { "tenant", "tenant" },
+                    { "clientId", "clientId" }
+                };
+                adlsAdapter.UpdateConfig(config.ToString());
+                adlsAdapter.Secret = "secret";
+                adlsAdapter.SharedKey = "sharedKey";
+            }
+            catch
+            {
+                Assert.Fail("AdlsAdapter initialized without secret shouldn't throw exception when updating config.");
+            }
         }
     }
 }

@@ -48,6 +48,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             this.AppliedTraits = new CdmTraitCollection(this.Ctx, this);
         }
+
         internal CdmObjectReferenceBase CopyToHost(CdmCorpusContext ctx, dynamic refTo, bool simpleReference)
         {
             this.Ctx = ctx;
@@ -82,7 +83,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         [Obsolete("Only for internal use.")]
-        public CdmObjectDefinition FetchResolvedReference(ResolveOptions resOpt = null)
+        public CdmObject FetchResolvedReference(ResolveOptions resOpt = null)
         {
             if (resOpt == null)
             {
@@ -96,7 +97,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null;
 
             ResolveContext ctx = this.Ctx as ResolveContext;
-            CdmObjectDefinitionBase res = null;
+            CdmObjectBase res = null;
 
             // if this is a special request for a resolved attribute, look that up now
             int seekResAtt = offsetAttributePromise(this.NamedReference);
@@ -105,7 +106,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 string entName = this.NamedReference.Substring(0, seekResAtt);
                 string attName = this.NamedReference.Slice(seekResAtt + resAttToken.Length);
                 // get the entity
-                CdmObjectDefinition ent = (this.Ctx.Corpus as CdmCorpusDefinition).ResolveSymbolReference(resOpt, this.InDocument, entName, CdmObjectType.EntityDef, retry: true);
+                CdmObject ent = this.Ctx.Corpus.ResolveSymbolReference(resOpt, this.InDocument, entName, CdmObjectType.EntityDef, retry: true);
                 if (ent == null)
                 {
                     Logger.Warning(nameof(CdmObjectReferenceBase), ctx, $"unable to resolve an entity named '{entName}' from the reference '{this.NamedReference}");
@@ -127,7 +128,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             else
             {
                 // normal symbolic reference, look up from the Corpus, it knows where everything is
-                res = (this.Ctx.Corpus as CdmCorpusDefinition).ResolveSymbolReference(resOpt, this.InDocument, this.NamedReference, this.ObjectType, retry: true);
+                res = this.Ctx.Corpus.ResolveSymbolReference(resOpt, this.InDocument, this.NamedReference, this.ObjectType, retry: true);
             }
 
             return res;
@@ -143,7 +144,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (!string.IsNullOrEmpty(this.NamedReference))
                 return this.CopyRefObject(resOpt, this.NamedReference, true);
-            return this.CopyRefObject(resOpt, this.DeclaredPath + this.ExplicitReference.GetName(), true);
+            string newDeclaredPath = this.DeclaredPath?.EndsWith("/(ref)") == true ? this.DeclaredPath.Substring(0, this.DeclaredPath.Length - 6) : this.DeclaredPath;
+            return this.CopyRefObject(resOpt, newDeclaredPath, true);
         }
 
         /// <inheritdoc />
@@ -178,6 +180,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             return copy;
         }
+
         internal abstract CdmObjectReferenceBase CopyRefObject(ResolveOptions resOpt, dynamic refTo, bool simpleReference, CdmObjectReferenceBase host = null);
 
         /// <inheritdoc />
@@ -199,6 +202,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (this.ExplicitReference != null)
                 return this.ExplicitReference.GetName();
+
             return null;
         }
 
@@ -229,6 +233,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             dynamic def = this.FetchResolvedReference(resOpt) as dynamic;
             if (def != null)
+            {
+                if (def is CdmObjectReferenceBase)
+                {
+                    def = def.FetchResolvedReference(resOpt) as dynamic;
+                }
+            }
+            if (def != null && !(def is CdmObjectReference))
                 return def;
             return default(T);
         }
@@ -255,11 +266,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (!string.IsNullOrEmpty(this.NamedReference))
                     path = pathFrom + this.NamedReference;
                 else
-                    path = pathFrom;
-                this.DeclaredPath = path;
+                {
+                    // when an object is defined inline inside a reference, we need a path to the reference
+                    // AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
+                    // defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
+                    // gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
+                    // entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
+                    // object at the same level, like anywhere there is a collection of references or the collection of attributes.
+                    // so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
+                    // extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
+                    // the inline defined object.
+                    // ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
+                    // the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
+                    // ANY reference, not just inline ones
+                    if (this.ExplicitReference != null)
+                    {
+                        // ref path is name of defined object
+                        path = $"{pathFrom}{this.ExplicitReference.GetName()}";
+                        // inline object path is a request for the defintion. setting the declaredPath
+                        // keeps the visit on the explcitReference from using the defined object name
+                        // as the path to that object
+                        (this.ExplicitReference as CdmObjectDefinitionBase).DeclaredPath = path;
+                    }
+                    else
+                    {
+                        path = pathFrom;
+                    }
+                }
+                this.DeclaredPath = $"{path}/(ref)";
             }
+            string refPath = this.DeclaredPath;
 
-            if (preChildren != null && preChildren.Invoke(this, path))
+            if (preChildren != null && preChildren.Invoke(this, refPath))
                 return false;
             if (this.ExplicitReference != null && string.IsNullOrEmpty(this.NamedReference))
                 if (this.ExplicitReference.Visit(path, preChildren, postChildren))
@@ -268,10 +306,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return true;
 
             if (this.AppliedTraits != null)
-                if (this.AppliedTraits.VisitList(path + "/appliedTraits/", preChildren, postChildren))
+                if (this.AppliedTraits.VisitList(refPath + "/appliedTraits/", preChildren, postChildren))
                     return true;
 
-            if (postChildren != null && postChildren.Invoke(this, path))
+            if (postChildren != null && postChildren.Invoke(this, refPath))
                 return true;
             return false;
         }
@@ -332,8 +370,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 const string kind = "rts";
                 ResolveContext ctx = this.Ctx as ResolveContext;
-                string objDefName = this.FetchObjectDefinitionName();
-                string cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, "", true);
+                var objDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
+                string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", true, objDef != null ? objDef.AtCorpusPath : null);
                 dynamic rtsResultDynamic = null;
                 if (cacheTag != null)
                     ctx.Cache.TryGetValue(cacheTag, out rtsResultDynamic);
@@ -348,7 +386,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (rtsResult == null)
                 {
-                    CdmObjectDefinition objDef = this.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
                     if (objDef != null)
                     {
                         rtsResult = (objDef as CdmObjectDefinitionBase).FetchResolvedTraits(resOpt);
@@ -356,10 +393,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             rtsResult = rtsResult.DeepCopy();
 
                         // register set of possible docs
-                        ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(objDef, kind, resOpt.SymbolRefSet);
+                        ctx.Corpus.RegisterDefinitionReferenceSymbols(objDef, kind, resOpt.SymbolRefSet);
 
                         // get the new cache tag now that we have the list of docs
-                        cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, "", true);
+                        cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, "", true, objDef.AtCorpusPath);
                         if (!string.IsNullOrWhiteSpace(cacheTag))
                             ctx.Cache[cacheTag] = rtsResult;
                     }
@@ -369,7 +406,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // cache was found
                     // get the SymbolSet for this cached object
                     string key = CdmCorpusDefinition.CreateCacheKeyFromObject(this, kind);
-                    ((CdmCorpusDefinition)ctx.Corpus).DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
+                    ctx.Corpus.DefinitionReferenceSymbols.TryGetValue(key, out SymbolSet tempDocRefSet);
                     resOpt.SymbolRefSet = tempDocRefSet;
                 }
 

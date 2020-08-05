@@ -272,7 +272,7 @@ export class ManifestPersistence {
         }
 
         // processAnnotationsToData also processes extensions.
-        await ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
+        ModelJson.utils.processTraitsAndAnnotationsToData(instance.ctx, result, instance.exhibitsTraits);
 
         if (instance.entities && instance.entities.length > 0) {
             result.entities = [];

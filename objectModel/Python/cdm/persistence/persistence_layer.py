@@ -6,7 +6,7 @@ from collections import OrderedDict
 from typing import Any, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.utilities import AttributeResolutionDirectiveSet, CdmError, logger, ResolveOptions
+from cdm.utilities import AttributeResolutionDirectiveSet, CdmError, logger, ResolveOptions, StorageUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmObject
@@ -150,7 +150,7 @@ class PersistenceLayer:
                 # it would be really rude to just kill that old object and replace it with this replicant, especially because
                 # the caller has no idea this happened. so... sigh ... instead of returning the new object return the one that
                 # was just killed off but make it contain everything the new document loaded.
-                doc_content = doc_content.copy(ResolveOptions(wrt_doc=doc_container), doc_container)
+                doc_content = doc_content.copy(ResolveOptions(wrt_doc=doc_container, directives=self._ctx.corpus.default_resolution_directives), doc_container)
 
             folder.documents.append(doc_content, doc_name)
             doc_content._file_system_modified_time = fs_modified_time
@@ -169,7 +169,12 @@ class PersistenceLayer:
 
         persistence_module_name = '{}_persistence'.format(object_name)
         persistence_class_name = ''.join([x.title() for x in persistence_module_name.split('_')])
-        persistence_module = importlib.import_module('cdm.persistence.{}.{}'.format(persistence_type.lower(), persistence_module_name))
+
+        if persistence_class_name == 'ProjectionPersistence':
+            # Projection persistence class is in a nested folder
+            persistence_module = importlib.import_module('cdm.persistence.{}.projections.{}'.format(persistence_type.lower(), persistence_module_name))
+        else:
+            persistence_module = importlib.import_module('cdm.persistence.{}.{}'.format(persistence_type.lower(), persistence_module_name))
         PersistenceClass = getattr(persistence_module, persistence_class_name, None)
 
         if not PersistenceClass:
@@ -321,8 +326,13 @@ class PersistenceLayer:
         try:
             old_document_path = doc.documentPath
             new_document_path = old_document_path[0: len(old_document_path) - len(self.ODI_EXTENSION)] + new_name
+            # Remove namespace from path
+            path_tuple = StorageUtils.split_namespace_path(new_document_path)
+            if not path_tuple:
+                logger.error(self._TAG, self._ctx, 'The object path cannot be null or empty.', self._save_odi_documents.__name__)
+                return
             content = doc.encode()
-            await adapter.write_async(new_document_path, content)
+            await adapter.write_async(path_tuple[1], content)
         except Exception as e:
             logger.error(self._TAG, self._ctx, 'Failed to write to the file \'{}\' for reason {}.'.format(
                 doc.documentPath, e), self._save_odi_documents.__name__)

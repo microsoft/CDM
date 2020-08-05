@@ -39,7 +39,7 @@ class CdmManifestDeclarationDefinition(CdmObjectDefinition, CdmFileStatus):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmManifestDeclarationDefinition'] = None) -> 'CdmManifestDeclarationDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmManifestDeclarationDefinition(self.ctx, self.manifest_name)

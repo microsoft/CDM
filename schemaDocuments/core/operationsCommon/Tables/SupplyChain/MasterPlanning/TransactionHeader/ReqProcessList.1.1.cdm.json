@@ -1,0 +1,198 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlan.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReqProcessList",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Cancelled",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClassId",
+          "dataType": "ClassId",
+          "description": ""
+        },
+        {
+          "name": "Errors",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Level",
+          "dataType": "BOMLevel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxChildThreads",
+          "dataType": "ReqProcessNumThreadsRequested",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Parameters",
+          "dataType": "ParametersX",
+          "isNullable": true,
+          "displayName": "Process parameters",
+          "description": ""
+        },
+        {
+          "name": "PmfDataChangedDuringProcessing",
+          "dataType": "PmfDataChangedDuringProcessing",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PmfRerunFromLevel",
+          "dataType": "BOMLevel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessId",
+          "dataType": "ReqProcessId",
+          "description": ""
+        },
+        {
+          "name": "ReqCalcUpdate",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPlanId",
+          "dataType": "ReqPlanId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsedChildThreads",
+          "dataType": "ReqProcessNumThreadsUsed",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsedTodaysDate",
+          "dataType": "TodaysDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InfrastructureFailure",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlan"
+          },
+          "name": "Relationship_ReqPlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Unfinished planning processes"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ClassId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BOMLevel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqProcessNumThreadsRequested",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ParametersX",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "PmfDataChangedDuringProcessing",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ReqProcessId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqPlanId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqProcessNumThreadsUsed",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TodaysDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

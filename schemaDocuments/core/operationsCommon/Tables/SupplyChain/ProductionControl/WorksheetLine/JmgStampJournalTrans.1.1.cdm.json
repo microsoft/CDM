@@ -1,0 +1,1001 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgJobTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/JmgPayTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/JmgStampJournalTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgTermReg.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgIpcActivity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjActivity.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "ProdRouteJob.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgIpcCategory.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/ProdRouteTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Transaction/ProjEmplTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgStampJournalTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AbsencePayQty",
+          "dataType": "JmgPayQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Active",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Work in process",
+          "description": ""
+        },
+        {
+          "name": "ActOprID",
+          "dataType": "JmgActOprID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BreakSeconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Break",
+          "description": ""
+        },
+        {
+          "name": "BreakTolerance",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Break tolerance",
+          "description": ""
+        },
+        {
+          "name": "CorrStartDate",
+          "dataType": "JmgDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected start date",
+          "description": ""
+        },
+        {
+          "name": "CorrStartTime",
+          "dataType": "JmgTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected start time",
+          "description": ""
+        },
+        {
+          "name": "CorrStopDate",
+          "dataType": "JmgDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected end date",
+          "description": ""
+        },
+        {
+          "name": "CorrStopTime",
+          "dataType": "JmgTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected end time",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "doProdUpdate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Production update",
+          "description": ""
+        },
+        {
+          "name": "ErrorCause",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ErrorSpecification",
+          "dataType": "JmgErrorSpecification",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsGeneratedByCalculation",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobFinished",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Job is finished",
+          "description": ""
+        },
+        {
+          "name": "JobId",
+          "dataType": "JmgJobId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobIDAbs",
+          "dataType": "JmgJobIDAbs",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobPayType",
+          "dataType": "JmgJobPayType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobRef",
+          "dataType": "JmgJobRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobRefType",
+          "dataType": "JmgJobRefType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobType",
+          "dataType": "JmgJobType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JourRegType",
+          "dataType": "JmgJourRegType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Log",
+          "dataType": "LogTxt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Module",
+          "dataType": "JmgModule",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnCallActivity",
+          "dataType": "JmgIpcActivityIdOnCall",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OprNum",
+          "dataType": "OprNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginalTransaction",
+          "dataType": "Blobdata",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyError",
+          "dataType": "PdsCWBatchErr",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyGood",
+          "dataType": "PdsCWBatchGood",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWQtyStartup",
+          "dataType": "PdsCWBatchStup",
+          "isNullable": true,
+          "displayName": "CW start qty",
+          "description": ""
+        },
+        {
+          "name": "PdsCWSysQtyError",
+          "dataType": "PdsCWBatchErr",
+          "isNullable": true,
+          "displayName": "CW qty error items",
+          "description": ""
+        },
+        {
+          "name": "PdsCWSysQtyGood",
+          "dataType": "PdsCWBatchGood",
+          "isNullable": true,
+          "displayName": "CW qty good items",
+          "description": ""
+        },
+        {
+          "name": "PdsCWSysQtyStartup",
+          "dataType": "PdsCWBatchStup",
+          "isNullable": true,
+          "displayName": "CW qty start items",
+          "description": ""
+        },
+        {
+          "name": "PieceRatePayCostTypeMin",
+          "dataType": "JmgPayCostType",
+          "isNullable": true,
+          "displayName": "Pay type for minimum rate",
+          "description": ""
+        },
+        {
+          "name": "PieceRatePayMinRate",
+          "dataType": "JmgRate",
+          "isNullable": true,
+          "displayName": "Minimum rate",
+          "description": ""
+        },
+        {
+          "name": "PieceRatePayRate",
+          "dataType": "JmgRate",
+          "isNullable": true,
+          "displayName": "Piecework rate",
+          "description": ""
+        },
+        {
+          "name": "ProfileDate",
+          "dataType": "StartDate",
+          "isNullable": true,
+          "displayName": "Profile date",
+          "description": ""
+        },
+        {
+          "name": "ProjCategory",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjEmplTransId",
+          "dataType": "ProjEmplTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyError",
+          "dataType": "ProdReportedError",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyGood",
+          "dataType": "ProdReportedGood",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyStartup",
+          "dataType": "ProductQuantity",
+          "isNullable": true,
+          "displayName": "Start quantity",
+          "description": ""
+        },
+        {
+          "name": "RouteJobType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Seconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Time",
+          "description": ""
+        },
+        {
+          "name": "SecondsOnReg",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Seconds before allocation",
+          "description": ""
+        },
+        {
+          "name": "SecondsOnTrans",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "displayName": "Transaction ID seconds",
+          "description": ""
+        },
+        {
+          "name": "StampType",
+          "dataType": "JmgStampType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StampTypeSpec",
+          "dataType": "JmgStampTypeSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "JmgDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "StartTime",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "Start time",
+          "description": ""
+        },
+        {
+          "name": "StopDate",
+          "dataType": "JmgDate",
+          "isNullable": true,
+          "displayName": "End date",
+          "description": ""
+        },
+        {
+          "name": "StopTime",
+          "dataType": "JmgTime",
+          "isNullable": true,
+          "displayName": "End time",
+          "description": ""
+        },
+        {
+          "name": "SysErrorSpecification",
+          "dataType": "JmgErrorSpecification",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SysQtyError",
+          "dataType": "ProductQuantity",
+          "isNullable": true,
+          "displayName": "Quantity of error items",
+          "description": ""
+        },
+        {
+          "name": "SysQtyGood",
+          "dataType": "ProductQuantity",
+          "isNullable": true,
+          "displayName": "Quantity of good items",
+          "description": ""
+        },
+        {
+          "name": "SysQtyStartup",
+          "dataType": "ProductQuantity",
+          "isNullable": true,
+          "displayName": "Quantity of started items",
+          "description": ""
+        },
+        {
+          "name": "TermRegStartRecID",
+          "dataType": "JmgTermRegStartRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TermRegStopRecID",
+          "dataType": "JmgTermRegStopRecID",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TermStart",
+          "dataType": "JmgTerminalId",
+          "isNullable": true,
+          "displayName": "Start registration terminal",
+          "description": ""
+        },
+        {
+          "name": "TermStop",
+          "dataType": "JmgTerminalId",
+          "isNullable": true,
+          "displayName": "Stop registration terminal",
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "JmgTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "JmgWorkerRecId",
+          "description": ""
+        },
+        {
+          "name": "WorkerPilot",
+          "dataType": "JmgWorkerRecId_JobPilot",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WrkCtrId",
+          "dataType": "WrkCtrId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WrkCtrIdPilot",
+          "dataType": "JmgWrkCtrIdPilot",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgJobTable"
+          },
+          "name": "Relationship_JmgJobTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgPayTable"
+          },
+          "name": "Relationship_JmgPayTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgStampJournalTable"
+          },
+          "name": "Relationship_JmgStampJournalTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgTermReg"
+          },
+          "name": "Relationship_JmgTermReg_startRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgTermReg"
+          },
+          "name": "Relationship_JmgTermReg_stopRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgIpcActivity"
+          },
+          "name": "Relationship_JobId_IpcActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjActivity"
+          },
+          "name": "Relationship_JobId_ProjActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_JobId_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdRouteJob"
+          },
+          "name": "Relationship_JobId_RouteRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgIpcCategory"
+          },
+          "name": "Relationship_JobRef_IpcBreakRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgIpcCategory"
+          },
+          "name": "Relationship_JobRef_IpcCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_JobRef_ProdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_JobRef_ProdOverlapRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_JobRef_ProdProcesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_JobRef_ProdQueueAfterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_JobRef_ProdSetupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_JobRef_ProdTransportRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_JobRef_ProjRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_JobRef_ProjActicityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgIpcActivity"
+          },
+          "name": "Relationship_OnCallJmgIpcActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdRouteTrans"
+          },
+          "name": "Relationship_ProdRouteTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjEmplTrans"
+          },
+          "name": "Relationship_ProjEmplTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_ResourcePilotWrkCtrTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_ResourceWrkCtrTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Logbook"
+    },
+    {
+      "dataTypeName": "JmgPayQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgActOprID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgTime",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgErrorSpecification",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgJobIDAbs",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgJobPayType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgJobRef",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgJobRefType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgJobType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgJourRegType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LogTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgModule",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgIpcActivityIdOnCall",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OprNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Blobdata",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "PdsCWBatchErr",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWBatchGood",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWBatchStup",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgPayCostType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "StartDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjEmplTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProdReportedError",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdReportedGood",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProductQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgStampType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgStampTypeSpec",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgTermRegStartRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgTermRegStopRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId_JobPilot",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WrkCtrId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgWrkCtrIdPilot",
+      "extendsDataType": "string"
+    }
+  ]
+}

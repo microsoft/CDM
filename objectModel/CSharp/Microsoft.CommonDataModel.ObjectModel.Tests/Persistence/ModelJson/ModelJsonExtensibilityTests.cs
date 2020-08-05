@@ -153,7 +153,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.ModelJson
             var deserializerTime = deserializeStopwatch.ElapsedMilliseconds;
 
             Assert.Performance(500, serializerTime, "Serializing");
-            Assert.Performance(1500, deserializerTime, "Deserializing");
+            Assert.Performance(1800, deserializerTime, "Deserializing");
         }
 
         /// <summary>

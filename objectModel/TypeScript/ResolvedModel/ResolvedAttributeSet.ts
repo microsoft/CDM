@@ -200,7 +200,9 @@ export class ResolvedAttributeSet extends refCounted {
         this.resolvedName2resolvedAttribute = new Map<string, ResolvedAttribute>(); // rebuild with smaller set
         this.set = newSet;
         for (const ra of newSet) {
-            this.resolvedName2resolvedAttribute.set(ra.resolvedName, ra);
+            if (!this.resolvedName2resolvedAttribute.has(ra.resolvedName)) {
+                this.resolvedName2resolvedAttribute.set(ra.resolvedName, ra);
+            }
         }
     }
 

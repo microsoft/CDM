@@ -27,7 +27,7 @@ async function runSample() {
     // ------------------------------------------------------------------------------------------------------------
     // Set up adapters for managing access to local FS, remote and ADLS locations
 
-    // Fake cdm, normaly use the github adapter
+    // Fake cdm, normaly use the CDM Standards adapter
     // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
     cdmCorpus.storage.mount('cdm', new cdm.types.LocalAdapter(`${pathFromExeToExampleRoot}example-public-standards`));
 

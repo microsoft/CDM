@@ -170,7 +170,7 @@ class EntityResolution(unittest.TestCase):
         res_opt = ResolveOptions(wrt_doc=entity.in_document)
         resolved_entity = await entity.create_resolved_entity_async('resolved', res_opt)
 
-        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[1].applied_traits[6].named_reference)
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[1].applied_traits[7].named_reference)
 
         # Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
         res_opt = ResolveOptions(wrt_doc=entity.in_document)

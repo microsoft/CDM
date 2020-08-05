@@ -48,7 +48,7 @@ public class Program {
     // Local is our default.
     // So any paths that start out navigating without a device tag will assume local.
 
-    // Fake cdm, normally use the github adapter.
+    // Fake cdm, normally use the CDM Standards adapter.
     // Mount it as the 'cdm' adapter, not the default so must use "cdm:/folder" to get there.
     cdmCorpus.getStorage().mount(
         "cdm",

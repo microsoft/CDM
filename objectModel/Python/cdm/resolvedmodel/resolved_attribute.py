@@ -120,12 +120,18 @@ class ResolvedAttribute():
         return self._ttpm
 
     def copy(self) -> 'ResolvedAttribute':
+        from cdm.resolvedmodel import ResolvedAttributeSet
+
         # Use the options from the traits.
         copy = ResolvedAttribute(self.resolved_traits.res_opt, self.target, self._resolved_name, self.att_ctx)
         copy._resolved_attribute_count = self._resolved_attribute_count
         copy.resolved_traits = self.resolved_traits.shallow_copy()
         copy.insert_order = self.insert_order
         copy.arc = self.arc
+
+        if isinstance(copy.target, ResolvedAttributeSet):
+            # deep copy when set contains sets. this copies the resolved att set and the context, etc.
+            copy.target = copy.target.copy()
 
         if self.applier_state is not None:
             copy.applier_state = self.applier_state._copy()

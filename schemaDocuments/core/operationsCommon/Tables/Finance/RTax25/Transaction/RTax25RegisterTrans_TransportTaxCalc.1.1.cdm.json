@@ -1,0 +1,579 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/PaymentOrderBudgetReceiptClassTable_RU.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RAsset/Main/RAssetTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/Group/RTax25ProfitTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RTax25/WorksheetLine/RTax25RegisterJournalTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/VehicleModelTable_W.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/VehicleTypeTable_W.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxAuthorityAddress.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTax25RegisterTrans_TransportTaxCalc",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetId",
+          "dataType": "RAssetId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BlockType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Line type",
+          "description": ""
+        },
+        {
+          "name": "BudgetRevenueCode",
+          "dataType": "PaymentOrderBudgetReceiptClassCode_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Corrected",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Corrected",
+          "description": ""
+        },
+        {
+          "name": "ExemptionAmount",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Tax allowance amount",
+          "description": ""
+        },
+        {
+          "name": "ExemptionId",
+          "dataType": "RAssetTaxAllowanceId",
+          "isNullable": true,
+          "displayName": "Exemption from tax",
+          "description": ""
+        },
+        {
+          "name": "Factor",
+          "dataType": "RAssetTaxAccountingFactor",
+          "isNullable": true,
+          "displayName": "Allowance factor",
+          "description": ""
+        },
+        {
+          "name": "FactorK2",
+          "dataType": "RAssetTaxAccountingFactor",
+          "isNullable": true,
+          "displayName": "Ownership factor",
+          "description": ""
+        },
+        {
+          "name": "GracePeriod",
+          "dataType": "Months",
+          "isNullable": true,
+          "displayName": "Grace period",
+          "description": ""
+        },
+        {
+          "name": "JournalTransRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineDescription",
+          "dataType": "RTax25Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ManualInput",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Manual data input",
+          "description": ""
+        },
+        {
+          "name": "Model",
+          "dataType": "VehicleModel_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Months",
+          "dataType": "Months",
+          "isNullable": true,
+          "displayName": "Number of months",
+          "description": ""
+        },
+        {
+          "name": "Privilege",
+          "dataType": "RAssetTaxAllowanceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfitAmount",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RCOAD",
+          "dataType": "OKATO_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegNo",
+          "dataType": "VehiclePlateNum_W",
+          "isNullable": true,
+          "displayName": "Reg. No.",
+          "description": ""
+        },
+        {
+          "name": "RTax25ProfitTable",
+          "dataType": "RTax25ProfitTableRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesTaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SerialNumber",
+          "dataType": "RAssetSerialNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Tax",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Calculated advance payment/Tax",
+          "description": ""
+        },
+        {
+          "name": "TaxAllowanceAmount",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Tax allowance amount",
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Advance payment amount/Tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBase",
+          "dataType": "TaxBase",
+          "isNullable": true,
+          "displayName": "Tax base",
+          "description": ""
+        },
+        {
+          "name": "TaxValue",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "Tax value",
+          "description": ""
+        },
+        {
+          "name": "Unit",
+          "dataType": "UnitOfMeasureSymbol",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UsefulLifeTime",
+          "dataType": "Yr",
+          "isNullable": true,
+          "displayName": "Useful life-time",
+          "description": ""
+        },
+        {
+          "name": "VehicleType",
+          "dataType": "VehicleType_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FactorKp",
+          "dataType": "PositiveFactor",
+          "isNullable": true,
+          "displayName": "Factor Kp",
+          "description": ""
+        },
+        {
+          "name": "OwnedShare",
+          "dataType": "RAssetTransportTaxOwnedShare",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Deduction",
+          "dataType": "RAssetTaxAllowanceId",
+          "isNullable": true,
+          "displayName": "Deduction",
+          "description": ""
+        },
+        {
+          "name": "RegisterRemovalDate",
+          "dataType": "RegisterRemovalDate_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReleaseYear",
+          "dataType": "Yr",
+          "isNullable": true,
+          "displayName": "Output year",
+          "description": ""
+        },
+        {
+          "name": "TaxDeductionAmount",
+          "dataType": "RAssetAssessedAmount",
+          "isNullable": true,
+          "displayName": "Tax allowance amount",
+          "description": ""
+        },
+        {
+          "name": "VehiclePlateDate",
+          "dataType": "VehiclePlateDate_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Branch",
+          "dataType": "BranchId_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefLineNumber",
+          "dataType": "RTax25RegisterLineNum64",
+          "isNullable": true,
+          "displayName": "Reference row",
+          "description": ""
+        },
+        {
+          "name": "TaxAuthority",
+          "dataType": "TaxAuthority",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Location",
+          "dataType": "RAssetLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PaymentOrderBudgetReceiptClassTable_RU"
+          },
+          "name": "Relationship_PaymentOrderBudgetReceiptClassTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RAssetTable"
+          },
+          "name": "Relationship_RAssetTableAssetIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25ProfitTable"
+          },
+          "name": "Relationship_RTax25ProfitTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTax25RegisterJournalTrans"
+          },
+          "name": "Relationship_RTax25RegisterJournalTransRecIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxTable"
+          },
+          "name": "Relationship_TaxTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VehicleModelTable_W"
+          },
+          "name": "Relationship_VehicleModelTable_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VehicleTypeTable_W"
+          },
+          "name": "Relationship_VehicleTypeTable_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxAuthorityAddress"
+          },
+          "name": "Relationship_TaxAuthorityAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax register line"
+    },
+    {
+      "dataTypeName": "RAssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymentOrderBudgetReceiptClassCode_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetAssessedAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RAssetTaxAllowanceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetTaxAccountingFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Months",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RTax25Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25RegisterLineNum64",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VehicleModel_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "OKATO_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VehiclePlateNum_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTax25ProfitTableRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetSerialNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Yr",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "VehicleType_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PositiveFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RAssetTransportTaxOwnedShare",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RegisterRemovalDate_RU",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VehiclePlateDate_W",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BranchId_RU",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAuthority",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RAssetLocationId",
+      "extendsDataType": "string"
+    }
+  ]
+}

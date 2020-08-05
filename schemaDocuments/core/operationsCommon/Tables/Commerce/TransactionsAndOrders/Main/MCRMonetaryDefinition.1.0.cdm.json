@@ -1,0 +1,189 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "MCRRFMDefinition.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRMonetaryDefinition",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualEnd",
+          "dataType": "MCRMonetaryEndDollars",
+          "isNullable": true,
+          "displayName": "Actual end",
+          "description": ""
+        },
+        {
+          "name": "ActualStart",
+          "dataType": "MCRMonetaryStartDollars",
+          "isNullable": true,
+          "displayName": "Actual start",
+          "description": ""
+        },
+        {
+          "name": "CustomerCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Customer count",
+          "description": ""
+        },
+        {
+          "name": "FrequencyScore",
+          "dataType": "MCRScore",
+          "isNullable": true,
+          "displayName": "Frequency score",
+          "description": ""
+        },
+        {
+          "name": "MonetaryEndDollars",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "End range",
+          "description": ""
+        },
+        {
+          "name": "MonetaryStartDollars",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Start range",
+          "description": ""
+        },
+        {
+          "name": "RecencyScore",
+          "dataType": "MCRScore",
+          "isNullable": true,
+          "displayName": "Recency score",
+          "description": ""
+        },
+        {
+          "name": "RFMDefinitionName",
+          "dataType": "MCRRFMDefinitionName",
+          "description": ""
+        },
+        {
+          "name": "SalePercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Sales percent",
+          "description": ""
+        },
+        {
+          "name": "SalesAmount",
+          "dataType": "SalesAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Score",
+          "dataType": "MCRScore",
+          "isNullable": true,
+          "displayName": "Monetary score",
+          "description": ""
+        },
+        {
+          "name": "TransactionCount",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Order count",
+          "description": ""
+        },
+        {
+          "name": "TransactionPercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Order percent",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "MCRRFMDefinition"
+          },
+          "name": "Relationship_MCRRFMDefinitionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Monetary Definition"
+    },
+    {
+      "dataTypeName": "MCRMonetaryEndDollars",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRMonetaryStartDollars",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Counter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRScore",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "MCRRFMDefinitionName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "SalesAmount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

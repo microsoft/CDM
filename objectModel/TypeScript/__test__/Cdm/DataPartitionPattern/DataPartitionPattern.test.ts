@@ -23,7 +23,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
      * Tests refreshing files that match the regular expression
      */
     it('TestRefreshDataPartitionPatterns', async (done) => {
-        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRefreshDataPartitionPatterns')
+        const cdmCorpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRefreshDataPartitionPatterns');
 
         const cdmManifest: CdmManifestDefinition =
             await cdmCorpus.fetchObjectAsync<CdmManifestDefinition>('local:/patternManifest.manifest.cdm.json');
@@ -140,6 +140,40 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         expect(cdmManifest.entities.allItems[0].dataPartitionPatterns.allItems[0].lastFileStatusCheckTime)
             .not
             .toBeUndefined();
+        done();
+    });
+
+    /**
+     * Testing that patterns behave correctly with variations to rootLocation
+     */
+    it('TestVariationsInRootLocation', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestVariationsInRootLocation');
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('pattern.manifest.cdm.json');
+        await manifest.fileStatusCheckAsync();
+
+        const startsWithSlash: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        expect(startsWithSlash.dataPartitionPatterns.allItems[0].regularExpression)
+            .toBe('.*testfile.csv');
+        expect(startsWithSlash.dataPartitions.length)
+            .toBe(1);
+        expect(startsWithSlash.dataPartitions.allItems[0].location)
+            .toBe('/partitions/testfile.csv');
+
+        const endsWithSlash: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[1] as CdmLocalEntityDeclarationDefinition;
+        expect(endsWithSlash.dataPartitionPatterns.allItems[0].regularExpression)
+            .toBe('.*testfile.csv');
+        expect(endsWithSlash.dataPartitions.length)
+            .toBe(1);
+        expect(endsWithSlash.dataPartitions.allItems[0].location)
+            .toBe('partitions/testfile.csv');
+
+        const noSlash: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[2] as CdmLocalEntityDeclarationDefinition;
+        expect(noSlash.dataPartitionPatterns.allItems[0].regularExpression)
+            .toBe('.*testfile.csv');
+        expect(noSlash.dataPartitions.length)
+            .toBe(1);
+        expect(noSlash.dataPartitions.allItems[0].location)
+            .toBe('partitions/testfile.csv');
         done();
     });
 

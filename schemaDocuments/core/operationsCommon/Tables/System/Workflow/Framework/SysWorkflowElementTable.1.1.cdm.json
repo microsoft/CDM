@@ -1,0 +1,90 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WorkflowElementTable.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysWorkflowElementTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CorrelationId",
+          "dataType": "WorkflowCorrelationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDateTime",
+          "dataType": "WorkflowDueDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ElementId",
+          "dataType": "WorkflowElementId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaxRuntimeId",
+          "dataType": "WorkflowActivityInstanceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WorkflowElementTable"
+          },
+          "name": "Relationship_WorkflowElementTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Workflow element due dates"
+    },
+    {
+      "dataTypeName": "WorkflowCorrelationId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowDueDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WorkflowElementId",
+      "extendsDataType": "guid"
+    },
+    {
+      "dataTypeName": "WorkflowActivityInstanceId",
+      "extendsDataType": "guid"
+    }
+  ]
+}

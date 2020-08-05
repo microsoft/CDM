@@ -1,0 +1,101 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Group/RetailPeriodCode.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "RetailAffiliation.1.0.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailLoyaltyTier",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Affiliation",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "TierId",
+          "dataType": "RetailAffiliationTierId",
+          "description": ""
+        },
+        {
+          "name": "TierLevel",
+          "dataType": "RetailLoyaltyTierLevelNum",
+          "description": ""
+        },
+        {
+          "name": "ValidDateInterval",
+          "dataType": "DateCode",
+          "displayName": "Date interval",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailPeriodCode"
+          },
+          "name": "Relationship_DateIntervalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailAffiliation"
+          },
+          "name": "Relationship_RetailAffiliationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Loyalty tier"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailAffiliationTierId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailLoyaltyTierLevelNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "DateCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

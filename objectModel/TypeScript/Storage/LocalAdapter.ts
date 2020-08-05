@@ -4,6 +4,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
+import { StorageUtils } from '../Utilities/StorageUtils';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
 
 let readFile, writeFile, stat, mkdir, readdir;
@@ -70,10 +71,12 @@ export class LocalAdapter implements StorageAdapter {
     }
 
     public createAdapterPath(corpusPath: string): string {
-        if (corpusPath.includes(':')) {
-            corpusPath = corpusPath.slice(corpusPath.indexOf(':') + 1);
+        const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
+        if (!pathTuple) {
+            return undefined;
         }
-        
+        corpusPath = pathTuple[1];
+
         if (path.isAbsolute(this.fullRoot)) {
             return path.join(this.fullRoot, corpusPath);
         }
@@ -156,7 +159,7 @@ export class LocalAdapter implements StorageAdapter {
             this.locationHint = configJson.locationHint;
         }
 
-        this.fullRoot = path.join(__dirname, this.root);
+        this.fullRoot = path.resolve(this.root);
     }
 
     private async dirExists(folderPath: string): Promise<boolean> {

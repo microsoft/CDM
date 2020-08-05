@@ -1,0 +1,77 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "TestOperationCollection",
+            "displayName": "TestOperationCollection",
+            "extendsEntity": {
+                "operations": [
+                    {
+                        "$type": "addCountAttribute",
+                        "countAttribute": {
+                            "name": "testAddCount"
+                        }
+                    },
+                    {
+                        "$type": "addSupportingAttribute",
+                        "supportingAttribute": {
+                            "name": "testAddSupporting"
+                        }
+                    },
+                    {
+                        "$type": "addTypeAttribute",
+                        "typeAttribute": {
+                            "name": "testAddType"
+                        }
+                    },
+                    {
+                        "$type": "excludeAttributes",
+                        "excludeAttributes": [
+                            "testAttribute1"
+                        ]
+                    },
+                    {
+                        "$type": "arrayExpansion",
+                        "startOrdinal": 0,
+                        "endOrdinal": 1
+                    },
+                    {
+                        "$type": "combineAttributes",
+                        "take": [
+                            "testAttribute1"
+                        ],
+                        "mergeInto": {
+                            "name": "testAddPolymorphic"
+                        }
+                    },
+                    {
+                        "$type": "renameAttributes",
+                        "renameFormat": "(m)"
+                    },
+                    {
+                        "$type": "replaceAsForeignKey",
+                        "reference": "testAttribute1",
+                        "replaceWith": {
+                            "name": "testForeignKey"
+                        }
+                    },
+                    {
+                        "$type": "includeAttributes",
+                        "includeAttributes": [
+                            "testAttribute1"
+                        ]
+                    }
+                ],
+                "source": "TestSource"
+            },
+            "hasAttributes": [
+            ]
+        }
+    ]
+}

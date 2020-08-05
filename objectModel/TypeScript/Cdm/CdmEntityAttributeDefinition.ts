@@ -6,6 +6,7 @@ import {
     AttributeContextParameters,
     AttributeResolutionContext,
     AttributeResolutionDirectiveSet,
+    CardinalitySettings,
     CdmAttribute,
     CdmAttributeContext,
     cdmAttributeContextType,
@@ -21,12 +22,14 @@ import {
     CdmObjectDefinition,
     CdmObjectReference,
     cdmObjectType,
+    CdmProjection,
     CdmPurposeReference,
-    cdmStatusLevel,
     CdmTraitDefinition,
     CdmTraitReference,
     Errors,
     Logger,
+    ProjectionContext,
+    ProjectionDirective,
     relationshipInfo,
     resolveContext,
     ResolvedAttribute,
@@ -39,15 +42,38 @@ import {
     ResolvedTraitSet,
     ResolvedTraitSetBuilder,
     resolveOptions,
+    traitToPropertyMap,
     VisitCallback
 } from '../internal';
 
 export class CdmEntityAttributeDefinition extends CdmAttribute {
     public purpose: CdmPurposeReference;
+    /**
+     * The entity attribute's entity reference.
+     */
     public entity: CdmEntityReference;
+    private readonly traitToPropertyMap: traitToPropertyMap;
+
+    /**
+     * For projection based models, a source is explicitly tagged as a polymorphic source for it to be recognized as such.
+     * This property of the entity attribute allows us to do that.
+     */
+    public isPolymorphicSource?: boolean;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.entityAttributeDef;
+    }
+    public get description(): string {
+        return this.traitToPropertyMap.fetchPropertyValue('description') as string;
+    }
+    public set description(val: string) {
+        this.traitToPropertyMap.updatePropertyValue('description', val);
+    }
+    public get displayName(): string {
+        return this.traitToPropertyMap.fetchPropertyValue('displayName') as string;
+    }
+    public set displayName(val: string) {
+        this.traitToPropertyMap.updatePropertyValue('displayName', val);
     }
 
     constructor(ctx: CdmCorpusContext, name: string) {
@@ -55,6 +81,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         // let bodyCode = () =>
         {
             this.objectType = cdmObjectType.entityAttributeDef;
+            this.traitToPropertyMap = new traitToPropertyMap(this);
         }
         // return p.measure(bodyCode);
     }
@@ -68,10 +95,6 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return false;
         }
         // return p.measure(bodyCode);
@@ -80,7 +103,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmEntityAttributeDefinition;
@@ -109,15 +132,32 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             if (!this.entity) {
                 missingFields.push('entity');
             }
+            if (this.cardinality) {
+                if (!this.cardinality.minimum) {
+                    missingFields.push('cardinality.minimum');
+                }
+                if (!this.cardinality.maximum) {
+                    missingFields.push('cardinality.maximum');
+                }
+            }
+
             if (missingFields.length > 0) {
-                Logger.error(
-                    CdmEntityAttributeDefinition.name,
-                    this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, missingFields),
-                    this.validate.name
-                );
+                Logger.error(CdmEntityAttributeDefinition.name, this.ctx, Errors.validateErrorString(this.atCorpusPath, missingFields), this.validate.name);
 
                 return false;
+            }
+
+            if (this.cardinality) {
+                if (!CardinalitySettings.isMinimumValid(this.cardinality.minimum)) {
+                    Logger.error(CdmEntityAttributeDefinition.name, this.ctx, `Invalid minimum cardinality ${this.cardinality.minimum}`, this.validate.name);
+
+                    return false;
+                }
+                if (!CardinalitySettings.isMaximumValid(this.cardinality.maximum)) {
+                    Logger.error(CdmEntityAttributeDefinition.name, this.ctx, `Invalid maximum cardinality ${this.cardinality.maximum}`, this.validate.name);
+
+                    return false;
+                }
             }
 
             return true;
@@ -128,6 +168,10 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
     public visit(pathFrom: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         // let bodyCode = () =>
         {
+            if (!this.entity) {
+                return false;
+            }
+
             let path: string = '';
             if (!this.ctx.corpus.blockDeclaredPathChanges) {
                 path = this.declaredPath;
@@ -186,182 +230,202 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             const ctxEnt: CdmEntityReference = this.entity;
             const underAtt: CdmAttributeContext = under;
             let acpEnt: AttributeContextParameters;
-            if (underAtt) {
-                // make a context for this attribute that holds the attributes that come up from the entity
-                acpEnt = {
-                    under: underAtt,
-                    type: cdmAttributeContextType.entity,
-                    name: ctxEnt.fetchObjectDefinitionName(),
-                    regarding: ctxEnt,
-                    includeTraits: true
-                };
-            }
 
-            const rtsThisAtt: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
+            const ctxEntObjDef: CdmObjectDefinition = ctxEnt.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
+            if (ctxEntObjDef.objectType === cdmObjectType.projectionDef) {
+                // A Projection
 
-            // this context object holds all of the info about what needs to happen to resolve these attributes.
-            // make a copy and add defaults if missing
-            let resGuideWithDefault: CdmAttributeResolutionGuidance;
-            if (this.resolutionGuidance !== undefined) {
-                resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
+                const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, ctxEnt);
+                const projDef: CdmProjection = ctxEntObjDef as CdmProjection;
+                const projCtx: ProjectionContext = projDef.constructProjectionContext(projDirective, under);
+
+                const ras: ResolvedAttributeSet = projDef.extractResolvedAttributes(projCtx);
+                rasb.ras = ras;
             } else {
-                resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
-            }
-            resGuideWithDefault.updateAttributeDefaults(this.name);
+                // An Entity Reference
 
-            const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
-
-            // complete cheating but is faster.
-            // this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
-            const relInfo: relationshipInfo = this.getRelationshipInfo(arc.resOpt, arc);
-
-            if (relInfo.isByRef) {
-                // make the entity context that a real recursion would have give us
-                if (under) {
-                    under = rasb.ras.createAttributeContext(resOpt, acpEnt);
+                if (underAtt) {
+                    // make a context for this attribute that holds the attributes that come up from the entity
+                    acpEnt = {
+                        under: underAtt,
+                        type: cdmAttributeContextType.entity,
+                        name: ctxEnt.fetchObjectDefinitionName(),
+                        regarding: ctxEnt,
+                        includeTraits: true
+                    };
                 }
-                // if selecting from one of many attributes, then make a context for each one
-                if (under && relInfo.selectsOne) {
-                    // the right way to do this is to get a resolved entity from the embedded entity and then
-                    // look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
-                    // that seems like a disaster waiting to happen given endless looping, etc.
-                    // for now, just insist that only the top level entity attributes declared in the ref entity will work
-                    const entPickFrom: CdmEntityDefinition = this.entity.fetchObjectDefinition(resOpt);
-                    const attsPick: CdmCollection<CdmAttributeItem> = entPickFrom.attributes;
-                    if (entPickFrom && attsPick) {
-                        const l: number = attsPick.length;
-                        for (let i: number = 0; i < l; i++) {
-                            if (attsPick.allItems[i].getObjectType() === cdmObjectType.entityAttributeDef) {
-                                // a table within a table. as expected with a selectsOne attribute
-                                // since this is by ref, we won't get the atts from the table, but we do need the traits that hold the key
-                                // these are the same contexts that would get created if we recursed
-                                // first this attribute
-                                const acpEntAtt: AttributeContextParameters = {
-                                    under: under,
-                                    type: cdmAttributeContextType.attributeDefinition,
-                                    name: attsPick.allItems[i].fetchObjectDefinitionName(),
-                                    regarding: attsPick.allItems[i],
-                                    includeTraits: true
-                                };
-                                const pickUnder: CdmAttributeContext = rasb.ras.createAttributeContext(resOpt, acpEntAtt);
-                                // and the entity under that attribute
-                                const pickEnt: CdmEntityReference = (attsPick.allItems[i] as CdmEntityAttributeDefinition).entity;
-                                const acpEntAttEnt: AttributeContextParameters = {
-                                    under: pickUnder,
-                                    type: cdmAttributeContextType.entity,
-                                    name: pickEnt.fetchObjectDefinitionName(),
-                                    regarding: pickEnt,
-                                    includeTraits: true
-                                };
-                                rasb.ras.createAttributeContext(resOpt, acpEntAttEnt);
+
+                const rtsThisAtt: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
+
+                // this context object holds all of the info about what needs to happen to resolve these attributes.
+                // make a copy and add defaults if missing
+                let resGuideWithDefault: CdmAttributeResolutionGuidance;
+                if (this.resolutionGuidance !== undefined) {
+                    resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
+                } else {
+                    resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
+                }
+                resGuideWithDefault.updateAttributeDefaults(this.name);
+
+                const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
+
+                // complete cheating but is faster.
+                // this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
+                const relInfo: relationshipInfo = this.getRelationshipInfo(arc.resOpt, arc);
+
+                if (relInfo.isByRef) {
+                    // make the entity context that a real recursion would have give us
+                    if (under) {
+                        under = rasb.ras.createAttributeContext(resOpt, acpEnt);
+                    }
+                    // if selecting from one of many attributes, then make a context for each one
+                    if (under && relInfo.selectsOne) {
+                        // the right way to do this is to get a resolved entity from the embedded entity and then
+                        // look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
+                        // that seems like a disaster waiting to happen given endless looping, etc.
+                        // for now, just insist that only the top level entity attributes declared in the ref entity will work
+                        const entPickFrom: CdmEntityDefinition = this.entity.fetchObjectDefinition(resOpt);
+                        const attsPick: CdmCollection<CdmAttributeItem> = entPickFrom.attributes;
+                        if (entPickFrom && attsPick) {
+                            const l: number = attsPick.length;
+                            for (let i: number = 0; i < l; i++) {
+                                if (attsPick.allItems[i].getObjectType() === cdmObjectType.entityAttributeDef) {
+                                    // a table within a table. as expected with a selectsOne attribute
+                                    // tslint:disable-next-line: max-line-length
+                                    // since this is by ref, we won't get the atts from the table, but we do need the traits that hold the key
+                                    // these are the same contexts that would get created if we recursed
+                                    // first this attribute
+                                    const acpEntAtt: AttributeContextParameters = {
+                                        under: under,
+                                        type: cdmAttributeContextType.attributeDefinition,
+                                        name: attsPick.allItems[i].fetchObjectDefinitionName(),
+                                        regarding: attsPick.allItems[i],
+                                        includeTraits: true
+                                    };
+                                    const pickUnder: CdmAttributeContext = rasb.ras.createAttributeContext(resOpt, acpEntAtt);
+                                    // and the entity under that attribute
+                                    const pickEnt: CdmEntityReference = (attsPick.allItems[i] as CdmEntityAttributeDefinition).entity;
+                                    const pickEntType: cdmAttributeContextType = (pickEnt.fetchObjectDefinition<CdmObjectDefinition>(resOpt).objectType === cdmObjectType.projectionDef) ?
+                                        cdmAttributeContextType.projection :
+                                        cdmAttributeContextType.entity;
+
+                                    const acpEntAttEnt: AttributeContextParameters = {
+                                        under: pickUnder,
+                                        type: pickEntType,
+                                        name: pickEnt.fetchObjectDefinitionName(),
+                                        regarding: pickEnt,
+                                        includeTraits: true
+                                    };
+                                    rasb.ras.createAttributeContext(resOpt, acpEntAttEnt);
+                                }
                             }
                         }
                     }
-                }
-                // if we got here because of the max depth, need to impose the directives to make the trait work as expected
-                if (relInfo.maxDepthExceeded) {
-                    if (!arc.resOpt.directives) {
-                        arc.resOpt.directives = new AttributeResolutionDirectiveSet();
+                    // if we got here because of the max depth, need to impose the directives to make the trait work as expected
+                    if (relInfo.maxDepthExceeded) {
+                        if (!arc.resOpt.directives) {
+                            arc.resOpt.directives = new AttributeResolutionDirectiveSet();
+                        }
+                        arc.resOpt.directives.add('referenceOnly');
                     }
-                    arc.resOpt.directives.add('referenceOnly');
+                } else {
+                    const resLink: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+                    resLink.symbolRefSet = resOpt.symbolRefSet;
+                    resLink.relationshipDepth = relInfo.nextDepth;
+                    rasb.mergeAttributes(this.entity.fetchResolvedAttributes(resLink, acpEnt));
                 }
-            } else {
-                const resLink: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
-                resLink.symbolRefSet = resOpt.symbolRefSet;
-                resLink.relationshipDepth = relInfo.nextDepth;
-                rasb.mergeAttributes(this.entity.fetchResolvedAttributes(resLink, acpEnt));
-            }
 
-            // from the traits of purpose and applied here, see if new attributes get generated
-            rasb.ras.setAttributeContext(underAtt);
-            rasb.applyTraits(arc);
-            rasb.generateApplierAttributes(arc, true); // true = apply the prepared traits to new atts
-            // this may have added symbols to the dependencies, so merge them
-            resOpt.symbolRefSet.merge(arc.resOpt.symbolRefSet);
+                // from the traits of purpose and applied here, see if new attributes get generated
+                rasb.ras.setAttributeContext(underAtt);
+                rasb.applyTraits(arc);
+                rasb.generateApplierAttributes(arc, true); // true = apply the prepared traits to new atts
+                // this may have added symbols to the dependencies, so merge them
+                resOpt.symbolRefSet.merge(arc.resOpt.symbolRefSet);
 
-            // use the traits for linked entity identifiers to record the actual foreign key links
-            if (rasb.ras && rasb.ras.set && (relInfo.isByRef)) {
-                rasb.ras.set.forEach((att: ResolvedAttribute): void => {
-                    if (att.resolvedTraits) {
-                        const reqdTrait: ResolvedTrait = att.resolvedTraits.find(resOpt, 'is.linkedEntity.identifier');
-                        if (!reqdTrait) {
-                            return;
-                        }
+                // use the traits for linked entity identifiers to record the actual foreign key links
+                if (rasb.ras && rasb.ras.set && (relInfo.isByRef)) {
+                    rasb.ras.set.forEach((att: ResolvedAttribute): void => {
+                        if (att.resolvedTraits) {
+                            const reqdTrait: ResolvedTrait = att.resolvedTraits.find(resOpt, 'is.linkedEntity.identifier');
+                            if (!reqdTrait) {
+                                return;
+                            }
 
-                        if (reqdTrait.parameterValues === undefined || reqdTrait.parameterValues.length === 0) {
-                            Logger.warning(
-                                CdmEntityAttributeDefinition.name,
-                                this.ctx as resolveContext,
-                                `is.linkedEntity.identifier does not support arguments`
-                            );
+                            if (reqdTrait.parameterValues === undefined || reqdTrait.parameterValues.length === 0) {
+                                Logger.warning(
+                                    CdmEntityAttributeDefinition.name,
+                                    this.ctx as resolveContext,
+                                    `is.linkedEntity.identifier does not support arguments`
+                                );
 
-                            return;
-                        }
-                        const entReferences: (string)[] = [];
-                        const attReferences: (string)[] = [];
-                        const addEntityReference: (entRef: CdmEntityReference, namespace: string) => void =
-                            (entityRef: CdmEntityReference, namespace: string): void => {
-                                const entDef: CdmObjectDefinition = entityRef.fetchObjectDefinition(resOpt);
-                                if (entDef) {
-                                    const otherResTraits: ResolvedTraitSet = entityRef.fetchResolvedTraits(resOpt);
-                                    const identifyingTrait: ResolvedTrait = otherResTraits.find(resOpt, 'is.identifiedBy');
-                                    if (otherResTraits && identifyingTrait) {
-                                        const attRef: CdmObjectReference = identifyingTrait.parameterValues
-                                            .fetchParameterValueByName('attribute').value as CdmObjectReference;
-                                        const attNamePath: string = attRef.namedReference;
-                                        const attName: string = attNamePath.split('/')
-                                            .pop();
-                                        // path should be absolute and without a namespace
-                                        let relativeEntPath: string =
-                                            this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.atCorpusPath, entDef.inDocument);
-                                        if (relativeEntPath.startsWith(`${namespace}:`)) {
-                                            relativeEntPath = relativeEntPath.slice(namespace.length + 1);
+                                return;
+                            }
+                            const entReferences: (string)[] = [];
+                            const attReferences: (string)[] = [];
+                            const addEntityReference: (entRef: CdmEntityReference, namespace: string) => void =
+                                (entityRef: CdmEntityReference, namespace: string): void => {
+                                    const entDef: CdmObjectDefinition = entityRef.fetchObjectDefinition(resOpt);
+                                    if (entDef) {
+                                        const otherResTraits: ResolvedTraitSet = entityRef.fetchResolvedTraits(resOpt);
+                                        const identifyingTrait: ResolvedTrait = otherResTraits.find(resOpt, 'is.identifiedBy');
+                                        if (otherResTraits && identifyingTrait) {
+                                            const attRef: CdmObjectReference = identifyingTrait.parameterValues
+                                                .fetchParameterValueByName('attribute').value as CdmObjectReference;
+                                            const attNamePath: string = attRef.namedReference;
+                                            const attName: string = attNamePath.split('/')
+                                                .pop();
+                                            // path should be absolute and without a namespace
+                                            let relativeEntPath: string =
+                                                this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.atCorpusPath, entDef.inDocument);
+                                            if (relativeEntPath.startsWith(`${namespace}:`)) {
+                                                relativeEntPath = relativeEntPath.slice(namespace.length + 1);
+                                            }
+                                            entReferences.push(relativeEntPath);
+                                            attReferences.push(attName);
                                         }
-                                        entReferences.push(relativeEntPath);
-                                        attReferences.push(attName);
+                                    }
+                                };
+                            if (relInfo.selectsOne) {
+                                const entPickFrom: CdmEntityDefinition = this.entity.fetchObjectDefinition(resOpt);
+                                const attsPick: CdmCollection<CdmAttributeItem> = entPickFrom ? entPickFrom.attributes : undefined;
+                                if (entPickFrom && attsPick) {
+                                    const l: number = attsPick.length;
+                                    for (let i: number = 0; i < l; i++) {
+                                        if (attsPick.allItems[i].getObjectType() === cdmObjectType.entityAttributeDef) {
+                                            const entAtt: CdmEntityAttributeDefinition = attsPick.allItems[i] as CdmEntityAttributeDefinition;
+                                            addEntityReference(entAtt.entity, this.inDocument.namespace);
+                                        }
                                     }
                                 }
-                            };
-                        if (relInfo.selectsOne) {
-                            const entPickFrom: CdmEntityDefinition = this.entity.fetchObjectDefinition(resOpt);
-                            const attsPick: CdmCollection<CdmAttributeItem> = entPickFrom ? entPickFrom.attributes : undefined;
-                            if (entPickFrom && attsPick) {
-                                const l: number = attsPick.length;
-                                for (let i: number = 0; i < l; i++) {
-                                    if (attsPick.allItems[i].getObjectType() === cdmObjectType.entityAttributeDef) {
-                                        const entAtt: CdmEntityAttributeDefinition = attsPick.allItems[i] as CdmEntityAttributeDefinition;
-                                        addEntityReference(entAtt.entity, this.inDocument.namespace);
-                                    }
-                                }
+                            } else {
+                                addEntityReference(this.entity, this.inDocument.namespace);
                             }
-                        } else {
-                            addEntityReference(this.entity, this.inDocument.namespace);
+                            const cEnt: CdmConstantEntityDefinition =
+                                this.ctx.corpus.MakeObject<CdmConstantEntityDefinition>(cdmObjectType.constantEntityDef);
+                            cEnt.setEntityShape(this.ctx.corpus.MakeRef(cdmObjectType.entityRef, 'entityGroupSet', true));
+                            cEnt.setConstantValues(entReferences.map((entityRef: string, idx: number) => [entityRef, attReferences[idx]]));
+                            const param: CdmObjectReference = this.ctx.corpus.MakeRef(cdmObjectType.entityRef, cEnt, false);
+                            reqdTrait.parameterValues.setParameterValue(resOpt, 'entityReferences', param);
                         }
-                        const cEnt: CdmConstantEntityDefinition =
-                            this.ctx.corpus.MakeObject<CdmConstantEntityDefinition>(cdmObjectType.constantEntityDef);
-                        cEnt.setEntityShape(this.ctx.corpus.MakeRef(cdmObjectType.entityRef, 'entityGroupSet', true));
-                        cEnt.setConstantValues(entReferences.map((entityRef: string, idx: number) => [entityRef, attReferences[idx]]));
-                        const param: CdmObjectReference = this.ctx.corpus.MakeRef(cdmObjectType.entityRef, cEnt, false);
-                        reqdTrait.parameterValues.setParameterValue(resOpt, 'entityReferences', param);
-                    }
-                });
-            }
-
-            // a 'structured' directive wants to keep all entity attributes together in a group
-            if (arc.resOpt.directives && arc.resOpt.directives.has('structured')) {
-                const raSub: ResolvedAttribute = new ResolvedAttribute(
-                    rtsThisAtt.resOpt, rasb.ras, this.name, rasb.ras.attributeContext);
-                if (relInfo.isArray) {
-                    // put a resolved trait on this att group, yuck,
-                    //  hope I never need to do this again and then need to make a function for this
-                    const tr: CdmTraitReference =
-                        this.ctx.corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, 'is.linkedEntity.array', true);
-                    const t: CdmTraitDefinition = tr.fetchObjectDefinition(resOpt);
-                    const rt: ResolvedTrait = new ResolvedTrait(t, undefined, [], []);
-                    raSub.resolvedTraits = raSub.resolvedTraits.merge(rt, true);
+                    });
                 }
-                rasb = new ResolvedAttributeSetBuilder();
-                rasb.ownOne(raSub);
+
+                // a 'structured' directive wants to keep all entity attributes together in a group
+                if (arc.resOpt.directives && arc.resOpt.directives.has('structured')) {
+                    const raSub: ResolvedAttribute = new ResolvedAttribute(
+                        rtsThisAtt.resOpt, rasb.ras, this.name, rasb.ras.attributeContext);
+                    if (relInfo.isArray) {
+                        // put a resolved trait on this att group, yuck,
+                        //  hope I never need to do this again and then need to make a function for this
+                        const tr: CdmTraitReference =
+                            this.ctx.corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, 'is.linkedEntity.array', true);
+                        const t: CdmTraitDefinition = tr.fetchObjectDefinition(resOpt);
+                        const rt: ResolvedTrait = new ResolvedTrait(t, undefined, [], []);
+                        raSub.resolvedTraits = raSub.resolvedTraits.merge(rt, true);
+                    }
+                    rasb = new ResolvedAttributeSetBuilder();
+                    rasb.ownOne(raSub);
+                }
             }
 
             return rasb;
@@ -374,7 +438,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             const rtsThisAtt: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
@@ -459,6 +523,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         // let bodyCode = () =>
         {
             const rts: ResolvedTraitSet = undefined;
+            let noMaxDepth: boolean = false;
             let hasRef: boolean = false;
             let isByRef: boolean = false;
             let isArray: boolean = false;
@@ -471,6 +536,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                     hasRef = true;
                 }
                 if (arc.resOpt.directives) {
+                    noMaxDepth = arc.resOpt.directives.has('noMaxDepth');
                     // based on directives
                     if (hasRef) {
                         isByRef = arc.resOpt.directives.has('referenceOnly');
@@ -495,6 +561,12 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                         if (hasRef && arc.resGuide.entityByReference.referenceOnlyAfterDepth !== undefined) {
                             maxDepth = arc.resGuide.entityByReference.referenceOnlyAfterDepth;
                         }
+                        if (noMaxDepth) {
+                            // no max? really? what if we loop forever? if you need more than 32 nested entities,
+                            // then you should buy a different metadata description system.
+                            maxDepth = 32;
+                        }
+
                         if (nextDepth > maxDepth) {
                             // don't do it
                             isByRef = true;

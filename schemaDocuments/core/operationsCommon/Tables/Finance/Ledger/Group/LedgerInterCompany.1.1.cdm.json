@@ -1,0 +1,233 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerInterCompany",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OriginatingCompany",
+          "dataType": "SelectableDataArea",
+          "displayName": "Originating company",
+          "description": ""
+        },
+        {
+          "name": "DestinationCompany",
+          "dataType": "SelectableDataArea",
+          "displayName": "Destination company",
+          "description": ""
+        },
+        {
+          "name": "OriginatingCreditLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Credit account",
+          "description": ""
+        },
+        {
+          "name": "OriginatingDebitLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Debit account",
+          "description": ""
+        },
+        {
+          "name": "DestinationCreditLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Credit account",
+          "description": ""
+        },
+        {
+          "name": "DestinationDebitLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Debit account",
+          "description": ""
+        },
+        {
+          "name": "CustCashDiscPostOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post cash discount",
+          "description": ""
+        },
+        {
+          "name": "CustCurrencyExchPostOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post currency exchange gain or loss",
+          "description": ""
+        },
+        {
+          "name": "CustPostFineOption_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post fine",
+          "description": ""
+        },
+        {
+          "name": "CustPostFinInterestOption_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post interest",
+          "description": ""
+        },
+        {
+          "name": "JournalName",
+          "dataType": "LedgerJournalNameIdIntercompany",
+          "displayName": "Journal",
+          "description": ""
+        },
+        {
+          "name": "VendCashDiscPostOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post cash discount",
+          "description": ""
+        },
+        {
+          "name": "VendCurrencyExchPostOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post currency exchange gain or loss",
+          "description": ""
+        },
+        {
+          "name": "VendPostFineOption_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post fine",
+          "description": ""
+        },
+        {
+          "name": "VendPostFinInterestOption_BR",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Post interest",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_OriginatingCreditLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_OriginatingDebitLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DestinationCreditLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DestinationDebitLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_JournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CreditLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DebitLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Intercompany accounting"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameIdIntercompany",
+      "extendsDataType": "string"
+    }
+  ]
+}

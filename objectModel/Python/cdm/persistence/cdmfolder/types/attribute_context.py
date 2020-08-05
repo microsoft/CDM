@@ -15,5 +15,5 @@ class AttributeContext(JObject):
         self.name = None  # type: str
         self.parent = None  # type: str
         self.definition = None  # type: str
-        self.appliedTraits = None  # type: Optional[List[str, TraitRefernce]]
+        self.appliedTraits = None  # type: Optional[List[str, TraitReference]]
         self.contents = None  # type: Optional[List[str, AttributeContext]]

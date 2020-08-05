@@ -1,0 +1,278 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/LedgerAllocateKey.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Group/LedgerJournalName.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Budget/Group/BudgetTransactionCode.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BudgetParameters",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CashFlowForecastPeriodAllocationKey",
+          "dataType": "LedgerAllocateKeyId",
+          "isNullable": true,
+          "displayName": "Allocation key",
+          "description": ""
+        },
+        {
+          "name": "CheckRevenueBudgetBalanceInterval",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CheckRevenueBudgetBalanceOption",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsAllowTransferRuleEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use rules for budget transfers",
+          "description": ""
+        },
+        {
+          "name": "IsAssetBudgetTransCreateAsCompleted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Fixed assets",
+          "description": ""
+        },
+        {
+          "name": "IsDemandFcstBudgetTransCreateAsCompleted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Demand forecast",
+          "description": ""
+        },
+        {
+          "name": "IsFrenchRegulatoryEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use French public sector accounting rules",
+          "description": ""
+        },
+        {
+          "name": "IsProjectBudgetTransCreateAsCompleted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Project",
+          "description": ""
+        },
+        {
+          "name": "IsSupplyFcstBudgetTransCreateAsCompleted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Supply forecast",
+          "description": ""
+        },
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalName",
+          "dataType": "LedgerJournalNameId",
+          "isNullable": true,
+          "displayName": "Budget journal",
+          "description": ""
+        },
+        {
+          "name": "SumPreliminaryBudget",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Preliminary budget",
+          "description": ""
+        },
+        {
+          "name": "UseOnlyApportionment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Budget apportionments",
+          "description": ""
+        },
+        {
+          "name": "IsBudgetReservationEnabled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "General budget reservations",
+          "description": ""
+        },
+        {
+          "name": "PreventIncreaseToCarryForwardEncumbrance",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prevent carry-forward encumbrance increases",
+          "description": ""
+        },
+        {
+          "name": "DisplayLegacyBudgetAnalysis",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Display legacy budget analysis inquiry",
+          "description": ""
+        },
+        {
+          "name": "IsAssetBudgetTransCreateAsCompleted_RU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Fixed assets (Russia)",
+          "description": ""
+        },
+        {
+          "name": "UseSessionDateForAccounting",
+          "dataType": "BudgetReservationUseSessionDate_PSN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNBudgetModelDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNBudgetModelId",
+          "dataType": "BudgetModelId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNBudgetTransactionCode",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Budget code",
+          "description": ""
+        },
+        {
+          "name": "PSNAllowPriorYearCorrection",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Allow prior year corrections",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocateKey"
+          },
+          "name": "Relationship_LedgerAllocateKeyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalName"
+          },
+          "name": "Relationship_LedgerJournalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BudgetTransactionCode"
+          },
+          "name": "Relationship_BudgetTransactionCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Budget parameters"
+    },
+    {
+      "dataTypeName": "LedgerAllocateKeyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerJournalNameId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BudgetReservationUseSessionDate_PSN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BudgetModelId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

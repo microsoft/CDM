@@ -42,7 +42,7 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
             let copy: CdmConstantEntityDefinition;
             if (!host) {
@@ -96,10 +96,6 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return false;
         }
         // return p.measure(bodyCode);
@@ -108,6 +104,15 @@ export class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     public getName(): string {
         // let bodyCode = () =>
         {
+            // make up a name if one not given
+            if (this.constantEntityName === undefined) {
+                if (this.entityShape !== undefined) {
+                    return `Constant${this.entityShape.fetchObjectDefinitionName()}`;
+                }
+
+                return 'ConstantEntity';
+            }
+
             return this.constantEntityName;
         }
         // return p.measure(bodyCode);

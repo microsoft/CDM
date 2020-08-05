@@ -8,7 +8,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Newtonsoft.Json.Linq;
-    using System.Collections.Generic;
     using System.Linq;
 
     class AttributeContextPersistence
@@ -75,7 +74,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 // i know the trait collection names look wrong. but I wanted to use the def baseclass
                 AppliedTraits = Utils.ListCopyData<dynamic>(resOpt, instance.ExhibitsTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer)),
                 Contents = Utils.ListCopyData<dynamic>(resOpt, instance.Contents, options)?.ConvertAll<JToken>(t => JToken.FromObject(t, JsonSerializationUtil.JsonSerializer))
-            }; ;
+            };
         }
 
         private static CdmAttributeContextType? MapTypeNameToEnum(string typeName)
@@ -102,6 +101,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return CdmAttributeContextType.GeneratedRound;
                 case "generatedSet":
                     return CdmAttributeContextType.GeneratedSet;
+                case "projection":
+                    return CdmAttributeContextType.Projection;
+                case "source":
+                    return CdmAttributeContextType.Source;
+                case "operations":
+                    return CdmAttributeContextType.Operations;
+                case "operationAddCountAttribute":
+                    return CdmAttributeContextType.OperationAddCountAttribute;
+                case "operationAddSupportingAttribute":
+                    return CdmAttributeContextType.OperationAddSupportingAttribute;
+                case "operationAddTypeAttribute":
+                    return CdmAttributeContextType.OperationAddTypeAttribute;
+                case "operationExcludeAttributes":
+                    return CdmAttributeContextType.OperationExcludeAttributes;
+                case "operationArrayExpansion":
+                    return CdmAttributeContextType.OperationArrayExpansion;
+                case "operationCombineAttributes":
+                    return CdmAttributeContextType.OperationCombineAttributes;
+                case "operationRenameAttributes":
+                    return CdmAttributeContextType.OperationRenameAttributes;
+                case "operationReplaceAsForeignKey":
+                    return CdmAttributeContextType.OperationReplaceAsForeignKey;
+                case "operationIncludeAttributes":
+                    return CdmAttributeContextType.OperationIncludeAttributes;
+                case "operationAddAttributeGroup":
+                    return CdmAttributeContextType.OperationAddAttributeGroup;
                 default:
                     return null;
             }
@@ -131,6 +156,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                     return "generatedRound";
                 case CdmAttributeContextType.GeneratedSet:
                     return "generatedSet";
+                case CdmAttributeContextType.Projection:
+                    return "projection";
+                case CdmAttributeContextType.Source:
+                    return "source";
+                case CdmAttributeContextType.Operations:
+                    return "operations";
+                case CdmAttributeContextType.OperationAddCountAttribute:
+                    return "operationAddCountAttribute";
+                case CdmAttributeContextType.OperationAddSupportingAttribute:
+                    return "operationAddSupportingAttribute";
+                case CdmAttributeContextType.OperationAddTypeAttribute:
+                    return "operationAddTypeAttribute";
+                case CdmAttributeContextType.OperationExcludeAttributes:
+                    return "operationExcludeAttributes";
+                case CdmAttributeContextType.OperationArrayExpansion:
+                    return "operationArrayExpansion";
+                case CdmAttributeContextType.OperationCombineAttributes:
+                    return "operationCombineAttributes";
+                case CdmAttributeContextType.OperationRenameAttributes:
+                    return "operationRenameAttributes";
+                case CdmAttributeContextType.OperationReplaceAsForeignKey:
+                    return "operationReplaceAsForeignKey";
+                case CdmAttributeContextType.OperationIncludeAttributes:
+                    return "operationIncludeAttributes";
+                case CdmAttributeContextType.OperationAddAttributeGroup:
+                    return "operationAddAttributeGroup";
                 default:
                     return "unknown";
             }

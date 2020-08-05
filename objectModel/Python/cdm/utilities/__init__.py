@@ -26,6 +26,7 @@ from .trait_to_property_map import TraitToPropertyMap
 from .visit_callback import VisitCallback
 from .logging import logger
 from .errors import Errors
+from .storage_utils import StorageUtils
 
 
 __all__ = [
@@ -39,6 +40,7 @@ __all__ = [
     'CopyOptions',
     'DocsResult',
     'EventCallback',
+    'Errors',
     'FriendlyFormatNode',
     'IdentifierRef',
     'JObject',
@@ -49,6 +51,7 @@ __all__ = [
     'ResolveContextScope',
     'ResolveOptions',
     'string_utils',
+    'StorageUtils',
     'SymbolSet',
     'time_utils',
     'TraitToPropertyMap',

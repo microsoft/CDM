@@ -256,7 +256,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
         let resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
         let resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync('resolved', resOpt);
 
-        expect(resolvedEntity.attributes.allItems[1].appliedTraits.allItems[6].namedReference)
+        expect(resolvedEntity.attributes.allItems[1].appliedTraits.allItems[7].namedReference)
             .toBe('is.linkedEntity.name');
 
         // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.

@@ -30,5 +30,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         {
             return string.Compare(strA, strB, StringComparison.OrdinalIgnoreCase);
         }
+
+        public static bool EqualsWithIgnoreCase(this string strA, string strB)
+        {
+            return strA.Equals(strB, StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        public static bool EqualsWithCase(this string strA, string strB)
+        {
+            return strA.Equals(strB, StringComparison.InvariantCulture);
+        }
     }
 }

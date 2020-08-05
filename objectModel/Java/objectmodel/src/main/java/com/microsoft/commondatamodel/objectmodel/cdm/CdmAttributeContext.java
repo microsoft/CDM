@@ -83,7 +83,6 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     if (acp.getRegarding() != null) {
       definition = acp.getRegarding().createSimpleReference(resOptCopy);
       definition.setInDocument(acp.getUnder().getInDocument()); // Ref is in the same doc as context.
-
       // now get the traits applied at this reference (applied only, not the ones that are part of the definition of the object)
       // and make them the traits for this context
       if (acp.isIncludeTraits()) {
@@ -239,10 +238,6 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   }
 
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 
@@ -359,13 +354,23 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     this.setParent(parentRef);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
     return null;
   }
 

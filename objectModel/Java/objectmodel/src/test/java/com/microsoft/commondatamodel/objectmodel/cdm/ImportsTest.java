@@ -34,7 +34,7 @@ public class ImportsTest {
     Assert.assertEquals(
             doc.getImports().get(0).getCorpusPath(),
             "missing.cdm.json");
-    Assert.assertNull((doc.getImports().get(0)).getDoc());
+    Assert.assertNull((doc.getImports().get(0)).getDocument());
   }
 
   @Test
@@ -51,10 +51,10 @@ public class ImportsTest {
 
     assertNotNull(doc);
     Assert.assertEquals(doc.getImports().getCount(), 1);
-    final CdmDocumentDefinition firstImport = doc.getImports().getAllItems().get(0).getDoc();
+    final CdmDocumentDefinition firstImport = doc.getImports().get(0).getDocument();
     Assert.assertEquals(firstImport.getImports().getCount(), 1);
     Assert.assertEquals(firstImport.getName(), "notMissing.cdm.json");
-    final CdmDocumentDefinition nestedImport = firstImport.getImports().getAllItems().get(0).getDoc();
+    final CdmDocumentDefinition nestedImport = firstImport.getImports().get(0).getDocument();
     Assert.assertNull(nestedImport);
   }
 
@@ -68,10 +68,10 @@ public class ImportsTest {
 
     assertNotNull(doc);
     Assert.assertEquals(doc.getImports().getCount(), 2);
-    final CdmDocumentDefinition firstImport = doc.getImports().getAllItems().get(0).getDoc();
+    final CdmDocumentDefinition firstImport = doc.getImports().get(0).getDocument();
     Assert.assertEquals(firstImport.getName(), "missingImport.cdm.json");
     Assert.assertEquals(firstImport.getImports().getCount(), 1);
-    final CdmDocumentDefinition secondImport = doc.getImports().getAllItems().get(1).getDoc();
+    final CdmDocumentDefinition secondImport = doc.getImports().get(1).getDocument();
     Assert.assertEquals(secondImport.getName(), "notMissing.cdm.json");
   }
 
@@ -108,16 +108,16 @@ public class ImportsTest {
     Assert.assertNotNull(mainDoc);
     Assert.assertEquals(mainDoc.getImports().getCount(), 2);
 
-    CdmDocumentDefinition firstImport = mainDoc.getImports().get(0).getDoc();
-    CdmDocumentDefinition secondImport = mainDoc.getImports().get(1).getDoc();
+    CdmDocumentDefinition firstImport = mainDoc.getImports().get(0).getDocument();
+    CdmDocumentDefinition secondImport = mainDoc.getImports().get(1).getDocument();
 
     // Since these two imports are loaded asynchronously, we need to make sure that
     // the import that they share (targetImport) was loaded, and that the
     // targetImport doc is attached to both of these import objects.
     Assert.assertEquals(firstImport.getImports().getCount(), 1);
-    Assert.assertNotNull(firstImport.getImports().get(0).getDoc());
+    Assert.assertNotNull(firstImport.getImports().get(0).getDocument());
     Assert.assertEquals(secondImport.getImports().getCount(), 1);
-    Assert.assertNotNull(secondImport.getImports().get(0).getDoc());
+    Assert.assertNotNull(secondImport.getImports().get(0).getDocument());
   }
 
   /**
@@ -133,14 +133,14 @@ public class ImportsTest {
     Assert.assertEquals(mainDoc.getImports().getCount(), 2);
 
     // Make sure imports loaded correctly, despite them missing imports.
-    CdmDocumentDefinition firstImport = mainDoc.getImports().get(0).getDoc();
-    CdmDocumentDefinition secondImport = mainDoc.getImports().get(0).getDoc();
+    CdmDocumentDefinition firstImport = mainDoc.getImports().get(0).getDocument();
+    CdmDocumentDefinition secondImport = mainDoc.getImports().get(0).getDocument();
 
     Assert.assertEquals(firstImport.getImports().getCount(), 1);
-    Assert.assertNull(firstImport.getImports().get(0).getDoc());
+    Assert.assertNull(firstImport.getImports().get(0).getDocument());
 
     Assert.assertEquals(secondImport.getImports().getCount(), 1);
-    Assert.assertNull(firstImport.getImports().get(0).getDoc());
+    Assert.assertNull(firstImport.getImports().get(0).getDocument());
   }
 
   /**
@@ -156,7 +156,7 @@ public class ImportsTest {
     Assert.assertNotNull(mainDoc);
     Assert.assertEquals(mainDoc.getImports().getCount(), 1);
 
-    CdmDocumentDefinition importDoc = mainDoc.getImports().get(0).getDoc();
+    CdmDocumentDefinition importDoc = mainDoc.getImports().get(0).getDocument();
     Assert.assertNotNull(importDoc);
 
     // Now load the second doc, which uses the same import.
@@ -165,7 +165,7 @@ public class ImportsTest {
     Assert.assertNotNull(secondDoc);
     Assert.assertEquals(secondDoc.getImports().getCount(), 1);
 
-    CdmDocumentDefinition secondImportDoc = mainDoc.getImports().get(0).getDoc();
+    CdmDocumentDefinition secondImportDoc = mainDoc.getImports().get(0).getDocument();
     Assert.assertNotNull(secondImportDoc);
 
     Assert.assertEquals(importDoc, secondImportDoc);

@@ -1,0 +1,107 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmSalesUnit",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "SalesUnitId",
+          "dataType": "smmSalesUnitId",
+          "description": ""
+        },
+        {
+          "name": "Active",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Active",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "smmDescription",
+          "description": ""
+        },
+        {
+          "name": "ParentId",
+          "dataType": "smmSalesUnitParentId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesUnitManagerId",
+          "dataType": "smmSalesUnitMemberID",
+          "isNullable": true,
+          "displayName": "Sales unit manager",
+          "description": ""
+        },
+        {
+          "name": "UnitType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales management units"
+    },
+    {
+      "dataTypeName": "smmSalesUnitId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmSalesUnitParentId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmSalesUnitMemberID",
+      "extendsDataType": "string"
+    }
+  ]
+}

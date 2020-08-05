@@ -1,0 +1,111 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailKeyboardMappingTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Parameter/RetailOperations.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailKeyboardMappingTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "action",
+          "dataType": "RetailOperationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "actionProperty",
+          "dataType": "RetailActionProperty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ASCIIValue",
+          "dataType": "RetailASCIIValue",
+          "description": ""
+        },
+        {
+          "name": "keyboardMappingId",
+          "dataType": "RetailKeyboardMappingId",
+          "description": ""
+        },
+        {
+          "name": "keyChar",
+          "dataType": "RetailKeyChar",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailKeyboardMappingTable"
+          },
+          "name": "Relationship_RetailKeyboardMappingTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailOperations"
+          },
+          "name": "Relationship_RetailOperationsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Keyboard mapping"
+    },
+    {
+      "dataTypeName": "RetailOperationId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailActionProperty",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailASCIIValue",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailKeyboardMappingId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailKeyChar",
+      "extendsDataType": "string"
+    }
+  ]
+}

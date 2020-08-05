@@ -280,6 +280,26 @@ describe('Cdm/Relationship/Relationship', () => {
         verifyRelationships(manifest, expectedRels);
         done();
     });
+
+    /**
+     * Test that multiple relationships are generated when there are references to multiple entities
+     */
+    it('TestRelationshipToMultipleEntities', async (done) => {
+        const expectedRels: CdmE2ERelationship[] = JSON.parse(testHelper.getExpectedOutputFileContent(
+            testsSubpath,
+            'TestRelationshipToMultipleEntities',
+            'expectedRels.json')) as CdmE2ERelationship[];
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestRelationshipToMultipleEntities');
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/main.manifest.cdm.json');
+
+        await corpus.calculateEntityGraphAsync(manifest);
+        await manifest.populateManifestRelationshipsAsync();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+        done();
+    });
 });
 
 function verifyRelationships(manifest: CdmManifestDefinition, expectedRelationships: CdmE2ERelationship[]): void {

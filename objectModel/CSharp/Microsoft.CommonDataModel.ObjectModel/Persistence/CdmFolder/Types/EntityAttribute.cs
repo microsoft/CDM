@@ -8,8 +8,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     public class EntityAttribute
     {
         public string Explanation { get; set; }
+        public string DisplayName { get; set; }
+        public string Description { get; set; }
         public JToken Purpose { get; set; }
-
+        public bool? IsPolymorphicSource { get; set; }
         public JToken Entity { get; set; }
         public string Name { get; set; }
         public List<JToken> AppliedTraits { get; set; }

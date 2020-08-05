@@ -1,0 +1,91 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "InterCompanyTradingPartner.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "IntercompanyActionPolicy",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowDiscountEdit",
+          "dataType": "IntercompanyAllowDiscountEdit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllowPriceEdit",
+          "dataType": "IntercompanyAllowPriceEdit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InstanceRelationType",
+          "dataType": "RelationType",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IntercompanyTradingPartner",
+          "dataType": "InterCompanyTradingPartnerRecID",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "InterCompanyTradingPartner"
+          },
+          "name": "Relationship_InterCompanyTradingPartnerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Intercompany configuration"
+    },
+    {
+      "dataTypeName": "IntercompanyAllowDiscountEdit",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "IntercompanyAllowPriceEdit",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RelationType",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InterCompanyTradingPartnerRecID",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -187,7 +187,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
 
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmAttributeContext;
@@ -288,10 +288,6 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
     public isDerivedFrom(baseDef: string, resOpt?: resolveOptions): boolean {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this);
-            }
-
             return false;
         }
         // return p.measure(bodyCode);

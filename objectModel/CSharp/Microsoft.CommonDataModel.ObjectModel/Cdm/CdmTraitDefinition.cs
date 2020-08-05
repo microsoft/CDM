@@ -242,7 +242,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.BaseIsKnownToHaveParameters == true)
                 cacheTagExtra = this.ExtendsTrait.Id.ToString();
 
-            string cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
+            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
             dynamic rtsResultDynamic = null;
             if (cacheTag != null)
                 ctx.Cache.TryGetValue(cacheTag, out rtsResultDynamic);
@@ -299,9 +299,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 rtsResult.Merge(resTrait, false);
 
                 // register set of possible symbols
-                ((CdmCorpusDefinition)ctx.Corpus).RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt), kind, resOpt.SymbolRefSet);
+                ctx.Corpus.RegisterDefinitionReferenceSymbols(this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt), kind, resOpt.SymbolRefSet);
                 // get the new cache tag now that we have the list of docs
-                cacheTag = ((CdmCorpusDefinition)ctx.Corpus).CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
+                cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, cacheTagExtra);
                 if (!string.IsNullOrWhiteSpace(cacheTag))
                     ctx.Cache[cacheTag] = rtsResult;
             }

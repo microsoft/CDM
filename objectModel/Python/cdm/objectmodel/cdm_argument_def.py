@@ -42,7 +42,7 @@ class CdmArgumentDefinition(CdmObjectSimple):
         return CdmObjectType.ARGUMENT_DEF
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmArgumentDefinition'] = None) -> 'CdmArgumentDefinition':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self)
+        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmArgumentDefinition(self.ctx, self.name)
@@ -81,7 +81,7 @@ class CdmArgumentDefinition(CdmObjectSimple):
         if self.ctx.corpus._block_declared_path_changes is False:
             path = self._declared_path
             if not path:
-                path = '{}{}'.format(path_from, ('value/' if self.value else ''))
+                path = path_from # name of arg is forced down from trait ref. you get what you get and you don't throw a fit.
                 self._declared_path = path
 
         if pre_children and pre_children(self, path):
@@ -89,7 +89,7 @@ class CdmArgumentDefinition(CdmObjectSimple):
 
         if self.value:
             if isinstance(self.value, CdmObject):
-                if self.value.visit(path, pre_children, post_children):
+                if self.value.visit(path + '/value/', pre_children, post_children):
                     return True
 
         if post_children and post_children(self, path):

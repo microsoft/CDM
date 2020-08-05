@@ -5,6 +5,7 @@ import * as adal from 'adal-node';
 import * as crypto from 'crypto';
 import { URL } from 'url';
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse, TokenProvider } from '../Utilities/Network';
+import { StorageUtils } from '../Utilities/StorageUtils';
 import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
 
@@ -23,6 +24,10 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         this.extractFilesystemAndSubPath(this._root);
     }
 
+    public get tenant(): string {
+        return this._tenant;
+    }
+
     public get hostname(): string {
         return this._hostname;
     }
@@ -33,7 +38,6 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     public clientId: string;
-    public tenant: string;
     public locationHint: string;
     public secret: string;
     public sharedKey: string;
@@ -53,6 +57,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
 
     private _hostname: string;
     private _root: string;
+    private _tenant: string;
     private context: adal.AuthenticationContext;
     private fileSystem: string = '';
     private formattedHostname: string = '';
@@ -74,7 +79,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
                 if (tenantOrSharedKeyorTokenProvider && !clientId && !secret) {
                     this.sharedKey = tenantOrSharedKeyorTokenProvider;
                 } else if (tenantOrSharedKeyorTokenProvider && clientId && secret) {
-                    this.tenant = tenantOrSharedKeyorTokenProvider;
+                    this._tenant = tenantOrSharedKeyorTokenProvider;
                     this.clientId = clientId;
                     this.secret = secret;
                     this.context = new adal.AuthenticationContext(`https://login.windows.net/${this.tenant}`);
@@ -129,6 +134,9 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
 
     public createAdapterPath(corpusPath: string): string {
         const formattedCorpusPath: string = this.formatCorpusPath(corpusPath);
+        if (formattedCorpusPath === undefined || formattedCorpusPath === null) {
+            return undefined;
+        }
 
         if (this.adapterPaths.has(formattedCorpusPath)) {
             return this.adapterPaths.get(formattedCorpusPath);
@@ -173,8 +181,9 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
             const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
 
             if (cdmResponse.statusCode === 200) {
+                // http nodejs lib returns lowercase headers.
                 // tslint:disable-next-line: no-backbone-get-set-outside-model
-                return new Date(cdmResponse.responseHeaders.get('lastModified'));
+                return new Date(cdmResponse.responseHeaders.get('last-modified'));
             }
         } catch (e) {
             // We don't have standard logger here, so use one from system diagnostics
@@ -183,6 +192,10 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     public async fetchAllFilesAsync(folderCorpusPath: string): Promise<string[]> {
+        if (folderCorpusPath === undefined || folderCorpusPath === null) {
+            return undefined;
+        }
+
         const url: string = `https://${this.hostname}/${this.fileSystem}`;
         const directory: string = `${this.subPath}/${folderCorpusPath}`;
         const request: CdmHttpRequest = await this.buildRequest(`${url}?directory=${directory}&recursive=True&resource=filesystem`, 'GET');
@@ -267,7 +280,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
 
         // Check first for clientId/secret auth.
         if (configJson.tenant && configJson.clientId) {
-            this.tenant = configJson.tenant;
+            this._tenant = configJson.tenant;
             this.clientId = configJson.clientId;
 
             // Check for a secret, we don't really care is it there, but it is nice if it is.
@@ -325,7 +338,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         const headers: Map<string, string> = new Map<string, string>();
 
         // Add UTC now time and new version.
-        headers.set(this.httpXmsDate, new Date().toISOString());
+        headers.set(this.httpXmsDate, new Date().toUTCString());
         headers.set(this.httpXmsVersion, '2018-06-17');
 
         let contentLength: number = 0;
@@ -355,8 +368,8 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         }
 
         // Append canonicalized resource.
-        const accountName: string =
-            builder += '/';
+        const accountName: string = uri.host.split('.')[0];
+        builder += '/';
         builder += accountName;
         builder += uri.pathname;
 
@@ -371,21 +384,13 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         }
 
         // hash the payload
-        const dataToHash: Buffer = Buffer.from(builder.trimRight());
-        const bytes: Buffer = new Buffer(sharedKey);
+        const dataToHash: string = builder.trimRight();
+        const bytes: Buffer = Buffer.from(sharedKey, 'base64');
 
         const hmac: crypto.Hmac = crypto.createHmac('sha256', bytes);
-
-        hmac.on('readable', () => {
-            const data: string | Buffer = hmac.read();
-            if (data) {
-                const signedString: string = `SharedKey ${accountName}:${data.toString()}`;
-                headers.set(this.httpAuthorization, signedString);
-            }
-        });
-
-        hmac.write(dataToHash);
-        hmac.end();
+        const signedString: string = `SharedKey ${accountName}:${hmac.update(dataToHash)
+            .digest('base64')}`;
+        headers.set(this.httpAuthorization, signedString);
 
         return headers;
     }
@@ -418,9 +423,14 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     private formatCorpusPath(corpusPath: string): string {
-        if (corpusPath.startsWith('adls:')) {
-            corpusPath = corpusPath.substring(5);
-        } else if (corpusPath.length > 0 && !corpusPath.startsWith('/')) {
+        const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
+        if (!pathTuple) {
+            return undefined;
+        }
+
+        corpusPath = pathTuple[1];
+
+        if (corpusPath.length > 0 && !corpusPath.startsWith('/')) {
             corpusPath = `/${corpusPath}`;
         }
 

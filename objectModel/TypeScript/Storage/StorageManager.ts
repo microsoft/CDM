@@ -11,6 +11,7 @@ import {
     resolveContext
 } from '../internal';
 import { Logger } from '../Utilities/Logging/Logger';
+import { StorageUtils } from '../Utilities/StorageUtils';
 import { ADLSAdapter } from './ADLSAdapter';
 import { CdmStandardsAdapter } from './CdmStandardsAdapter';
 import { RemoteAdapter } from './RemoteAdapter';
@@ -63,9 +64,9 @@ export class StorageManager {
     }
 
     /**
-     * Mounts a namespaceto the specified adapter
+     * Mounts a namespace to the specified adapter
      */
-    public mount(namespace: string, adapter: StorageAdapter) {
+    public mount(namespace: string, adapter: StorageAdapter): void {
         if (!namespace) {
             Logger.error(StorageManager.name, this.ctx, 'The namespace cannot be null or empty.', this.mount.name);
 
@@ -198,25 +199,6 @@ export class StorageManager {
     }
 
     /**
-     * @internal
-     * Splits the namespace path on namespace and objects.
-     */
-    public splitNamespacePath(objectPath: string): [string, string] {
-        if (!objectPath) {
-            Logger.error(StorageManager.name, this.ctx, 'The object path cannot be null or empty.', this.splitNamespacePath.name);
-
-            return undefined;
-        }
-        let namespace: string = '';
-        if (objectPath.includes(':')) {
-            namespace = objectPath.slice(0, objectPath.indexOf(':'));
-            objectPath = objectPath.slice(objectPath.indexOf(':') + 1);
-        }
-
-        return [namespace, objectPath];
-    }
-
-    /**
      * Retrieves the adapter for the specified namespace.
      */
     public fetchAdapter(namespace: string): StorageAdapter {
@@ -310,7 +292,12 @@ export class StorageManager {
         }
         let result: string;
         // break the corpus path into namespace and ... path
-        const pathTuple: [string, string] = this.splitNamespacePath(corpusPath);
+        const pathTuple: [string, string] = StorageUtils.splitNamespacePath(corpusPath);
+        if (!pathTuple) {
+            Logger.error(StorageManager.name, this.ctx, 'The corpus path cannot be null or empty.', this.corpusPathToAdapterPath.name);
+
+            return undefined;
+        }
         const namespace: string = pathTuple[0] || this.defaultNamespace;
 
         // get the adapter registered for this namespace
@@ -342,7 +329,12 @@ export class StorageManager {
             return;
         }
 
-        const pathTuple: [string, string] = this.splitNamespacePath(objectPath);
+        const pathTuple: [string, string] = StorageUtils.splitNamespacePath(objectPath);
+        if (!pathTuple) {
+            Logger.error(StorageManager.name, this.ctx, 'The object path cannot be null or empty.', this.createAbsoluteCorpusPath.name);
+
+            return undefined;
+        }
         const nameSpace: string = pathTuple[0];
         let newObjectPath: string = pathTuple[1];
         let finalNamespace: string;

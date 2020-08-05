@@ -64,9 +64,6 @@ class CdmFolderDefinition(CdmObjectDefinition, CdmContainerDefinition):
         return CdmObjectType.FOLDER_DEF
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmFolderDefinition'] = None) -> 'CdmFolderDefinition':
-        if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
-
         return None
 
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:

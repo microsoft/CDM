@@ -1,0 +1,150 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/Main/PurchRFQScoringMethod.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "PurchRFQCloseVisibilityType_PSN.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchRFQSolicitationType",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultScoringMethod",
+          "dataType": "PurchRFQScoringMethodRecId",
+          "isNullable": true,
+          "displayName": "Scoring method",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "PurchRFQSolicitationDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "PurchRFQSolicitationName",
+          "description": ""
+        },
+        {
+          "name": "AllowBidByInvitationOnly",
+          "dataType": "AllowBidByInvitationOnly",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultRFQCloseVisibilityType",
+          "dataType": "PurchRFQVisibilityTypeRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultBidType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PSNAllowAlternates",
+          "dataType": "PurchRFQAllowAlternates",
+          "isNullable": true,
+          "displayName": "Allow alternates on response line",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQScoringMethod"
+          },
+          "name": "Relationship_DefaultScoringMethodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQCloseVisibilityType_PSN"
+          },
+          "name": "Relationship_PurchRFQCloseVisibilityTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "PurchSolicitationType"
+    },
+    {
+      "dataTypeName": "PurchRFQScoringMethodRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchRFQSolicitationDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQSolicitationName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AllowBidByInvitationOnly",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQVisibilityTypeRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PurchRFQAllowAlternates",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -27,7 +27,7 @@ async def main():
     # Local is our default. So any paths that start out navigating without a device tag will assume local.
     cdm_corpus.storage.default_namespace = 'local'
 
-    # Fake cdm, normally use the github adapter.
+    # Fake cdm, normally use the CDM Standards adapter.
     cdm_corpus.storage.mount('cdm', LocalAdapter(root=os.path.join(ROOT_PATH, '../../example-public-standards')))
 
     # This sample is going to simulate the steps a tool would follow in order to create a new manifest document in some user

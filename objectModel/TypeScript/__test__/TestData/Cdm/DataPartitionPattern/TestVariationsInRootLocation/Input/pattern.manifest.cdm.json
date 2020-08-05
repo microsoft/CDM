@@ -1,0 +1,46 @@
+{
+    "$schema": "CdmFolder.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "manifestName": "cdmTest",
+    "explanation": "test cdm folder for cdm version 1.0+",
+    "imports": [
+        {
+            "uri": "/primitives.cdm.json"
+        }
+    ],
+    "entities": [
+        {
+            "type": "LocalEntity",
+            "entityName": "startsWithSlash",
+            "entityPath": "/entity.cdm.json/entity",
+            "dataPartitionPatterns": [
+                {
+                    "rootLocation": "/partitions",
+                    "regularExpression": ".*testfile.csv"
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "endsWithSlash",
+            "entityPath": "/entity.cdm.json/entity",
+            "dataPartitionPatterns": [
+                {
+                    "rootLocation": "partitions/",
+                    "regularExpression": ".*testfile.csv"
+                }
+            ]
+        },
+        {
+            "type": "LocalEntity",
+            "entityName": "noSlash",
+            "entityPath": "/entity.cdm.json/entity",
+            "dataPartitionPatterns": [
+                {
+                    "rootLocation": "partitions",
+                    "regularExpression": ".*testfile.csv"
+                }
+            ]
+        }
+    ]
+}

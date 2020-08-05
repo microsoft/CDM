@@ -19,6 +19,7 @@ import {
 } from '../internal';
 import { StorageAdapter } from '../Storage/StorageAdapter';
 import { Logger } from '../Utilities/Logging/Logger';
+import { StorageUtils } from '../Utilities/StorageUtils';
 import { IPersistence } from './Common/IPersistence';
 
 const PersistenceTypes = {
@@ -237,7 +238,7 @@ export class PersistenceLayer {
                 // it would be really rude to just kill that old object and replace it with this replicant, especially because
                 // the caller has no idea this happened. so... sigh ... instead of returning the new object return the one that
                 // was just killed off but make it contain everything the new document loaded.
-                docContent = docContent.copy(new resolveOptions(docContainer), docContainer) as CdmDocumentDefinition;
+                docContent = docContent.copy(new resolveOptions(docContainer, this.ctx.corpus.defaultResolutionDirectives), docContainer) as CdmDocumentDefinition;
             }
             folder.documents.push(docContent, docName);
 
@@ -427,8 +428,15 @@ export class PersistenceLayer {
             const oldDocumentPath: string = doc.documentPath;
             const newDocumentPath: string =
                 oldDocumentPath.substring(0, oldDocumentPath.length - CdmConstants.odiExtension.length) + newName;
+            // Remove namespace from path
+            const pathTuple: [string, string] = StorageUtils.splitNamespacePath(newDocumentPath);
+            if (!pathTuple) {
+                Logger.error(PersistenceLayer.name, this.ctx, 'The object path cannot be null or empty.', this.saveOdiDocuments.name);
+
+                return;
+            }
             const content = JSON.stringify(doc, undefined, 2);
-            await adapter.writeAsync(newDocumentPath, content);
+            await adapter.writeAsync(pathTuple[1], content);
         } catch (e) {
             Logger.error(
                 PersistenceLayer.name,

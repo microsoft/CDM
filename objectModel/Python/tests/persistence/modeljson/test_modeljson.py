@@ -1,16 +1,18 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
+from typing import Optional
 import unittest
 import json
 import os
 
-from cdm.enums import CdmStatusLevel, CdmObjectType
+from cdm.enums import CdmStatusLevel, CdmObjectType, CdmDataFormat
 from cdm.objectmodel import CdmDocumentDefinition, CdmManifestDefinition, CdmReferencedEntityDeclarationDefinition, \
     CdmCorpusDefinition
 from cdm.persistence import PersistenceLayer
 from cdm.persistence.modeljson import ManifestPersistence
 from cdm.persistence.cdmfolder import ManifestPersistence as CdmManifestPersistence
+from cdm.storage import LocalAdapter
 
 from tests.common import async_test, TestHelper
 
@@ -24,10 +26,8 @@ class ModelJsonTest(unittest.TestCase):
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         manifest = await cdm_corpus.fetch_object_async(PersistenceLayer.MODEL_JSON_EXTENSION, cdm_corpus.storage.fetch_root_folder('local'))
 
-        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, PersistenceLayer.MODEL_JSON_EXTENSION)
         actual_data = json.loads((await ManifestPersistence.to_data(manifest, None, None)).encode())
-        error_msg = TestHelper.compare_same_object(expected_data, actual_data)
-        self.assertEqual('', error_msg, error_msg)
+        self._validate_output(test_name, PersistenceLayer.MODEL_JSON_EXTENSION, actual_data)
 
     @async_test
     async def test_loading_cdm_folder_and_model_json_to_data(self):
@@ -35,11 +35,8 @@ class ModelJsonTest(unittest.TestCase):
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         manifest = await cdm_corpus.fetch_object_async('default.manifest{}'.format(PersistenceLayer.CDM_EXTENSION), cdm_corpus.storage.fetch_root_folder('local'))
 
-        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, PersistenceLayer.MODEL_JSON_EXTENSION)
         actual_data = json.loads((await ManifestPersistence.to_data(manifest, None, None)).encode())
-        error_msg = TestHelper.compare_same_object(expected_data, actual_data)
-
-        self.assertEqual('', error_msg, error_msg)
+        self._validate_output(test_name, PersistenceLayer.MODEL_JSON_EXTENSION, actual_data)
 
     @async_test
     async def test_loading_model_json_result_and_cdm_folder_to_data(self):
@@ -47,11 +44,8 @@ class ModelJsonTest(unittest.TestCase):
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         manifest = await cdm_corpus.fetch_object_async(PersistenceLayer.MODEL_JSON_EXTENSION, cdm_corpus.storage.fetch_root_folder('local'))
 
-        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'cdmFolder{}'.format(PersistenceLayer.CDM_EXTENSION))
         actual_data = json.loads((CdmManifestPersistence.to_data(manifest, None, None)).encode())
-        error_msg = TestHelper.compare_same_object(expected_data, actual_data)
-
-        self.assertEqual('', error_msg, error_msg)
+        self._validate_output(test_name, 'cdmFolder{}'.format(PersistenceLayer.CDM_EXTENSION), actual_data)
 
     @async_test
     async def test_loading_model_json_and_cdm_folder_to_data(self):
@@ -59,14 +53,8 @@ class ModelJsonTest(unittest.TestCase):
         cdm_corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         manifest = await cdm_corpus.fetch_object_async(PersistenceLayer.MODEL_JSON_EXTENSION, cdm_corpus.storage.fetch_root_folder('local'))
 
-        cdm_corpus.storage.fetch_root_folder('output').documents.append(manifest)
-        await manifest.save_as_async('cdm.json', save_referenced=True)
-
-        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, 'cdmFolder{}'.format(PersistenceLayer.CDM_EXTENSION))
         actual_data = json.loads((CdmManifestPersistence.to_data(manifest, None, None)).encode())
-        error_msg = TestHelper.compare_same_object(expected_data, actual_data)
-
-        self.assertEqual('', error_msg, error_msg)
+        self._validate_output(test_name, 'cdmFolder{}'.format(PersistenceLayer.CDM_EXTENSION), actual_data)
 
     @async_test
     async def test_loading_cdm_folder_result_and_model_json_to_data(self):
@@ -75,11 +63,8 @@ class ModelJsonTest(unittest.TestCase):
 
         manifest = await cdm_corpus.fetch_object_async('result.model.manifest{}'.format(PersistenceLayer.CDM_EXTENSION), cdm_corpus.storage.fetch_root_folder('local'))
 
-        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, PersistenceLayer.MODEL_JSON_EXTENSION)
         actual_data = json.loads((await ManifestPersistence.to_data(manifest, None, None)).encode())
-        error_msg = TestHelper.compare_same_object(expected_data, actual_data)
-
-        self.assertEqual('', error_msg, error_msg)
+        self._validate_output(test_name, PersistenceLayer.MODEL_JSON_EXTENSION, actual_data)
 
     @async_test
     async def test_imports_relative_path(self):
@@ -164,11 +149,8 @@ class ModelJsonTest(unittest.TestCase):
         model_id_trait4.arguments.append('modelId', 'f19bbb97-c031-441a-8bd1-61b9181c0b83/1a7ef9c8-c7e8-45f8-9d8a-b80f8ffe4612')
         manifest.entities.append(reference_entity4)
 
-        expected_data = TestHelper.get_expected_output_data(self.tests_subpath, test_name, PersistenceLayer.MODEL_JSON_EXTENSION)
         obtained_model_json = json.loads((await ManifestPersistence.to_data(manifest, None, None)).encode())
-        error_msg = TestHelper.compare_same_object(expected_data, obtained_model_json)
-
-        self.assertEqual('', error_msg, error_msg)
+        self._validate_output(test_name, PersistenceLayer.MODEL_JSON_EXTENSION, obtained_model_json)
 
     @async_test
     async def test_setting_model_json_entity_description(self):
@@ -190,6 +172,46 @@ class ModelJsonTest(unittest.TestCase):
 
         self.assertEqual('test description', obtained_model_json.entities[0].get('description'))
 
+    @async_test
+    async def test_loading_and_saving_date_and_time_data_types(self):
+        """Tests that the "date" and "time" data types are correctly loaded/saved from/to a model.json."""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_loading_and_saving_date_and_time_data_types')
+
+        # Load the manifest and resolve it
+        manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')
+        resolved_manifest = await manifest.create_resolved_manifest_async('resolved', None)
+
+        # Convert loaded manifest to model.json
+        model_json = await ManifestPersistence.to_data(resolved_manifest, None, None)
+
+        # Verify that the attributes' data types were correctly persisted as "date" and "time"
+        self.assertEqual('date', model_json.entities[0]['attributes'][0]['dataType'])
+        self.assertEqual('time', model_json.entities[0]['attributes'][1]['dataType'])
+
+        # Now check that these attributes' data types are still "date" and "time" when loading the model.json back to manifest
+        # We first need to create a second adapter to the input folder to fool the OM into thinking it's different
+        # This is because there's a bug that currently prevents us from saving and then loading a model.json under the same namespace
+        corpus.storage.mount('local2', LocalAdapter(TestHelper.get_input_folder_path(self.tests_subpath, 'test_loading_and_saving_date_and_time_data_types')))
+
+        manifest_from_model_json = await corpus.fetch_object_async('local2:/model.json')
+        entity = await corpus.fetch_object_async(manifest_from_model_json.entities[0].entity_path, manifest_from_model_json)
+
+        # Verify that the attributes' data types were correctly loaded as "date" and "time"
+        self.assertEqual(CdmDataFormat.DATE, entity.attributes[0].data_format)
+        self.assertEqual(CdmDataFormat.TIME, entity.attributes[1].data_format)
+
+    def _validate_output(self, test_name: str, output_file_name: str, actual_output: 'JObject', does_write_test_debugging_files: Optional[bool] = False):
+        """
+        Handles the obtained output.
+        If needed, writes the output to a test debugging file.
+        It reads expected output and compares it to the actual output.
+        """
+        serialized_output = json.dumps(actual_output, sort_keys=True, indent=2)
+        if does_write_test_debugging_files:
+            TestHelper.write_actual_output_file_content(self.tests_subpath, test_name, output_file_name, serialized_output)
+        expected_output = TestHelper.get_expected_output_data(self.tests_subpath, test_name, output_file_name)
+        error_msg = TestHelper.compare_same_object(expected_output, actual_output)
+        self.assertEqual('', error_msg, error_msg)
 
 if __name__ == '__main__':
     unittest.main()

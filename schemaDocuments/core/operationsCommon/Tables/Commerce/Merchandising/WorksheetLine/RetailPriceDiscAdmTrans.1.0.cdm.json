@@ -1,0 +1,176 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/PriceDiscAdmTrans.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Miscellaneous/RetailCategoryPriceRule.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailPriceDiscAdmTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BasePrice",
+          "dataType": "RetailCurrentBasePrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BasePriceOrigCurrencyCode",
+          "dataType": "RetailBasePriceOrigCurrencyCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventCost",
+          "dataType": "RetailCurrentInventCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigCurBasePrice",
+          "dataType": "RetailCurrentOrigCurBasePrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OtherGroupPrice",
+          "dataType": "RetailCurrentOtherGroupPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceDiscAdmTrans",
+          "dataType": "PriceDiscAdmTransRecId",
+          "description": ""
+        },
+        {
+          "name": "RetailCategoryPriceRuleRecId",
+          "dataType": "RetailCategoryPriceRuleRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesPrice",
+          "dataType": "RetailCurrentSalesPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PriceDiscAdmTrans"
+          },
+          "name": "Relationship_PriceDiscAdmTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCategoryPriceRule"
+          },
+          "name": "Relationship_RetailCategoryPriceRuleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Trade agreement journal lines retail details"
+    },
+    {
+      "dataTypeName": "RetailCurrentBasePrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailBasePriceOrigCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCurrentInventCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentOrigCurBasePrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailCurrentOtherGroupPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceDiscAdmTransRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCategoryPriceRuleRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCurrentSalesPrice",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

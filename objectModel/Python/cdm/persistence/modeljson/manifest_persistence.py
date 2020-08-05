@@ -151,7 +151,7 @@ class ManifestPersistence:
         result = Model()
 
         # process_traits_and_annotations_to_data also processes extensions.
-        await utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
+        utils.process_traits_and_annotations_to_data(instance.ctx, result, instance.exhibits_traits)
 
         result.name = instance.manifest_name
         result.description = instance.explanation

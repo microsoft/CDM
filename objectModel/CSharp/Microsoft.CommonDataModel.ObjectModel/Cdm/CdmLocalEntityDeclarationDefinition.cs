@@ -173,11 +173,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseName, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            }
-
             return false; // makes no sense
         }
 
@@ -185,13 +180,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public async Task FileStatusCheckAsync()
         {
             string fullPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(this.EntityPath, this.InDocument);
-            DateTimeOffset? modifiedTime = await (this.Ctx.Corpus as CdmCorpusDefinition).ComputeLastModifiedTimeAsync(fullPath, this);
+            DateTimeOffset? modifiedTime = await this.Ctx.Corpus.ComputeLastModifiedTimeAsync(fullPath, this);
 
             foreach (var partition in this.DataPartitions)
+            {
                 await partition.FileStatusCheckAsync();
+            }
 
             foreach (var pattern in this.DataPartitionPatterns)
+            {
                 await pattern.FileStatusCheckAsync();
+            }
 
             // update modified times
             this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;

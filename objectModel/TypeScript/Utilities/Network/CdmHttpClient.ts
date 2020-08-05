@@ -187,17 +187,20 @@ export class CdmHttpClient {
      * @return {Promise} which one the race.
      */
     private async raceAsyncTaskAgainstTimeout(ms: number, promise: Promise<CdmHttpResponse>): Promise<CdmHttpResponse> {
-
-        const timeout = new Promise<CdmHttpResponse>((resolve, reject) => {
-            const t = setTimeout(() => {
-                clearTimeout(t);
-                reject('Timed out.');
+        let timeout;
+        const timeoutPromise = new Promise<CdmHttpResponse>((resolve, reject) => {
+            timeout = setTimeout(() => {
+                clearTimeout(timeout);
+                reject('Request timeout.');
             }, ms);
         });
 
         return Promise.race([
-            promise,
-            timeout
-        ]);
+            timeoutPromise,
+            promise
+        ]).then((response) => {
+            clearTimeout(timeout);
+            return response;
+        });
     }
 }

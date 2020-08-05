@@ -1,0 +1,601 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetBook.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ForecastModel.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjControl.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjLineProperty.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjPeriodTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjWIPTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjControlPeriodTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityNew",
+          "dataType": "ProjActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActualContract",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Contract",
+          "description": ""
+        },
+        {
+          "name": "ActualCostAmount",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Actual cost amount",
+          "description": ""
+        },
+        {
+          "name": "AssetBookId",
+          "dataType": "AssetBookId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetIdNew",
+          "dataType": "AssetId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AutoManualCalculation",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BeginningBalance",
+          "dataType": "ProjBeginningBalance",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryNew",
+          "dataType": "ProjCategoryCostId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompletePct",
+          "dataType": "ProjControlCompletePct",
+          "isNullable": true,
+          "displayName": "Manual calculation",
+          "description": ""
+        },
+        {
+          "name": "CompletePctCalculated",
+          "dataType": "ProjControlCompletePct",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Automatic calculation",
+          "description": ""
+        },
+        {
+          "name": "ContractValue",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Contract value ",
+          "description": ""
+        },
+        {
+          "name": "ControlId",
+          "dataType": "ProjControlId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CTCContract",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Contract",
+          "description": ""
+        },
+        {
+          "name": "CTCCostAmount",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Remaining cost amount",
+          "description": ""
+        },
+        {
+          "name": "Elimination",
+          "dataType": "ProjElimination",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EliminationOrig",
+          "dataType": "ProjElimination",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EstimatedEndDate",
+          "dataType": "ProjEndDate",
+          "isNullable": true,
+          "displayName": "Estimated end date",
+          "description": ""
+        },
+        {
+          "name": "EstimateOutput",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Factor",
+          "dataType": "ProjControlFactor",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InternalContractTotal",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Contract",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LinePropertyIdNew",
+          "dataType": "ProjLinePropertyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ModelId",
+          "dataType": "ForecastModelId",
+          "isNullable": true,
+          "displayName": "Forecast model",
+          "description": ""
+        },
+        {
+          "name": "OverUnderBiling",
+          "dataType": "Amount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodFrom",
+          "dataType": "ProjPeriodFrom",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodId",
+          "dataType": "ProjPeriodId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodTo",
+          "dataType": "ProjPeriodTo",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Estimate date",
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "ProjWipId",
+          "isReadOnly": true,
+          "displayName": "Estimate project",
+          "description": ""
+        },
+        {
+          "name": "ProjIdNew",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyCostNew",
+          "dataType": "ProjQtyCost",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Recalculated",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Recalculation",
+          "description": ""
+        },
+        {
+          "name": "Reverse",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reversed",
+          "description": ""
+        },
+        {
+          "name": "TotalMaxCapital",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Elimination output",
+          "description": ""
+        },
+        {
+          "name": "ValueAdded",
+          "dataType": "ProjValueAdded",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Version",
+          "dataType": "ProjControlVersion",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "VoucherDatePosted",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Ledger date",
+          "description": ""
+        },
+        {
+          "name": "VoucherDateReverse",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Ledger date",
+          "description": ""
+        },
+        {
+          "name": "VoucherPosted",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Voucher number",
+          "description": ""
+        },
+        {
+          "name": "VoucherReverse",
+          "dataType": "Voucher",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reversed",
+          "description": ""
+        },
+        {
+          "name": "WIPAccruedTurnover",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Accrued revenue",
+          "description": ""
+        },
+        {
+          "name": "WIPAccruedTurnoverProd",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Accrued revenue (production)",
+          "description": ""
+        },
+        {
+          "name": "WIPAccruedTurnoverProfit",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Accrued revenue (profit)",
+          "description": ""
+        },
+        {
+          "name": "WIPCost",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Cost",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBook"
+          },
+          "name": "Relationship_AssetBookIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ForecastModel"
+          },
+          "name": "Relationship_ForecastModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjControl"
+          },
+          "name": "Relationship_ProjControlRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjectNewRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjLineProperty"
+          },
+          "name": "Relationship_ProjLinePropertyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjPeriodTable"
+          },
+          "name": "Relationship_ProjPeriodTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjWIPTable"
+          },
+          "name": "Relationship_ProjWipTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Control periods"
+    },
+    {
+      "dataTypeName": "ProjActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjBeginningBalance",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjCategoryCostId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjControlCompletePct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjControlId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjElimination",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjEndDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjControlFactor",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ProjLinePropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ForecastModelId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Amount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjPeriodFrom",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjPeriodId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjPeriodTo",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjWipId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjQtyCost",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjValueAdded",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjControlVersion",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

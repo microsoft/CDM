@@ -26,6 +26,37 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             typeAttribute.Purpose = PurposeReferencePersistence.FromData(ctx, obj["purpose"]);
             typeAttribute.DataType = DataTypeReferencePersistence.FromData(ctx, obj["dataType"]);
+            if (obj["cardinality"] != null)
+            {
+                string minCardinality = null;
+                if (obj["cardinality"]["minimum"] != null)
+                    minCardinality = (string)obj["cardinality"]["minimum"];
+
+                string maxCardinality = null;
+                if (obj["cardinality"]["maximum"] != null)
+                    maxCardinality = (string)obj["cardinality"]["maximum"];
+
+                if (string.IsNullOrWhiteSpace(minCardinality) || string.IsNullOrWhiteSpace(maxCardinality))
+                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Both minimum and maximum are required for the Cardinality property.", nameof(FromData));
+
+                if (!CardinalitySettings.IsMinimumValid(minCardinality))
+                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Invalid minimum cardinality {minCardinality}.", nameof(FromData));
+
+                if (!CardinalitySettings.IsMaximumValid(maxCardinality))
+                    Logger.Error(nameof(TypeAttributePersistence), ctx, $"Invalid maximum cardinality {maxCardinality}.", nameof(FromData));
+
+                if (!string.IsNullOrWhiteSpace(minCardinality) &&
+                    !string.IsNullOrWhiteSpace(maxCardinality) &&
+                    CardinalitySettings.IsMinimumValid(minCardinality) &&
+                    CardinalitySettings.IsMinimumValid(maxCardinality))
+                {
+                    typeAttribute.Cardinality = new CardinalitySettings(typeAttribute)
+                    {
+                        Minimum = minCardinality,
+                        Maximum = maxCardinality
+                    };
+                }
+            }
             typeAttribute.AttributeContext = AttributeContextReferencePersistence.FromData(ctx, obj["attributeContext"]);
             Utils.AddListToCdmCollection(typeAttribute.AppliedTraits, Utils.CreateTraitReferenceList(ctx, obj["appliedTraits"]));
             typeAttribute.ResolutionGuidance = AttributeResolutionGuidancePersistence.FromData(ctx, obj["resolutionGuidance"]);
@@ -36,18 +67,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 t2pMap.UpdatePropertyValue("isPrimaryKey", entityName + "/(resolvedAttributes)/" + typeAttribute.Name);
             }
 
-            typeAttribute.Explanation = PropertyFromDataToString(obj["explanation"]);
-            typeAttribute.Description = PropertyFromDataToString(obj["description"]);
-            typeAttribute.IsReadOnly = PropertyFromDataToBool(obj["isReadOnly"]);
-            typeAttribute.IsNullable = PropertyFromDataToBool(obj["isNullable"]);
-            typeAttribute.SourceName = PropertyFromDataToString(obj["sourceName"]);
-            typeAttribute.SourceOrdering = PropertyFromDataToInt(obj["sourceOrdering"]);
-            typeAttribute.DisplayName = PropertyFromDataToString(obj["displayName"]);
-            typeAttribute.ValueConstrainedToList = PropertyFromDataToBool(obj["valueConstrainedToList"]);
-            typeAttribute.MaximumLength = PropertyFromDataToInt(obj["maximumLength"]);
-            typeAttribute.MaximumValue = PropertyFromDataToString(obj["maximumValue"]);
-            typeAttribute.MinimumValue = PropertyFromDataToString(obj["minimumValue"]);
-            var dataFormat = PropertyFromDataToString(obj["dataFormat"]);
+            typeAttribute.Explanation = Utils.PropertyFromDataToString(obj["explanation"]);
+            typeAttribute.Description = Utils.PropertyFromDataToString(obj["description"]);
+            typeAttribute.IsReadOnly = Utils.PropertyFromDataToBool(obj["isReadOnly"]);
+            typeAttribute.IsNullable = Utils.PropertyFromDataToBool(obj["isNullable"]);
+            typeAttribute.SourceName = Utils.PropertyFromDataToString(obj["sourceName"]);
+            typeAttribute.SourceOrdering = Utils.PropertyFromDataToInt(obj["sourceOrdering"]);
+            typeAttribute.DisplayName = Utils.PropertyFromDataToString(obj["displayName"]);
+            typeAttribute.ValueConstrainedToList = Utils.PropertyFromDataToBool(obj["valueConstrainedToList"]);
+            typeAttribute.MaximumLength = Utils.PropertyFromDataToInt(obj["maximumLength"]);
+            typeAttribute.MaximumValue = Utils.PropertyFromDataToString(obj["maximumValue"]);
+            typeAttribute.MinimumValue = Utils.PropertyFromDataToString(obj["minimumValue"]);
+            typeAttribute.DefaultValue = obj["defaultValue"];
+
+            var dataFormat = Utils.PropertyFromDataToString(obj["dataFormat"]);
             if (dataFormat != null)
             {
                 bool success = Enum.TryParse(dataFormat, true, out CdmDataFormat cdmDataFormat);
@@ -61,8 +94,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 }
             }
 
-            typeAttribute.DefaultValue = obj["defaultValue"];
-
             return typeAttribute;
         }
 
@@ -75,7 +106,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Name = instance.Name,
                 Purpose = Utils.JsonForm(instance.Purpose, resOpt, options),
                 DataType = Utils.JsonForm(instance.DataType, resOpt, options),
-                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty)?.ToList(), options),
+                AppliedTraits = CopyDataUtils.ListCopyData(resOpt, instance.AppliedTraits?.Where(trait => !trait.IsFromProperty), options),
                 AttributeContext = Utils.JsonForm(instance.AttributeContext, resOpt, options),
                 ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options)
             };
@@ -122,53 +153,5 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             return obj;
         }
 
-        /// <summary>
-        /// Converts dynamic input into a string for a property (ints are converted to string)
-        /// </summary>
-        /// <param name="value">The value that should be converted to a string.</param>
-        private static string PropertyFromDataToString(dynamic value)
-        {
-            string stringValue = (string)value;
-            if (!string.IsNullOrWhiteSpace(stringValue))
-            {
-                return stringValue;
-            }
-            else if (value is int)
-            {
-                return value.ToString();
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
-        /// </summary>
-        /// <param name="value">The value that should be converted to an int.</param>
-        private static int? PropertyFromDataToInt(dynamic value)
-        {
-            if (value is int)
-            {
-                return value;
-            }
-            string stringValue = (string)value;
-            if (!string.IsNullOrWhiteSpace(stringValue) && Int32.TryParse(stringValue, out int intValue))
-            {
-                return intValue;
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
-        /// </summary>
-        /// <param name="value">The value that should be converted to a boolean.</param>
-        private static bool? PropertyFromDataToBool(dynamic value)
-        {
-            if (value is bool)
-                return value;
-            if (bool.TryParse((string)value, out bool boolValue))
-                return boolValue;
-            return null;
-        }
     }
 }

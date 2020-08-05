@@ -49,7 +49,7 @@ public class Program {
     // ---------------------------------------------------------------------------------------------
     // Set up adapters for managing access to local FS, remote and ADLS locations.
 
-    // Fake cdm, normally use the github adapter.
+    // Fake cdm, normally use the CDM Standards adapter.
     // Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there.
     cdmCorpus.getStorage().mount(
         "cdm",

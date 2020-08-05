@@ -8,7 +8,7 @@ import os
 from typing import List, Optional, Tuple, Set, TYPE_CHECKING
 
 from cdm.storage import CdmStandardsAdapter, LocalAdapter, ResourceAdapter
-from cdm.utilities import logger
+from cdm.utilities import logger, StorageUtils
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmContainerDefinition, CdmCorpusDefinition, CdmFolderDefinition
@@ -78,7 +78,10 @@ class StorageManager:
         result = None
 
         # Break the corpus path into namespace and ... path
-        path_tuple = self._split_namespace_path(corpus_path)
+        path_tuple = StorageUtils.split_namespace_path(corpus_path)
+        if not path_tuple:
+            logger.error(self._TAG, self._ctx, 'The corpus path cannot be null or empty.', self.corpus_path_to_adapter_path.__name__)
+            return None
         namespace = path_tuple[0] or self.default_namespace
 
         # Get the adapter registered for this namespace
@@ -104,12 +107,18 @@ class StorageManager:
         return None
 
     def fetch_root_folder(self, namespace: str) -> 'CdmFolderDefinition':
-        """given the namespace of a registered storage adapter, return the root
+        """Given the namespace of a registered storage adapter, return the root
         folder containing the sub-folders and documents"""
-        if namespace and namespace in self._namespace_folders:
-            return self._namespace_folders[namespace]
+        if not namespace:
+            logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.', StorageManager.fetch_root_folder.__name__)
+            return None
 
-        logger.error(self._TAG, self._ctx, 'missing adapter for namespace "{}"'.format(namespace), StorageManager.fetch_root_folder.__name__)
+        if namespace in self._namespace_folders:
+            return self._namespace_folders[namespace]
+        elif self.default_namespace in self._namespace_folders:
+            return self._namespace_folders[self.default_namespace]
+
+        logger.error(self._TAG, self._ctx, 'Adapter not found for the namespace \'{}\''.format(namespace), StorageManager.fetch_root_folder.__name__)
         return None
 
     def fetch_config(self) -> str:
@@ -158,7 +167,10 @@ class StorageManager:
             # Already called status_rpt when checking for unsupported path format.
             return None
 
-        path_tuple = self._split_namespace_path(object_path)
+        path_tuple = StorageUtils.split_namespace_path(object_path)
+        if not path_tuple:
+            logger.error(self._TAG, self._ctx, 'The object path cannot be null or empty.', self.create_absolute_corpus_path.__name__)
+            return None
         final_namespace = ''
 
         prefix = None
@@ -278,16 +290,6 @@ class StorageManager:
                 self.mount(namespace, adapter)
 
         return unrecognized_adapters if does_return_error_list else None
-
-    def _split_namespace_path(self, object_path: str) -> Tuple[str, str]:
-        namespace = ''
-        namespace_index = object_path.find(':')
-
-        if namespace_index != -1:
-            namespace = object_path[0: namespace_index]
-            object_path = object_path[namespace_index + 1:]
-
-        return (namespace, object_path)
 
     def unmount(self, namespace: str) -> None:
         """unregisters a storage adapter and its root folder"""

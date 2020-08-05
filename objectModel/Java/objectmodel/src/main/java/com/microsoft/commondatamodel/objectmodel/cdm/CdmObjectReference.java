@@ -41,7 +41,7 @@ public interface CdmObjectReference extends CdmObject {
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  default CdmObjectDefinition fetchResolvedReference() {
+  default CdmObject fetchResolvedReference() {
     return fetchResolvedReference(new ResolveOptions(this));
   }
 
@@ -53,5 +53,5 @@ public interface CdmObjectReference extends CdmObject {
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  CdmObjectDefinition fetchResolvedReference(ResolveOptions resOpt);
+  CdmObject fetchResolvedReference(ResolveOptions resOpt);
 }

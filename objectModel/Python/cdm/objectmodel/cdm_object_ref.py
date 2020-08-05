@@ -102,7 +102,8 @@ class CdmObjectReference(CdmObject):
             for at in self.applied_traits:
                 rtsb.merge_traits(at._fetch_resolved_traits(res_opt))
 
-    def _fetch_resolved_reference(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
+    def _fetch_resolved_reference(self, res_opt: 'ResolveOptions') -> 'CdmObject':
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         if self.explicit_reference:
             return self.explicit_reference
 
@@ -141,14 +142,16 @@ class CdmObjectReference(CdmObject):
 
     def create_simple_reference(self, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObjectReference':
         if not res_opt:
-            res_opt = ResolveOptions(self)
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         if self.named_reference:
             return self._copy_ref_object(res_opt, self.named_reference, True)
-        return self._copy_ref_object(res_opt, self._declared_path + self.explicit_reference.get_name(), True)
+        new_declared_path = self._declared_path[0: len(self._declared_path) -
+                                                6] if self._declared_path is not None and self._declared_path.endswith('/(ref)') else self._declared_path
+        return self._copy_ref_object(res_opt, new_declared_path, True)
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmObjectReference'] = None) -> 'CdmObjectReference':
         if not res_opt:
-            res_opt = ResolveOptions(self)
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
         copy = self._copy_ref_object(res_opt, self.named_reference if self.named_reference else self.explicit_reference, self.simple_named_reference, host)
 
@@ -180,10 +183,17 @@ class CdmObjectReference(CdmObject):
 
     def fetch_object_definition(self, res_opt: 'ResolveOptions') -> 'CdmObjectDefinition':
         if res_opt is None:
-            res_opt = ResolveOptions(self)
-        return self._fetch_resolved_reference(res_opt)
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
+        definition = self._fetch_resolved_reference(res_opt)
+        if definition is not None:
+            if isinstance(definition, CdmObjectReference):
+                definition = definition.fetch_resolved_reference()
+        if definition is not None and not isinstance(definition, CdmObjectReference):
+            return definition
+        return None
 
     def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
+        res_opt = res_opt if res_opt is not None else ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
         was_previously_resolving = self.ctx.corpus._is_currently_resolving
         self.ctx.corpus._is_currently_resolving = True
         ret = self._fetch_resolved_traits_internal(res_opt)
@@ -198,7 +208,8 @@ class CdmObjectReference(CdmObject):
         # TODO: check the applied traits comparison
         if self.named_reference and self.applied_traits is None:
             ctx = self.ctx
-            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True)
+            obj_def = self.fetch_object_definition(res_opt)
+            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path if obj_def else None)
             rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
             # store the previous reference symbol set, we will need to add it with
@@ -207,7 +218,6 @@ class CdmObjectReference(CdmObject):
             res_opt._symbol_ref_set = SymbolSet()
 
             if rts_result is None:
-                obj_def = self.fetch_object_definition(res_opt)
                 if obj_def:
                     rts_result = obj_def._fetch_resolved_traits(res_opt)
                     if rts_result:
@@ -217,7 +227,7 @@ class CdmObjectReference(CdmObject):
                     ctx.corpus._register_definition_reference_symbols(obj_def, kind, res_opt._symbol_ref_set)
 
                     # get the new cache tag now that we have the list of docs
-                    cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True)
+                    cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path)
                     if cache_tag:
                         ctx._cache[cache_tag] = rts_result
             else:
@@ -253,10 +263,31 @@ class CdmObjectReference(CdmObject):
             if self.named_reference:
                 path = path_from + self.named_reference
             else:
-                path = path_from
-            self._declared_path = path
+                # when an object is defined inline inside a reference, we need a path to the reference
+                # AND a path to the inline object. The 'correct' way to do this is to name the reference (inline) and the
+                # defined object objectName so you get a path like extendsEntity/(inline)/MyBaseEntity. that way extendsEntity/(inline)
+                # gets you the reference where there might be traits, etc. and extendsEntity/(inline)/MyBaseEntity gets the
+                # entity defintion. HOWEVER! there are situations where (inline) would be ambiguous since there can be more than one
+                # object at the same level, like anywhere there is a collection of references or the collection of attributes.
+                # so we will flip it (also preserves back compat) and make the reference extendsEntity/MyBaseEntity/(inline) so that
+                # extendsEntity/MyBaseEntity gives the reference (like before) and then extendsEntity/MyBaseEntity/(inline) would give
+                # the inline defined object.
+                # ALSO, ALSO!!! since the ability to use a path to request an object (through) a reference is super useful, lets extend
+                # the notion and use the word (object) in the path to mean 'drill from reference to def' This would work then on
+                # ANY reference, not just inline ones
+                if self.explicit_reference:
+                    # ref path is name of defined object
+                    path = path_from + self.explicit_reference.get_name()
+                    # inline object path is a request for the defintion. setting the declaredPath
+                    # keeps the visit on the explcitReference from using the defined object name
+                    # as the path to that object
+                    self.explicit_reference._declared_path = path
+                else:
+                    path = path_from
+            self._declared_path = path + '/(ref)'
+        ref_path = self._declared_path
 
-        if pre_children and pre_children(self, path):
+        if pre_children and pre_children(self, ref_path):
             return False
 
         if self.explicit_reference and not self.named_reference:
@@ -266,10 +297,10 @@ class CdmObjectReference(CdmObject):
         if self._visit_ref(path, pre_children, post_children):
             return True
 
-        if self.applied_traits and self._applied_traits._visit_array('{}/applied_traits/'.format(path), pre_children, post_children):
+        if self.applied_traits and self._applied_traits._visit_array('{}/applied_traits/'.format(ref_path), pre_children, post_children):
             return True
 
-        if post_children and post_children(self, path):
+        if post_children and post_children(self, ref_path):
             return True
 
         return False

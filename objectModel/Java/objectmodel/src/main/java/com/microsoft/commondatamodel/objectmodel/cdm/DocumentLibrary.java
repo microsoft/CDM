@@ -177,7 +177,7 @@ public class DocumentLibrary {
         this.documentLibraryLock.lock();
 
         boolean needToLoad = false;
-        if (!this.docsNotFound.containsKey(docName) && !this.docsCurrentlyLoading.containsKey(docName)) {
+        if (this.docsNotLoaded.containsKey(docName) && !this.docsNotFound.containsKey(docName) && !this.docsCurrentlyLoading.containsKey(docName)) {
             // Set status to loading.
             this.docsNotLoaded.remove(docName);
             this.docsCurrentlyLoading.put(docName, (short) 1);

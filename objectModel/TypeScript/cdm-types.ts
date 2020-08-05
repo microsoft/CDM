@@ -85,3 +85,4 @@ export {
 } from './internal';
 export { AttributeResolutionDirectiveSet } from './Utilities/AttributeResolutionDirectiveSet';
 export * from './Storage';
+export * from './Utilities/StorageUtils';

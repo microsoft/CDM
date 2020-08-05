@@ -1,0 +1,247 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesTable.cdm.json"
+    },
+    {
+      "corpusPath": "RetailTransactionTable.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ChargeOverrideHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChargeCode",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginalAmount",
+          "dataType": "SalesPrice",
+          "isNullable": true,
+          "displayName": "Original Amount",
+          "description": ""
+        },
+        {
+          "name": "OverrideAmount",
+          "dataType": "SalesPrice",
+          "isNullable": true,
+          "displayName": "Override Amount",
+          "description": ""
+        },
+        {
+          "name": "OverrideReason",
+          "dataType": "RetailInfocodeTranslationDescription",
+          "isNullable": true,
+          "displayName": "Override Reason",
+          "description": ""
+        },
+        {
+          "name": "SalesOrderId",
+          "dataType": "SalesIdBase",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionId",
+          "dataType": "RetailTransactionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UserId",
+          "dataType": "HcmPersonnelNumberId",
+          "isNullable": true,
+          "displayName": "(POS) Overriden By",
+          "description": ""
+        },
+        {
+          "name": "OverrideTime",
+          "dataType": "CreatedDateTime",
+          "isNullable": true,
+          "displayName": "Overriden At",
+          "description": ""
+        },
+        {
+          "name": "Channel",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Store",
+          "dataType": "RetailStoreId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Terminal",
+          "dataType": "RetailTerminalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounterFromOrigin",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AxUserId",
+          "dataType": "RetailAxChargeOverrideUserId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MarkupTransRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OverriddenFieldNum",
+          "dataType": "RetailFieldNum",
+          "isNullable": true,
+          "displayName": "Overridden field",
+          "description": ""
+        },
+        {
+          "name": "OriginalValue",
+          "dataType": "RetailChargeOriginalValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OverriddenValue",
+          "dataType": "RetailChargeOverriddenValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "SalesTable"
+          },
+          "name": "Relationship_SalesOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailTransactionTable"
+          },
+          "name": "Relationship_TransactionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": ""
+    },
+    {
+      "dataTypeName": "SalesPrice",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailInfocodeTranslationDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmPersonnelNumberId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CreatedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAxChargeOverrideUserId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailFieldNum",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailChargeOriginalValue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailChargeOverriddenValue",
+      "extendsDataType": "string"
+    }
+  ]
+}

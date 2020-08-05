@@ -1,0 +1,292 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailAsyncCustomer.1.0.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailAsyncAddress",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "OnlineAddressCreated",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccountAsync",
+          "dataType": "RetailAsyncCustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustName",
+          "dataType": "CustName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Street",
+          "dataType": "AddressStreet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "State",
+          "dataType": "LogisticsAddressStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "County",
+          "dataType": "AddressCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Phone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Zip",
+          "dataType": "LogisticsAddressZipCodeId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Email",
+          "dataType": "LogisticsElectronicAddressLocator",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Url",
+          "dataType": "URL",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "City",
+          "dataType": "AddressCity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Country",
+          "dataType": "AddressCountryRegionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StreetNumber",
+          "dataType": "LogisticsAddressStreetNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DistrictName",
+          "dataType": "LogisticsAddressDistrictName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BuildingCompliment",
+          "dataType": "LogisticsAddressBuildingCompliment",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MakePostalAddressPrimary",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Role",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounterFromOrigin",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AddressId",
+          "dataType": "RetailAsyncAddressId",
+          "description": ""
+        },
+        {
+          "name": "LogisticsLocationRoleRecordId",
+          "dataType": "bigInteger",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LogisticsPostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_LogisticsPostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailAsyncCustomer"
+          },
+          "name": "Relationship_RetailAsyncCustomerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail async address"
+    },
+    {
+      "dataTypeName": "RetailAsyncCustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressStreet",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressStateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCountryRegionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Phone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressZipCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsElectronicAddressLocator",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "URL",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AddressCity",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressStreetNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressDistrictName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsAddressBuildingCompliment",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailAsyncAddressId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -330,7 +330,7 @@ public class ManifestPersistence {
         });
       }
 
-      Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits()).join();
+      Utils.processTraitsAndAnnotationsToData(instance.getCtx(), result, instance.getExhibitsTraits());
 
       if (instance.getEntities() != null && instance.getEntities().getCount() > 0) {
         final List<CompletableFuture<Void>> promises = new ArrayList<>();

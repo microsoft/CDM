@@ -40,7 +40,7 @@ corpus.default_namespace = 'local'
 
 # ---------------------------------------------------------------------------------------------
 # Set up a local, remote and adls adapters
-# Fake cdm, normaly use the github adapter
+# Fake cdm, normaly use the CDM Standards adapter
 # Mount it as the 'cdm' device, not the default so must use "cdm:/folder" to get there
 corpus.storage.mount('cdm', LocalAdapter(root=os.path.join(ROOT_PATH, '../../example-public-standards')))
 

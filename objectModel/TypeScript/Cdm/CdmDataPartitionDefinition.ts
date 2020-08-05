@@ -117,7 +117,7 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmDataPartitionDefinition {
         if (!resOpt) {
-            resOpt = new resolveOptions(this);
+            resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
         }
 
         let copy: CdmDataPartitionDefinition;
@@ -180,10 +180,6 @@ export class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
      * @inheritdoc
      */
     public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        if (!resOpt) {
-            resOpt = new resolveOptions(this);
-        }
-
         return false;
     }
 

@@ -1,0 +1,88 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Payments/Group/RetailHardwareProfile.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailKeyMapping",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "mapFrom",
+          "dataType": "RetailMapFrom",
+          "description": ""
+        },
+        {
+          "name": "mapTo",
+          "dataType": "RetailMapTo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "name",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "profileId",
+          "dataType": "RetailHardwareProfileId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailHardwareProfile"
+          },
+          "name": "Relationship_RetailHardwareProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "POS key mappings"
+    },
+    {
+      "dataTypeName": "RetailMapFrom",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailMapTo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailHardwareProfileId",
+      "extendsDataType": "string"
+    }
+  ]
+}

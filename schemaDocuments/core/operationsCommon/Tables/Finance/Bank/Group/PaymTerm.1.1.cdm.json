@@ -1,0 +1,355 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PaymDay.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PaymDueDateLimit_ES.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PaymSched.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCashFlowManagement/Group/CFMPaymentRequestType.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PaymTerm",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdditionalMonths",
+          "dataType": "AdditionalMonths",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Cash",
+          "dataType": "Cash",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CashLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "displayName": "Cash",
+          "description": ""
+        },
+        {
+          "name": "CreditCardCreditCheck",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CreditCardPaymentType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerUpdateDueDate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Due date update",
+          "description": ""
+        },
+        {
+          "name": "CutOffDay",
+          "dataType": "PositiveDays",
+          "isNullable": true,
+          "displayName": "Cutoff day",
+          "description": ""
+        },
+        {
+          "name": "DefaultPaymTerm_PSN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Default terms of payment",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDateLimitGroupId_ES",
+          "dataType": "DueDateLimitGroupId_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfDays",
+          "dataType": "PositiveDays",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NumOfMonths",
+          "dataType": "PositiveMonths",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymDayId",
+          "dataType": "PaymDayId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymMethod",
+          "dataType": "PaymMethod",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymSched",
+          "dataType": "PaymSchedId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymTermId",
+          "dataType": "PaymTermId",
+          "description": ""
+        },
+        {
+          "name": "PostOffsettingAR",
+          "dataType": "PostOffsettingAR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipCarrierAncillaryCharge",
+          "dataType": "ShipCarrierAncillaryCharge",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ShipCarrierCertifiedCheck",
+          "dataType": "ShipCarrierCertifiedCheck",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseDeliveryDateForDueDate_ES",
+          "dataType": "UseDeliveryDateForDueDate_ES",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UseEmplAccount_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "From advance holder",
+          "description": ""
+        },
+        {
+          "name": "VendorUpdateDueDate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Due date update",
+          "description": ""
+        },
+        {
+          "name": "CFMPaymentRequestTypePayment",
+          "dataType": "CFMPaymentRequestTypeRef",
+          "isNullable": true,
+          "displayName": "Payment",
+          "description": ""
+        },
+        {
+          "name": "CFMPaymentRequestTypePrepayment",
+          "dataType": "CFMPaymentRequestTypeRef",
+          "isNullable": true,
+          "displayName": "Prepayment",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_CashLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymDay"
+          },
+          "name": "Relationship_PaymDayRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymDueDateLimit_ES"
+          },
+          "name": "Relationship_PaymDueDateLimit_ESRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PaymSched"
+          },
+          "name": "Relationship_PaymSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestType"
+          },
+          "name": "Relationship_CFMPaymentRequestTypePaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestType"
+          },
+          "name": "Relationship_CFMPaymentRequestTypePrepaymentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Terms of payment"
+    },
+    {
+      "dataTypeName": "AdditionalMonths",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Cash",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PositiveDays",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DueDateLimitGroupId_ES",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PositiveMonths",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PaymDayId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymMethod",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PaymSchedId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PostOffsettingAR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ShipCarrierAncillaryCharge",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ShipCarrierCertifiedCheck",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "UseDeliveryDateForDueDate_ES",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFMPaymentRequestTypeRef",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

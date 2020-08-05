@@ -4,6 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
@@ -19,6 +20,8 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityRef
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTrait;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionDirective;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -199,13 +202,23 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     }
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt) {
     return constructResolvedAttributes(resOpt, null);
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
   @Override
-  ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
+  @Deprecated
+  public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, final CdmAttributeContext under) {
     // find and cache the complete set of attributes
     // attributes definitions originate from and then get modified by subsequent re-definitions from (in this order):
     // an extended entity, traits applied to extended entity, exhibited traits of main entity, the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
@@ -215,8 +228,9 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
     if (this.getExtendsEntity() != null) {
       final CdmObjectReference extRef = this.extendsEntity;
-      final CdmAttributeContext extendsRefUnder;
+      CdmAttributeContext extendsRefUnder = null;
       AttributeContextParameters acpExtEnt = null;
+
       if (under != null) {
         final AttributeContextParameters acpExt = new AttributeContextParameters();
         acpExt.setUnder(under);
@@ -226,53 +240,74 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         acpExt.setIncludeTraits(false);
 
         extendsRefUnder = this.rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpExt);
-        // usually the extended entity is a reference to a name.
-        // it is allowed however to just define the entity inline.
-        String extName = extRef.getNamedReference();
-        if (extName == null)
-        {
-            extName = extRef.getExplicitReference().getName();
+      }
+
+      if (extRef.getExplicitReference() != null && extRef.fetchObjectDefinition(resOpt).getObjectType() == CdmObjectType.ProjectionDef) {
+        // A Projection
+
+        CdmObjectDefinition extRefObjDef = extRef.fetchObjectDefinition(resOpt);
+        if (extendsRefUnder != null) {
+          acpExtEnt = new AttributeContextParameters();
+          acpExtEnt.setUnder(extendsRefUnder);
+          acpExtEnt.setType(CdmAttributeContextType.Projection);
+          acpExtEnt.setName(extRefObjDef.getName());
+          acpExtEnt.setRegarding(extRef);
+          acpExtEnt.setIncludeTraits(false);
         }
-        acpExtEnt = new AttributeContextParameters();
-        acpExtEnt.setUnder(extendsRefUnder);
-        acpExtEnt.setType(CdmAttributeContextType.Entity);
-        acpExtEnt.setName(extName);
-        acpExtEnt.setRegarding(extRef);
-        acpExtEnt.setIncludeTraits(false);
+
+        ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, extRef);
+        CdmProjection projDef = (CdmProjection) extRefObjDef;
+        ProjectionContext projCtx = projDef.constructProjectionContext(projDirective, extendsRefUnder);
+
+        this.rasb.setResolvedAttributeSet(projDef.extractResolvedAttributes(projCtx));
+      } else {
+        // An Entity Reference
+
+        if (extendsRefUnder != null) {
+
+          // usually the extended entity is a reference to a name.
+          // it is allowed however to just define the entity inline.
+          acpExtEnt = new AttributeContextParameters();
+          acpExtEnt.setUnder(extendsRefUnder);
+          acpExtEnt.setType(CdmAttributeContextType.Entity);
+          acpExtEnt.setName(extRef.getNamedReference() != null ? extRef.getNamedReference() : extRef.getExplicitReference().getName());
+          acpExtEnt.setRegarding(extRef);
+          acpExtEnt.setIncludeTraits(false);
+        }
+
+        // save moniker, extended entity may attach a different moniker that we do not
+        // want to pass along to getting this entities attributes
+        final String oldMoniker = resOpt.getFromMoniker();
+
+        this.rasb.mergeAttributes((this.getExtendsEntityRef()).fetchResolvedAttributes(resOpt, acpExtEnt));
+
+        if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
+          Logger.error(
+                  CdmEntityDefinition.class.getSimpleName(),
+                  this.getCtx(),
+                  Logger.format("Maximum number of resolved attributes reached for the entity: {0}.", this.entityName)
+          );
+          return null;
+        }
+
+        if (this.getExtendsEntityResolutionGuidance() != null) {
+          // some guidance was given on how to integrate the base attributes into the set. apply that guidance
+          ResolvedTraitSet rtsBase = this.fetchResolvedTraits(resOpt);
+
+          // this context object holds all of the info about what needs to happen to resolve these attributes.
+          // make a copy and set defaults if needed
+          CdmAttributeResolutionGuidance resGuide =
+                  (CdmAttributeResolutionGuidance) this.getExtendsEntityResolutionGuidance().copy(resOpt);
+          resGuide.updateAttributeDefaults(resGuide.fetchObjectDefinitionName());
+          // holds all the info needed by the resolver code
+          AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuide, rtsBase);
+
+          this.rasb.generateApplierAttributes(arc, false); // true = apply the prepared traits to new atts
+        }
+
+        // reset to the old moniker
+        resOpt.setFromMoniker(oldMoniker);
       }
-
-      // save moniker, extended entity may attach a different moniker that we do not
-      // want to pass along to getting this entities attributes
-      final String oldMoniker = resOpt.getFromMoniker();
-
-      if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
-        Logger.error(
-            CdmEntityDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("Maximum number of resolved attributes reached for the entity: {0}.", this.entityName)
-        );
-        return null;
-      }
-
-      this.rasb.mergeAttributes(this.extendsEntity.fetchResolvedAttributes(resOpt, acpExtEnt));
-
-      if (this.getExtendsEntityResolutionGuidance() != null) {
-        // some guidance was given on how to integrate the base attributes into the set. apply that guidance
-        ResolvedTraitSet rtsBase = this.fetchResolvedTraits(resOpt);
-
-        // this context object holds all of the info about what needs to happen to resolve these attributes.
-        // make a copy and set defaults if needed
-        CdmAttributeResolutionGuidance resGuide =
-            (CdmAttributeResolutionGuidance) this.getExtendsEntityResolutionGuidance().copy(resOpt);
-        resGuide.updateAttributeDefaults(resGuide.fetchObjectDefinitionName());
-        // holds all the info needed by the resolver code
-        AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuide, rtsBase);
-
-        this.rasb.generateApplierAttributes(arc, false); // true = apply the prepared traits to new atts
-      }
-
-      // reset to the old moniker
-      resOpt.setFromMoniker(oldMoniker);
     }
 
     this.rasb.markInherited();
@@ -365,7 +400,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
               .getStorage()
               .createAbsoluteCorpusPath(folder.getAtCorpusPath(), folder),
           fileName);
-      if (targetAtCorpusPath.equalsIgnoreCase(origDoc)) {
+      if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
         Logger.error(
             CdmEntityDefinition.class.getSimpleName(),
             this.getCtx(),
@@ -505,7 +540,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       resOptNew.setWrtDoc(docRes);
       docRes.refreshAsync(resOptNew).join();
       // get a fresh ref
-      entResolved = (CdmEntityDefinition) docRes.fetchObjectFromDocumentPath(newEntName);
+      entResolved = (CdmEntityDefinition) docRes.fetchObjectFromDocumentPath(newEntName, resOptNew);
 
       this.getCtx().getCorpus().resEntMap.put(this.getAtCorpusPath(), entResolved.getAtCorpusPath());
 
@@ -561,8 +596,8 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     });
   }
 
-  private boolean cleanSubGroup(final Object subItem, boolean underGenerated) {
-    if (subItem instanceof CdmObject && ((CdmObject) subItem).getObjectType() == CdmObjectType.AttributeRef) {
+  private boolean cleanSubGroup(final CdmObject subItem, boolean underGenerated) {
+    if (subItem.getObjectType() == CdmObjectType.AttributeRef) {
       return true; // not empty
     }
     if (subItem instanceof CdmAttributeContext) {
@@ -576,7 +611,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       }
       // look at all children, make a set to remove
       final List<CdmAttributeContext> toRemove = new ArrayList<>();
-      for (final Object subSub : ac.getContents()) {
+      for (final CdmObject subSub : ac.getContents()) {
         if (!cleanSubGroup(subSub, underGenerated)) {
           boolean potentialTarget = underGenerated;
 
@@ -935,7 +970,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     this.getCtx().getCorpus().isCurrentlyResolving = true;
 
     if (resOpt == null) {
-      resOpt = new ResolveOptions(this, null); // use null to get the old default directives, although in a few clock ticks we will change this explicitly anyway.
+      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
     // this whole resolved entity ref goo will go away when resolved documents are done.

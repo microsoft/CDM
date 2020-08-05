@@ -9,6 +9,7 @@ from cdm.persistence import PersistenceLayer
 from cdm.utilities import ResolveOptions, CopyOptions, copy_data_utils
 
 from . import utils
+from .projections.projection_persistence import ProjectionPersistence
 from .types import AttributeGroupReference, CdmJsonType, \
     DataTypeReference, EntityReference, PurposeReference, TraitReference
 

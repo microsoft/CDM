@@ -45,7 +45,7 @@ public class InterceptLog implements AutoCloseable {
 
     testLogger = (Logger) LogManager.getLogger(classInterceptLogsFor);
     config.addLoggerAppender(testLogger, appender);
-    testLogger.setLevel(level); // Only capture errors.
+    testLogger.setLevel(level);
     ctx.updateLoggers();
   }
 

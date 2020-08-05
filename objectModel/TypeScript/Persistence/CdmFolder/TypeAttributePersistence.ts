@@ -3,6 +3,7 @@
 
 import { CdmFolder } from '..';
 import {
+    CardinalitySettings,
     CdmCorpusContext,
     cdmDataFormat,
     cdmObjectType,
@@ -33,6 +34,37 @@ export class TypeAttributePersistence {
 
         typeAttribute.purpose = CdmFolder.PurposeReferencePersistence.fromData(ctx, object.purpose);
         typeAttribute.dataType = CdmFolder.DataTypeReferencePersistence.fromData(ctx, object.dataType);
+
+        if (object.cardinality) {
+            let minCardinality: string;
+            if (object.cardinality.minimum) {
+                minCardinality = object.cardinality.minimum;
+            }
+
+            let maxCardinality: string;
+            if (object.cardinality.maximum) {
+                maxCardinality = object.cardinality.maximum;
+            }
+
+            if (!minCardinality || !maxCardinality) {
+                Logger.error(TypeAttributePersistence.name, ctx, 'Both minimum and maximum are required for the Cardinality property.', this.fromData.name);
+            }
+
+            if (!CardinalitySettings.isMinimumValid(minCardinality)) {
+                Logger.error(TypeAttributePersistence.name, ctx, `Invalid minimum cardinality ${minCardinality}.`, this.fromData.name);
+            }
+
+            if (!CardinalitySettings.isMaximumValid(maxCardinality)) {
+                Logger.error(TypeAttributePersistence.name, ctx, `Invalid maximum cardinality ${maxCardinality}.`, this.fromData.name);
+            }
+
+            if (minCardinality && maxCardinality && CardinalitySettings.isMinimumValid(minCardinality) && CardinalitySettings.isMaximumValid(maxCardinality)) {
+                typeAttribute.cardinality = new CardinalitySettings(typeAttribute);
+                typeAttribute.cardinality.minimum = minCardinality;
+                typeAttribute.cardinality.maximum = maxCardinality;
+            }
+        }
+
         typeAttribute.attributeContext =
             CdmFolder.AttributeContextReferencePersistence.fromData(ctx, object.attributeContext);
         utils.addArrayToCdmCollection<CdmTraitReference>(
@@ -47,16 +79,16 @@ export class TypeAttributePersistence {
             t2pMap.updatePropertyValue('isPrimaryKey', entityName + '/(resolvedAttributes)/' + typeAttribute.name);
         }
 
-        typeAttribute.isReadOnly = TypeAttributePersistence.propertyFromDataToBool(object.isReadOnly);
-        typeAttribute.isNullable = TypeAttributePersistence.propertyFromDataToBool(object.isNullable);
-        typeAttribute.sourceName = TypeAttributePersistence.propertyFromDataToString(object.sourceName);
-        typeAttribute.sourceOrdering = TypeAttributePersistence.propertyFromDataToInt(object.sourceOrdering);
-        typeAttribute.displayName = TypeAttributePersistence.propertyFromDataToString(object.displayName);
-        typeAttribute.description = TypeAttributePersistence.propertyFromDataToString(object.description);
-        typeAttribute.valueConstrainedToList = TypeAttributePersistence.propertyFromDataToBool(object.valueConstrainedToList);
-        typeAttribute.maximumLength = TypeAttributePersistence.propertyFromDataToInt(object.maximumLength);
-        typeAttribute.maximumValue = TypeAttributePersistence.propertyFromDataToString(object.maximumValue);
-        typeAttribute.minimumValue = TypeAttributePersistence.propertyFromDataToString(object.minimumValue);
+        typeAttribute.isReadOnly = utils.propertyFromDataToBool(object.isReadOnly);
+        typeAttribute.isNullable = utils.propertyFromDataToBool(object.isNullable);
+        typeAttribute.sourceName = utils.propertyFromDataToString(object.sourceName);
+        typeAttribute.sourceOrdering = utils.propertyFromDataToInt(object.sourceOrdering);
+        typeAttribute.displayName = utils.propertyFromDataToString(object.displayName);
+        typeAttribute.description = utils.propertyFromDataToString(object.description);
+        typeAttribute.valueConstrainedToList = utils.propertyFromDataToBool(object.valueConstrainedToList);
+        typeAttribute.maximumLength = utils.propertyFromDataToInt(object.maximumLength);
+        typeAttribute.maximumValue = utils.propertyFromDataToString(object.maximumValue);
+        typeAttribute.minimumValue = utils.propertyFromDataToString(object.minimumValue);
 
         if (object.dataFormat !== undefined) {
             typeAttribute.dataFormat = TypeAttributePersistence.dataTypeFromData(object.dataFormat);
@@ -126,55 +158,6 @@ export class TypeAttributePersistence {
         }
 
         return object;
-    }
-
-    /**
-     * Converts dynamic input into a string for a property (ints are converted to string)
-     * @param value The value that should be converted to a string.
-     */
-    private static propertyFromDataToString(value): string {
-        if (typeof value === 'string' && value !== '' && value.trim() !== '') {
-            return value;
-        } else if (typeof value === 'number') {
-            return value.toString();
-        }
-
-        return undefined;
-    }
-
-    /**
-     * Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
-     * @param value The value that should be converted to an int.
-     */
-    private static propertyFromDataToInt(value): number {
-        if (typeof value === 'number') {
-            return value;
-        } else if (typeof value === 'string') {
-            const numberValue: number = Number(value);
-            if (!isNaN(numberValue)) {
-                return numberValue;
-            }
-        }
-
-        return undefined;
-    }
-
-    /**
-     * Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
-     * @param value The value that should be converted to a boolean.
-     */
-    private static propertyFromDataToBool(value): boolean {
-        if (typeof value === 'boolean') {
-            return value;
-        } else if (typeof value === 'string') {
-            if (value === 'true' || value === 'True') {
-                return true;
-            } else if (value === 'false' || value === 'False') {
-                return false;
-            }
-        }
-
-        return undefined;
     }
 
     // case insensitive for input

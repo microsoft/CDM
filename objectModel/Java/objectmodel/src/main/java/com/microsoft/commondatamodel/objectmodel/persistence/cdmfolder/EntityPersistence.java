@@ -23,6 +23,9 @@ import java.util.stream.Collectors;
 public class EntityPersistence {
 
   public static CdmEntityDefinition fromData(final CdmCorpusContext ctx, final JsonNode obj) {
+    if (obj == null) {
+      return null;
+    }
 
     final CdmEntityDefinition entity =
         ctx.getCorpus()
@@ -31,14 +34,19 @@ public class EntityPersistence {
                 obj.has("entityName")
                     ? obj.get("entityName").asText()
                     : null);
+
     entity.setExtendsEntity(EntityReferencePersistence.fromData(ctx, obj.get("extendsEntity")));
+
     entity.setExtendsEntityResolutionGuidance(
         AttributeResolutionGuidancePersistence.fromData(
             ctx,
             obj.get("extendsEntityResolutionGuidance")));
 
-    if (obj.get("explanation") != null)
-      entity.setExplanation(obj.get("explanation").asText());
+    entity.setExplanation(Utils.getStringFromJson(obj.get("explanation")));
+    entity.setSourceName(Utils.getStringFromJson(obj.get("sourceName")));
+    entity.setDisplayName(Utils.getStringFromJson(obj.get("displayName")));
+    entity.setDescription(Utils.getStringFromJson(obj.get("description")));
+    entity.setVersion(Utils.getStringFromJson(obj.get("version")));
 
     Utils.addListToCdmCollection(
         entity.getExhibitsTraits(),
@@ -54,13 +62,6 @@ public class EntityPersistence {
     Utils.addListToCdmCollection(
         entity.getAttributes(),
         Utils.createAttributeList(ctx, obj.get("hasAttributes"), entity.getEntityName()));
-    entity.setSourceName(obj.has("sourceName") ? obj.get("sourceName").asText() : null);
-    entity.setDisplayName(obj.has("displayName") ? obj.get("displayName").asText() : null);
-    if (obj.has("description")) {
-        String descriptionText = obj.get("description").asText();
-        entity.setDescription(!StringUtils.isNullOrTrimEmpty(descriptionText) ? descriptionText: null);
-    }
-    entity.setVersion(obj.has("version") ? obj.get("version").asText() : null);
     entity.setCdmSchemas(obj.has("cdmSchemas")
         ? null
         : JMapper.MAP.convertValue(obj.get("cdmSchemas"), new TypeReference<List<String>>() {

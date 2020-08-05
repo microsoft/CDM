@@ -19,6 +19,7 @@ import urllib.parse
 import adal
 import dateutil.parser
 
+from cdm.utilities import StorageUtils
 from cdm.utilities.network.cdm_http_client import CdmHttpClient
 from cdm.storage.network import NetworkAdapter
 
@@ -32,9 +33,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         super().__init__()
 
         # --- internal ---
-        self._adapter_paths = {} # type: Dict[str, str]
+        self._adapter_paths = {}  # type: Dict[str, str]
         self._file_system = None  # type: Optional[str]
-        self._formatted_hostname = None # type: Optional[str]
+        self._formatted_hostname = None  # type: Optional[str]
         self._http_authorization = 'Authorization'
         self._http_client = CdmHttpClient()  # type: CdmHttpClient
         self._http_xms_date = 'x-ms-date'
@@ -47,13 +48,13 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if root and hostname:
             self.root = root  # type: Optional[str]
             self.hostname = hostname  # type: Optional[str]
-            self.tenant = kwargs.get('tenant', None)  # type: Optional[str]
             self.client_id = kwargs.get('client_id', None)  # type: Optional[str]
             self.secret = kwargs.get('secret', None)  # type: Optional[str]
             self.shared_key = kwargs.get('shared_key', None)  # type: Optional[str]
             self.location_hint = None  # type: Optional[str]
 
             # --- internal ---
+            self._tenant = kwargs.get('tenant', None)  # type: Optional[str]
             self._auth_context = adal.AuthenticationContext('https://login.windows.net/' + self.tenant) if self.tenant else None
             self._token_provider = kwargs.get('token_provider', None) # type: Optional[TokenProvider]
 
@@ -74,6 +75,10 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     def root(self, value: str):
         self._root = value
         self._extract_filesystem_and_sub_path(self._root)
+
+    @property
+    def tenant(self) -> str:
+        return self._tenant
 
     def can_read(self) -> bool:
         return True
@@ -98,10 +103,13 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         return None
 
     def create_adapter_path(self, corpus_path: str) -> str:
-        if corpus_path.startswith('//'):
+        if corpus_path and corpus_path.startswith('//'):
             corpus_path = corpus_path[1:]
 
         formatted_corpus_path = self._format_corpus_path(corpus_path)
+        if formatted_corpus_path is None:
+            return None
+
         if formatted_corpus_path in self._adapter_paths:
             return self._adapter_paths[formatted_corpus_path]
         else:
@@ -129,6 +137,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         return None
 
     async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
+        if folder_corpus_path is None:
+            return None
+
         url = 'https://{}/{}'.format(self.hostname, self._file_system)
         directory = urllib.parse.urljoin(self._sub_path, self._format_corpus_path(folder_corpus_path))
         if directory.startswith('/'):
@@ -197,7 +208,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         # Check first for clientId/secret auth.
         if configs_json.get('tenant') and configs_json.get('clientId'):
-            self.tenant = configs_json['tenant']
+            self._tenant = configs_json['tenant']
             self.client_id = configs_json['clientId']
 
             # Check for a secret, we don't really care is it there, but it is nice if it is.
@@ -326,9 +337,13 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._sub_path = '/'.join(prep_root_array[1:])
 
     def _format_corpus_path(self, corpus_path: str) -> str:
-        if corpus_path.startswith('adls:'):
-            corpus_path = corpus_path[5:]
-        elif corpus_path and corpus_path[0] != '/':
+        path_tuple = StorageUtils.split_namespace_path(corpus_path)
+        if not path_tuple:
+            return None
+
+        corpus_path = path_tuple[1]
+
+        if corpus_path and corpus_path[0] != '/':
             corpus_path = '/' + corpus_path
         return corpus_path
 

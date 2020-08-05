@@ -6,8 +6,11 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
+import com.fasterxml.jackson.databind.node.IntNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeItem;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
@@ -287,5 +290,96 @@ public class Utils {
     }
 
     return casted;
+  }
+
+  /**
+   * Converts dynamic input into a string for a property (ints are converted to string)
+   * @param value The value that should be converted to a string.
+   * @return The value converted into a string
+   */
+  static String propertyFromDataToString(final Object value) {
+    final String stringValue = getStringFromJson(value);
+    if (stringValue != null && !stringValue.equals("")) {
+      return stringValue;
+    } 
+
+    final Integer intValue = getIntFromJson(value);
+    if (intValue != null) {
+      return Integer.toString(intValue);
+    }
+
+    return null;
+  }
+
+  /**
+   * Converts dynamic input into an int for a property (numbers represented as strings are converted to int)
+   * @param value The value that should be converted to an Integer.
+   * @return The value converted into an Integer
+   */
+  static Integer propertyFromDataToInt(final Object value) {
+    final Integer intValue = getIntFromJson(value);
+    if (intValue != null) {
+      return intValue;
+    }
+
+    final String stringValue = getStringFromJson(value);
+    if (stringValue != null) {
+      try{
+        return Integer.valueOf(stringValue);
+      } catch (NumberFormatException ex) {
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Converts dynamic input into a boolean for a property (booleans represented as strings are converted to boolean)
+   * @param value The value that should be converted to a boolean.
+   * @return The value converted into a boolean
+   */
+  static Boolean propertyFromDataToBoolean(final Object value) {
+    if (value == null || value instanceof Boolean) {
+      return (Boolean)value;
+    } else if (value instanceof BooleanNode) {
+      return ((BooleanNode)value).asBoolean();
+    }
+
+    final String stringValue = getStringFromJson(value);
+    if (stringValue.equals("True") || stringValue.equals("true")) {
+      return true;
+    } else if (stringValue.equals("False") || stringValue.equals("false")) {
+      return false;
+    }
+
+    return null;
+  }
+
+  /**
+   * Helper function to extract string value from a JsonNode object
+   * @param value A JsonNode that contains a string or a JsonNode object
+   * @return The string value inside of the JsonNode
+   */
+  static String getStringFromJson(final Object value) {
+    if (value instanceof String) {
+      return (String)value;
+    } else if (value instanceof TextNode) {
+      return ((TextNode)value).asText();
+    }
+    return null;
+  }
+
+  /**
+   * Helper function to extract Integer value from a JsonNode object
+   * @param value A JsonNode that contains an Integer or a JsonNode object
+   * @return The Integer value inside of the JsonNode
+   */
+  static Integer getIntFromJson(final Object value) {
+    if (value instanceof Integer) {
+      return (Integer)value;
+    } else if (value instanceof IntNode) {
+      return (Integer)((IntNode)value).intValue();
+    }
+    return null;
   }
 }

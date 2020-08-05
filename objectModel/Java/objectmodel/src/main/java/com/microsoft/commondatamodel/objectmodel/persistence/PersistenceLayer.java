@@ -3,16 +3,10 @@
 
 package com.microsoft.commondatamodel.objectmodel.persistence;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.CdmFolderType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.DocumentPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
-import com.microsoft.commondatamodel.objectmodel.persistence.common.InterfaceToImpl;
 import com.microsoft.commondatamodel.objectmodel.persistence.common.PersistenceType;
 import com.microsoft.commondatamodel.objectmodel.persistence.modeljson.ModelJsonType;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
@@ -31,8 +25,10 @@ import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.microsoft.commondatamodel.objectmodel.utilities.StorageUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 
 // TODO-BQ: This class will need a revisit, it is dealing with way too much reflection.
 public class PersistenceLayer {
@@ -269,7 +265,7 @@ public class PersistenceLayer {
           // especially because the caller has no idea this happened. So... sigh ... instead of
           // returning the new object return the one that was just killed off but make it contain
           // everything the new document loaded.
-          docContent = (CdmDocumentDefinition) docContent.copy(new ResolveOptions(docContainer,  this.ctx.getCorpus().getDefaultResolutionDirectives()), docContainer);
+          docContent = (CdmDocumentDefinition) docContent.copy(new ResolveOptions(docContainer, this.ctx.getCorpus().getDefaultResolutionDirectives()), docContainer);
         }
 
         folder.getDocuments().add((CdmDocumentDefinition)docContent, docName);
@@ -493,7 +489,13 @@ public class PersistenceLayer {
         Class odiDocumentClass = Class.forName("com.microsoft.commondatamodel.objectmodel.persistence.odi.types.Document");
         oldDocumentPath = (String) odiDocumentClass.getMethod("getDocumentPath").invoke(doc);
         String newDocumentPath = oldDocumentPath.substring(0, oldDocumentPath.length() - CdmConstants.ODI_EXTENSION.length()) + newName;
-        adapter.writeAsync(newDocumentPath, JMapper.MAP.writeValueAsString(doc)).join();
+        // Remove namespace from path
+        final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(newDocumentPath);
+        if (pathTuple == null) {
+          Logger.error(PersistenceLayer.class.getSimpleName(), this.ctx, "The object path cannot be null or empty.", "saveOdiDocumentsAsync");
+          return;
+        }
+        adapter.writeAsync(pathTuple.getRight(), JMapper.MAP.writeValueAsString(doc)).join();
 
         // Save linked documents
         List<Object> linkedDocuments = (List<Object>) odiDocumentClass.getMethod("getLinkedDocuments").invoke(doc);

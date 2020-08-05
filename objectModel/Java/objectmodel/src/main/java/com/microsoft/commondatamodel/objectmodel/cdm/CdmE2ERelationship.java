@@ -56,7 +56,11 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
       return true;
     }
 
-    return postChildren != null && postChildren.invoke(this, path);
+    if (postChildren != null && postChildren.invoke(this, path)) {
+      return true;
+    }
+
+    return false;
   }
 
   @Override
@@ -102,10 +106,6 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
 
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
-    if (resOpt == null) {
-      resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    }
-
     return false;
   }
 
@@ -133,7 +133,7 @@ public class CdmE2ERelationship extends CdmObjectDefinitionBase {
   }
 
   /**
-   * 
+   *
    * @param resOpt
    * @param options
    * @return

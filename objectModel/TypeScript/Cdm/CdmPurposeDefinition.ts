@@ -47,7 +47,7 @@ export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             let copy: CdmPurposeDefinition;
@@ -135,7 +135,7 @@ export class CdmPurposeDefinition extends CdmObjectDefinitionBase {
         // let bodyCode = () =>
         {
             if (!resOpt) {
-                resOpt = new resolveOptions(this);
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
             return this.isDerivedFromDef(resOpt, this.extendsPurposeRef(), this.getName(), base);

@@ -24,7 +24,10 @@ if TYPE_CHECKING:
 def rel2_cache_key(rel: 'CdmE2ERelationship') -> str:
     """"standardized way of turning a relationship object into a key for caching
     without using the object itself as a key (could be duplicate relationship objects)"""
-    return '{}|{}|{}|{}'.format(rel.to_entity, rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
+    name_and_pipe = ''
+    if rel.relationship_name:
+        name_and_pipe = '{}|'.format(rel.relationship_name)
+    return '{}{}|{}|{}|{}'.format(name_and_pipe, rel.to_entity, rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
 
 
 class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus):
@@ -103,7 +106,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
         return copy
 
-    async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: str) -> Optional['CdmManifestDefinition']:
+    async def create_resolved_manifest_async(self, new_manifest_name: str, new_entity_document_name_format: str, directives: Optional[AttributeResolutionDirectiveSet] = None) -> Optional['CdmManifestDefinition']:
         """Creates a resolved copy of the manifest.
         new_entity_document_name_format specifies a pattern to use when creating documents for resolved entities.
         The default is "resolved/{n}.cdm.json" to avoid a document name conflict with documents in the same folder as
@@ -152,6 +155,12 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         # create an imports doc with all the necessary resolved entity references and then resolve it
         resolved_manifest = CdmManifestDefinition(self.ctx, new_manifest_name)
 
+        # bring over any imports in this document or other bobbles
+        resolved_manifest.schema = self.schema
+        resolved_manifest.explanation = self.explanation
+        for imp in self.imports:
+            resolved_manifest.imports.append(imp.copy())
+
         # add the new document to the folder
         if resolved_manifest_folder.documents.append(resolved_manifest) is None:
             # when would this happen?
@@ -189,9 +198,8 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 return None
 
             # next create the resolved entity.
-            res_opt = ResolveOptions()
-            res_opt.wrt_doc = ent_def.in_document
-            res_opt.directives = AttributeResolutionDirectiveSet({'normalized', 'referenceOnly'})
+            with_directives = directives if directives is not None else self.ctx.corpus.default_resolution_directives
+            res_opt = ResolveOptions(ent_def.in_document, with_directives.copy())
 
             logger.debug(self._TAG, self.ctx, '    resolving entity {} to document {}'.format(source_entity_full_path, new_document_full_path),
                          self.create_resolved_manifest_async.__name__)
@@ -277,7 +285,7 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         return True
 
     def _localize_rel_to_manifest(self, rel: 'CdmE2ERelationship') -> 'CdmE2ERelationship':
-        rel_copy = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF)  # type: CdmE2ERelationship
+        rel_copy = self.ctx.corpus.make_object(CdmObjectType.E2E_RELATIONSHIP_DEF, rel.relationship_name)  # type: CdmE2ERelationship
         rel_copy.to_entity = self.ctx.corpus.storage.create_relative_corpus_path(rel.to_entity, self)
         rel_copy.from_entity = self.ctx.corpus.storage.create_relative_corpus_path(rel.from_entity, self)
         rel_copy.to_entity_attribute = rel.to_entity_attribute

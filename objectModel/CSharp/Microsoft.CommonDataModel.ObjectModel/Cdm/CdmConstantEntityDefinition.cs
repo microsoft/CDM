@@ -96,17 +96,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
         {
-            if (resOpt == null)
-            {
-                resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            }
-
             return false;
         }
 
         /// <inheritdoc />
         public override string GetName()
         {
+            // make up a name if one not given
+            if (this.ConstantEntityName == null)
+            {
+                if (this.EntityShape != null)
+                    return $"Constant{ this.EntityShape.FetchObjectDefinitionName()}";
+
+                return "ConstantEntity";
+            }
             return this.ConstantEntityName;
         }
 

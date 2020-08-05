@@ -280,16 +280,14 @@ export class ResolvedTraitSet {
                         const pc: ParameterCollection = rt.parameterValues.pc;
                         let av: ArgumentValue[] = rt.parameterValues.values;
                         const idx: number = pc.fetchParameterIndex(paramName);
-                        if (idx !== undefined) {
-                            if (av[idx] === valueWhen) {
-                                // copy the set and make a deep copy of the trait being set
-                                traitSetResult = this.shallowCopyWithException(rt.trait);
-                                // assume these are all still true for this copy
-                                rt = traitSetResult.set[i];
-                                av = rt.parameterValues.values;
-                                av[idx] = ParameterValue.fetchReplacementValue(this.resOpt, av[idx], valueNew, true);
-                                break;
-                            }
+                        if (idx !== undefined && av[idx] === valueWhen) {
+                            // copy the set and make a deep copy of the trait being set
+                            traitSetResult = this.shallowCopyWithException(rt.trait);
+                            // assume these are all still true for this copy
+                            rt = traitSetResult.set[i];
+                            av = rt.parameterValues.values;
+                            av[idx] = ParameterValue.fetchReplacementValue(this.resOpt, av[idx], valueNew, true);
+                            break;
                         }
                     }
                 }

@@ -136,9 +136,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
             var httpRequest = this.SetUpCdmRequest(url, new Dictionary<string, string>() { { "User-Agent", "CDM" } }, HttpMethod.Get);
 
-            var cdmResponse = await base.ExecuteRequest(httpRequest);
-
-            return await cdmResponse.Content.ReadAsStringAsync();
+            using (var cdmResponse = await base.ExecuteRequest(httpRequest))
+            {
+                return await cdmResponse.Content.ReadAsStringAsync();
+            }
         }
 
         /// <inheritdoc />

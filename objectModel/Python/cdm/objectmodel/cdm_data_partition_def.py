@@ -67,7 +67,7 @@ class CdmDataPartitionDefinition(CdmObjectDefinition, CdmFileStatus):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmDataPartitionDefinition'] = None) -> 'CdmDataPartitionDefinition':
         if not res_opt:
-            res_opt = ResolveOptions(wrt_doc=self)
+            res_opt = ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         if not host:
             copy = CdmDataPartitionDefinition(self.ctx, self.name)

@@ -30,6 +30,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         bool SimpleNamedReference { get; set; }
 
         [Obsolete("Only for internal use.")]
-        CdmObjectDefinition FetchResolvedReference(ResolveOptions resOpt = null);
+        CdmObject FetchResolvedReference(ResolveOptions resOpt = null);
     }
 }

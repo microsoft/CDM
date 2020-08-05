@@ -1,19 +1,19 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmAttributeGroupDefinition } from '../../../../Cdm/CdmAttributeGroupDefinition';
-import { CdmAttributeGroupReference } from '../../../../Cdm/CdmAttributeGroupReference';
-import { CdmEntityDefinition } from '../../../../Cdm/CdmEntityDefinition';
-import { CdmTraitReference } from '../../../../Cdm/CdmTraitReference';
-import { cdmDataFormat } from '../../../../Enums/cdmDataFormat';
 import {
+    CdmAttributeGroupDefinition,
+    CdmAttributeGroupReference,
     CdmAttributeReference,
     CdmConstantEntityDefinition,
     CdmCorpusDefinition,
+    cdmDataFormat,
+    CdmEntityDefinition,
     CdmEntityReference,
     cdmObjectType,
     cdmStatusLevel,
     CdmTraitCollection,
+    CdmTraitReference,
     CdmTypeAttributeDefinition,
     resolveContext
 } from '../../../../internal';

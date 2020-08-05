@@ -1,0 +1,277 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailFiscalDocumentLine_BR.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxExemptCodeTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailFiscalDocumentTaxTrans_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Channel",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "FiscalValue",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncludedTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Included tax",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "description": ""
+        },
+        {
+          "name": "ReplicationCounterFromOrigin",
+          "dataType": "RetailReplicationCounter",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RetainedTax",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Retained tax/to recuperate",
+          "description": ""
+        },
+        {
+          "name": "store",
+          "dataType": "RetailStoreId",
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Taxable amount",
+          "description": ""
+        },
+        {
+          "name": "TaxAmountOther",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "Other tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxationCode",
+          "dataType": "TaxationCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxationOrigin",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmount",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Tax base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountExempt",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Exempt base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmountOther",
+          "dataType": "TaxBaseCur",
+          "isNullable": true,
+          "displayName": "Other base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "description": ""
+        },
+        {
+          "name": "TaxValue",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "terminal",
+          "dataType": "RetailTerminalId",
+          "description": ""
+        },
+        {
+          "name": "transactionId",
+          "dataType": "RetailTransactionId",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxReductionPct",
+          "dataType": "TaxValue",
+          "isNullable": true,
+          "displayName": "Tax reduction pct",
+          "description": ""
+        },
+        {
+          "name": "TaxExemptCode",
+          "dataType": "TaxExemptCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentNumber",
+          "dataType": "FiscalDocumentNumber_BR",
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentSeries",
+          "dataType": "FiscalDocumentSeries_BR",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailFiscalDocumentLine_BR"
+          },
+          "name": "Relationship_RetailFiscalDocumentLine_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxExemptCodeTable"
+          },
+          "name": "Relationship_TaxExemptCodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail Fiscal Document Tax Transactions"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailReplicationCounter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailStoreId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxationCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxBaseCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailTerminalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailTransactionId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxExemptCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalDocumentSeries_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

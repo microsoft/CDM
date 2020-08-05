@@ -13,6 +13,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     public class E2ERelationship
     {
         /// <summary>
+        /// Gets or sets name of the relationship.
+        /// </summary>
+        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        public string Name { get; set; }
+
+        /// <summary>
         /// Gets or sets the absolute corpus path of the referencing entity.
         /// </summary>
         [JsonProperty("fromEntity", NullValueHandling = NullValueHandling.Ignore)]

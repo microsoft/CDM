@@ -199,7 +199,7 @@ export class traitToPropertyMap {
      * @internal
      */
     public fetchTraitReference(traitName: string, fromProperty: boolean = false): CdmTraitReference {
-        const traitIndex: number = this.traits.indexOf(traitName, fromProperty);
+        const traitIndex: number = this.traits === undefined ? -1 : this.traits.indexOf(traitName, fromProperty);
 
         return traitIndex !== -1 ? this.traits.allItems[traitIndex] : undefined;
     }
@@ -208,11 +208,7 @@ export class traitToPropertyMap {
      * @internal
      */
     public removeTrait(traitName: string): void {
-        if ((this.host as CdmObjectReference).appliedTraits) {
-            (this.host as CdmObjectReference).appliedTraits.remove(traitName, true);
-        } else if ((this.host as CdmObjectDefinition).exhibitsTraits) {
-            (this.host as CdmObjectDefinition).exhibitsTraits.remove(traitName, true);
-        }
+        this.traits.remove(traitName, true);
     }
 
     /**
@@ -431,17 +427,11 @@ export class traitToPropertyMap {
      */
     public fetchOrCreateTrait(traitName: string, simpleRef: boolean = false): CdmTraitReference {
         let trait: CdmTraitReference = this.fetchTraitReference(traitName, true);
-
         if (!trait) {
             trait = this.ctx.corpus.MakeObject<CdmTraitReference>(cdmObjectType.traitRef, traitName);
-            if ((this.host as CdmObjectReference).appliedTraits) {
-                trait = (this.host as CdmObjectReference).appliedTraits.push(trait);
-            }
-            if ((this.host as CdmObjectDefinition).exhibitsTraits) {
-                trait = (this.host as CdmObjectDefinition).exhibitsTraits.push(trait);
-            }
+            this.traits.push(trait);
+            trait.isFromProperty = true;
         }
-        (trait).isFromProperty = true;
 
         return trait;
     }

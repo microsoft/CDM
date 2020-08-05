@@ -1,0 +1,280 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.1.2.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetBookTable.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "AssetGroup.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "AssetDepreciationGroup_W.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetGroupBookSetup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowableLimitForAccumulatedDepType_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetGroup",
+          "dataType": "AssetGroupId",
+          "description": ""
+        },
+        {
+          "name": "AssetGroupDepreciation_IN",
+          "dataType": "AssetGroupDepreciation_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BookId",
+          "dataType": "AssetBookId",
+          "description": ""
+        },
+        {
+          "name": "Depreciation",
+          "dataType": "AssetDepreciate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationConvention",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationProfile",
+          "dataType": "AssetDepreciationProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationAltProfile",
+          "dataType": "AssetDepreciationAltProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationExtProfile",
+          "dataType": "AssetDepreciationExtProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationAcceleratedProfile_JP",
+          "dataType": "AssetDepreciationAcceleratedProfileId_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LifeTime",
+          "dataType": "AssetLifeTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLife",
+          "dataType": "AssetServiceLife",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLifeMonths_FR",
+          "dataType": "AssetServiceLifeMonths",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLifeYears_FR",
+          "dataType": "AssetServiceLifeYears",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepAllocationPeriods_JP",
+          "dataType": "AssetSpecialDepAllocationPeriods_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepAllocationUnit_JP",
+          "dataType": "AssetSpecialDepAllocationUnit_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SpecialDepAllocationConvention_JP",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuotaUsagePeriod_RU",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Service life by rate",
+          "description": ""
+        },
+        {
+          "name": "DepreciationGroupId",
+          "dataType": "AssetDepreciationGroupId_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DepreciationExtProfile_JP",
+          "dataType": "AssetDepreciationExtProfileId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetGroup"
+          },
+          "name": "Relationship_AssetGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationGroup_W"
+          },
+          "name": "Relationship_AssetDepreciationGroup_WRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset group book setup"
+    },
+    {
+      "dataTypeName": "AssetGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetGroupDepreciation_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciate",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciationProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationAltProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationExtProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepreciationAcceleratedProfileId_JP",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetLifeTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetServiceLife",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetServiceLifeMonths",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetServiceLifeYears",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepAllocationPeriods_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetSpecialDepAllocationUnit_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetDepreciationGroupId_W",
+      "extendsDataType": "string"
+    }
+  ]
+}
