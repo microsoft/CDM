@@ -22,13 +22,12 @@ import java.util.concurrent.CompletableFuture;
 /**
  * An adapter pre-configured to read the standard schema files published by CDM.
  */
-public class CdmStandardsAdapter extends NetworkAdapter implements StorageAdapter {
+public class CdmStandardsAdapter extends NetworkAdapter {
 
   private static final String STANDARDS_ENDPOINT = "https://cdm-schema.microsoft.com";
   static final String TYPE = "cdm-standards";
   
   private String root;
-  private String locationHint;
 
   /**
    * Constructs a CdmStandardsAdapter with default parameters.
@@ -56,8 +55,9 @@ public class CdmStandardsAdapter extends NetworkAdapter implements StorageAdapte
       configObject.set(stringJsonNodeEntry.getKey(), stringJsonNodeEntry.getValue());
     }
 
-    if (this.locationHint != null){
-      configObject.put("locationHint", this.locationHint);
+    String locationHint = getLocationHint(); 
+    if (locationHint != null){
+      configObject.put("locationHint", locationHint);
     }
 
     if (this.root != null){
@@ -72,10 +72,12 @@ public class CdmStandardsAdapter extends NetworkAdapter implements StorageAdapte
     }
   }
 
+  @Override
   public boolean canRead() {
     return true;
   }
 
+  @Override
   public CompletableFuture<String> readAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
       final String path = root + corpusPath;
@@ -89,30 +91,12 @@ public class CdmStandardsAdapter extends NetworkAdapter implements StorageAdapte
     });
   }
 
-  public boolean canWrite() {
-    return false;
-  }
-
-  public CompletableFuture<Void> writeAsync(final String corpusPath, final String data) {
-    throw new UnsupportedOperationException();
-  }
-
-  public void clearCache() {
-    // Left blank intentionally
-  }
-
-  public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
-    return CompletableFuture.completedFuture(OffsetDateTime.now());
-  }
-
-  public CompletableFuture<List<String>> fetchAllFilesAsync(final String currFullPath) {
-    return CompletableFuture.completedFuture(null);
-  }
-
+  @Override
   public String createAdapterPath(final String corpusPath) {
     return getAbsolutePath() + corpusPath;
   }
 
+  @Override
   public String createCorpusPath(final String adapterPath) {
     if (Strings.isNullOrEmpty(adapterPath) || !adapterPath.startsWith(getAbsolutePath())) {
       return null;
@@ -129,18 +113,8 @@ public class CdmStandardsAdapter extends NetworkAdapter implements StorageAdapte
     this.updateNetworkConfig(config);
     final JsonNode configsJson = JMapper.MAP.readTree(config);
 
-    this.locationHint = configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null;
+    setLocationHint(configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null);
     this.root = configsJson.has("root") ? configsJson.get("root").asText() : null;
-  }
-
-  @Override
-  public void setLocationHint(final String locationHint) {
-    this.locationHint = locationHint;
-  }
-
-  @Override
-  public String getLocationHint() {
-    return this.locationHint;
   }
 
   public void setRoot(final String root) {

@@ -152,6 +152,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity, resolvedEntity.AttributeContext);
                 string expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"AttrCtx_{entityName}.txt"));
                 string expectedText = File.ReadAllText(expectedStringFilePath);
+                string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", "ActualOutput", $"AttrCtx_{entityName}.txt"));
+                File.WriteAllText(actualStringFilePath, actualText);
                 Assert.AreEqual(expectedText, actualText);
             }
         }

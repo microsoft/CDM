@@ -35,6 +35,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.io.File;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -119,13 +120,12 @@ public class TypeAttributeTest {
    */
   @Test
   public void testReadingIsPrimaryKey() throws InterruptedException {
-    final String testInputPath = TestHelper.getInputFolderPath(TESTS_SUBPATH, "testReadingIsPrimaryKey");
-    final CdmCorpusDefinition corpus = new CdmCorpusDefinition();
-    corpus.getStorage().mount("local", new LocalAdapter(testInputPath));
-    corpus.getStorage().setDefaultNamespace("local");
+    final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testReadingIsPrimaryKey", null);
 
+    final ResolveOptions resOpt = new ResolveOptions();
+    resOpt.setStrictValidation(true);
     // Read from an unresolved entity schema.
-    final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TeamMembership.cdm.json/TeamMembership").join();
+    final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TeamMembership.cdm.json/TeamMembership", null, resOpt).join();
     final CdmAttributeGroupReference attributeGroupRef = (CdmAttributeGroupReference) entity.getAttributes().get(0);
     final CdmAttributeGroupDefinition attributeGroup = (CdmAttributeGroupDefinition) attributeGroupRef.getExplicitReference();
     final CdmTypeAttributeDefinition typeAttribute = (CdmTypeAttributeDefinition) attributeGroup.getMembers().get(0);
@@ -138,7 +138,7 @@ public class TypeAttributeTest {
     Assert.assertEquals(isIdentifiedBy1.getArguments().get(0).getValue(), "TeamMembership/(resolvedAttributes)/teamMembershipId");
 
     // Read from a resolved entity schema.
-    final CdmEntityDefinition resolvedEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TeamMembership_Resolved.cdm.json/TeamMembership").join();
+    final CdmEntityDefinition resolvedEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TeamMembership_Resolved.cdm.json/TeamMembership", null, resOpt).join();
     final CdmTypeAttributeDefinition resolvedTypeAttribute = (CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0);
 
     Assert.assertTrue(resolvedTypeAttribute.fetchIsPrimaryKey());

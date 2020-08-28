@@ -38,7 +38,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The namespace that will be used when one is not explicitly provided.
         /// </summary>
         public string DefaultNamespace { get; set; }
-
+        
         /// <summary>
         /// Constructs a StorageManager.
         /// </summary>

@@ -29,8 +29,12 @@ from .base import StorageAdapterBase
 class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     """Azure Data Lake Storage Gen2 storage adapter"""
 
+    ADLS_DEFAULT_TIMEOUT = 9000
+
     def __init__(self, hostname: Optional[str] = None, root: Optional[str] = None, **kwargs) -> None:
         super().__init__()
+        super(NetworkAdapter, self).__init__()
+        super(StorageAdapterBase, self).__init__()
 
         # --- internal ---
         self._adapter_paths = {}  # type: Dict[str, str]
@@ -44,6 +48,8 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._type = 'adls'
         self._root = None
         self._sub_path = None  # type: Optional[str]
+        self._file_modified_time_cache = {}  # type: Dict[str, datetime]
+        self.timeout = self.ADLS_DEFAULT_TIMEOUT # type: int
 
         if root and hostname:
             self.root = root  # type: Optional[str]
@@ -51,7 +57,6 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             self.client_id = kwargs.get('client_id', None)  # type: Optional[str]
             self.secret = kwargs.get('secret', None)  # type: Optional[str]
             self.shared_key = kwargs.get('shared_key', None)  # type: Optional[str]
-            self.location_hint = None  # type: Optional[str]
 
             # --- internal ---
             self._tenant = kwargs.get('tenant', None)  # type: Optional[str]
@@ -87,20 +92,30 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         return True
 
     def clear_cache(self) -> None:
-        pass
+        self._file_modified_time_cache.clear()
 
     async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime]:
-        adapter_path = self.create_adapter_path(corpus_path)
-        request = self._build_request(adapter_path, 'HEAD')
+        cachedValue = None
+        if self._is_cache_enabled:
+             cachedValue = self._file_modified_time_cache.get(corpus_path)
 
-        try:
-            cdm_response = await self._http_client._send_async(request, self.wait_time_callback)
-            if cdm_response.status_code == HTTPStatus.OK:
-                return dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
-        except Exception:
-            pass
+        if cachedValue is not None:
+            return cachedValue        
+        else:
+            adapter_path = self.create_adapter_path(corpus_path)
+            request = self._build_request(adapter_path, 'HEAD')
 
-        return None
+            try:
+                cdm_response = await self._http_client._send_async(request, self.wait_time_callback)
+                if cdm_response.status_code == HTTPStatus.OK:
+                    lastTime = dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
+                    if lastTime is not None and self._is_cache_enabled:
+                        self._file_modified_time_cache[corpus_path] = lastTime
+                    return lastTime
+            except Exception:
+                pass
+
+            return None
 
     def create_adapter_path(self, corpus_path: str) -> str:
         if corpus_path and corpus_path.startswith('//'):
@@ -141,7 +156,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             return None
 
         url = 'https://{}/{}'.format(self.hostname, self._file_system)
-        directory = urllib.parse.urljoin(self._sub_path, self._format_corpus_path(folder_corpus_path))
+        directory = self._sub_path + self._format_corpus_path(folder_corpus_path)
         if directory.startswith('/'):
             directory = directory[1:]
 
@@ -157,7 +172,13 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
                     name = path['name']  # type: str
                     name_without_sub_path = name[len(self._sub_path) + 1:] if self._sub_path and name.startswith(self._sub_path) else name
 
-                    results.append(self._format_corpus_path(name_without_sub_path))
+                    filepath = self._format_corpus_path(name_without_sub_path)
+                    results.append(filepath)
+
+                    lastTimeString = path.get('lastModified')
+                    if lastTimeString is not None and self._is_cache_enabled:
+                        self._file_modified_time_cache[filepath] = dateutil.parser.parse(lastTimeString)
+
             return results
 
         return None

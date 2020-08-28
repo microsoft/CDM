@@ -5,6 +5,8 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -180,29 +182,42 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
-      final String fullPath =
-          this.getCtx()
-              .getCorpus()
-              .getStorage()
-              .createAbsoluteCorpusPath(this.getEntityPath(), this.getInDocument());
-      final OffsetDateTime modifiedTime = getCtx()
-          .getCorpus()
-          .computeLastModifiedTimeAsync(fullPath, this)
-          .join();
+      StorageAdapter storageAdapterInterface = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace()); 
+      StorageAdapterBase.CacheContext cacheContext = null;
+      if(storageAdapterInterface instanceof StorageAdapterBase) {
+        cacheContext = ((StorageAdapterBase)storageAdapterInterface).createFileQueryCacheContext();
+      }      
+      try {
+        final String fullPath =
+            this.getCtx()
+                .getCorpus()
+                .getStorage()
+                .createAbsoluteCorpusPath(this.getEntityPath(), this.getInDocument());
+        final OffsetDateTime modifiedTime = getCtx()
+            .getCorpus()
+            .computeLastModifiedTimeAsync(fullPath, this)
+            .join();
 
-      for (final CdmDataPartitionDefinition partition : getDataPartitions()) {
-          partition.fileStatusCheckAsync().join();
-      }
-
-      for (final CdmDataPartitionPatternDefinition pattern : getDataPartitionPatterns()) {
+        for (final CdmDataPartitionPatternDefinition pattern : getDataPartitionPatterns()) {
           pattern.fileStatusCheckAsync().join();
+        }
+
+        for (final CdmDataPartitionDefinition partition : getDataPartitions()) {
+            partition.fileStatusCheckAsync().join();
+        }
+
+        // update modified times
+        setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+        setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
+
+        reportMostRecentTimeAsync(getLastFileModifiedTime()).join();
       }
-
-      // update modified times
-      setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
-      setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
-
-      reportMostRecentTimeAsync(getLastFileModifiedTime()).join();
+      finally {
+        if(cacheContext != null)
+        {
+          cacheContext.dispose();
+        }
+      }
     });
   }
 

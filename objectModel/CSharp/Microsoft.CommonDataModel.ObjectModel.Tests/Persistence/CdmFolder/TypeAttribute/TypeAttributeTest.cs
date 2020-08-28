@@ -61,14 +61,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         [TestMethod]
         public async Task TestReadingIsPrimaryKey()
         {
-            var testInputPath = TestHelper.GetInputFolderPath(testsSubpath, "TestReadingIsPrimaryKey");
-            CdmCorpusDefinition corpus = new CdmCorpusDefinition();
-            corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-            corpus.Storage.Mount("local", new LocalAdapter(testInputPath));
-            corpus.Storage.DefaultNamespace = "local";
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestReadingIsPrimaryKey");
 
+            var resOpt = new ResolveOptions()
+            {
+                StrictValidation = true
+            };
             // Read from an unresolved entity schema.
-            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TeamMembership.cdm.json/TeamMembership");
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TeamMembership.cdm.json/TeamMembership", null , resOpt);
             CdmAttributeGroupReference attributeGroupRef = (CdmAttributeGroupReference)entity.Attributes[0];
             CdmAttributeGroupDefinition attributeGroup = (CdmAttributeGroupDefinition)attributeGroupRef.ExplicitReference;
             CdmTypeAttributeDefinition typeAttribute = (CdmTypeAttributeDefinition)attributeGroup.Members[0];
@@ -81,7 +81,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.AreEqual("TeamMembership/(resolvedAttributes)/teamMembershipId", isIdentifiedBy1.Arguments[0].Value);
 
             // Read from a resolved entity schema.
-            CdmEntityDefinition resolvedEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TeamMembership_Resolved.cdm.json/TeamMembership");
+            CdmEntityDefinition resolvedEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TeamMembership_Resolved.cdm.json/TeamMembership", null, resOpt);
             CdmTypeAttributeDefinition resolvedTypeAttribute = (CdmTypeAttributeDefinition)resolvedEntity.Attributes[0];
 
             Assert.IsTrue((bool)resolvedTypeAttribute.IsPrimaryKey);

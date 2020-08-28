@@ -175,7 +175,7 @@ public class CalculateRelationshipTest {
     private static String getRelationshipStrings(CdmCollection<CdmE2ERelationship> relationships) {
         StringBuilder bldr = new StringBuilder();
         for (CdmE2ERelationship rel : relationships) {
-            bldr.append(MessageFormat.format("{0}|{1}|{2}|{3}|{4}", rel.getName(), rel.getToEntity(), rel.getToEntityAttribute(), rel.getFromEntity(), rel.getFromEntityAttribute()));
+            bldr.append(MessageFormat.format("{0}|{1}|{2}|{3}|{4}", !StringUtils.isNullOrTrimEmpty(rel.getName()) ? rel.getName() : "", rel.getToEntity(), rel.getToEntityAttribute(), rel.getFromEntity(), rel.getFromEntityAttribute()));
             bldr.append(endOfLine);
         }
         return bldr.toString();

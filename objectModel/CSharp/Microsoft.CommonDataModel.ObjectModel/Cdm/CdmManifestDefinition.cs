@@ -10,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using Microsoft.CommonDataModel.ObjectModel.Storage;
 
     public class CdmManifestDefinition : CdmDocumentDefinition, CdmObjectDefinition, CdmFileStatus
     {
@@ -466,24 +467,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public async Task FileStatusCheckAsync()
         {
-            DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromObject(this);
-
-            foreach (var entity in this.Entities)
-                await entity.FileStatusCheckAsync();
-
-            foreach (var subManifest in this.SubManifests)
-                await subManifest.FileStatusCheckAsync();
-
-            this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
-            if (this.LastFileModifiedTime == null)
-                this.LastFileModifiedTime = this._fileSystemModifiedTime;
-
-            // reload the manifest if it has been updated in the file system
-            if (modifiedTime != this._fileSystemModifiedTime)
+            using ((this.Ctx.Corpus.Storage.FetchAdapter(this.InDocument.Namespace) as StorageAdapterBase)?.CreateFileQueryCacheContext())
             {
-                await this.Reload();
-                this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
-                this._fileSystemModifiedTime = this.LastFileModifiedTime;
+                DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromObject(this);
+
+                foreach (var entity in this.Entities)
+                    await entity.FileStatusCheckAsync();
+
+                foreach (var subManifest in this.SubManifests)
+                    await subManifest.FileStatusCheckAsync();
+
+                this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
+                if (this.LastFileModifiedTime == null)
+                    this.LastFileModifiedTime = this._fileSystemModifiedTime;
+
+                // reload the manifest if it has been updated in the file system
+                if (modifiedTime != this._fileSystemModifiedTime)
+                {
+                    await this.Reload();
+                    this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
+                    this._fileSystemModifiedTime = this.LastFileModifiedTime;
+                }
             }
         }
 

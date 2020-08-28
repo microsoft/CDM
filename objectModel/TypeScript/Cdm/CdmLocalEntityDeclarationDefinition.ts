@@ -17,6 +17,7 @@ import {
     resolveOptions,
     VisitCallback
 } from '../internal';
+import {StorageAdapterBase , StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
 
 /**
@@ -187,21 +188,31 @@ export class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
-        const modifiedTime: Date = await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
 
-        for (const partition of this.dataPartitions) {
-            await partition.fileStatusCheckAsync();
+        let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
+        let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
+        try {
+            const fullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.entityPath, this.inDocument);
+            const modifiedTime: Date = await this.ctx.corpus.computeLastModifiedTimeAsync(fullPath, this);
+
+            for (const pattern of this.dataPartitionPatterns) {
+                await pattern.fileStatusCheckAsync();
+            }
+
+            for (const partition of this.dataPartitions) {
+                await partition.fileStatusCheckAsync();
+            }
+
+            this.lastFileStatusCheckTime = new Date();
+            this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
+
+            await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
         }
-
-        for (const pattern of this.dataPartitionPatterns) {
-            await pattern.fileStatusCheckAsync();
+        finally {
+            if(cacheContext != null) {
+                cacheContext.dispose()
+            }
         }
-
-        this.lastFileStatusCheckTime = new Date();
-        this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
-
-        await this.reportMostRecentTimeAsync(this.lastFileModifiedTime);
     }
 
     /**

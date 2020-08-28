@@ -9,11 +9,12 @@ import { StorageUtils } from '../Utilities/StorageUtils';
 import { NetworkAdapter } from './NetworkAdapter';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
 
-export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
+export class ADLSAdapter extends NetworkAdapter {
     /**
      * @internal
      */
     public readonly type: string = 'adls';
+    private readonly adlsDefaultTimeout: number = 8000;
 
     public get root(): string {
         return this._root;
@@ -38,7 +39,6 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     public clientId: string;
-    public locationHint: string;
     public secret: string;
     public sharedKey: string;
 
@@ -63,6 +63,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     private formattedHostname: string = '';
     private subPath: string = '';
     private tokenResponse: adal.TokenResponse;
+    private fileModifiedTimeCache: Map<string, Date> = new Map<string, Date>();
 
     // The ADLS constructor for clientId/secret authentication.
     constructor(
@@ -88,6 +89,8 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
                 this.tokenProvider = tenantOrSharedKeyorTokenProvider;
             }
         }
+
+        this.timeout = this.adlsDefaultTimeout;
 
         this.adapterPaths = new Map();
         this.httpClient = new CdmHttpClient();
@@ -173,21 +176,37 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        const adapterPath: string = this.createAdapterPath(corpusPath);
+        const cachedValue: Date = this.isCacheEnabled() ? this.fileModifiedTimeCache.get(corpusPath) : undefined;
+        if(cachedValue) {
+            return cachedValue;
+        }
+        else {        
 
-        const request: CdmHttpRequest = await this.buildRequest(adapterPath, 'HEAD');
+            const adapterPath: string = this.createAdapterPath(corpusPath);
 
-        try {
-            const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
+            const request: CdmHttpRequest = await this.buildRequest(adapterPath, 'HEAD');
 
-            if (cdmResponse.statusCode === 200) {
-                // http nodejs lib returns lowercase headers.
-                // tslint:disable-next-line: no-backbone-get-set-outside-model
-                return new Date(cdmResponse.responseHeaders.get('last-modified'));
+            try {
+                const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
+
+                if (cdmResponse.statusCode === 200) {
+                    // http nodejs lib returns lowercase headers.
+                    // tslint:disable-next-line: no-backbone-get-set-outside-model
+                    const lastTimeString: string = cdmResponse.responseHeaders.get('last-modified');
+                    if(lastTimeString)
+                    {
+                        const lastTime:Date = new Date();
+                        if(this.isCacheEnabled())
+                        {
+                            this.fileModifiedTimeCache.set(corpusPath, lastTime);
+                        }
+                        return lastTime;
+                    }
+                }
+            } catch (e) {
+                // We don't have standard logger here, so use one from system diagnostics
+                console.debug(`ADLS file not found, skipping last modified time calculation for it. Exception: ${e}`);
             }
-        } catch (e) {
-            // We don't have standard logger here, so use one from system diagnostics
-            console.debug(`ADLS file not found, skipping last modified time calculation for it. Exception: ${e}`);
         }
     }
 
@@ -197,7 +216,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
         }
 
         const url: string = `https://${this.hostname}/${this.fileSystem}`;
-        const directory: string = `${this.subPath}/${folderCorpusPath}`;
+        const directory: string = `${this.subPath}${folderCorpusPath}`;
         const request: CdmHttpRequest = await this.buildRequest(`${url}?directory=${directory}&recursive=True&resource=filesystem`, 'GET');
         const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
 
@@ -214,7 +233,13 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
                     const name: string = jObject.name;
                     const nameWithoutSubPath: string = this.subPath.length > 0 && name.startsWith(this.subPath) ?
                         name.substring(this.subPath.length + 1) : name;
-                    result.push(this.formatCorpusPath(nameWithoutSubPath));
+                    const path: string = this.formatCorpusPath(nameWithoutSubPath);
+                    result.push(path);
+
+                    if(jObject.lastModified && this.isCacheEnabled())
+                    {
+                        this.fileModifiedTimeCache.set(path, new Date(jObject.lastModified));
+                    }
                 }
             }
 
@@ -223,7 +248,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
     }
 
     public clearCache(): void {
-        return;
+        this.fileModifiedTimeCache.clear();
     }
 
     public fetchConfig(): string {
@@ -375,7 +400,7 @@ export class ADLSAdapter extends NetworkAdapter implements StorageAdapter {
 
         // Append canonicalized queries.
         if (uri.search) {
-            const queryParameters: string[] = uri.search.split('&');
+            const queryParameters: string[] = (uri.search.startsWith('?') ? uri.search.substr(1) : uri.search).split('&');
 
             for (const parameter of queryParameters) {
                 const keyValuePair: string[] = parameter.split('=');

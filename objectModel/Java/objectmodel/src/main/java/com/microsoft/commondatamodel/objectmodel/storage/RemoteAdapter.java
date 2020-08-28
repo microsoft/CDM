@@ -21,14 +21,13 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
+public class RemoteAdapter extends NetworkAdapter {
   static final String TYPE = "remote";
 
   private final Map<String, String> sources = new LinkedHashMap<>();
   private final Map<String, Map<String, String>> sourcesById = new LinkedHashMap<>();
 
   private Map<String, String> hosts;
-  private String locationHint;
 
   public RemoteAdapter() {
     this(null);
@@ -45,6 +44,7 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
     this.httpClient = new CdmHttpClient();
   }
 
+  @Override
   public boolean canRead() {
     return true;
   }
@@ -70,8 +70,9 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
       configObject.set(stringJsonNodeEntry.getKey(), stringJsonNodeEntry.getValue());
     }
 
-    if (this.locationHint != null) {
-      configObject.put("locationHint", this.locationHint);
+    String locationHint = this.getLocationHint();
+    if (locationHint != null) {
+      configObject.put("locationHint", locationHint);
     }
 
     resultConfig.put("config", configObject);
@@ -82,24 +83,13 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
     }
   }
 
-  public boolean canWrite() {
-    return false;
-  }
-
+  @Override
   public void clearCache() {
     sources.clear();
     sourcesById.clear();
   }
 
-  public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
-    return CompletableFuture.completedFuture(OffsetDateTime.now());
-  }
-
-  public CompletableFuture<List<String>> fetchAllFilesAsync(final String currFullPath) {
-    // TODO
-    return CompletableFuture.completedFuture(null);
-  }
-
+  @Override
   public String createAdapterPath(final String corpusPath) throws StorageAdapterException {
     final Map<String, String> urlConfig = getUrlConfig(corpusPath);
     final String protocol = urlConfig.get("protocol");
@@ -109,6 +99,7 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
     return protocol + "://" + host + path;
   }
 
+  @Override
   public String createCorpusPath(final String adapterPath) {
     if (StringUtils.isNullOrTrimEmpty(adapterPath)) {
       return null;
@@ -143,10 +134,6 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
         throw new StorageAdapterException("Could not read remote content at path: " + corpusPath, e);
       }
     });
-  }
-
-  public CompletableFuture<Void> writeAsync(final String corpusPath, final String data) {
-    throw new UnsupportedOperationException();
   }
 
   private Map<String, String> getOrRegisterHostInfo(final String adapterPath) {
@@ -202,7 +189,7 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
     this.updateNetworkConfig(config);
     final JsonNode configsJson = JMapper.MAP.readTree(config);
     if (configsJson.has("locationHint")) {
-      this.locationHint = configsJson.get("locationHint").asText();
+      this.setLocationHint(configsJson.get("locationHint").asText());
     }
 
     if (configsJson.has("hosts") && configsJson.get("hosts").isArray()) {
@@ -247,16 +234,6 @@ public class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
     result.put("path", path);
 
     return result;
-  }
-
-  @Override
-  public String getLocationHint() {
-    return locationHint;
-  }
-
-  @Override
-  public void setLocationHint(final String locationHint) {
-    this.locationHint = locationHint;
   }
 
   public Map<String, String> getHosts() {

@@ -14,8 +14,8 @@ class LocalAdapter(StorageAdapterBase):
     """Local file system storage adapter"""
 
     def __init__(self, root: Optional[str] = '') -> None:
-        self.root = root  # type: str
-        self.location_hint = None  # type: Optional[str]
+        super().__init__()
+        self.root = root  # type: str        
 
         # --- internal ---
         self._full_root = os.path.abspath(self.root)
@@ -61,9 +61,6 @@ class LocalAdapter(StorageAdapterBase):
 
         # Signal that we did not recognize path as one for self adapter.
         return None
-
-    def clear_cache(self) -> None:
-        pass
 
     async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime]:
         adapter_path = self.create_adapter_path(corpus_path)

@@ -63,6 +63,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         [Obsolete("Only for internal use")]
         public string Namespace { get; set; }
         internal bool ImportsIndexed { get; set; }
+        internal bool DeclarationsIndexed { get; set; }
         internal bool CurrentlyIndexing { get; set; }
         internal bool IsValid { get; set; }
         internal DateTimeOffset? _fileSystemModifiedTime { get; set; }
@@ -296,7 +297,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             // in current document?
             if (this.InternalDeclarations.ContainsKey(objectPath))
+            {
                 return this.InternalDeclarations[objectPath];
+            }
             else
             {
                 // this might be a request for an object def drill through of a reference.
@@ -384,7 +387,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     return this.Folder.AtCorpusPath + this.Name;
                 }
             }
-        }
+        }        
 
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
@@ -415,7 +418,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             ResolveOptions resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            if (await this.IndexIfNeeded(resOpt) == false)
+            if (!await this.IndexIfNeeded(resOpt))
             {
                 Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to index document prior to save '{this.Name}'", nameof(SaveAsAsync));
                 return false;
@@ -442,30 +445,40 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
+            this.DeclarationsIndexed = false;
             this.NeedsIndexing = true;
             this.IsValid = true;
 
-            return await this.IndexIfNeeded(resOpt);
+            return await this.IndexIfNeeded(resOpt, true);
         }
 
-        internal async Task<bool> IndexIfNeeded(ResolveOptions resOpt)
+        internal async Task<bool> IndexIfNeeded(ResolveOptions resOpt, bool strictValidation = false)
         {
-            if (this.NeedsIndexing)
+            if (this.NeedsIndexing && !this.CurrentlyIndexing)
             {
                 if (this.Folder == null)
                 {
                     Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Document '{this.Name}' is not in a folder", nameof(IndexIfNeeded));
                     return false;
                 }
-                // make the corpus internal machinery pay attention to this document for this call.
+
                 var corpus = this.Folder.Corpus;
 
-                await corpus.ResolveImportsAsync(this, resOpt);
+                // if the strictValidation is specified by the user in the ResolveOptions that value has precedence.
+                if (resOpt.StrictValidation != null)
+                {
+                    strictValidation = (bool)resOpt.StrictValidation;
+                }
 
-                // maintain actual current doc
+                if (strictValidation)
+                {
+                    await corpus.ResolveImportsAsync(this, resOpt);
+                }
+
+                // make the corpus internal machinery pay attention to this document for this call.
                 corpus.documentLibrary.MarkDocumentForIndexing(this);
 
-                return corpus.IndexDocuments(resOpt);
+                return corpus.IndexDocuments(resOpt, strictValidation);
             }
 
             return true;
@@ -606,7 +619,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal async Task Reload()
         {
-            await (this.Ctx.Corpus as CdmCorpusDefinition)._FetchObjectAsync(this.AtCorpusPath, null, true);
+            await this.Ctx.Corpus.FetchObjectAsync<CdmDocumentDefinition>(this.AtCorpusPath, null, null, true);
         }
 
         virtual internal async Task<bool> SaveLinkedDocuments(CopyOptions options = null)

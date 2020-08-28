@@ -67,7 +67,7 @@ namespace search_partition_pattern
 
             // Create a data partition pattern
             var dataPartitionPattern = cdmCorpus.MakeObject<CdmDataPartitionPatternDefinition>(CdmObjectType.DataPartitionPatternDef, "sampleDataPartitionPattern", false);
-            dataPartitionPattern.RootLocation = "local:dataFiles";
+            dataPartitionPattern.RootLocation = "dataFiles";
             dataPartitionPattern.RegularExpression = "/(\\d{4})/(\\w+)/cohort(\\d+)\\.csv$";
             // the line below demonstrates using "GlobPattern" which can be used instead of "RegularExpression"
             // dataPartitionPattern.GlobPattern = "/*/cohort*.csv";

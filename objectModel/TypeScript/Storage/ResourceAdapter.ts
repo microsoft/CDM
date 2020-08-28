@@ -4,7 +4,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
-import { StorageAdapter } from './StorageAdapter';
+import { StorageAdapterBase } from './StorageAdapterBase';
 
 let readFile;
 
@@ -12,13 +12,14 @@ if (fs.readFile) {
     readFile = util.promisify(fs.readFile);
 }
 
-export class ResourceAdapter implements StorageAdapter {
+export class ResourceAdapter extends StorageAdapterBase {
     private readonly ROOT: string = 'Microsoft.CommonDataModel.ObjectModel.Resources';
     private resourcesPath: string;
 
     public locationHint: string;
 
     constructor() {
+        super();
         this.resourcesPath = path.join(__dirname, '..', 'Resources');
     }
 
@@ -40,14 +41,6 @@ export class ResourceAdapter implements StorageAdapter {
         }
     }
 
-    public canWrite(): boolean {
-        return false;
-    }
-
-    public async writeAsync(corpusPath: string, data: string): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
     public createAdapterPath(corpusPath: string): string {
         if (!corpusPath) {
             return undefined;
@@ -62,25 +55,5 @@ export class ResourceAdapter implements StorageAdapter {
         }
 
         return adapterPath.substring(this.ROOT.length);
-    }
-
-    public clearCache(): void {
-        return;
-    }
-
-    public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        return new Date();
-    }
-
-    public async fetchAllFilesAsync(folderCorpusPath: string): Promise<string[]> {
-        return undefined;
-    }
-
-    public fetchConfig(): string {
-        throw new Error('Method not implemented.');
-    }
-
-    public updateConfig(config: string): void {
-        throw new Error('Method not implemented.');
     }
 }

@@ -13,13 +13,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using System.Threading.Tasks;
 
     [Obsolete("Please use the CdmStandardsAdapter instead.")]
-    public class GithubAdapter : NetworkAdapter, StorageAdapter
+    public class GithubAdapter : NetworkAdapter
     {
         private static string ghHost = "raw.githubusercontent.com";
         private static string ghPath = "/Microsoft/CDM/master/schemaDocuments";
-
-        /// <inheritdoc />
-        public string LocationHint { get; set; }
 
         internal const string Type = "github";
 
@@ -37,15 +34,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public bool CanRead()
+        public override bool CanRead()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task<string> ReadAsync(string corpusPath)
+        public override async Task<string> ReadAsync(string corpusPath)
         {
-            var httpRequest = this.SetUpCdmRequest($"{ghPath}{corpusPath}", 
+            var httpRequest = this.SetUpCdmRequest($"{ghPath}{corpusPath}",
                 new Dictionary<string, string>() { { "User-Agent", "CDM" } }, HttpMethod.Get);
 
             using (var cdmResponse = await base.ExecuteRequest(httpRequest))
@@ -53,46 +50,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 return await cdmResponse.Content.ReadAsStringAsync();
             }
         }
-
+        
         /// <inheritdoc />
-        public bool CanWrite()
-        {
-            return false;
-        }
-
-        /// <inheritdoc />
-        public Task WriteAsync(string corpusPath, string data)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritdoc />
-        public void ClearCache()
-        {
-            
-        }
-
-        /// <inheritdoc />
-        public Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
-        {
-            return Task.FromResult<DateTimeOffset?>(DateTimeOffset.UtcNow);
-        }
-
-        /// <inheritdoc />
-        public async Task<List<string>> FetchAllFilesAsync(string currFullPath)
-        {
-            // TODO
-            return null;
-        }
-
-        /// <inheritdoc />
-        public string CreateAdapterPath(string corpusPath)
+        public override string CreateAdapterPath(string corpusPath)
         {
             return $"{GithubAdapter.GhRawRoot()}{corpusPath}";
         }
 
         /// <inheritdoc />
-        public string CreateCorpusPath(string adapterPath)
+        public override string CreateCorpusPath(string adapterPath)
         {
             string ghRoot = GithubAdapter.GhRawRoot();
             // might not be an adapterPath that we understand. check that first 
@@ -103,9 +69,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
             return null;
         }
-
+        
         /// <inheritdoc />
-        public string FetchConfig()
+        public override string FetchConfig()
         {
             var resultConfig = new JObject
             {
@@ -129,7 +95,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public void UpdateConfig(string config)
+        public override void UpdateConfig(string config)
         {
             if (config == null)
             {

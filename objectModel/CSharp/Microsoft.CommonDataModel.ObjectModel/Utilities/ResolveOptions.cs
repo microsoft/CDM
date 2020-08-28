@@ -11,6 +11,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public CdmDocumentDefinition WrtDoc { get; set; } // the document to use as a point of reference when resolving relative paths and symbol names.
         public AttributeResolutionDirectiveSet Directives { get; set; } // a set of string flags that direct how attribute resolving traits behave
         public bool ShallowValidation { get; set; } // when enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead
+        public bool StrictValidation { get; set; } = true; // when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
         public int? ResolvedAttributeLimit { get; set; } = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
         internal int? RelationshipDepth { get; set; } // tracks the number of entity attributes that have been travered when collecting resolved traits or attributes. prevents run away loops
         internal bool SaveResolutionsOnCopy { get; set; } // when references get copied, use previous resolution results if available (for use with copy method)

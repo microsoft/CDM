@@ -180,7 +180,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     this.DeclaredPath = path;
                 }
             }
-            //trackVisits(path);
 
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
@@ -188,7 +187,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (this.ExtendsTrait.Visit(path + "/extendsTrait/", preChildren, postChildren))
                     return true;
             if (this.Parameters != null)
-                if (this._hasParameters.VisitList(path + "/hasParameters/", preChildren, postChildren))
+                if (this.Parameters.VisitList(path + "/hasParameters/", preChildren, postChildren))
                     return true;
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;

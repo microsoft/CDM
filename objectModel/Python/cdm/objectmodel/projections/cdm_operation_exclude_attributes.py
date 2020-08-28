@@ -3,13 +3,16 @@
 
 from typing import Optional, TYPE_CHECKING, List
 
-from cdm.enums import CdmObjectType, CdmOperationType
-from cdm.utilities import logger, Errors
+from cdm.enums import CdmObjectType, CdmOperationType, CdmAttributeContextType
+from cdm.objectmodel import CdmAttributeContext
+from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
+from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
+from cdm.utilities import logger, Errors, AttributeContextParameters
 
 from .cdm_operation_base import CdmOperationBase
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext
+    from cdm.objectmodel import CdmCorpusContext
     from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
     from cdm.resolvedmodel.projections.projection_context import ProjectionContext
     from cdm.utilities import VisitCallback, ResolveOptions
@@ -21,7 +24,7 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
     def __init__(self, ctx: 'CdmCorpusContext') -> None:
         super().__init__(ctx)
 
-        self.exclude_attributes = None  # type: List[str]
+        self.exclude_attributes = []  # type: List[str]
         self.type = CdmOperationType.EXCLUDE_ATTRIBUTES  # type: CdmOperationType
 
         # --- internal ---
@@ -45,7 +48,7 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
     def validate(self) -> bool:
         missing_fields = []
 
-        if not bool(self.exclude_attributes):
+        if self.exclude_attributes is None:
             missing_fields.append('exclude_attributes')
 
         if len(missing_fields) > 0:
@@ -70,6 +73,51 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
 
         return False
 
-    def _append_projection_attribute_state(self, proj_ctx: 'ProjectionContext', proj_attr_state_set: 'ProjectionAttributeStateSet', attr_ctx: 'CdmAttributeContext') -> 'ProjectionAttributeStateSet':
-        logger.error(self._TAG, self.ctx, 'Projection operation not implemented yet.', '_append_projection_attribute_state')
-        return None
+    def _append_projection_attribute_state(self, proj_ctx: 'ProjectionContext', proj_output_set: 'ProjectionAttributeStateSet', attr_ctx: 'CdmAttributeContext') -> 'ProjectionAttributeStateSet':
+        # Create a new attribute context for the operation
+        attr_ctx_op_exclude_attrs_param = AttributeContextParameters()
+        attr_ctx_op_exclude_attrs_param._under = attr_ctx
+        attr_ctx_op_exclude_attrs_param._type = CdmAttributeContextType.OPERATION_EXCLUDE_ATTRIBUTES
+        attr_ctx_op_exclude_attrs_param._name = 'operation/index{}/operationExcludeAttributes'.format(self._index)
+        attr_ctx_op_exclude_attrs = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_op_exclude_attrs_param)
+
+        # Get the top-level attribute names of the attributes to exclude
+        # We use the top-level names because the exclude list may contain a previous name our current resolved attributes had
+        top_level_exclude_attribute_names = ProjectionResolutionCommonUtil._get_top_list(proj_ctx, self.exclude_attributes)
+
+        # Iterate through all the projection attribute states generated from the source's resolved attributes
+        # Each projection attribute state contains a resolved attribute that it is corresponding to
+        for current_PAS in proj_ctx._current_attribute_state_set._values:
+            # Check if the current projection attribute state's resolved attribute is in the list of attributes to exclude
+            # If this attribute is not in the exclude list, then we are including it in the output
+            if current_PAS._current_resolved_attribute.resolved_name not in top_level_exclude_attribute_names:
+                # Create a new attribute context for the attribute that we are including
+                attr_ctx_added_attr_param = AttributeContextParameters()
+                attr_ctx_added_attr_param._under = attr_ctx
+                attr_ctx_added_attr_param._type = CdmAttributeContextType.ATTRIBUTE_DEFINITION
+                attr_ctx_added_attr_param._name = current_PAS._current_resolved_attribute.resolved_name
+                attr_ctx_added_attr = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_added_attr_param)
+
+                # Create a projection attribute state for the included attribute
+                # We only create projection attribute states for attributes that are not in the exclude list
+                # Add the current projection attribute state as the previous state of the new projection attribute state
+                new_PAS = ProjectionAttributeState(proj_output_set._ctx)
+                new_PAS._current_resolved_attribute = current_PAS._current_resolved_attribute
+                new_PAS._previous_state_list = [current_PAS]
+
+                proj_output_set._add(new_PAS)
+            else:
+                # The current projection attribute state's resolved attribute is in the exclude list
+
+                # Get the attribute name the way it appears in the exclude list
+                # For our attribute context, we want to use the attribute name the attribute has in the exclude list rather than its current name
+                exclude_attribute_name = top_level_exclude_attribute_names[current_PAS._current_resolved_attribute.resolved_name]
+
+                # Create a new attribute context for the excluded attribute
+                attr_ctx_excluded_attr_param = AttributeContextParameters()
+                attr_ctx_excluded_attr_param._under = attr_ctx_op_exclude_attrs
+                attr_ctx_excluded_attr_param._type = CdmAttributeContextType.ATTRIBUTE_DEFINITION
+                attr_ctx_excluded_attr_param._name = exclude_attribute_name
+                attr_ctx_excluded_attr = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_excluded_attr_param)
+
+        return proj_output_set

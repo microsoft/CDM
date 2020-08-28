@@ -15,7 +15,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     using System.Text;
     using System.Threading.Tasks;
 
-    public class MockADLSAdapter : NetworkAdapter, StorageAdapter
+    public class MockADLSAdapter : NetworkAdapter
     {
         private AuthenticationContext Context;
 
@@ -107,13 +107,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         }
 
         /// <inheritdoc />
-        public bool CanRead()
+        public override bool CanRead()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task<string> ReadAsync(string corpusPath)
+        public override async Task<string> ReadAsync(string corpusPath)
         {
             String url = this.CreateAdapterPath(corpusPath);
             var request = await this.BuildRequest(url, HttpMethod.Get);
@@ -124,13 +124,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         }
 
         /// <inheritdoc />
-        public bool CanWrite()
+        public override bool CanWrite()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task WriteAsync(string corpusPath, string data)
+        public override async Task WriteAsync(string corpusPath, string data)
         {
             if (ensurePath($"{this.Root}{corpusPath}") == false)
             {
@@ -153,13 +153,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         }
 
         /// <inheritdoc />
-        public string CreateAdapterPath(string corpusPath)
+        public override string CreateAdapterPath(string corpusPath)
         {
             return $"https://{this.Hostname}{this.Root}{corpusPath}";
         }
 
         /// <inheritdoc />
-        public string CreateCorpusPath(string adapterPath)
+        public override string CreateCorpusPath(string adapterPath)
         {
             var prefix = $"https://{this.Hostname}{this.Root}";
             if (!string.IsNullOrEmpty(adapterPath) && adapterPath.StartsWith(prefix))
@@ -169,27 +169,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             return null;
         }
-
-        /// <inheritdoc />
-        public void ClearCache()
-        {
-            return;
-        }
-
-        /// <inheritdoc />
-        public async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
-        {
-            // TODO
-            return null;
-        }
-
-        /// <inheritdoc />
-        public async Task<List<string>> FetchAllFilesAsync(string currFullPath)
-        {
-            // TODO
-            return null;
-        }
-
+        
         /// <summary>
         /// Returns the headers with the applied shared key.
         /// </summary>
@@ -336,16 +316,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
 
             // Folders are only of virtual kind in Azure Storage
             return true;
-        }
-
-        string StorageAdapter.FetchConfig()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void UpdateConfig(string configs)
-        {
-            throw new NotImplementedException();
         }
     }
 }

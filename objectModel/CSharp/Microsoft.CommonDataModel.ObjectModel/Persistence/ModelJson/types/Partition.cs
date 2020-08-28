@@ -14,7 +14,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types
     public class Partition : DataObject
     {
         [JsonProperty("refreshTime", NullValueHandling = NullValueHandling.Ignore)]
-        public DateTime? RefreshTime { get; set; }
+        public DateTimeOffset? RefreshTime { get; set; }
 
         [JsonProperty("location")]
         public string Location { get; set; }

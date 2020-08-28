@@ -411,7 +411,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       }
 
       // if the wrtDoc needs to be indexed (like it was just modified) then do that first
-      if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt).join()) {
+      if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt, true).join()) {
         Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "Couldn't index source document.", "createResolvedEntityAsync");
         return null;
       }

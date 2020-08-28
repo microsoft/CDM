@@ -1,10 +1,12 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import asyncio
 from collections import defaultdict
 from datetime import datetime
+import nest_asyncio
 from typing import cast, Callable, Dict, List, Optional, Set, TypeVar, Union, TYPE_CHECKING, Tuple
+import warnings
 
 from cdm.storage import StorageManager
 from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmStatusLevel, CdmValidationStep
@@ -82,7 +84,6 @@ class CdmCorpusDefinition:
         self._outgoing_relationships = defaultdict(list)  # type: Dict[CdmObjectDefinition, List[CdmE2ERelationship]]
         self._definition_reference_symbols = {}  # type: Dict[str, SymbolSet]
         self._empty_rts = {}  # type: Dict[str, ResolvedTraitSet]
-        self._object_cache = {}  # type: Dict[str, CdmObject]
         self._document_library = DocumentLibrary()
         self._storage = StorageManager(self)
         self._persistence = PersistenceLayer(self)
@@ -259,7 +260,7 @@ class CdmCorpusDefinition:
 
     async def create_root_manifest_async(self, corpus_path: str) -> Optional['CdmManifestDefinition']:
         if self._is_path_manifest_document(corpus_path):
-            self._root_manifest = await self._fetch_object_async(corpus_path)
+            self._root_manifest = await self.fetch_object_async(corpus_path)
             return self._root_manifest
         return None
 
@@ -548,44 +549,41 @@ class CdmCorpusDefinition:
 
         return None
 
-    async def fetch_object_async(self, object_path: str, relative_object: Optional['CdmObject'] = None, shallow_validation: Optional[bool] = False, force_reload: Optional[bool] = False) -> 'CdmObject':
-        """gets an object by the path from the Corpus."""
-        return await self._fetch_object_async(object_path, relative_object=relative_object, force_reload=force_reload, shallow_validation=shallow_validation)
-
-    def _index_documents(self, res_opt: 'ResolveOptions') -> bool:
+    def _index_documents(self, res_opt: 'ResolveOptions', strict_validation: bool) -> bool:
         docs_not_indexed = self._document_library._list_docs_not_indexed()  # type: Set[CdmDocumentDefinition]
+
         if not docs_not_indexed:
             return True
 
-        # index any imports
         for doc in docs_not_indexed:
-            if doc._needs_indexing:
+            if not doc._declarations_indexed:
                 logger.debug(self._TAG, self.ctx, 'index start: {}'.format(doc.at_corpus_path), self._index_documents.__name__)
                 doc._clear_caches()
-                doc._get_import_priorities()
 
         # check basic integrity
         for doc in docs_not_indexed:
-            if doc._needs_indexing:
-                doc.is_valid = True  # assume valid unless this fails
-                if not self._check_object_integrity(doc):
-                    doc.is_valid = False
+            if not doc._declarations_indexed:
+                doc._is_valid = self._check_object_integrity(doc)
 
         # declare definitions of objects in this doc
         for doc in docs_not_indexed:
-            if doc._needs_indexing and doc.is_valid:
+            if not doc._declarations_indexed and doc._is_valid:
                 self._declare_object_definitions(doc, '')
 
-        # make sure we can find everything that is named by reference
-        for doc in docs_not_indexed:
-            if doc._needs_indexing and doc.is_valid:
-                res_opt_local = CdmObject._copy_resolve_options(res_opt)
-                res_opt_local.wrt_doc = doc
-                self._resolve_object_definitions(res_opt_local, doc)
+        if strict_validation:
+            # index any imports
+            for doc in docs_not_indexed:
+                doc._get_import_priorities()
 
-        # now resolve any trait arguments that are type object
-        for doc in docs_not_indexed:
-            if doc._needs_indexing:
+            # make sure we can find everything that is named by reference
+            for doc in docs_not_indexed:
+                if doc._is_valid:
+                    res_opt_local = CdmObject._copy_resolve_options(res_opt)
+                    res_opt_local.wrt_doc = doc
+                    self._resolve_object_definitions(res_opt_local, doc)
+
+            # now resolve any trait arguments that are type object
+            for doc in docs_not_indexed:
                 res_opt_local = CdmObject._copy_resolve_options(res_opt)
                 res_opt_local.wrt_doc = doc
                 self._resolve_trait_arguments(res_opt_local, doc)
@@ -593,9 +591,8 @@ class CdmCorpusDefinition:
         # finish up
         # make a copy to avoid error iterating over set that is modified in loop
         for doc in docs_not_indexed.copy():
-            if doc._needs_indexing:
-                logger.debug(self._TAG, self.ctx, 'index finish: {}'.format(doc.at_corpus_path), self._index_documents.__name__)
-                self._finish_document_resolve(doc)
+            logger.debug(self._TAG, self.ctx, 'index finish: {}'.format(doc.at_corpus_path), self._index_documents.__name__)
+            self._finish_document_resolve(doc, strict_validation)
 
         return True
 
@@ -710,26 +707,29 @@ class CdmCorpusDefinition:
 
         return rts
 
-    def _finish_document_resolve(self, doc: 'CdmDocumentDetinition') -> None:
+    def _finish_document_resolve(self, doc: 'CdmDocumentDetinition', strict_validation: bool) -> None:
+        was_indexed_previously = doc._declarations_indexed
+
         doc._currently_indexing = False
-        doc._imports_indexed = True
-        doc._needs_indexing = False
+        doc._imports_indexed = doc._imports_indexed or not strict_validation
+        doc._declarations_indexed = True
+        doc._needs_indexing = not strict_validation
         self._document_library._mark_document_as_indexed(doc)
 
-        if doc.is_valid:
+        # if the document declarations were indexed previously, do not log again.
+        if not was_indexed_previously and doc._is_valid:
             for definition in doc.definitions:
                 if definition.object_type == CdmObjectType.ENTITY_DEF:
                     logger.debug(self._TAG, self.ctx, 'indexed entity: {}'.format(definition.at_corpus_path))
 
     def _finish_resolve(self) -> None:
-        ctx = self.ctx
         #  cleanup references
         logger.debug(self._TAG, self.ctx, 'finishing...')
 
         # turn elevated traits back on, they are off by default and should work fully now that everything is resolved
         all_documents = self._document_library._list_all_documents()
         for fd in all_documents:
-            self._finish_document_resolve(fd[1])
+            self._finish_document_resolve(fd[1], False)
 
     async def _load_folder_or_document(self, object_path: str, force_reload: Optional[bool] = False, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmContainerDefinition']:
         if not object_path:
@@ -839,6 +839,7 @@ class CdmCorpusDefinition:
 
     def _remove_document_objects(self, folder: 'CdmFolderDefinition', doc_def: 'CdmDocumentDefinition') -> None:
         doc = cast('CdmDocumentDefinition', doc_def)
+        # the field defintion_wrt_tag has been removed
         # Don't worry about defintion_wrt_tag because it uses the doc ID that won't get re-used in this session unless
         # there are more than 4 billion objects every symbol defined in this document is pointing at the document, so
         # remove from cache. Also remove the list of docs that it depends on.
@@ -849,8 +850,6 @@ class CdmCorpusDefinition:
         self._document_library._remove_document_path(path, folder, doc)
 
     def _remove_object_definitions(self, doc: CdmDocumentDefinition) -> None:
-        ctx = self.ctx
-
         def visit_callback(i_object: 'CdmObject', path: str) -> bool:
             if path.find('(unspecified)') > 0:
                 return True
@@ -880,6 +879,8 @@ class CdmCorpusDefinition:
 
     async def resolve_references_and_validate_async(self, stage: 'CdmValidationStep',
                                                     stage_through: 'CdmValidationStep', res_opt: Optional['ResolveOptions'] = None) -> 'CdmValidationStep':
+        warnings.warn('This function is likely to be removed soon.', DeprecationWarning)
+
         # use the provided directives or use the current default
         directives = None  # type: AttributeResolutionDirectiveSet
         if res_opt is not None:
@@ -1086,6 +1087,11 @@ class CdmCorpusDefinition:
 
         wrt_doc = res_opt.wrt_doc
 
+        loop = asyncio.get_event_loop()
+        nest_asyncio.apply(loop)
+        if not loop.run_until_complete(wrt_doc._index_if_needed(res_opt, True)):
+            logger.error(self._TAG, self.ctx, 'Couldn\'t index source document.', '_resolve_symbol_reference')
+
         # get the array of documents where the symbol is defined
         symbol_docs_result = self._docs_for_symbol(res_opt, wrt_doc, from_doc, symbol_def)
         doc_best = symbol_docs_result.doc_best
@@ -1246,6 +1252,7 @@ class CdmCorpusDefinition:
         self._definition_reference_symbols.pop(key, None)
 
     def visit(self, path_from: str, pre_children: 'VisitCallback', post_children: 'VisitCallback') -> bool:
+        warnings.warn('Function deprecated', DeprecationWarning)
         return False
 
     async def _compute_last_modified_time_async(self, corpus_path: str, obj: Optional['CdmObject'] = None) -> datetime:
@@ -1333,9 +1340,13 @@ class CdmCorpusDefinition:
 
         return CdmObjectType.ERROR
 
-    async def _fetch_object_async(self, object_path: str, relative_object: Optional['CdmObject'] = None,
-                                  force_reload: Optional[bool] = False, shallow_validation: Optional[bool] = False) -> 'CdmObject':
+    async def fetch_object_async(self, object_path: str, relative_object: Optional['CdmObject'] = None, shallow_validation: Optional[bool] = False, \
+                                 force_reload: Optional[bool] = False, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObject':
+        """gets an object by the path from the Corpus."""
         from cdm.persistence import PersistenceLayer
+
+        if res_opt is None:
+            res_opt = ResolveOptions()
 
         object_path = self.storage.create_absolute_corpus_path(object_path, relative_object)
         document_path = object_path
@@ -1346,21 +1357,21 @@ class CdmCorpusDefinition:
             document_name_index += len(PersistenceLayer.CDM_EXTENSION)
             document_path = object_path[0: document_name_index]
 
-        logger.debug(self._TAG, self.ctx, 'request object: {}'.format(object_path), self._fetch_object_async.__name__)
+        logger.debug(self._TAG, self.ctx, 'request object: {}'.format(object_path), self.fetch_object_async.__name__)
         obj = await self._load_folder_or_document(document_path, force_reload)
 
         if not obj:
             return
 
-        res_opt = ResolveOptions(wrt_doc=obj, directives=AttributeResolutionDirectiveSet())
         # get imports and index each document that is loaded
         if isinstance(obj, CdmDocumentDefinition):
-            res_opt.shallow_validation = shallow_validation
-            if not await obj._index_if_needed(res_opt):
+            if res_opt.shallow_validation is None:
+                res_opt.shallow_validation = shallow_validation
+            if not await obj._index_if_needed(res_opt, False):
                 return None
-            if not obj.is_valid:
+            if not obj._is_valid:
                 logger.error(self._TAG, self.ctx, 'The requested path: {} involves a document that failed validation'.format(
-                    object_path), self._fetch_object_async.__name__)
+                    object_path), self.fetch_object_async.__name__)
                 return None
 
         if document_path == object_path:
@@ -1376,7 +1387,7 @@ class CdmCorpusDefinition:
         result = obj._fetch_object_from_document_path(remaining_object_path, res_opt)
         if not result:
             logger.error(self._TAG, self.ctx, 'Could not find symbol "{}" in document [{}]'.format(
-                remaining_object_path, obj.at_corpus_path), self._fetch_object_async.__name__)
+                remaining_object_path, obj.at_corpus_path), self.fetch_object_async.__name__)
 
         return result
 

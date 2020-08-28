@@ -65,22 +65,27 @@ class CdmLocalEntityDeclarationDefinition(CdmEntityDeclarationDefinition):
             new_partition.arguments = args.copy()
             self.data_partitions.append(new_partition)
 
-    async def file_status_check_async(self) -> None:
+    async def file_status_check_async(self) -> None:        
         """Check the modified time for this object and any children."""
-        full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
-        modified_time = await self.ctx.corpus._compute_last_modified_time_async(full_path, self)
 
-        for partition in self.data_partitions:
-            await partition.file_status_check_async()
+        context = self.ctx.corpus.storage.fetch_adapter(self.in_document.namespace).create_file_query_cache_context()
+        try:
+            full_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.entity_path, self.in_document)
+            modified_time = await self.ctx.corpus._compute_last_modified_time_async(full_path, self)
 
-        for pattern in self.data_partition_patterns:
-            await pattern.file_status_check_async()
+            for pattern in self.data_partition_patterns:
+                await pattern.file_status_check_async()
 
-        self.last_file_status_check_time = datetime.now(timezone.utc)
-        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
+            for partition in self.data_partitions:
+                await partition.file_status_check_async()
 
-        await self.report_most_recent_time_async(self.last_file_modified_time)
+            self.last_file_status_check_time = datetime.now(timezone.utc)
+            self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
 
+            await self.report_most_recent_time_async(self.last_file_modified_time)
+        finally:
+            context.dispose()
+        
     def get_name(self) -> str:
         return self.entity_name
 

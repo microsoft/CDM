@@ -98,8 +98,11 @@ public class DocumentLibrary {
         this.documentLibraryLock.lock();
 
         List<CdmDocumentDefinition> list = new ArrayList<>();
+        // gets all the documents that needs indexing and set the currentlyIndexing flag to true.
         for (Map.Entry<CdmDocumentDefinition, Short> entry : this.docsNotIndexed.entrySet()) {
-            list.add(entry.getKey());
+            CdmDocumentDefinition doc = entry.getKey();
+            doc.setCurrentlyIndexing(true);
+            list.add(doc);
         }
 
         this.documentLibraryLock.unlock();

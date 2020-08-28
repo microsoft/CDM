@@ -211,12 +211,12 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
                         let aValue: ArgumentValue;
 
                         let iArg: number = 0;
-                        for (const a of this.arguments) {
-                            paramFound = params.resolveParameter(iArg, a.getName());
-                            a.resolvedParameter = paramFound;
-                            aValue = a.value;
+                        for (const argument of this.arguments) {
+                            paramFound = params.resolveParameter(iArg, argument.getName());
+                            argument.resolvedParameter = paramFound;
+                            aValue = argument.value;
                             aValue = ctx.corpus.constTypeCheck(resOpt, this.inDocument, paramFound, aValue);
-                            a.value = aValue;
+                            argument.value = aValue;
                             iArg++;
                         }
                     }

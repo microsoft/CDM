@@ -38,13 +38,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var localAdapter = this.CreateStorageAdapterForTest("TestEntityWithMissingNestedImportsAsync");
             var cdmCorpus = this.CreateTestCorpus(localAdapter);
 
-            var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/missingNestedImport.cdm.json");
+            var resOpt = new ResolveOptions()
+            {
+                StrictValidation = true
+            };
+            var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/missingNestedImport.cdm.json", null, resOpt);
             Assert.IsNotNull(doc);
             Assert.AreEqual(1, doc.Imports.Count);
-            var firstImport = (doc.Imports[0] as CdmImport).Document;
+            var firstImport = doc.Imports[0].Document;
             Assert.AreEqual(1, firstImport.Imports.Count);
             Assert.AreEqual("notMissing.cdm.json", firstImport.Name);
-            var nestedImport = (firstImport.Imports[0] as CdmImport).Document;
+            var nestedImport = firstImport.Imports[0].Document;
             Assert.IsNull(nestedImport);
         }
 
@@ -54,7 +58,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var localAdapter = this.CreateStorageAdapterForTest("TestEntityWithSameImportsAsync");
             var cdmCorpus = this.CreateTestCorpus(localAdapter);
 
-            var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/multipleImports.cdm.json");
+            var resOpt = new ResolveOptions()
+            {
+                StrictValidation = true
+            };
+            var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/multipleImports.cdm.json", null, resOpt);
             Assert.IsNotNull(doc);
             Assert.AreEqual(2, doc.Imports.Count);
             var firstImport = (doc.Imports[0] as CdmImport).Document;
@@ -94,7 +102,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var localAdapter = this.CreateStorageAdapterForTest("TestLoadingSameImportsAsync");
             var cdmCorpus = this.CreateTestCorpus(localAdapter);
 
-            CdmDocumentDefinition mainDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("mainEntity.cdm.json");
+            var resOpt = new ResolveOptions()
+            {
+                StrictValidation = true
+            };
+
+            CdmDocumentDefinition mainDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("mainEntity.cdm.json", null, resOpt);
             Assert.IsNotNull(mainDoc);
             Assert.AreEqual(2, mainDoc.Imports.Count);
 
@@ -119,7 +132,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var localAdapter = this.CreateStorageAdapterForTest("TestLoadingSameMissingImportsAsync");
             var cdmCorpus = this.CreateTestCorpus(localAdapter);
 
-            CdmDocumentDefinition mainDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("mainEntity.cdm.json");
+            var resOpt = new ResolveOptions()
+            {
+                StrictValidation = true
+            };
+
+            CdmDocumentDefinition mainDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("mainEntity.cdm.json", null, resOpt);
             Assert.IsNotNull(mainDoc);
             Assert.AreEqual(2, mainDoc.Imports.Count);
 
@@ -143,8 +161,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var localAdapter = this.CreateStorageAdapterForTest("TestLoadingAlreadyPresentImportsAsync");
             var cdmCorpus = this.CreateTestCorpus(localAdapter);
 
+            var resOpt = new ResolveOptions()
+            {
+                StrictValidation = true
+            };
+
             // load the first doc
-            CdmDocumentDefinition mainDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("mainEntity.cdm.json");
+            CdmDocumentDefinition mainDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("mainEntity.cdm.json", null, resOpt);
             Assert.IsNotNull(mainDoc);
             Assert.AreEqual(1, mainDoc.Imports.Count);
 
@@ -153,7 +176,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             // now load the second doc, which uses the same import
             // the import should not be loaded again, it should be the same object
-            CdmDocumentDefinition secondDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("secondEntity.cdm.json");
+            CdmDocumentDefinition secondDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("secondEntity.cdm.json", null, resOpt);
             Assert.IsNotNull(secondDoc);
             Assert.AreEqual(1, secondDoc.Imports.Count);
 

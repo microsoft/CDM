@@ -9,6 +9,7 @@ from cdm.storage import StorageAdapterBase
 
 class MockStorageAdapter(StorageAdapterBase):
     def __init__(self, target: Dict[str, str]):
+        super().__init__()
         self.target = target  # type:  Dict[str, str]
 
     def can_write(self) -> bool:
@@ -23,20 +24,3 @@ class MockStorageAdapter(StorageAdapterBase):
             corpus_path = corpus_path[corpus_path.find(':') + 1:]
         return corpus_path
 
-    def can_read(self) -> bool:
-        raise NotImplementedError()
-
-    def clear_cache(self) -> None:
-        raise NotImplementedError()
-
-    async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
-        raise NotImplementedError()
-
-    def create_corpus_path(self, adapter_path: str) -> Optional[str]:
-        raise NotImplementedError()
-
-    async def read_async(self, corpus_path: str) -> str:
-        raise NotImplementedError()
-
-    async def compute_last_modified_time_async(self, adapter_path: str) -> Optional[datetime]:
-        raise NotImplementedError()

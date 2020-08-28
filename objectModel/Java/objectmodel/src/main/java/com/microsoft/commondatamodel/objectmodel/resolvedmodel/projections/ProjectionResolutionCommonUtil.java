@@ -138,22 +138,32 @@ public final class ProjectionResolutionCommonUtil {
     }
 
     /**
-     * Get top node of the projection state tree for non-polymorphic scenarios
+     * Gets the names of the top-level nodes in the projection state tree (for non-polymorphic scenarios) that match a set of attribute names
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      */
     @Deprecated
-    public static List<ProjectionAttributeState> getTop(ProjectionContext projCtx, String attrName) {
-        SearchResult result = new SearchResult();
-        for (ProjectionAttributeState top : projCtx.getCurrentAttributeStateSet().getValues()) {
-            SearchStructure st = new SearchStructure();
-            st = SearchStructure.buildStructure(top, top, attrName, st, false, 0);
-            if (st != null && st.getResult().getFoundFlag() == true) {
-                result = st.getResult();
+    public static Map<String, String> getTopList(ProjectionContext projCtx, List<String> attrNames) {
+        // This dictionary contains a mapping from the top-level name of an attribute
+        // to the attribute name the top-level name was derived from (the name contained in the given list)
+        Map<String, String> topLevelAttributeNames = new HashMap<>();
+
+        // Iterate through each attribute name in the list and search for their top-level names
+        for (String attrName : attrNames) {
+            // Iterate through each projection attribute state in the current set and check if its
+            // current resolved attribute's name is the top-level name of the current attrName
+            for (ProjectionAttributeState top : projCtx.getCurrentAttributeStateSet().getValues()) {
+                SearchStructure st = new SearchStructure();
+                st = SearchStructure.buildStructure(top, top, attrName, st, false, 0);
+                // Found the top-level name
+                if (st != null && st.getResult().getFoundFlag() == true) {
+                    // Create a mapping from the top-level name of the attribute to the name it has in the list
+                    topLevelAttributeNames.put(top.getCurrentResolvedAttribute().getResolvedName(), attrName);
+                }
             }
         }
-        return result != null ? result.getTop() : null;
+        return topLevelAttributeNames;
     }
 
     /**

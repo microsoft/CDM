@@ -114,20 +114,30 @@ export class ProjectionResolutionCommonUtil {
     }
 
     /**
-     * Get top node of the projection state tree for non-polymorphic scenarios
+     * Gets the names of the top-level nodes in the projection state tree (for non-polymorphic scenarios) that match a set of attribute names
      * @internal
      */
-    public static getTop(projCtx: ProjectionContext, attrName: string): ProjectionAttributeState[] {
-        let result: SearchResult = new SearchResult();
-        for (const top of projCtx.currentAttributeStateSet.values) {
-            let st: SearchStructure = new SearchStructure();
-            st = SearchStructure.buildStructure(top, top, attrName, st, false, 0);
-            if (st?.result.foundFlag === true) {
-                result = st.result;
+    public static getTopList(projCtx: ProjectionContext, attrNames: string[]): Map<string, string> {
+        // This dictionary contains a mapping from the top-level (most recent) name of an attribute
+        // to the attribute name the top-level name was derived from (the name contained in the given list)
+        const topLevelAttributeNames: Map<string, string> = new Map<string, string>();
+
+        // Iterate through each attribute name in the list and search for their top-level names
+        for (const attrName of attrNames) {
+            // Iterate through each projection attribute state in the current set and check if its
+            // current resolved attribute's name is the top-level name of the current attrName
+            for (const top of projCtx.currentAttributeStateSet.values) {
+                let st: SearchStructure = new SearchStructure();
+                st = SearchStructure.buildStructure(top, top, attrName, st, false, 0);
+                // Found the top-level name
+                if (st?.result.foundFlag === true) {
+                    // Create a mapping from the top-level name of the attribute to the name it has in the given list
+                    topLevelAttributeNames.set(top.currentResolvedAttribute.resolvedName, attrName);
+                }
             }
         }
 
-        return result?.top;
+        return topLevelAttributeNames;
     }
 
     /**

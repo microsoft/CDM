@@ -15,7 +15,8 @@ import {
     CdmTraitCollection,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
-    resolveContext
+    resolveContext,
+    resolveOptions
 } from '../../../../internal';
 import { PersistenceLayer } from '../../../../Persistence';
 import { EntityPersistence } from '../../../../Persistence/CdmFolder/EntityPersistence';
@@ -70,14 +71,13 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
      * Testing that 'isPrimaryKey' property value is correct when reading from an unresolved and resolved entity schema.
      */
     it('TestReadingIsPrimaryKey', async (done) => {
-        const testInputPath: string = testHelper.getInputFolderPath(testsSubpath, 'TestReadingIsPrimaryKey');
-        const corpus: CdmCorpusDefinition = new CdmCorpusDefinition();
-        corpus.setEventCallback(() => { }, cdmStatusLevel.warning);
-        corpus.storage.mount('local', new LocalAdapter(testInputPath));
-        corpus.storage.defaultNamespace = 'local';
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestReadingIsPrimaryKey');
+
+        const resOpt: resolveOptions = new resolveOptions();
+        resOpt.strictValidation = true;
 
         // Read from an unresolved entity schema.
-        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership.cdm.json/TeamMembership');
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership.cdm.json/TeamMembership', null, resOpt);
         const attributeGroupRef: CdmAttributeGroupReference = entity.attributes.allItems[0] as CdmAttributeGroupReference;
         const attributeGroup: CdmAttributeGroupDefinition = attributeGroupRef.explicitReference as CdmAttributeGroupDefinition;
         const typeAttribute: CdmTypeAttributeDefinition = attributeGroup.members.allItems[0] as CdmTypeAttributeDefinition;
@@ -91,7 +91,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         expect(isIdentifiedBy1.arguments.allItems[0].value).toEqual('TeamMembership/(resolvedAttributes)/teamMembershipId');
 
         // Read from a resolved entity schema.
-        const resolvedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership_Resolved.cdm.json/TeamMembership');
+        const resolvedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership_Resolved.cdm.json/TeamMembership', null, resOpt);
         const resolvedTypeAttribute: CdmTypeAttributeDefinition = resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition;
 
         expect(resolvedTypeAttribute.isPrimaryKey)

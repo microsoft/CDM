@@ -23,6 +23,10 @@ public class ResolveOptions {
    */
   private boolean shallowValidation;
   /**
+   * When enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
+   */
+  private Boolean strictValidation = true;
+  /**
    * the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
    */
   private Integer resolvedAttributeLimit = 4000;
@@ -117,6 +121,14 @@ public class ResolveOptions {
 
   public void setShallowValidation(final boolean shallowValidation) {
     this.shallowValidation = shallowValidation;
+  }
+
+  public Boolean getStrictValidation() {
+    return strictValidation;
+  }
+
+  public void setStrictValidation(final Boolean strictValidation) {
+    this.strictValidation = strictValidation;
   }
 
   /**

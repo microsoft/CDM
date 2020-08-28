@@ -20,9 +20,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using Newtonsoft.Json.Linq;
     using System.Diagnostics;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
+    using System.ComponentModel;
+    using System.IO;
 
-    public class ADLSAdapter : NetworkAdapter, StorageAdapter
+    public class ADLSAdapter : NetworkAdapter
     {
+        private const double ADLSDefaultTimeout = 6000;
+
         private AuthenticationContext Context;
 
         /// <summary>
@@ -86,9 +90,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// </summary>
         public TokenProvider TokenProvider { get; set; }
 
-        /// <inheritdoc />
-        public string LocationHint { get; set; }
-
         /// <summary>
         /// The map from corpus path to adapter path.
         /// </summary>
@@ -108,6 +109,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The sub-path.
         /// </summary>
         private string subPath = "";
+
+        /// <summary>
+        /// A cache for storing last modified times of file paths.
+        /// </summary>
+        private Dictionary<string, DateTimeOffset> fileModifiedTimeCache = new Dictionary<string, DateTimeOffset>();
 
         /// <summary>
         /// The predefined ADLS resource.
@@ -132,9 +138,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         internal const string Type = "adls";
 
         /// <summary>
+        /// The default constructor, a user has to apply JSON config after creating it this way.
+        /// </summary>
+        public ADLSAdapter()
+        {
+            this.httpClient = new CdmHttpClient();
+            this.Timeout = TimeSpan.FromMilliseconds(ADLSAdapter.ADLSDefaultTimeout);
+        }
+
+        /// <summary>
         /// The ADLS constructor for clientId/secret authentication.
         /// </summary>
-        public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret)
+        public ADLSAdapter(string hostname, string root, string tenant, string clientId, string secret) : this()
         {
             this.Hostname = hostname;
             this.Root = root;
@@ -142,47 +157,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             this.ClientId = clientId;
             this.Secret = secret;
             this.Context = new AuthenticationContext("https://login.windows.net/" + this.Tenant);
-            this.httpClient = new CdmHttpClient();
-        }
-
-        /// <summary>
-        /// The default constructor, a user has to apply JSON config after creating it this way.
-        /// </summary>
-        public ADLSAdapter()
-        {
-            this.httpClient = new CdmHttpClient();
         }
 
         /// <summary>
         /// The ADLS constructor for shared key authentication.
         /// </summary>
-        public ADLSAdapter(string hostname, string root, string sharedKey)
+        public ADLSAdapter(string hostname, string root, string sharedKey) : this()
         {
             this.Hostname = hostname;
             this.Root = root;
             this.SharedKey = sharedKey;
-            this.httpClient = new CdmHttpClient();
         }
 
         /// <summary>
         /// The ADLS constructor for user-defined token provider.
         /// </summary>
-        public ADLSAdapter(string hostname, string root, TokenProvider tokenProvider)
+        public ADLSAdapter(string hostname, string root, TokenProvider tokenProvider) : this()
         {
             this.Hostname = hostname;
             this.Root = root;
             this.TokenProvider = tokenProvider;
-            this.httpClient = new CdmHttpClient();
         }
 
         /// <inheritdoc />
-        public bool CanRead()
+        public override bool CanRead()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task<string> ReadAsync(string corpusPath)
+        public override async Task<string> ReadAsync(string corpusPath)
         {
             string url = this.CreateAdapterPath(corpusPath);
 
@@ -195,13 +199,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public bool CanWrite()
+        public override bool CanWrite()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public async Task WriteAsync(string corpusPath, string data)
+        public override async Task WriteAsync(string corpusPath, string data)
         {
             if (EnsurePath($"{this.Root}{corpusPath}") == false)
             {
@@ -224,7 +228,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public string CreateAdapterPath(string corpusPath)
+        public override string CreateAdapterPath(string corpusPath)
         {
             var formattedCorpusPath = this.FormatCorpusPath(corpusPath);
             if (formattedCorpusPath == null)
@@ -235,7 +239,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             if (adapterPaths.ContainsKey(formattedCorpusPath))
             {
                 return adapterPaths[formattedCorpusPath];
-            } 
+            }
             else
             {
                 return $"https://{this.Hostname}{this.Root}{formattedCorpusPath}";
@@ -243,7 +247,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public string CreateCorpusPath(string adapterPath)
+        public override string CreateCorpusPath(string adapterPath)
         {
             if (!string.IsNullOrEmpty(adapterPath))
             {
@@ -272,40 +276,51 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             return null;
         }
 
-        /// <inheritdoc />
-        public void ClearCache()
+        public override void ClearCache()
         {
-            return;
+            this.fileModifiedTimeCache.Clear();
         }
 
         /// <inheritdoc />
-        public async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
+        public override async Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
         {
-            var adapterPath = this.CreateAdapterPath(corpusPath);
-
-            var httpRequest = await this.BuildRequest(adapterPath, HttpMethod.Head);
-
-            try
+            if (this.IsCacheEnabled && fileModifiedTimeCache.TryGetValue(corpusPath, out DateTimeOffset time))
             {
-                using (var cdmResponse = await base.ExecuteRequest(httpRequest))
+                return time;
+            }
+            else
+            {
+                var adapterPath = this.CreateAdapterPath(corpusPath);
+
+                var httpRequest = await this.BuildRequest(adapterPath, HttpMethod.Head);
+
+                try
                 {
-                    if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                    using (var cdmResponse = await base.ExecuteRequest(httpRequest))
                     {
-                        return cdmResponse.Content.Headers.LastModified;
+                        if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                        {
+                            var lastTime = cdmResponse.Content.Headers.LastModified;
+                            if (this.IsCacheEnabled && lastTime.HasValue)
+                            {
+                                this.fileModifiedTimeCache[corpusPath] = lastTime.Value;
+                            }
+                            return lastTime;
+                        }
                     }
                 }
+                catch (HttpRequestException ex)
+                {
+                    // We don't have standard logger here, so use one from system diagnostics
+                    Debug.WriteLine($"ADLS file not found, skipping last modified time calculation for it. Exception: {ex}");
+                }
+                
+                return null;
             }
-            catch (HttpRequestException ex)
-            {
-                // We don't have standard logger here, so use one from system diagnostics
-                Debug.WriteLine($"ADLS file not found, skipping last modified time calculation for it. Exception: {ex}");
-            }
-
-            return null;
         }
 
         /// <inheritdoc />
-        public async Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
+        public override async Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
         {
             if (folderCorpusPath == null)
             {
@@ -346,7 +361,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                         string nameWithoutSubPath = this.subPath.Length > 0 && name.ToString().StartsWith(this.subPath) ?
                             name.ToString().Substring(this.subPath.Length + 1) : name.ToString();
 
-                        result.Add(this.FormatCorpusPath(nameWithoutSubPath));
+                        string path = this.FormatCorpusPath(nameWithoutSubPath);
+                        result.Add(path);
+
+                        jObject.TryGetValue("lastModified", StringComparison.OrdinalIgnoreCase, out JToken lastModifiedTime);
+
+                        if (this.IsCacheEnabled && DateTimeOffset.TryParse(lastModifiedTime.ToString(), out DateTimeOffset offset))
+                        {
+                            fileModifiedTimeCache[path] = offset;
+                        }
                     }
                 }
                 
@@ -586,7 +609,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public string FetchConfig()
+        public override string FetchConfig()
         {
             var resultConfig = new JObject
             {
@@ -620,7 +643,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public void UpdateConfig(string config)
+        public override void UpdateConfig(string config)
         {
             if (config == null)
             {

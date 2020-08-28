@@ -10,6 +10,7 @@ import {
     resolveOptions
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
+import { testUtils } from '../../testUtils';
 import { AttributeContextUtil } from './AttributeContextUtil';
 
 describe('Cdm/Projection/ProjectionFKTest', () => {
@@ -178,7 +179,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
 
         const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const fileNameSuffix: string = getResolutionOptionNameSuffix(resOpts);
+        const fileNameSuffix: string = testUtils.getResolutionOptionNameSuffix(resOpts);
 
         const entSalesForeignKeyProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entSalesForeignKeyProjection)
@@ -189,27 +190,13 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, `${entityName}${fileNameSuffix}`, resolvedSalesForeignKeyProjection);
     }
 
-    function getResolutionOptionNameSuffix(resolutionOptions: string[]): string {
-        let fileNamePrefix: string = '';
-
-        for (let i: number = 0; i < resolutionOptions.length; i++) {
-            fileNamePrefix = `${fileNamePrefix}_${resolutionOptions[i]}`;
-        }
-
-        if (!fileNamePrefix) {
-            fileNamePrefix = '_default';
-        }
-
-        return fileNamePrefix;
-    }
-
-    async function saveResolved(corpus: CdmCorpusDefinition, manifest: CdmManifestDefinition, testName: string, inputEntity: CdmEntityDefinition, resolutionOptions: string[]): Promise<CdmEntityDefinition>{
+    async function saveResolved(corpus: CdmCorpusDefinition, manifest: CdmManifestDefinition, testName: string, inputEntity: CdmEntityDefinition, resolutionOptions: string[]): Promise<CdmEntityDefinition> {
         const roHashSet: Set<string> = new Set<string>();
         for (let i: number = 0; i < resolutionOptions.length; i++) {
             roHashSet.add(resolutionOptions[i]);
         }
 
-        const fileNameSuffix: string = getResolutionOptionNameSuffix(resolutionOptions);
+        const fileNameSuffix: string = testUtils.getResolutionOptionNameSuffix(resolutionOptions);
 
         const resolvedEntityName: string = `Resolved_${inputEntity.entityName}${fileNameSuffix}.cdm.json`;
 

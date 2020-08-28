@@ -56,7 +56,7 @@ describe('Cdm/Resolution/ManifestResolve', () => {
             .toBe('cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/electronicMedicalRecords.manifest.cdm.json/Address');
 
         // setting back expected test timeout.
-        jest.setTimeout(5000);
+        jest.setTimeout(10000);
     });
 
     /**

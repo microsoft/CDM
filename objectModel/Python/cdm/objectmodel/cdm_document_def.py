@@ -3,6 +3,7 @@
 
 from datetime import datetime
 from typing import Dict, Optional, Set, Tuple, TYPE_CHECKING
+import warnings
 
 from cdm.enums import CdmObjectType
 from cdm.utilities import CopyOptions, logger, ResolveOptions, Errors
@@ -64,6 +65,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         # internal
         self._currently_indexing = False
+        self._declarations_indexed = False
         self._file_system_modified_time = None  # type: Optional[datetime]
         self._imports_indexed = False
         self._import_priorities = None  # type: Optional[ImportPriorities]
@@ -71,7 +73,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self._needs_indexing = True
         self._imports = CdmImportCollection(self.ctx, self)
         self._definitions = CdmDefinitionCollection(self.ctx, self)
-        self.is_valid = True  # types: bool
+        self._is_valid = True  # types: bool
         self._TAG = CdmDocumentDefinition.__name__
 
         self._clear_caches()
@@ -92,6 +94,11 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def definitions(self) -> 'CdmDefinitionCollection':
         """the document definitions."""
         return self._definitions
+
+    @property
+    def is_valid(self) -> str:
+        warnings.warn('Property deprecated.', DeprecationWarning)
+        return self._is_valid
 
     @property
     def object_type(self) -> 'CdmObjectType':
@@ -132,23 +139,27 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         return copy
 
-    async def _index_if_needed(self, res_opt: 'ResolveOptions') -> bool:
-        if not self._needs_indexing:
+    async def _index_if_needed(self, res_opt: 'ResolveOptions', strict_validation: bool = False) -> bool:
+        if not self._needs_indexing or self._currently_indexing:
             return True
 
         if not self.folder:
             logger.error(self._TAG, self.ctx, 'Document \'{}\' is not in a folder'.format(self.name), self._index_if_needed.__name__)
             return False
 
-        # make the corpus internal machinery pay attention to this document for this call
         corpus = self.folder._corpus
 
-        await corpus._resolve_imports_async(self, res_opt)
+        # if the strictValidation is specified by the user in the ResolveOptions that value has precedence.
+        if res_opt.strict_validation is not None:
+            strict_validation = res_opt.strict_validation
 
-        # maintain actual current doc
+        if strict_validation:
+            await corpus._resolve_imports_async(self, res_opt)
+
+        # make the corpus internal machinery pay attention to this document for this call
         corpus._document_library._mark_document_for_indexing(self)
 
-        return corpus._index_documents(res_opt)
+        return corpus._index_documents(res_opt, strict_validation)
 
     def _get_import_priorities(self) -> 'ImportPriorities':
         if not self._import_priorities:
@@ -393,12 +404,15 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         """updates indexes for document content, call this after modifying objects in the document"""
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
+        self._declarations_indexed = False
+        self._imports_indexed = False
+        self._import_priorities = None
         self._needs_indexing = True
-        self.is_valid = True
-        return await self._index_if_needed(res_opt)
+        self._is_valid = True
+        return await self._index_if_needed(res_opt, True)
 
     async def _reload_async(self) -> None:
-        await self.ctx.corpus._fetch_object_async(self.corpus_path, force_reload=True)
+        await self.ctx.corpus.fetch_object_async(self.corpus_path, force_reload=True)
 
     async def save_as_async(self, new_name: str, save_referenced: bool = False, options: Optional['CopyOptions'] = None) -> bool:
         """saves the document back through the adapter in the requested format

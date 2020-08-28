@@ -83,7 +83,7 @@ describe('Network/MockCdmHttpClientTest', () => {
         const httpRequest: CdmHttpRequest = new CdmHttpRequest('/folder1');
 
         httpRequest.timeout = 2000;
-        httpRequest.maximumTimeout = 2000;
+        httpRequest.maximumTimeout = 20000;
         httpRequest.numberOfRetries = 0;
 
         try {
@@ -112,7 +112,7 @@ describe('Network/MockCdmHttpClientTest', () => {
             fail('This test case should\'ve failed and throw an exception due timeout.');
         } catch (err) {
             expect(err)
-                .toBe('Request timeout.');
+                .toBe('Maximum timeout exceeded.');
         }
     });
 

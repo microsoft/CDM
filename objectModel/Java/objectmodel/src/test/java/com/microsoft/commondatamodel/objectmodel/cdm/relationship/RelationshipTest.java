@@ -17,6 +17,8 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryS
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.E2ERelationship;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -313,7 +315,9 @@ public class RelationshipTest {
           Objects.equals(expectedRel.getFromEntity(), x.getFromEntity())
           && Objects.equals(expectedRel.getFromEntityAttribute(), x.getFromEntityAttribute())
           && Objects.equals(expectedRel.getToEntity(), x.getToEntity())
-          && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute()))
+          && Objects.equals(expectedRel.getToEntityAttribute(), x.getToEntityAttribute())
+          && ((StringUtils.isNullOrTrimEmpty(expectedRel.getName()) && StringUtils.isNullOrTrimEmpty(x.getName()))
+          || (expectedRel.getName().equals(x.getName()))))
         .collect(Collectors.toList());
       Assert.assertEquals(found.size(), 1);
    }

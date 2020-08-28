@@ -8,7 +8,7 @@ from typing import List
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmEntityDefinition
 from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
-from tests.common import async_test, TestHelper
+from tests.common import async_test, TestHelper, TestUtils
 
 
 class ProjectionFKTest(unittest.TestCase):
@@ -161,24 +161,13 @@ class ProjectionFKTest(unittest.TestCase):
         manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')
 
         expected_output_path = TestHelper.get_expected_output_folder_path(self.tests_subpath, test_name)
-        file_name_suffix = self._get_resolution_option_name_suffix(res_opts)
+        file_name_suffix = TestUtils.get_resolution_option_name_suffix(res_opts)
 
         ent_sales_foreign_key_projection = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_sales_foreign_key_projection)
         resolved_sales_foreign_key_projection = await self._save_resolved(corpus, manifest, test_name, ent_sales_foreign_key_projection, res_opts)
         self.assertIsNotNone(resolved_sales_foreign_key_projection)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, '{}{}'.format(entity_name, file_name_suffix), resolved_sales_foreign_key_projection)
-
-    def _get_resolution_option_name_suffix(self, resolution_options: List[str]) -> str:
-        file_name_prefix = ''
-
-        for i in range(len(resolution_options)):
-            file_name_prefix = '{}_{}'.format(file_name_prefix, resolution_options[i])
-
-        if not file_name_prefix:
-            file_name_prefix = '_default'
-
-        return file_name_prefix
 
     async def _save_resolved(
         self,
@@ -192,7 +181,7 @@ class ProjectionFKTest(unittest.TestCase):
         for i in range(len(resolution_options)):
             ro_hash_set.add(resolution_options[i])
 
-        file_name_suffix = self._get_resolution_option_name_suffix(resolution_options)
+        file_name_suffix = TestUtils.get_resolution_option_name_suffix(resolution_options)
 
         resolved_entity_name = 'Resolved_{}{}.cdm.json'.format(input_entity.entity_name, file_name_suffix)
 

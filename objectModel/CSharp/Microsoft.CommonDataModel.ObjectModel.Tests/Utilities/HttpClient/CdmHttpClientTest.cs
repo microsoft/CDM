@@ -48,7 +48,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
                 method2ExecutedCount++;
 
                 return await Task.FromResult(responseMessage);
-            } else
+            }
+            else
             {
                 // Wait some time.
                 Thread.Sleep(2000);
@@ -153,13 +154,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Utilities.Network
                 var cdmHttpRequest = new CdmHttpRequest("/folder2")
                 {
                     Timeout = TimeSpan.FromSeconds(1),
-                    MaximumTimeout = TimeSpan.FromSeconds(6),
-                    NumberOfRetries = 3
+                    MaximumTimeout = TimeSpan.FromSeconds(3),
+                    NumberOfRetries = 2
                 };
 
                 Func<Task> func = async () => await cdmHttpClient.SendAsync(cdmHttpRequest, DefaultGetWaitTime);
 
-                func.Should().Throw<CdmTimedOutException>("Request timeout.");
+                func.Should().Throw<CdmTimedOutException>("Maximum timeout exceeded.");
             }
         }
 

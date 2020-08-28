@@ -614,7 +614,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             }
 
             // if the wrtDoc needs to be indexed (like it was just modified) then do that first
-            if (await (resOpt.wrtDoc.indexIfNeeded(resOpt)) === false) {
+            if (!await resOpt.wrtDoc.indexIfNeeded(resOpt, true)) {
                 Logger.error(
                     CdmEntityDefinition.name,
                     this.ctx,

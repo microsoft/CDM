@@ -24,8 +24,6 @@ import { testHelper } from '../../testHelper';
  * Various projections scenarios, partner scenarios, bug fixes
  */
 describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
-    const foundationJsonPath: string = 'cdm:/foundations.cdm.json';
-
     const resOptsCombinations: Set<string>[] = [
         new Set([]),
         new Set(['referenceOnly']),

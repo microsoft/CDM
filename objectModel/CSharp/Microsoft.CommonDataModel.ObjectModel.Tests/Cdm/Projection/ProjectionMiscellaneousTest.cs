@@ -17,8 +17,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     [TestClass]
     public class ProjectionMiscellaneousTest
     {
-        private const string FoundationJsonPath = "cdm:/foundations.cdm.json";
-
         private static List<HashSet<string>> restOptsCombinations = new List<HashSet<string>>() {
             new HashSet<string> { },
             new HashSet<string> { "referenceOnly" },

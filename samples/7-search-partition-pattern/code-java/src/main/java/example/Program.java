@@ -96,7 +96,7 @@ public class Program {
             CdmObjectType.DataPartitionPatternDef,
             "sampleDataPartitionPattern",
             false);
-    dataPartitionPattern.setRootLocation("local:dataFiles");
+    dataPartitionPattern.setRootLocation("dataFiles");
     dataPartitionPattern.setRegularExpression("/(\\d{4})/(\\w+)/cohort(\\d+)\\.csv$");
     // the line below demonstrates using "GlobPattern" which can be used instead of "RegularExpression"
     // dataPartitionPattern.setGlobPattern("/*/cohort*.csv");

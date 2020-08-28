@@ -46,8 +46,8 @@ describe('Cdm/CdmDocumentDefinition', () => {
         docC.imports.push('B.cdm.json');
 
         // forces docB to be indexed first.
-        await docB.indexIfNeeded(new resolveOptions());
-        await docA.indexIfNeeded(new resolveOptions());
+        await docB.indexIfNeeded(new resolveOptions(), true);
+        await docA.indexIfNeeded(new resolveOptions(), true);
 
         // should contain A, B and C.
         expect(docA.importPriorities.importPriority.size)
@@ -87,8 +87,8 @@ describe('Cdm/CdmDocumentDefinition', () => {
         folder.documents.push(docD);
         docD.imports.push('C.cdm.json');
 
-        // indexIfNeeded will internally call prioritizeImports on every document.
-        await docA.indexIfNeeded(new resolveOptions());
+        // indexIfNeeded will internally call prioritizeImports on every documen, truet.
+        await docA.indexIfNeeded(new resolveOptions(), true);
 
         expect(docA.importPriorities.importPriority.size)
             .toBe(4);
@@ -97,15 +97,15 @@ describe('Cdm/CdmDocumentDefinition', () => {
         markDocumentsToIndex(folder.documents);
 
         // force docC to be indexed first, so the priorityList will be read from the cache this time.
-        await docC.indexIfNeeded(new resolveOptions());
-        await docA.indexIfNeeded(new resolveOptions());
+        await docC.indexIfNeeded(new resolveOptions(), true);
+        await docA.indexIfNeeded(new resolveOptions(), true);
 
         expect(docA.importPriorities.importPriority.size)
             .toBe(4);
 
         // indexes the rest of the documents.
-        await docB.indexIfNeeded(new resolveOptions());
-        await docD.indexIfNeeded(new resolveOptions());
+        await docB.indexIfNeeded(new resolveOptions(), true);
+        await docD.indexIfNeeded(new resolveOptions(), true);
 
         expect(docA.importPriorities.hasCircularImport)
             .toBe(false);
@@ -136,8 +136,8 @@ describe('Cdm/CdmDocumentDefinition', () => {
         folder.documents.push(docC);
 
         // forces docB to be indexed first, so the priorityList will be read from the cache this time.
-        await docB.indexIfNeeded(new resolveOptions(docB));
-        await docA.indexIfNeeded(new resolveOptions(docA));
+        await docB.indexIfNeeded(new resolveOptions(docB), true);
+        await docA.indexIfNeeded(new resolveOptions(docA), true);
 
         // should only contain docA and docC, docB should be excluded.
         expect(docA.importPriorities.importPriority.size)

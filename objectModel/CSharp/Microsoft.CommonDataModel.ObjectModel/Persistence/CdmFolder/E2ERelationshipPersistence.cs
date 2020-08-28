@@ -13,7 +13,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         public static CdmE2ERelationship FromData(CdmCorpusContext ctx, E2ERelationship dataObj)
         {
             var relationship = ctx.Corpus.MakeObject<CdmE2ERelationship>(CdmObjectType.E2ERelationshipDef);
-            relationship.Name = dataObj.Name;
+            if (!string.IsNullOrWhiteSpace(dataObj.Name))
+            {
+                relationship.Name = dataObj.Name;
+            }
             relationship.FromEntity = dataObj.FromEntity;
             relationship.FromEntityAttribute = dataObj.FromEntityAttribute;
             relationship.ToEntity = dataObj.ToEntity;
@@ -25,7 +28,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
         {
             return new E2ERelationship
             {
-                Name = instance.Name,
+                Name = !string.IsNullOrWhiteSpace(instance.Name) ? instance.Name : null,
                 FromEntity = instance.FromEntity,
                 FromEntityAttribute = instance.FromEntityAttribute,
                 ToEntity = instance.ToEntity,

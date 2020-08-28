@@ -80,7 +80,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// <summary>
         /// Test if the mini dyn resolved entities match
         /// </summary>
-        [TestMethod]
+        // [TestMethod]
         public async Task TestResolvedMiniDyn()
         {
             await this.ResolveSaveDebuggingFileAndAssert("TestResolvedMiniDyn", "MiniDyn");
@@ -268,7 +268,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         private async Task ResolveSaveDebuggingFileAndAssert(string testName, string manifestName, bool doesWriteDebuggingFiles = false)
         {
             Assert.IsNotNull(testName);
-            var result = (await this.ResolveEnvironment(testName, manifestName));
+            var result = await this.ResolveEnvironment(testName, manifestName);
 
             if (doesWriteDebuggingFiles)
             {
@@ -315,7 +315,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 if (f.Entities != null)
                 {
                     if (spew != null)
+                    {
                         spew.SpewLine(f.FolderPath);
+                    }
+
                     foreach (CdmEntityDeclarationDefinition entity in f.Entities)
                     {
                         string corpusPath;
@@ -325,14 +328,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                         {
                             corpusPath = cdmCorpus.Storage.CreateAbsoluteCorpusPath(ent.EntityPath, currentFile);
                             ent = await cdmCorpus.FetchObjectAsync<CdmReferencedEntityDeclarationDefinition>(corpusPath);
-                            currentFile = (CdmObject)ent;
+                            currentFile = ent;
                         }
                         corpusPath = cdmCorpus.Storage.CreateAbsoluteCorpusPath(((CdmLocalEntityDeclarationDefinition)ent).EntityPath, currentFile);
-                        CdmEntityDefinition newEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(corpusPath);
-                        ResolveOptions resOpt = new ResolveOptions() { WrtDoc = newEnt.InDocument, Directives = directives };
+                        ResolveOptions resOpt = new ResolveOptions()
+                        {
+                            StrictValidation = true
+                        };
+                        CdmEntityDefinition newEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
+                        resOpt.WrtDoc = newEnt.InDocument;
+                        resOpt.Directives = directives;
                         ResolvedEntity resEnt = new ResolvedEntity(resOpt, newEnt);
                         if (spew != null)
+                        {
                             resEnt.Spew(resOpt, spew, " ", true);
+                        }
                     }
                 }
                 if (f.SubManifests != null)

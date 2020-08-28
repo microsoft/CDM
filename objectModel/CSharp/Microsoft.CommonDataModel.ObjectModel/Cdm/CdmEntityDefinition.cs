@@ -554,6 +554,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null;
             }
 
+            // if the wrtDoc needs to be indexed (like it was just modified) then do that first
+            if (!await resOpt.WrtDoc.IndexIfNeeded(resOpt, true))
+            {
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Couldn't index source document.", nameof(CreateResolvedEntityAsync));
+                return null;
+            }
+
             if (folder == null)
             {
                 folder = this.InDocument.Folder;
@@ -567,13 +574,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (StringUtils.EqualsWithIgnoreCase(targetAtCorpusPath, origDoc))
             {
                 Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Attempting to replace source entity's document '{targetAtCorpusPath}'", nameof(CreateResolvedEntityAsync));
-                return null;
-            }
-
-            // if the wrtDoc needs to be indexed (like it was just modified) then do that first
-            if (!await (resOpt.WrtDoc as CdmDocumentDefinition).IndexIfNeeded(resOpt))
-            {
-                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Couldn't index source document.", nameof(CreateResolvedEntityAsync));
                 return null;
             }
 

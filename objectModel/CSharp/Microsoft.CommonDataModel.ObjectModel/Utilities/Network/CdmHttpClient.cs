@@ -82,7 +82,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                 }
                 else
                 {
-                    throw new CdmTimedOutException();
+                    throw new CdmTimedOutException("Maximum timeout exceeded.");
                 }
             }
             catch (AggregateException err)

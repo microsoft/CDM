@@ -22,8 +22,9 @@ class CdmStandardsAdapter(NetworkAdapter, StorageAdapterBase):
             #   root: The root path specifies either to read the standard files in logical or resolved form.
         """
         super().__init__()
+        super(NetworkAdapter, self).__init__()
+        super(StorageAdapterBase, self).__init__()
 
-        self.location_hint = None
         self.root = root
 
         # --- internal ---
@@ -33,9 +34,6 @@ class CdmStandardsAdapter(NetworkAdapter, StorageAdapterBase):
     def can_read(self) -> bool:
         return True
 
-    def can_write(self) -> bool:
-        return False
-
     def create_adapter_path(self, corpus_path: str) -> str:
         return self._absolutePath + corpus_path
 
@@ -43,15 +41,6 @@ class CdmStandardsAdapter(NetworkAdapter, StorageAdapterBase):
         if not adapter_path or not adapter_path.startswith(self._absolutePath):
             return None
         return adapter_path[len(self._absolutePath):]
-
-    def clear_cache(self) -> None:
-        pass
-
-    async def compute_last_modified_time_async(self, corpus_path: str) -> Optional[datetime.datetime]:
-        return datetime.datetime.now()
-
-    async def fetch_all_files_async(self, folder_corpus_path: str) -> List[str]:
-        return None
 
     def fetch_config(self) -> str:
         result_config = {'type': self._type}
@@ -88,9 +77,6 @@ class CdmStandardsAdapter(NetworkAdapter, StorageAdapterBase):
         
         if config_json.get('root'):
             self.root = config_json['root']
-
-    async def write_async(self, corpus_path: str, data: str) -> None:
-        raise Exception('Write operation not supported')
 
     @property
     def _absolutePath(self):

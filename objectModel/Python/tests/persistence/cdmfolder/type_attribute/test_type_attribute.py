@@ -11,7 +11,7 @@ from cdm.persistence import PersistenceLayer
 from cdm.persistence.cdmfolder.entity_persistence import EntityPersistence
 from cdm.persistence.cdmfolder.types import TypeAttribute
 from cdm.storage import LocalAdapter
-from cdm.utilities import JObject
+from cdm.utilities import JObject, ResolveOptions
 
 from tests.common import async_test, TestHelper
 
@@ -43,14 +43,13 @@ class TypeAttributeTest(unittest.TestCase):
 
     @async_test
     async def test_reading_is_primary_key(self):
-        test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, 'test_reading_is_primary_key')
-        corpus = CdmCorpusDefinition()
-        corpus.ctx.report_at_level = CdmStatusLevel.WARNING
-        corpus.storage.mount('local', LocalAdapter(test_input_path))
-        corpus.storage.default_namespace = 'local'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_reading_is_primary_key')
+
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
 
         # read from an unresolved entity schema
-        entity = await corpus.fetch_object_async('local:/TeamMembership.cdm.json/TeamMembership')
+        entity = await corpus.fetch_object_async('local:/TeamMembership.cdm.json/TeamMembership', res_opt=res_opt)
         attribute_group_ref = entity.attributes[0]  # type: CdmAttributeGroupReference
         attribute_group = attribute_group_ref.explicit_reference # type: CdmAttributeGroupDefinition
         type_attribute = attribute_group.members[0]  # type: CdmTypeAttributeDefinition
@@ -63,7 +62,7 @@ class TypeAttributeTest(unittest.TestCase):
         self.assertEqual('TeamMembership/(resolvedAttributes)/teamMembershipId', is_identified_by1.arguments[0].value)
 
         # read from a resolved entity schema
-        resolved_entity = await corpus.fetch_object_async('local:/TeamMembership_Resolved.cdm.json/TeamMembership')
+        resolved_entity = await corpus.fetch_object_async('local:/TeamMembership_Resolved.cdm.json/TeamMembership', res_opt=res_opt)
         resolved_type_attribute = resolved_entity.attributes[0]  # type: CdmTypeAttributeDefinition
 
         self.assertTrue(resolved_type_attribute.is_primary_key)

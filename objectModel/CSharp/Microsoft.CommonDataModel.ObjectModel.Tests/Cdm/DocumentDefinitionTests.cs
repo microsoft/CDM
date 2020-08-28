@@ -37,8 +37,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             docC.Imports.Add("B.cdm.json");
 
             // forces docB to be indexed first.
-            await docB.IndexIfNeeded(new ResolveOptions());
-            await docA.IndexIfNeeded(new ResolveOptions());
+            await docB.IndexIfNeeded(new ResolveOptions(), true);
+            await docA.IndexIfNeeded(new ResolveOptions(), true);
 
             // should contain A, B and C.
             Assert.AreEqual(3, docA.ImportPriorities.ImportPriority.Count);
@@ -77,7 +77,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             docD.Imports.Add("C.cdm.json");
 
             // indexIfNeeded will internally call prioritizeImports on every document.
-            await docA.IndexIfNeeded(new ResolveOptions());
+            await docA.IndexIfNeeded(new ResolveOptions(), true);
 
             Assert.AreEqual(4, docA.ImportPriorities.ImportPriority.Count);
 
@@ -85,14 +85,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             MarkDocumentsToIndex(folder.Documents);
 
             // force docC to be indexed first, so the priorityList will be read from the cache this time.
-            await docC.IndexIfNeeded(new ResolveOptions());
-            await docA.IndexIfNeeded(new ResolveOptions());
+            await docC.IndexIfNeeded(new ResolveOptions(), true);
+            await docA.IndexIfNeeded(new ResolveOptions(), true);
 
             Assert.AreEqual(4, docA.ImportPriorities.ImportPriority.Count);
 
             // indexes the rest of the documents.
-            await docB.IndexIfNeeded(new ResolveOptions());
-            await docD.IndexIfNeeded(new ResolveOptions());
+            await docB.IndexIfNeeded(new ResolveOptions(), true);
+            await docD.IndexIfNeeded(new ResolveOptions(), true);
 
             Assert.IsFalse(docA.ImportPriorities.hasCircularImport);
             Assert.IsFalse(docB.ImportPriorities.hasCircularImport);
@@ -122,8 +122,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             folder.Documents.Add(docC);
 
             // forces docB to be indexed first, so the priorityList will be read from the cache this time.
-            await docB.IndexIfNeeded(new ResolveOptions(docB));
-            await docA.IndexIfNeeded(new ResolveOptions(docA));
+            await docB.IndexIfNeeded(new ResolveOptions(docB), true);
+            await docA.IndexIfNeeded(new ResolveOptions(docA), true);
 
             // should only contain docA and docC, docB should be excluded.
             Assert.AreEqual(2, docA.ImportPriorities.ImportPriority.Count);

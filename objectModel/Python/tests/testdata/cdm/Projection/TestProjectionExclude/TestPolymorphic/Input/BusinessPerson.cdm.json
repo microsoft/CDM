@@ -1,0 +1,57 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.1.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "BusinessPerson",
+            "hasAttributes": [
+                {
+                    "name": "contactAt",
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "selectsSubAttribute": {
+                            "selects": "some",
+                            "selectsSomeAvoidNames": [
+                                "socialId",
+                                "account"
+                            ]
+                        }
+                    },
+                    "entity": {
+                        "entityReference": {
+                            "entityName": "ContactKinds",
+                            "hasAttributes": [
+                                {
+                                    "name": "emailKind",
+                                    "entity": "Email",
+                                    "resolutionGuidance": {
+                                        "renameFormat": "{m}"
+                                    }
+                                },
+                                {
+                                    "name": "phoneKind",
+                                    "entity": "Phone",
+                                    "resolutionGuidance": {
+                                        "renameFormat": "{m}"
+                                    }
+                                },
+                                {
+                                    "name": "socialKind",
+                                    "entity": "Social",
+                                    "resolutionGuidance": {
+                                        "renameFormat": "{m}"
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

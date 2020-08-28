@@ -40,6 +40,9 @@ class ResolveOptions:
         # When enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead.
         self.shallow_validation = None  # type: Optional[bool]
 
+        # When enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
+        self.strict_validation = True  # type: bool
+
         # The limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
         self._resolved_attribute_limit = 4000  # type: Optional[int]
         

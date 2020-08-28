@@ -42,7 +42,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             }
             else
             {
-                Set.Add(pas.CurrentResolvedAttribute.ResolvedName, pas);
+                Set[pas.CurrentResolvedAttribute.ResolvedName] = pas;
             }
         }
 

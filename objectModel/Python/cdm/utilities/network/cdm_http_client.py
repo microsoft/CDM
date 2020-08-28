@@ -109,7 +109,7 @@ class CdmHttpClient:
                         raise CdmNumberOfRetriesExceededException(exception)
                     else:
                         if exception.args and exception.args[0].args and exception.args[0].args[0] == 'timed out':
-                            raise CdmTimedOutException(exception)
+                            raise CdmTimedOutException('Request timeout.')
                         else:
                             raise exception
             except Exception as exception:
@@ -134,9 +134,9 @@ class CdmHttpClient:
                 if retry_number == 0:
                     return None
 
-                raise CdmNumberOfRetriesExceededException
+                raise CdmNumberOfRetriesExceededException()
 
-        raise CdmNumberOfRetriesExceededException
+        raise CdmNumberOfRetriesExceededException()
 
     def _combine_urls(self, url1: str, url2: str) -> str:
         """

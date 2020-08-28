@@ -35,3 +35,52 @@ class CorpusTests(unittest.TestCase):
             self.fail(message)
         corpus.set_event_callback(callback, CdmStatusLevel.ERROR)
         await corpus._compute_last_modified_time_async('local:/default.manifest.cdm.json')
+
+    @async_test
+    async def test_strict_validation_off(self):
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_strict_validation')  # type: CdmCorpusDefinition
+        def callback(status_level: CdmStatusLevel, message: str):
+            # when the strict validation is disabled, there should be no reference validation.
+            # no error should be logged.
+            self.fail(message)
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
+
+        # load with strict validation disabled.
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = False
+        await corpus.fetch_object_async('local:/doc.cdm.json', res_opt=res_opt)
+
+    @async_test
+    async def test_strict_validation_on(self):
+        error_count = 0
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_strict_validation')
+        def callback(status_level: CdmStatusLevel, message: str):
+            nonlocal error_count
+            if message.index('Unable to resolve the reference') != -1:
+                error_count += 1
+            else:
+                self.fail(message)
+        corpus.set_event_callback(callback, CdmStatusLevel.ERROR)
+
+        # load with strict validation.
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
+        await corpus.fetch_object_async('local:/doc.cdm.json', res_opt=res_opt)
+        self.assertEqual(1, error_count)
+
+        error_count = 0
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_strict_validation')
+        def callback1(status_level: CdmStatusLevel, message: str):
+            nonlocal error_count
+            if status_level == CdmStatusLevel.WARNING and message.index('Unable to resolve the reference') != -1:
+                error_count += 1
+            else:
+                self.fail(message)
+        corpus.set_event_callback(callback1, CdmStatusLevel.WARNING)
+
+        # load with strict validation and shallow validation.
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
+        res_opt.shallow_validation = True
+        await corpus.fetch_object_async('local:/doc.cdm.json', res_opt=res_opt)
+        self.assertEqual(1, error_count)

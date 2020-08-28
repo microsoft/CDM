@@ -228,23 +228,28 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
-        modified_time = await self.ctx.corpus._fetch_last_modified_time_from_object_async(self)
 
-        for entity in self.entities:
-            await entity.file_status_check_async()
+        context = self.ctx.corpus.storage.fetch_adapter(self.in_document.namespace).create_file_query_cache_context()
+        try:
+            modified_time = await self.ctx.corpus._fetch_last_modified_time_from_object_async(self)
 
-        for sub_manifest in self.sub_manifests:
-            await sub_manifest.file_status_check_async()
+            for entity in self.entities:
+                await entity.file_status_check_async()
 
-        self.last_file_status_check_time = datetime.now(timezone.utc)
-        if not self.last_file_modified_time:
-            self.last_file_modified_time = self._file_system_modified_time
+            for sub_manifest in self.sub_manifests:
+                await sub_manifest.file_status_check_async()
 
-        # Reload the manifest if it has been updated in the file system.
-        if modified_time and self._file_system_modified_time and modified_time != self._file_system_modified_time:
-            await self._reload_async()
-            self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
-            self._file_system_modified_time = self.last_file_modified_time
+            self.last_file_status_check_time = datetime.now(timezone.utc)
+            if not self.last_file_modified_time:
+                self.last_file_modified_time = self._file_system_modified_time
+
+            # Reload the manifest if it has been updated in the file system.
+            if modified_time and self._file_system_modified_time and modified_time != self._file_system_modified_time:
+                await self._reload_async()
+                self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
+                self._file_system_modified_time = self.last_file_modified_time
+        finally:
+            context.dispose()
 
     async def _get_entity_from_reference(self, entity: 'CdmEntityDeclarationDefinition', manifest: 'CdmManifestDefinition') -> 'CdmEntityDefinition':
         entity_path = await self._get_entity_path_from_declaration(entity, cast('CdmObject', manifest))

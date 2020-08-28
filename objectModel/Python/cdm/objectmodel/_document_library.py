@@ -37,8 +37,13 @@ class DocumentLibrary:
 
     def _list_docs_not_indexed(self) -> Set['CdmDocumentDefinition']:
         """Returns a list of all the documents that are not indexed."""
+        docs_not_indexed = []  # type: List[CdmDocumentDefinition]
         with self._document_library_lock:
-            return self._docs_not_indexed.copy()
+            # gets all the documents that needs indexing and set the currentlyIndexing flag to true.
+            for doc in self._docs_not_indexed:
+                doc._currently_indexing = True
+                docs_not_indexed.append(doc)
+        return docs_not_indexed
 
     def _list_docs_not_loaded(self) -> Set[str]:
         """Returns a list of all the documents that are not loaded."""

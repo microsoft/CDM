@@ -17,29 +17,13 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of the resource adapter, enables the access to the files that are marked as resources.
  */
-public class ResourceAdapter implements StorageAdapter {
+public class ResourceAdapter extends StorageAdapterBase {
     private static final Logger LOGGER = LoggerFactory.getLogger(ResourceAdapter.class);
     private static final String ROOT = "Microsoft.CommonDataModel.ObjectModel.Resources";
-    private String locationHint;
-
-    @Override
-    public void setLocationHint(String locationHint) {
-        this.locationHint = locationHint;
-    }
-
-    @Override
-    public String getLocationHint() {
-        return locationHint;
-    }
-
+    
     @Override
     public boolean canRead() {
         return true;
-    }
-
-    @Override
-    public boolean canWrite() {
-        return false;
     }
 
     @Override
@@ -63,11 +47,6 @@ public class ResourceAdapter implements StorageAdapter {
     }
 
     @Override
-    public CompletableFuture<Void> writeAsync(String corpusPath, String data) {
-        return CompletableFuture.completedFuture(null);
-    }
-
-    @Override
     public String createAdapterPath(String corpusPath) throws StorageAdapterException {
         if (Strings.isNullOrEmpty(corpusPath)) {
             return null;
@@ -83,32 +62,5 @@ public class ResourceAdapter implements StorageAdapter {
         }
 
         return adapterPath.substring(ROOT.length());
-    }
-
-    @Override
-    public void clearCache() {
-        // Intended to return none.
-        return;
-    }
-
-    @Override
-    public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(String corpusPath)
-        throws StorageAdapterException {
-        return CompletableFuture.completedFuture(OffsetDateTime.now());
-    }
-
-    @Override
-    public CompletableFuture<List<String>> fetchAllFilesAsync(String folderCorpusPath) {
-        return CompletableFuture.completedFuture(null);
-    }
-
-    @Override
-    public String fetchConfig() {
-        throw new UnsupportedOperationException("This adapter does not support the fetchConfig method.");
-    }
-
-    @Override
-    public void updateConfig(String config) throws IOException {
-        throw new UnsupportedOperationException("This adapter does not support the updateConfig method.");
     }
 }

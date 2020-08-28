@@ -312,6 +312,8 @@ function verifyRelationships(manifest: CdmManifestDefinition, expectedRelationsh
             && x.fromEntityAttribute === expectedRel.fromEntityAttribute
             && x.toEntity === expectedRel.toEntity
             && x.toEntityAttribute === expectedRel.toEntityAttribute
+            && ((!x.name && !expectedRel.name)
+            || x.name === expectedRel.name)
         );
         expect(found.length)
             .toBe(1);

@@ -232,9 +232,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipToMultipleEntities");
 
             var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
-            var ent = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/A.cdm.json/A");
-            var resEnt = await ent.CreateResolvedEntityAsync("resA");
-            await resEnt.InDocument.SaveAsAsync("resA.cdm.json");
 
             await corpus.CalculateEntityGraphAsync(manifest);
             await manifest.PopulateManifestRelationshipsAsync();
@@ -254,6 +251,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 && x.FromEntityAttribute == expectedRel.FromEntityAttribute
                 && x.ToEntity == expectedRel.ToEntity
                 && x.ToEntityAttribute == expectedRel.ToEntityAttribute
+                && ((string.IsNullOrWhiteSpace(x.Name) && string.IsNullOrWhiteSpace(expectedRel.Name))
+                || x.Name == expectedRel.Name)
                 ).ToList();
                 Assert.AreEqual(1, found.Count);
             }
