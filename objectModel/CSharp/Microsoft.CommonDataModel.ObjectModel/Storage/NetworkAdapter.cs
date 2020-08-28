@@ -15,13 +15,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     /// <summary>
     /// Network adapter is an abstract class that contains logic for adapters dealing with data across network.
     /// </summary>
-    public abstract class NetworkAdapter : IDisposable
+    public abstract class NetworkAdapter : StorageAdapterBase, IDisposable
     {
         protected CdmHttpClient httpClient;
-
-        protected TimeSpan? timeout = null;
-        protected TimeSpan? maximumTimeout = null;
-        protected int numberOfRetries;
 
         // Use some default values in milliseconds in the case a user doesn't set them up.
         protected const double DefaultTimeout = 2000;
@@ -29,23 +25,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         protected const int DefaultNumberOfRetries = 2;
         protected const int DefaultShortestTimeWait = 500;
 
+        protected int numberOfRetries = DefaultNumberOfRetries;
+
         protected CdmHttpClient.Callback waitTimeCallback = null;
 
         protected bool IsDisposed { get; private set; }
-
-        /// <summary>
-        /// The default network adapter constructor called when the object is created by a user through code.
-        /// </summary>
-        protected NetworkAdapter()
-        {
-        }
-
-        /// <summary>
-        /// The network adapter constructor called when the object is created through a JSON config.
-        /// </summary>
-        protected NetworkAdapter(string configs)
-        {   
-        }
 
         ~NetworkAdapter()
         {
@@ -54,40 +38,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
-        /// The timeout for an HTTP request.
+        /// The timeout for an HTTP request, default is 2000ms.
         /// </summary>
-        public TimeSpan? Timeout
-        {
-            get
-            {
-                return this.timeout != null ? this.timeout : TimeSpan.FromMilliseconds(DefaultTimeout);
-            }
-            set
-            {
-                this.timeout = value;
-            }
-        }
+        public TimeSpan? Timeout { get; set; } = TimeSpan.FromMilliseconds(DefaultTimeout);
 
         /// <summary>
-        /// The maximum timeout for all retried HTTP requests.
+        /// The maximum timeout for all retried HTTP requests, default is 10000ms.
         /// </summary>
-        public TimeSpan? MaximumTimeout
-        {
-            get
-            {
-                return this.maximumTimeout != null ? this.maximumTimeout : TimeSpan.FromMilliseconds(DefaultMaximumTimeout);
-            }
-            set
-            {
-                this.maximumTimeout = value;
-            }
-        }
+        public TimeSpan? MaximumTimeout { get; set; } = TimeSpan.FromMilliseconds(DefaultMaximumTimeout);
 
         /// <summary>
-        /// The maximum number of retries for an HTTP request, default is 0.
+        /// The maximum number of retries for an HTTP request, default is 2.
+        /// Setting NumberOfRetries to negative value won't be effective.
         /// </summary>
-        public int NumberOfRetries { get; set; }
-
+        public int NumberOfRetries {
+            get{
+                return this.numberOfRetries;
+            }
+            set{
+                this.numberOfRetries = value < 0 ? DefaultNumberOfRetries : value;
+            }
+        }
 
         /// <summary>
         /// The wait time callback that gets called after each request is executed.

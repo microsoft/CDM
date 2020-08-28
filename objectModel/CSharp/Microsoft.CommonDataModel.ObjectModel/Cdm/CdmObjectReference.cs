@@ -5,7 +5,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using System;
-    using System.Collections.Generic;
 
     public interface CdmObjectReference : CdmObject
     {

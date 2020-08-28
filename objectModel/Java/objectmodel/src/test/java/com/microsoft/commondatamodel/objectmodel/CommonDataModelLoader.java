@@ -98,7 +98,7 @@ public class CommonDataModelLoader {
      List<CdmDocumentDefinition> allDocuments = cdmCorpus.getDocumentLibrary().listAllDocuments();
      for (int i = 0; i < allDocuments.size(); i++) {
        final ResolveOptions resOpt = new ResolveOptions(allDocuments.get(i));
-       allDocuments.get(i).indexIfNeededAsync(resOpt).join();
+       allDocuments.get(i).indexIfNeededAsync(resOpt, true).join();
      }
 
      return true;

@@ -7,11 +7,14 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmE2ERelationship;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.E2ERelationship;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 public class E2ERelationshipPersistence {
   public static CdmE2ERelationship fromData(final CdmCorpusContext ctx, final E2ERelationship dataObj) {
     final CdmE2ERelationship relationship = ctx.getCorpus().makeObject(CdmObjectType.E2ERelationshipDef);
-    relationship.setName(dataObj.getName());
+    if (!StringUtils.isNullOrTrimEmpty(dataObj.getName())) {
+      relationship.setName(dataObj.getName());
+    }
     relationship.setFromEntity(dataObj.getFromEntity());
     relationship.setFromEntityAttribute(dataObj.getFromEntityAttribute());
     relationship.setToEntity(dataObj.getToEntity());
@@ -21,7 +24,9 @@ public class E2ERelationshipPersistence {
 
   public static E2ERelationship toData(final CdmE2ERelationship instance) {
     final E2ERelationship e2ERelationship = new E2ERelationship();
-    e2ERelationship.setName(instance.getName());
+    if (!StringUtils.isNullOrTrimEmpty(instance.getName())) {
+      e2ERelationship.setName(instance.getName());
+    }
     e2ERelationship.setFromEntity(instance.getFromEntity());
     e2ERelationship.setFromEntityAttribute(instance.getFromEntityAttribute());
     e2ERelationship.setToEntity(instance.getToEntity());

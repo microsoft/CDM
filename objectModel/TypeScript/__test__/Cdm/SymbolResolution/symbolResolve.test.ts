@@ -13,6 +13,7 @@ import {
 } from '../../../internal';
 import { isAttributeGroupDefinition, isAttributeGroupReference, isCdmTraitDefinition, isCdmTraitReference, isTypeAttributeDefinition } from '../../../Utilities/cdmObjectTypeGuards';
 import { testHelper } from '../../testHelper';
+import { resolveContextScope } from '../../../Utilities/resolveContextScope';
 
 describe('Cdm/SymbolResolution/SymbolResolve', () => {
     const testsSubpath: string = 'Cdm/SymbolResolution';
@@ -24,8 +25,10 @@ describe('Cdm/SymbolResolution/SymbolResolve', () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSymbolResolution');
 
         // load the file
-        const ent: CdmEntityDefinition = await corpus.fetchObjectAsync('local:/symbolEntity.cdm.json/symbolEnt');
-        const resOpt: resolveOptions = new resolveOptions(ent.inDocument);
+        const resOpt: resolveOptions = new resolveOptions();
+        resOpt.strictValidation = true;
+        const ent: CdmEntityDefinition = await corpus.fetchObjectAsync('local:/symbolEntity.cdm.json/symbolEnt', null, resOpt);
+        resOpt.wrtDoc = ent.inDocument;
 
         // resolve a reference to the trait object
         const traitDef: CdmObjectBase = corpus.resolveSymbolReference(

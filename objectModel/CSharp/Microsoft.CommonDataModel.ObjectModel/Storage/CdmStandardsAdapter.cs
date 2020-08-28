@@ -14,13 +14,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     /// <summary>
     /// An adapter pre-configured to read the standard schema files published by CDM.
     /// </summary>
-    public class CdmStandardsAdapter : NetworkAdapter, StorageAdapter
+    public class CdmStandardsAdapter : NetworkAdapter
     {
         internal const string Type = "cdm-standards";
         private const string STANDARDS_ENDPOINT = "https://cdm-schema.microsoft.com";
-
-        /// <inheritdoc />
-        public string LocationHint { get; set; }
         
         /// <summary>
         /// The path to be appended to the endpoint.
@@ -52,36 +49,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public bool CanRead()
+        public override bool CanRead()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public bool CanWrite()
-        {
-            return false;
-        }
-
-        /// <inheritdoc />
-        public void ClearCache()
-        {
-        }
-
-        /// <inheritdoc />
-        public Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
-        {
-            return Task.FromResult<DateTimeOffset?>(DateTimeOffset.UtcNow);
-        }
-
-        /// <inheritdoc />
-        public string CreateAdapterPath(string corpusPath)
+        public override string CreateAdapterPath(string corpusPath)
         {
             return $"{AbsolutePath}{corpusPath}";
         }
 
         /// <inheritdoc />
-        public string CreateCorpusPath(string adapterPath)
+        public override string CreateCorpusPath(string adapterPath)
         {
             if (!adapterPath.StartsWith(AbsolutePath))
             {
@@ -92,13 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public Task<List<string>> FetchAllFilesAsync(string folderCorpusPath)
-        {
-            return null;
-        }
-
-        /// <inheritdoc />
-        public string FetchConfig()
+        public override string FetchConfig()
         {
             var resultConfig = new JObject
             {
@@ -127,7 +101,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public async Task<string> ReadAsync(string corpusPath)
+        public override async Task<string> ReadAsync(string corpusPath)
         {
             var httpRequest = this.SetUpCdmRequest(Root + corpusPath, null, HttpMethod.Get);
 
@@ -138,7 +112,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public void UpdateConfig(string config)
+        public override void UpdateConfig(string config)
         {
             if (config == null)
             {
@@ -158,12 +132,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 this.Root = configJson["root"].ToString();
             }
-        }
-
-        /// <inheritdoc />
-        public Task WriteAsync(string corpusPath, string data)
-        {
-            throw new NotSupportedException();
         }
     }
 }

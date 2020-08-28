@@ -55,5 +55,90 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             await corpus.ComputeLastModifiedTimeAsync("local:/default.manifest.cdm.json");
         }
+
+        /// <summary>
+        /// Tests the FetchObjectAsync function with the StrictValidation off.
+        /// </summary>
+        [TestMethod]
+        public async Task TestStrictValidationOff()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestStrictValidation");
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    // when the strict validation is disabled, there should be no reference validation.
+                    // no error should be logged.
+                    Assert.Fail(message);
+                }
+            }, CdmStatusLevel.Warning);
+
+            // load with deferred imports.
+            var resOpt = new ResolveOptions()
+            {
+                StrictValidation = false
+            };
+            await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", null, resOpt);
+        }
+
+        /// <summary>
+        /// Tests the FetchObjectAsync function with the StrictValidation on.
+        /// </summary>
+        [TestMethod]
+        public async Task TestStrictValidationOn()
+        {
+            int errorCount = 0;
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestStrictValidation");
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    if (message.Contains("Unable to resolve the reference"))
+                    {
+                        errorCount++;
+                    }
+                    else
+                    {
+                        Assert.Fail(message);
+                    }
+
+                }
+            }, CdmStatusLevel.Error);
+
+            // load with strict validation.
+            var resOpt = new ResolveOptions()
+            {
+                StrictValidation = true
+            };
+            await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", null, resOpt);
+            Assert.AreEqual(1, errorCount);
+
+            errorCount = 0;
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestStrictValidation");
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    if (level == CdmStatusLevel.Warning && message.Contains("Unable to resolve the reference"))
+                    {
+                        errorCount++;
+                    }
+                    else
+                    {
+                        Assert.Fail(message);
+                    }
+
+                }
+            }, CdmStatusLevel.Warning);
+
+            // load with strict validation and shallow validation.
+            resOpt = new ResolveOptions()
+            {
+                StrictValidation = true,
+                ShallowValidation = true
+            };
+            await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", null, resOpt);
+            Assert.AreEqual(1, errorCount);
+        }
     }
 }

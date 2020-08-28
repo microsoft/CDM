@@ -130,24 +130,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         }
 
         /// <summary>
-        /// Get top node of the projection state tree for non-polymorphic scenarios
+        /// Gets the names of the top-level nodes in the projection state tree (for non-polymorphic scenarios) that match a set of attribute names 
         /// </summary>
-        /// <param name="projCtx"></param>
-        /// <param name="attrName"></param>
-        /// <returns></returns>
-        internal static List<ProjectionAttributeState> GetTop(ProjectionContext projCtx, string attrName)
+        /// <param name="projCtx">The projection context.</param>
+        /// <param name="attrNames">The list of attribute names to match from.</param>
+        internal static Dictionary<string, string> GetTopList(ProjectionContext projCtx, List<string> attrNames)
         {
-            SearchResult result = new SearchResult();
-            foreach (ProjectionAttributeState top in projCtx.CurrentAttributeStateSet.Values)
+            // This dictionary contains a mapping from the top-level (most recent) name of an attribute 
+            // to the attribute name the top-level name was derived from (the name contained in the given list)
+            Dictionary<string, string> topLevelAttributeNames = new Dictionary<string, string>();
+
+            // Iterate through each attribute name in the list and search for their top-level names
+            foreach (string attrName in attrNames)
             {
-                SearchStructure st = new SearchStructure();
-                st = SearchStructure.BuildStructure(top, top, attrName, st, false, 0);
-                if (st?.Result.FoundFlag == true)
+                // Iterate through each projection attribute state in the current set and check if its
+                // current resolved attribute's name is the top-level name of the current attrName
+                foreach (ProjectionAttributeState top in projCtx.CurrentAttributeStateSet.Values)
                 {
-                    result = st.Result;
+                    SearchStructure st = new SearchStructure();
+                    st = SearchStructure.BuildStructure(top, top, attrName, st, false, 0);
+                    // Found the top-level name
+                    if (st?.Result.FoundFlag == true)
+                    {
+                        // Create a mapping from the top-level name of the attribute to the name it has in the given list
+                        topLevelAttributeNames[top.CurrentResolvedAttribute.ResolvedName] = attrName;
+                    }
                 }
             }
-            return result?.Top;
+            return topLevelAttributeNames;
         }
 
         /// <summary>

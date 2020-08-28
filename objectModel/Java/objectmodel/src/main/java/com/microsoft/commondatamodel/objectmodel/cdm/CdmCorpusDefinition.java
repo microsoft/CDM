@@ -56,10 +56,8 @@ public class CdmCorpusDefinition {
   private String rootPath;
   private Map<String, List<CdmDocumentDefinition>> symbolDefinitions;
   private Map<String, SymbolSet> definitionReferenceSymbols;
-  private Map<String, String> definitionWrtTag;
   private Map<String, ResolvedTraitSet> emptyRts;
 
-  private Map<String, CdmObject> objectCache;
   private DocumentLibrary documentLibrary;
 
   /**
@@ -82,7 +80,6 @@ public class CdmCorpusDefinition {
   public CdmCorpusDefinition() {
     this.symbolDefinitions = new LinkedHashMap<>();
     this.definitionReferenceSymbols = new LinkedHashMap<>();
-    this.definitionWrtTag = new LinkedHashMap<>();
     this.emptyRts = new LinkedHashMap<>();
 
     this.setCtx(new ResolveContext(this));
@@ -92,7 +89,6 @@ public class CdmCorpusDefinition {
     this.outgoingRelationships = new LinkedHashMap<>();
     this.incomingRelationships = new LinkedHashMap<>();
     this.resEntMap = new LinkedHashMap<>();
-    this.objectCache = new LinkedHashMap<>();
     this.documentLibrary = new DocumentLibrary();
 
     // the default for the default is to make entity attributes into foreign key references when they point at one other instance and
@@ -528,7 +524,6 @@ public class CdmCorpusDefinition {
 
   void removeDocumentObjects(final CdmFolderDefinition cdmFolderDefinition, final CdmDocumentDefinition docDef) {
     final CdmDocumentDefinition doc = docDef;
-    // don't worry about definitionWrtTag because it uses the doc ID that won't get re-used in this session unless there are more than 4 billion objects
 
     // every symbol defined in this document is pointing at the document, so remove from cache.
     // also remove the list of docs that it depends on
@@ -752,6 +747,10 @@ public class CdmCorpusDefinition {
     }
 
     CdmDocumentDefinition wrtDoc = resOpt.getWrtDoc();
+    if (!wrtDoc.indexIfNeededAsync(resOpt, true).join()) {
+      Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, "Couldn't index source document.", "resolveSymbolReference");
+      return null;
+    }
 
     // Get the array of documents where the symbol is defined.
     final DocsResult symbolDocsResult = this.docsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
@@ -949,46 +948,47 @@ public class CdmCorpusDefinition {
     }
   }
 
-  boolean visit(final String path, final VisitCallback preChildren, final VisitCallback postChildren) {
-    return false;
-  }
-
   private CompletableFuture<CdmContainerDefinition> loadFolderOrDocumentAsync(final String objectPath) {
     return loadFolderOrDocumentAsync(objectPath, false);
   }
 
-  boolean indexDocuments(final ResolveOptions resOpt) {
+  boolean indexDocuments(final ResolveOptions resOpt, final boolean strictValidation) {
     List<CdmDocumentDefinition> docsNotIndexed = this.documentLibrary.listDocsNotIndexed();
 
-    if (docsNotIndexed.size() > 0) {      // Index any imports.
-      for (final CdmDocumentDefinition doc : docsNotIndexed) {
-        if (doc.getNeedsIndexing()) {
-          Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("index start: {0}", doc.getAtCorpusPath()), "indexDocuments");
-          doc.clearCaches();
-          doc.getImportPriorities();
-        }
-      }
+    if (docsNotIndexed.size() == 0) {
+      return true;
+    }
 
-      // Check basic integrity.
-      for (final CdmDocumentDefinition doc : docsNotIndexed) {
-        if (doc.getNeedsIndexing()) {
-          doc.isValid = true; // assume valid unless this fails
-          if (!this.checkObjectIntegrity(doc)) {
-            doc.isValid = false;
-          }
-        }
+    for (final CdmDocumentDefinition doc : docsNotIndexed) {
+      if (!doc.declarationsIndexed) {
+        Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("index start: {0}", doc.getAtCorpusPath()), "indexDocuments");
+        doc.clearCaches();
       }
+    }
 
-      // Declare definitions in objects in this doc.
+    // Check basic integrity.
+    for (final CdmDocumentDefinition doc : docsNotIndexed) {
+      if (!doc.declarationsIndexed) {
+        doc.isValid = this.checkObjectIntegrity(doc);
+      }
+    }
+
+    // Declare definitions in objects in this doc.
+    for (final CdmDocumentDefinition doc : docsNotIndexed) {
+      if (!doc.declarationsIndexed && doc.isValid) {
+        this.declareObjectDefinitions(doc, "");
+      }
+    }
+
+    if (strictValidation) {
+      // Index any imports.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
-        if (doc.getNeedsIndexing() && doc.isValid) {
-          this.declareObjectDefinitions(doc, "");
-        }
+        doc.getImportPriorities();
       }
 
       // Make sure we can find everything that is named by reference.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
-        if (doc.getNeedsIndexing() && doc.isValid) {
+        if (doc.isValid) {
           final ResolveOptions resOptLocal = CdmObjectBase.copyResolveOptions(resOpt);
           resOptLocal.setWrtDoc(doc);
           this.resolveObjectDefinitions(doc, resOptLocal);
@@ -997,20 +997,18 @@ public class CdmCorpusDefinition {
 
       // Now resolve any trait arguments that are type object.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
-        if (doc.getNeedsIndexing() && doc.isValid) {
+        if (doc.isValid) {
           final ResolveOptions resOptLocal = CdmObjectBase.copyResolveOptions(resOpt);
           resOptLocal.setWrtDoc(doc);
           this.resolveTraitArguments(resOptLocal, doc);
         }
       }
+    }
 
-      // Finish up.
-      for (final CdmDocumentDefinition doc : docsNotIndexed) {
-        if (doc.getNeedsIndexing()) {
-          Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("index finish: {0}", doc.getAtCorpusPath()), "indexDocuments");
-          this.finishDocumentResolve(doc);
-        }
-      }
+    // Finish up.
+    for (final CdmDocumentDefinition doc : docsNotIndexed) {
+      Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("index finish: {0}", doc.getAtCorpusPath()), "indexDocuments");
+      this.finishDocumentResolve(doc, strictValidation);
     }
 
     return true;
@@ -1082,7 +1080,7 @@ public class CdmCorpusDefinition {
    * @see #fetchObjectAsync(String, CdmObject)
    */
   public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(final String objectPath) {
-    return fetchObjectAsync(objectPath, null).thenApply(cdmObject -> cdmObject != null ? (T) cdmObject : null);
+    return fetchObjectAsync(objectPath, null);
   }
 
   /**
@@ -1097,9 +1095,7 @@ public class CdmCorpusDefinition {
   public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(
       final String objectPath,
       final CdmObject cdmObject) {
-    return
-        fetchObjectAsync(objectPath, cdmObject, false, false)
-            .thenApply(fetchedCdmObject -> fetchedCdmObject != null ? (T) fetchedCdmObject : null);
+    return fetchObjectAsync(objectPath, cdmObject, null, false);
   }
 
   /**
@@ -1117,9 +1113,9 @@ public class CdmCorpusDefinition {
       final String objectPath,
       final CdmObject cdmObject,
       final boolean shallowValidation) {
-    return
-        fetchObjectAsync(objectPath, cdmObject, shallowValidation, false)
-            .thenApply(fetchedCdmObject -> fetchedCdmObject != null ? (T) fetchedCdmObject : null);
+    final ResolveOptions resOpt = new ResolveOptions();
+    resOpt.setShallowValidation(shallowValidation);
+    return fetchObjectAsync(objectPath, cdmObject, resOpt, false);
   }
 
   /**
@@ -1129,20 +1125,37 @@ public class CdmCorpusDefinition {
    * @param objectPath Object path, absolute or relative.
    * @param cdmObject  Optional parameter. When provided, it is used to obtain the FolderPath and
    *                   the Namespace needed to create the absolute path from a relative path.
-   * @param shallowValidation Optional parameter. When provided, shallow validation in ResolveOptions is enabled,
-   *                          which logs errors regarding resolving/loading references as warnings.
+   * @param resOpt     Optional parameter. Optional parameter. When provided, will use be used to
+   *                   determine how the symbols are resolved.
+   * @return The object obtained from the provided path.
+   */
+  public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(
+          final String objectPath,
+          final CdmObject cdmObject,
+          final ResolveOptions resOpt) {
+    return fetchObjectAsync(objectPath, cdmObject, resOpt, false);
+  }
+
+  /**
+   * Fetches an object by the path from the corpus, with the CDM object specified.
+   *
+   * @param <T>        Type of the object to be fetched.
+   * @param objectPath Object path, absolute or relative.
+   * @param cdmObject  Optional parameter. When provided, it is used to obtain the FolderPath and
+   *                   the Namespace needed to create the absolute path from a relative path.
+   * @param resOpt     Optional parameter. Optional parameter. When provided, will use be used to
+   *                   determine how the symbols are resolved.
    * @param forceReload Optional parameter. When true, the document containing the requested object is reloaded from storage
    *                    to access any external changes made to the document since it may have been cached by the corpus.
    * @return The object obtained from the provided path.
    */
-  CompletableFuture<CdmObject> fetchObjectAsync(
+  public <T extends CdmObject> CompletableFuture<T> fetchObjectAsync(
       final String objectPath,
       final CdmObject cdmObject,
-      final boolean shallowValidation,
+      final ResolveOptions resOpt,
       final boolean forceReload) {
-    // isRootManifestPath is required to deal with the load of the initial root manifest.
-    // In this case the the file name can be something different than a CDM CdmManifestDefinition,
-    // e.g.: "model.json".
+
+    final ResolveOptions finalResOpt = resOpt != null ? resOpt : new ResolveOptions();
 
     final String absolutePath = this.storage.createAbsoluteCorpusPath(objectPath, cdmObject);
 
@@ -1156,53 +1169,45 @@ public class CdmCorpusDefinition {
     }
 
     Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("request object: {0}", objectPath), "fetchObjectAsync");
+    final CdmContainerDefinition newObj = this.loadFolderOrDocumentAsync(documentPath, forceReload).join();
 
-    final String finalDocumentPath = documentPath;
-    final int finalDocumentNameIndex = documentNameIndex;
-    return this.loadFolderOrDocumentAsync(finalDocumentPath, forceReload).thenCompose(loadedCdmObject -> {
-      if (loadedCdmObject != null) {
-        final ResolveOptions resOpt = new ResolveOptions();
-        // get imports and index each document that is loaded
-        if (loadedCdmObject instanceof CdmDocumentDefinition) {
-          resOpt.setWrtDoc((CdmDocumentDefinition) loadedCdmObject);
-          resOpt.setDirectives(new AttributeResolutionDirectiveSet());
-          resOpt.setShallowValidation(shallowValidation);
-
-          if (!((CdmDocumentDefinition) loadedCdmObject).indexIfNeededAsync(resOpt).join()) {
-            return null;
-          }
-          if (!((CdmDocumentDefinition)loadedCdmObject).isValid) {
-            Logger.error(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("The requested path: {0} involves a document that failed validation", objectPath), "fetchObjectAsync");
-            return null;
-          }
+    if (newObj != null) {
+      // get imports and index each document that is loaded
+      if (newObj instanceof CdmDocumentDefinition) {
+        if (!((CdmDocumentDefinition) newObj).indexIfNeededAsync(finalResOpt, false).join()) {
+          return null;
         }
-
-        if (Objects.equals(finalDocumentPath, absolutePath)) {
-          return CompletableFuture.completedFuture(loadedCdmObject);
+        if (!((CdmDocumentDefinition)newObj).isValid) {
+          Logger.error(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("The requested path: {0} involves a document that failed validation", objectPath), "fetchObjectAsync");
+          return null;
         }
-
-        if (finalDocumentNameIndex == -1) {
-          return CompletableFuture.completedFuture(null);
-        }
-
-        // trim off the document path to get the object path in the doc
-        final String remainingObjectPath = absolutePath.substring(finalDocumentNameIndex + 1);
-
-        final CdmObject result = ((CdmDocumentDefinition) loadedCdmObject).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
-        if (null == result) {
-          Logger.error(
-              CdmCorpusDefinition.class.getSimpleName(),
-              this.ctx,
-              Logger.format("Could not find symbol '{0}' in document[{1}]", remainingObjectPath, loadedCdmObject.getAtCorpusPath()),
-              "fetchObjectAsync"
-          );
-        }
-
-        return CompletableFuture.completedFuture(result);
       }
 
-      return CompletableFuture.completedFuture(null);
-    });
+      if (Objects.equals(documentPath, absolutePath)) {
+        return CompletableFuture.completedFuture((T)newObj);
+      }
+
+      if (documentNameIndex == -1) {
+        return CompletableFuture.completedFuture(null);
+      }
+
+      // trim off the document path to get the object path in the doc
+      final String remainingObjectPath = absolutePath.substring(documentNameIndex + 1);
+
+      final CdmObject result = ((CdmDocumentDefinition) newObj).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
+      if (null == result) {
+        Logger.error(
+                CdmCorpusDefinition.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Could not find symbol '{0}' in document[{1}]", remainingObjectPath, newObj.getAtCorpusPath()),
+                "fetchObjectAsync"
+        );
+      }
+
+      return CompletableFuture.completedFuture((T)result);
+    }
+
+    return CompletableFuture.completedFuture(null);
   }
 
   public void setEventCallback(EventCallback status) {
@@ -1735,6 +1740,7 @@ public class CdmCorpusDefinition {
    *
    * @return The validation step that follows the completed step.
    */
+  @Deprecated
   public CompletableFuture<CdmValidationStep> resolveReferencesAndValidateAsync(
       final CdmValidationStep stage,
       final CdmValidationStep stageThrough) {
@@ -1768,7 +1774,7 @@ public class CdmCorpusDefinition {
       finalResolveOptions.setRelationshipDepth(0);
 
       for (final CdmDocumentDefinition doc : this.documentLibrary.listAllDocuments()) {
-        doc.indexIfNeededAsync(resOpt).join();
+        doc.indexIfNeededAsync(resOpt, false).join();
       }
 
       final boolean finishResolve = stageThrough == stage;
@@ -2202,13 +2208,17 @@ public class CdmCorpusDefinition {
     resOpt.setIndexingDoc(null);
   }
 
-  private void finishDocumentResolve(final CdmDocumentDefinition doc) {
+  private void finishDocumentResolve(final CdmDocumentDefinition doc, final boolean strictValidation) {
+    boolean wasIndexedPreviously = doc.declarationsIndexed;
+
     doc.setCurrentlyIndexing(false);
-    doc.setImportsIndexed(true);
-    doc.setNeedsIndexing(false);
+    doc.declarationsIndexed = true;
+    doc.setImportsIndexed(doc.isImportsIndexed() || strictValidation);
+    doc.setNeedsIndexing(!strictValidation);
     this.documentLibrary.markDocumentAsIndexed(doc);
 
-    if (doc.isValid) {
+    // if the document declarations were indexed previously, do not log again.
+    if (!wasIndexedPreviously && doc.isValid) {
       doc.getDefinitions().forEach(def -> {
         if (def.getObjectType() == CdmObjectType.EntityDef) {
           Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("indexed: '{0}'", def.getAtCorpusPath()));
@@ -2489,7 +2499,7 @@ public class CdmCorpusDefinition {
     // everything is resolved.
     List<CdmDocumentDefinition> allDocuments = this.documentLibrary.listAllDocuments();
     for (final CdmDocumentDefinition doc : allDocuments) {
-      this.finishDocumentResolve(doc);
+      this.finishDocumentResolve(doc, false);
     }
   }
 

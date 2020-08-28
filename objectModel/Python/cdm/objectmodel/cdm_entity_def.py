@@ -295,7 +295,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                 target_at_corpus_path), self.create_resolved_entity_async.__name__)
             return None
 
-        if not await res_opt.wrt_doc._index_if_needed(res_opt):
+        if not await res_opt.wrt_doc._index_if_needed(res_opt, True):
             logger.error(self._TAG, self.ctx, 'Couldn\'t index source document.', self.create_resolved_entity_async.__name__)
             return None
 

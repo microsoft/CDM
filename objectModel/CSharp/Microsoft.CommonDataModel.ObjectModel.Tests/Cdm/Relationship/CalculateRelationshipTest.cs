@@ -116,12 +116,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmEntityDefinition entity = corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest).GetAwaiter().GetResult();
             Assert.IsNotNull(entity);
             CdmEntityDefinition resolvedEntity = TestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" }).GetAwaiter().GetResult();
-            string actualAttrCtx = GetAttributeContextString(resolvedEntity, entityName, actualOutputFolder);
 
-            string expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputFolder, $"AttrCtx_{entityName}.txt"));
-            string expectedAttrCtx = File.ReadAllText(expectedStringFilePath);
-
-            Assert.AreEqual(expectedAttrCtx, actualAttrCtx);
+            AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputFolder, entityName, resolvedEntity);
 
             corpus.CalculateEntityGraphAsync(manifest).GetAwaiter().GetResult();
             manifest.PopulateManifestRelationshipsAsync().GetAwaiter().GetResult();
@@ -216,18 +212,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Console.WriteLine(bldr.ToString());
 
             return bldr.ToString();
-        }
-
-        /// <summary>
-        /// Check the attribute context for these test scenarios
-        /// </summary>
-        /// <param name="resolvedEntity"></param>
-        /// <param name="entityName"></param>
-        /// <param name="ActualOutputFolder"></param>
-        /// <returns></returns>
-        private static string GetAttributeContextString(CdmEntityDefinition resolvedEntity, string entityName, string ActualOutputFolder)
-        {
-            return (new AttributeContextUtil()).GetAttributeContextStrings(resolvedEntity, resolvedEntity.AttributeContext);
         }
     }
 }

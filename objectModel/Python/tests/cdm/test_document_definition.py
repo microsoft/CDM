@@ -32,8 +32,8 @@ class DocumentDefinitionTests(unittest.TestCase):
         doc_c.imports.append('B.cdm.json')
 
         # forces doc_b to be indexed first.
-        await doc_b._index_if_needed(ResolveOptions())
-        await doc_a._index_if_needed(ResolveOptions())
+        await doc_b._index_if_needed(ResolveOptions(), True)
+        await doc_a._index_if_needed(ResolveOptions(), True)
 
         # should contain A, B and C.
         self.assertEqual(3, len(doc_a._import_priorities.import_priority))
@@ -68,7 +68,7 @@ class DocumentDefinitionTests(unittest.TestCase):
         doc_d.imports.append('C.cdm.json')
 
         # _index_if_needed will internally call prioritizeimports on every document.
-        await doc_a._index_if_needed(ResolveOptions())
+        await doc_a._index_if_needed(ResolveOptions(), True)
 
         self.assertEqual(4, len(doc_a._import_priorities.import_priority))
 
@@ -76,14 +76,14 @@ class DocumentDefinitionTests(unittest.TestCase):
         self._mark_documents_to_index(folder.documents)
 
         # forces doc_c to be indexed first, so the priorityList will be read from the cache this time.
-        await doc_c._index_if_needed(ResolveOptions())
-        await doc_a._index_if_needed(ResolveOptions())
+        await doc_c._index_if_needed(ResolveOptions(), True)
+        await doc_a._index_if_needed(ResolveOptions(), True)
 
         self.assertEqual(4, len(doc_a._import_priorities.import_priority))
 
         # indexes the rest of the documents.
-        await doc_b._index_if_needed(ResolveOptions())
-        await doc_d._index_if_needed(ResolveOptions())
+        await doc_b._index_if_needed(ResolveOptions(), True)
+        await doc_d._index_if_needed(ResolveOptions(), True)
 
         self.assertFalse(doc_a._import_priorities.has_circular_import)
         self.assertFalse(doc_b._import_priorities.has_circular_import)
@@ -109,8 +109,8 @@ class DocumentDefinitionTests(unittest.TestCase):
         folder.documents.append(doc_c)
 
         # forces doc_b to be indexed first, so the priority_list will be read from the cache this time.
-        await doc_b._index_if_needed(ResolveOptions())
-        await doc_a._index_if_needed(ResolveOptions())
+        await doc_b._index_if_needed(ResolveOptions(), True)
+        await doc_a._index_if_needed(ResolveOptions(), True)
 
         # should only contain doc_a and doc_c, doc_b should be excluded.
         self.assertEqual(2, len(doc_a._import_priorities.import_priority))

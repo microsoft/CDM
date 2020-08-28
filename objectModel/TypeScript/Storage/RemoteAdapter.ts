@@ -12,12 +12,11 @@ interface HostInfo {
     path?: string;
 }
 
-export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
+export class RemoteAdapter extends NetworkAdapter {
     /**
      * @internal
      */
     public readonly type: string = 'remote';
-    public locationHint: string;
 
     private sources: { [key: string]: string } = {};
     private sourcesById: { [key: string]: { protocol: string; host: string } } = {};
@@ -43,10 +42,6 @@ export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
         }
     }
 
-    public async writeAsync(corpusPath: string, data: string): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
     public clearCache(): void {
         this.sources = {};
         this.sourcesById = {};
@@ -64,10 +59,6 @@ export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
         const cdmHttpResponse: CdmHttpResponse = await super.executeRequest(cdmHttpRequest);
 
         return cdmHttpResponse.content.toString();
-    }
-
-    public canWrite(): boolean {
-        return false;
     }
 
     public createAdapterPath(corpusPath: string): string {
@@ -92,14 +83,6 @@ export class RemoteAdapter extends NetworkAdapter implements StorageAdapter {
         const hostInfo: HostInfo = this.getOrRegisterHostInfo(adapterPath);
 
         return `/${hostInfo.key}${path}`;
-    }
-
-    public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        return new Date();
-    }
-
-    public async fetchAllFilesAsync(currFullPath: string): Promise<string[]> {
-        return undefined;
     }
 
     private getGuid(): string {

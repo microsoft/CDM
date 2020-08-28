@@ -230,30 +230,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"local:/default.manifest.cdm.json");
 
             string expectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
-            string fileNameSuffix = GetResolutionOptionNameSuffix(resOpts);
+            string fileNameSuffix = TestUtils.GetResolutionOptionNameSuffix(resOpts);
 
             CdmEntityDefinition entSalesForeignKeyProjection = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entSalesForeignKeyProjection);
             CdmEntityDefinition resolvedSalesForeignKeyProjection = await SaveResolved(corpus, manifest, testName, entSalesForeignKeyProjection, resOpts);
             Assert.IsNotNull(resolvedSalesForeignKeyProjection);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedSalesForeignKeyProjection);
-        }
-
-        private string GetResolutionOptionNameSuffix(List<string> resolutionOptions)
-        {
-            string fileNamePrefix = string.Empty;
-
-            for (int i = 0; i < resolutionOptions.Count; i++)
-            {
-                fileNamePrefix = $"{fileNamePrefix}_{resolutionOptions[i]}";
-            }
-
-            if (string.IsNullOrWhiteSpace(fileNamePrefix))
-            {
-                fileNamePrefix = "_default";
-            }
-
-            return fileNamePrefix;
         }
 
         private async Task<CdmEntityDefinition> SaveResolved(CdmCorpusDefinition corpus, CdmManifestDefinition manifest, string testName, CdmEntityDefinition inputEntity, List<string> resolutionOptions)
@@ -264,7 +247,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 roHashSet.Add(resolutionOptions[i]);
             }
 
-            string fileNameSuffix = GetResolutionOptionNameSuffix(resolutionOptions);
+            string fileNameSuffix = TestUtils.GetResolutionOptionNameSuffix(resolutionOptions);
 
             string resolvedEntityName = $"Resolved_{inputEntity.EntityName}{fileNameSuffix}.cdm.json";
 

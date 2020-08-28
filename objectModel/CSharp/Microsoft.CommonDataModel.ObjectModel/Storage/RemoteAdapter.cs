@@ -12,7 +12,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
-    public class RemoteAdapter : NetworkAdapter, StorageAdapter
+    public class RemoteAdapter : NetworkAdapter
     {
         private Dictionary<string, string> sources = new Dictionary<string, string>();
         private Dictionary<string, Dictionary<string, string>> sourcesById = new Dictionary<string, Dictionary<string, string>>();
@@ -40,9 +40,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             }
         }
 
-        /// <inheritdoc />
-        public string LocationHint { get; set; }
-
         /// <summary>
         /// The default constructor without specifying hosts.
         /// </summary>
@@ -63,39 +60,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public bool CanRead()
+        public override bool CanRead()
         {
             return true;
         }
 
         /// <inheritdoc />
-        public bool CanWrite()
-        {
-            return false;
-        }
-
-        /// <inheritdoc />
-        public void ClearCache()
+        public override void ClearCache()
         {
             this.sources = new Dictionary<string, string>();
             this.sourcesById = new Dictionary<string, Dictionary<string, string>>();
         }
 
         /// <inheritdoc />
-        public Task<DateTimeOffset?> ComputeLastModifiedTimeAsync(string corpusPath)
-        {
-            return Task.FromResult<DateTimeOffset?>(DateTimeOffset.UtcNow);
-        }
-
-        /// <inheritdoc />
-        public async Task<List<string>> FetchAllFilesAsync(string currFullPath)
-        {
-            // TODO
-            return null;
-        }
-
-        /// <inheritdoc />
-        public string CreateAdapterPath(string corpusPath)
+        public override string CreateAdapterPath(string corpusPath)
         {
             var urlConfig = this.GetUrlConfig(corpusPath);
             var protocol = urlConfig["protocol"];
@@ -107,7 +85,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public string CreateCorpusPath(string adapterPath)
+        public override string CreateCorpusPath(string adapterPath)
         {
             if (string.IsNullOrEmpty(adapterPath))
             {
@@ -129,8 +107,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             return $"/{hostInfo["key"]}{path}";
         }
 
+
         /// <inheritdoc />
-        public async Task<string> ReadAsync(string corpusPath)
+        public override async Task<string> ReadAsync(string corpusPath)
         {
             var url = CreateAdapterPath(corpusPath);
 
@@ -140,12 +119,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             {
                 return await cdmResponse.Content.ReadAsStringAsync();
             }
-        }
-
-        /// <inheritdoc />
-        public Task WriteAsync(string corpusPath, string data)
-        {
-            throw new NotImplementedException();
         }
 
         private Dictionary<string, string> GetOrRegisterHostInfo(string adapterPath, string key = null)
@@ -212,7 +185,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public string FetchConfig()
+        public override string FetchConfig()
         {
             var resultConfig = new JObject
             {
@@ -250,7 +223,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <inheritdoc />
-        public void UpdateConfig(string config)
+        public override void UpdateConfig(string config)
         {
             if (config == null)
             {

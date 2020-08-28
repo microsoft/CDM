@@ -71,10 +71,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         internal List<CdmDocumentDefinition> ListDocsNotIndexed()
         {
+            var docsNotIndexed = new List<CdmDocumentDefinition>();
             lock (this.allDocuments)
             {
-                return new List<CdmDocumentDefinition>(this.docsNotIndexed.Keys);
+                // gets all the documents that needs indexing and set the currentlyIndexing flag to true.
+                foreach (var doc in this.docsNotIndexed.Keys)
+                {
+                    doc.CurrentlyIndexing = true;
+                    docsNotIndexed.Add(doc);
+                }
             }
+            return docsNotIndexed;
         }
 
         /// <summary>

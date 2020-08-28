@@ -27,9 +27,9 @@ import java.util.stream.Collectors;
  * If a user doesn't specify timeout, maximutimeout or number of retries in the config under 'httpConfig' property
  * default values will be used as specified in the class.
  */
-public abstract class NetworkAdapter implements StorageAdapter {
+public abstract class NetworkAdapter extends StorageAdapterBase {
   // Use some default values in the case a user doesn't set them up.
-  private static final Duration DEFAULT_TIMEOUT = Duration.ofMillis(5000);
+  protected static final Duration DEFAULT_TIMEOUT = Duration.ofMillis(5000);
   private static final Duration DEFAULT_MAXIMUM_TIMEOUT = Duration.ofMillis(20000);
   private static final int DEFAULT_NUMBER_OF_RETRIES = 2;
   private static final int DEFAULT_SHORTEST_TIME_WAIT = 500;
@@ -38,16 +38,6 @@ public abstract class NetworkAdapter implements StorageAdapter {
   protected Duration maximumTimeout = DEFAULT_MAXIMUM_TIMEOUT;
   protected int numberOfRetries = DEFAULT_NUMBER_OF_RETRIES;
   protected CdmHttpClient.Callback waitTimeCallback = NetworkAdapter::defaultCallback;
-
-  /**
-   * The default network adapter constructor called when the object is created by a user through code.
-   */
-  protected NetworkAdapter() {
-  }
-
-  // TODO-BQ: Why did we removed the setting field part? Should we call updateNetworkConfig(configs)?
-  protected NetworkAdapter(final String configs) throws IOException {
-  }
 
   public CdmHttpClient getHttpClient() {
     return httpClient;
@@ -78,7 +68,7 @@ public abstract class NetworkAdapter implements StorageAdapter {
   }
 
   public void setNumberOfRetries(int numberOfRetries) {
-    this.numberOfRetries = numberOfRetries;
+    this.numberOfRetries = numberOfRetries < 0 ? DEFAULT_NUMBER_OF_RETRIES : numberOfRetries;
   }
 
   public CdmHttpClient.Callback getWaitTimeCallback() {

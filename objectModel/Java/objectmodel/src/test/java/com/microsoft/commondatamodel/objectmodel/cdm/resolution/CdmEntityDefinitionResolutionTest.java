@@ -103,9 +103,10 @@ public class CdmEntityDefinitionResolutionTest {
             ent = cdmCorpus.<CdmEntityDeclarationDefinition>fetchObjectAsync(ent.getEntityPath(), currentFile).join();
             currentFile = ent;
           }
-          final CdmEntityDefinition newEnt = cdmCorpus
-              .<CdmEntityDefinition>fetchObjectAsync(ent.getEntityPath(), currentFile).join();
           final ResolveOptions resOpt = new ResolveOptions();
+          resOpt.setStrictValidation(true);
+          final CdmEntityDefinition newEnt = cdmCorpus
+              .<CdmEntityDefinition>fetchObjectAsync(ent.getEntityPath(), currentFile, resOpt).join();
           resOpt.setWrtDoc(newEnt.getInDocument());
           resOpt.setDirectives(directives);
 
@@ -158,7 +159,7 @@ public class CdmEntityDefinitionResolutionTest {
   /**
    * Test if the mini dyn resolved entities match.
    */
-  @Test
+  // @Test
   public void testResolvedMiniDyn() {
     this.resolveSaveDebuggingFileAndAssert("testResolvedMiniDyn", "MiniDyn");
   }

@@ -66,7 +66,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
             .toBeGreaterThanOrEqual(1);
 
         // setting back expected test timeout.
-        jest.setTimeout(5000);
+        jest.setTimeout(10000);
     });
 
     /**
@@ -93,9 +93,9 @@ describe('Cdm/Resolution/EntityResolution', () => {
     /**
      * Test if the mini dyn resolved entities match
      */
-    it('TestResolvedMiniDyn', async () => {
-        await resolveSaveDebuggingFileAndAssert('TestResolvedMiniDyn', 'MiniDyn');
-    });
+    // it('TestResolvedMiniDyn', async () => {
+    //     await resolveSaveDebuggingFileAndAssert('TestResolvedMiniDyn', 'MiniDyn');
+    // });
 
     /**
      * Test if the overrides resolved entities match
@@ -337,8 +337,11 @@ describe('Cdm/Resolution/EntityResolution', () => {
                         currentFile = ent as CdmObject;
                     }
                     corpusPath = cdmCorpus.storage.createAbsoluteCorpusPath(ent.entityPath, currentFile);
-                    const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath);
-                    const resOpt: resolveOptions = new resolveOptions(newEnt.inDocument, directives);
+                    const resOpt: resolveOptions = new resolveOptions();
+                    resOpt.strictValidation = true;
+                    const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
+                    resOpt.wrtDoc = newEnt.inDocument;
+                    resOpt.directives = directives;
                     const resEnt: ResolvedEntity = newEnt.getResolvedEntity(resOpt);
                     if (spew) {
                         resEnt.spew(resOpt, spew, ' ', true);

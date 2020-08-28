@@ -8,7 +8,7 @@ import { configObjectType, StorageAdapter } from './StorageAdapter';
 /**
  * An adapter pre-configured to read the standard schema files published by CDM.
  */
-export class CdmStandardsAdapter extends NetworkAdapter implements StorageAdapter {
+export class CdmStandardsAdapter extends NetworkAdapter {
     private readonly STANDARDS_ENDPOINT = "https://cdm-schema.microsoft.com";
     /**
      * @internal

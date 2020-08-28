@@ -102,6 +102,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             # get a list of all corpus_paths under the root.
             file_info_list = await adapter.fetch_all_files_async(path_tuple[1])
         except Exception as e:
+            file_info_list = None
             logger.warning(self._TAG, self.ctx, 'The folder location \'{}\' described by a partition pattern does not exist'.format(
                 root_corpus), self.file_status_check_async.__name__)
 
@@ -147,12 +148,13 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
 
                             # put the original but cleaned up root back onto the matched doc as the location stored in the partition.
                             location_corpus_path = root_cleaned + fi
+                            full_path = root_corpus + fi
                             # Remove namespace from path
-                            path_tuple = StorageUtils.split_namespace_path(location_corpus_path)
+                            path_tuple = StorageUtils.split_namespace_path(full_path)
                             if not path_tuple:
                                 logger.error(self._TAG, self.ctx, 'The corpus path should not be null or empty.', self.file_status_check_async.__name__)
                                 return
-                            last_modified_time = await adapter.compute_last_modified_time_async(adapter.create_adapter_path(path_tuple[1]))
+                            last_modified_time = await adapter.compute_last_modified_time_async(path_tuple[1])
                             cast('CdmLocalEntityDeclarationDefinition', self.owner)._create_partition_from_pattern(
                                 location_corpus_path, self.exhibits_traits, args, self.specialized_schema, last_modified_time)
 
@@ -166,28 +168,28 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
         while i < len(pattern):
             curr_char = pattern[i]
 
-            if curr_char is '.':
+            if curr_char == '.':
                 # escape '.' characters
                 new_pattern.append('\\.')
-            elif curr_char is '\\':
+            elif curr_char == '\\':
                 # convert backslash into slash
                 new_pattern.append('/')
-            elif curr_char is '?':
+            elif curr_char == '?':
                 # question mark in glob matches any single character
                 new_pattern.append('.')
-            elif curr_char is '*':
+            elif curr_char == '*':
                 next_char = pattern[i + 1] if i + 1 < len(pattern) else None
-                if next_char is '*':
+                if next_char == '*':
                     prev_char = pattern[i - 1] if i - 1 >= 0 else None
                     post_char = pattern[i + 2] if i + 2 < len(pattern) else None
 
                     # globstar must be at beginning of pattern, end of pattern, or wrapped in separator characters
-                    if (prev_char is None or prev_char is '/' or prev_char is '\\') and (post_char is None or post_char is '/' or post_char is '\\'):
+                    if (prev_char is None or prev_char == '/' or prev_char == '\\') and (post_char is None or post_char == '/' or post_char == '\\'):
                         new_pattern.append('.*')
 
                         # globstar can match zero or more subdirectories. If it matches zero, then there should not be
                         # two consecutive '/' characters so make the second one optional
-                        if (prev_char is '/' or prev_char is '\\') and (post_char is '/' or post_char is '\\'):
+                        if (prev_char == '/' or prev_char == '\\') and (post_char == '/' or post_char == '\\'):
                             new_pattern.append('/?')
                             i = i + 1
                     else:

@@ -81,7 +81,13 @@ export class DocumentLibrary {
      * Returns a list of all the documents that are not loaded.
      */
     public listDocsNotIndexed(): Set<CdmDocumentDefinition> {
-        return this.docsNotIndexed;
+        const docsNotIndexed: Set<CdmDocumentDefinition> = new Set();
+        // gets all the documents that needs indexing and set the currentlyIndexing flag to true.
+        this.docsNotIndexed.forEach(doc => {
+            doc.currentlyIndexing = true;
+            docsNotIndexed.add(doc);
+        });
+        return docsNotIndexed;
     }
 
     /**

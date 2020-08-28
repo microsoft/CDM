@@ -110,7 +110,8 @@ class CalculateRelationshipTest(unittest.TestCase):
         """Get a string version of the relationship collection"""
         bldr = ''
         for rel in relationships:
-            bldr += '{}|{}|{}|{}|{}'.format(rel.relationship_name, rel.to_entity, rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
+            bldr += '{}|{}|{}|{}|{}'.format(rel.relationship_name if rel.relationship_name else '', rel.to_entity,
+                                            rel.to_entity_attribute, rel.from_entity, rel.from_entity_attribute)
             bldr += '\n'
         return bldr
 
@@ -156,4 +157,3 @@ class CalculateRelationshipTest(unittest.TestCase):
     def _get_attribute_context_string(self, resolved_entity: 'CdmEntityDefinition', entity_name: str, actual_output_folder: str) -> str:
         """Check the attribute context for these test scenarios"""
         return (AttributeContextUtil()).get_attribute_context_strings(resolved_entity, resolved_entity.attribute_context)
-

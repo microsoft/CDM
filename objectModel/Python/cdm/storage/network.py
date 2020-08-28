@@ -22,13 +22,37 @@ class NetworkAdapter:
     will be used as specified in the class.
     """
 
-    DEFAULT_TIMEOUT = 2000
+    DEFAULT_TIMEOUT = 6000
 
     DEFAULT_NUMBER_OF_RETRIES = 2
 
     DEFAULT_MAXIMUM_TIMEOUT = 10000
 
     DEFAULT_SHORTEST_WAIT_TIME = 500
+
+    @property
+    def timeout(self) -> int:
+        return self._timeout
+
+    @timeout.setter
+    def timeout(self, val: int) -> None:
+        self._timeout = val if val is not None and val >= 0 else self.DEFAULT_TIMEOUT
+
+    @property
+    def maximum_timeout(self) -> int:
+        return self._maximum_timeout
+
+    @maximum_timeout.setter
+    def maximum_timeout(self, val: int) -> None:
+        self._maximum_timeout = val if val is not None and val >= 0 else self.DEFAULT_MAXIMUM_TIMEOUT
+
+    @property
+    def number_of_retries(self) -> int:
+        return self._number_of_retries
+
+    @number_of_retries.setter
+    def number_of_retries(self, val: int) -> None:
+        self._number_of_retries = val if val is not None and val >= 0 else self.DEFAULT_NUMBER_OF_RETRIES
 
     def __init__(self) -> None:
         self.timeout = self.DEFAULT_TIMEOUT  # type: int

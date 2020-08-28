@@ -104,6 +104,10 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     /**
      * @internal
      */
+    public declarationsIndexed: boolean;
+    /**
+     * @internal
+     */
     public importsIndexed: boolean;
     /**
      * @internal
@@ -128,6 +132,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.jsonSchemaSemanticVersion = '1.0.0';
             this.needsIndexing = true;
             this.importsIndexed = false;
+            this.declarationsIndexed = false;
             this.isDirty = true;
             this.currentlyIndexing = false;
             this.isValid = true;
@@ -452,7 +457,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             options = new copyOptions();
         }
         const resOpt: resolveOptions = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
-        if (await this.indexIfNeeded(resOpt) === false) {
+        if (!await this.indexIfNeeded(resOpt)) {
             Logger.error(
                 CdmDocumentDefinition.name,
                 this.ctx,
@@ -480,33 +485,41 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         }
 
         this.needsIndexing = true;
+        this.importPriorities = undefined;
+        this.importsIndexed = false;
+        this.declarationsIndexed = false;
         this.isValid = true;
 
-        return this.indexIfNeeded(resOpt);
+        return this.indexIfNeeded(resOpt, true);
     }
 
     /**
      * @internal
      * Remove any old document content from caches and re-declare and resolve with new content
      */
-    public async indexIfNeeded(resOpt: resolveOptions): Promise<boolean> {
+    public async indexIfNeeded(resOpt: resolveOptions, strictValidation: boolean = false): Promise<boolean> {
         // let bodyCode = () =>
         {
-            if (this.needsIndexing) {
+            if (this.needsIndexing && !this.currentlyIndexing) {
                 if (!this.folder) {
                     Logger.error(CdmDocumentDefinition.name, this.ctx, `Document '${this.name}' is not in a folder`, this.indexIfNeeded.name);
-
                     return false;
                 }
-                // make the corpus internal machinery pay attention to this document for this call
+
                 const corpus: CdmCorpusDefinition = this.folder.corpus;
 
-                await corpus.resolveImportsAsync(this, resOpt);
+                if (resOpt.strictValidation !== undefined) {
+                    strictValidation = resOpt.strictValidation;
+                }
 
-                // maintain actual current doc
+                if (strictValidation) {
+                    await corpus.resolveImportsAsync(this, resOpt);
+                }
+                
+                // make the corpus internal machinery pay attention to this document for this call
                 corpus.documentLibrary.markDocumentForIndexing(this);
 
-                return corpus.indexDocuments(resOpt);
+                return corpus.indexDocuments(resOpt, strictValidation);
             }
 
             return true;

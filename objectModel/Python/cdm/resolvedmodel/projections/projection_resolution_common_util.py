@@ -91,16 +91,25 @@ class ProjectionResolutionCommonUtil:
         return result.leaf if result else None
 
     @staticmethod
-    def _get_top(proj_ctx: 'ProjectionContext', attr_name: str) -> List['ProjectionAttributeState']:
-        """Get top node of the projection state tree for non-polymorphic scenarios"""
-        result = SearchResult()
-        for top in proj_ctx._current_attribute_state_set._values:
-            st = SearchStructure()
-            st = SearchStructure._build_structure(top, top, attr_name, st, False, 0)
-            if st and st._result.found_flag == True:
-                result = st._result
+    def _get_top_list(proj_ctx: 'ProjectionContext', attr_names: List[str]) -> Dict[str, str]:
+        """Gets the names of the top-level nodes in the projection state tree (for non-polymorphic scenarios) that match a set of attribute names """
+        # This dictionary contains a mapping from the top-level name of an attribute
+        # to the attribute name the top-level name was derived from (the name contained in the given list)
+        top_level_attribute_names = {}
 
-        return result.top if result else None
+        # Iterate through each attribute name in the list and search for their top-level names
+        for attr_name in attr_names:
+            # Iterate through each projection attribute state in the current set and check if its
+            # current resolved attribute's name is the top-level name of the current attrName
+            for top in proj_ctx._current_attribute_state_set._values:
+                st = SearchStructure()
+                st = SearchStructure._build_structure(top, top, attr_name, st, False, 0)
+                # Found the top-level name
+                if st and st._result.found_flag:
+                    # Create a mapping from the top-level name of the attribute to the name it has in the list
+                    top_level_attribute_names[top._current_resolved_attribute.resolved_name] = attr_name
+
+        return top_level_attribute_names
 
     @staticmethod
     def _convert_to_list(top: 'ProjectionAttributeState') -> List['ProjectionAttributeState']:

@@ -33,3 +33,7 @@ class StringUtils:
     @staticmethod
     def equals_with_case(a: str, b: str) -> bool:
         return a == b
+
+    @staticmethod
+    def is_null_or_white_space(s: str) -> bool:
+        return s is None or s.strip() is ''

@@ -29,6 +29,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   protected Map<String, CdmObjectBase> internalDeclarations;
   protected boolean isDirty = true;
   protected boolean isValid;
+  protected boolean declarationsIndexed;
   private ImportPriorities importPriorities;
   private boolean needsIndexing;
   private CdmDefinitionCollection definitions;
@@ -126,18 +127,22 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.namespace = namespace;
   }
 
+  @Deprecated
   boolean isImportsIndexed() {
     return importsIndexed;
   }
 
+  @Deprecated
   void setImportsIndexed(final boolean importsIndexed) {
     this.importsIndexed = importsIndexed;
   }
 
+  @Deprecated
   boolean isCurrentlyIndexing() {
     return currentlyIndexing;
   }
 
+  @Deprecated
   void setCurrentlyIndexing(final boolean currentlyIndexing) {
     this.currentlyIndexing = currentlyIndexing;
   }
@@ -369,8 +374,11 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     }
 
     this.needsIndexing = true;
+    this.declarationsIndexed = false;
+    this.importPriorities = null;
+    this.importsIndexed = false;
     this.isValid = true;
-    return this.indexIfNeededAsync(resOpt);
+    return this.indexIfNeededAsync(resOpt, true);
   }
 
   /**
@@ -378,10 +386,10 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  public CompletableFuture<Boolean> indexIfNeededAsync(final ResolveOptions resOpt) {
+  public CompletableFuture<Boolean> indexIfNeededAsync(final ResolveOptions resOpt, final boolean strictValidation) {
 
     return CompletableFuture.supplyAsync(() -> {
-      if (this.getNeedsIndexing()) {
+      if (this.getNeedsIndexing() && !this.currentlyIndexing) {
         if (this.getFolder() == null) {
           Logger.error(
               CdmDocumentDefinition.class.getSimpleName(),
@@ -391,13 +399,17 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           );
           return false;
         }
+
         final CdmCorpusDefinition corpus = this.getFolder().getCorpus();
+        final boolean finalStrictValidation = resOpt.getStrictValidation() != null ? resOpt.getStrictValidation() : strictValidation;
 
-        corpus.resolveImportsAsync(this, resOpt).join();
+        if (finalStrictValidation) {
+          corpus.resolveImportsAsync(this, resOpt).join();
+        }
+
         corpus.getDocumentLibrary().markDocumentForIndexing(this);
-        return corpus.indexDocuments(resOpt);
+        return corpus.indexDocuments(resOpt, finalStrictValidation);
       }
-
       return true;
     });
   }
@@ -422,7 +434,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
     final ResolveOptions resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     
-    if (!this.indexIfNeededAsync(resOpt).join()) {
+    if (!this.indexIfNeededAsync(resOpt, false).join()) {
       Logger.error(
           CdmDocumentDefinition.class.getSimpleName(),
           this.getCtx(),

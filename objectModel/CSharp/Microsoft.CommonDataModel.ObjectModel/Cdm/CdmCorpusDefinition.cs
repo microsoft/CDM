@@ -76,15 +76,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal IDictionary<string, SymbolSet> DefinitionReferenceSymbols { get; set; }
 
-        private IDictionary<string, string> DefinitionWrtTag { get; set; }
-
         private IDictionary<string, ResolvedTraitSet> EmptyRts { get; set; }
 
         private IDictionary<string, CdmFolderDefinition> NamespaceFolders { get; set; }
 
         internal CdmManifestDefinition rootManifest { get; set; }
-
-        internal IDictionary<string, CdmObject> objectCache { get; set; }
 
         internal DocumentLibrary documentLibrary;
 
@@ -103,13 +99,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.SymbolDefinitions = new Dictionary<string, List<CdmDocumentDefinition>>();
             this.DefinitionReferenceSymbols = new Dictionary<string, SymbolSet>();
-            this.DefinitionWrtTag = new Dictionary<string, string>();
             this.EmptyRts = new Dictionary<string, ResolvedTraitSet>();
             this.NamespaceFolders = new Dictionary<string, CdmFolderDefinition>();
             this.OutgoingRelationships = new Dictionary<CdmObjectDefinition, List<CdmE2ERelationship>>();
             this.IncomingRelationships = new Dictionary<CdmObjectDefinition, List<CdmE2ERelationship>>();
             this.resEntMap = new Dictionary<string, string>();
-            this.objectCache = new Dictionary<string, CdmObject>();
 
             this.documentLibrary = new DocumentLibrary();
 
@@ -136,7 +130,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             if (this.IsPathManifestDocument(corpusPath))
             {
-                this.rootManifest = (CdmManifestDefinition)await this._FetchObjectAsync(corpusPath, null, false);
+                this.rootManifest = await this.FetchObjectAsync<CdmManifestDefinition>(corpusPath);
                 return this.rootManifest;
             }
             return null;
@@ -234,7 +228,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         // if more monikers, keep looking
                         if (result.NewSymbol.IndexOf("/") >= 0 && (usingWrtDoc || !this.SymbolDefinitions.ContainsKey(result.NewSymbol)))
                         {
-                            DocsResult currDocsResult = DocsForSymbol(resOpt, wrtDoc, tempMonikerDoc, result.NewSymbol);
+                            DocsResult currDocsResult = this.DocsForSymbol(resOpt, wrtDoc, tempMonikerDoc, result.NewSymbol);
                             if (currDocsResult.DocList == null && fromDoc == wrtDoc)
                             {
                                 // we are back at the top and we have not found the docs, move the wrtDoc down one level
@@ -269,6 +263,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null; // no way to figure this out
             CdmDocumentDefinition wrtDoc = resOpt.WrtDoc as CdmDocumentDefinition;
 
+            var indexTask = wrtDoc.IndexIfNeeded(resOpt, true);
+            indexTask.Wait();
+            // if the wrtDoc needs to be indexed (like it was just modified) then do that first
+            if (!indexTask.Result)
+            {
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, "Couldn't index source document.", nameof(ResolveSymbolReference));
+                return null;
+            }
+
             // get the array of documents where the symbol is defined
             DocsResult symbolDocsResult = this.DocsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
             CdmDocumentDefinition docBest = symbolDocsResult.DocBest;
@@ -278,20 +281,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 // add this symbol to the set being collected in resOpt, we will need this when caching
                 if (resOpt.SymbolRefSet == null)
+                {
                     resOpt.SymbolRefSet = new SymbolSet();
+                }
+
                 resOpt.SymbolRefSet.Add(symbolDef);
                 // for the given doc, there is a sorted list of imported docs (including the doc itself as item 0).
                 // find the lowest number imported document that has a definition for this symbol
                 if (wrtDoc.ImportPriorities == null)
+                {
                     return null;
+                }
 
                 IDictionary<CdmDocumentDefinition, int> importPriority = wrtDoc.ImportPriorities.ImportPriority;
                 if (importPriority.Count == 0)
+                {
                     return null;
+                }
 
 
                 if (docBest == null)
+                {
                     docBest = FetchPriorityDocument(docs, importPriority);
+                }
             }
 
             // perhaps we have never heard of this symbol in the imports for this document?
@@ -475,33 +487,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // since this is an expensive operation, actually cache the sorted list associated with this object and wrtDoc
 
             // easy stuff first
-            string thisId = null;
+            string thisId;
             string thisPath = (definition.ObjectType == CdmObjectType.ProjectionDef) ? definition.DeclaredPath.Replace("/", "") : definition.AtCorpusPath;
             if (!string.IsNullOrEmpty(pathToDef) && notKnownToHaveParameters)
+            {
                 thisId = pathToDef;
+            }
             else
+            {
                 thisId = definition.Id.ToString();
+            }
 
             StringBuilder tagSuffix = new StringBuilder();
             tagSuffix.AppendFormat("-{0}-{1}", kind, thisId);
             tagSuffix.AppendFormat("-({0})", resOpt.Directives != null ? resOpt.Directives.GetTag() : string.Empty);
             if (!string.IsNullOrEmpty(extraTags))
+            {
                 tagSuffix.AppendFormat("-{0}", extraTags);
+            }
 
             // is there a registered set? (for the objectdef, not for a reference) of the many symbols involved in defining this thing (might be none)
             var objDef = definition.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
             SymbolSet symbolsRef = null;
             if (objDef != null)
             {
-                string key = CdmCorpusDefinition.CreateCacheKeyFromObject(objDef, kind);
+                string key = CreateCacheKeyFromObject(objDef, kind);
                 this.DefinitionReferenceSymbols.TryGetValue(key, out symbolsRef);
             }
 
             if (symbolsRef == null && thisPath != null)
             {
                 // every symbol should depend on at least itself
-                SymbolSet symSetThis = new SymbolSet();
-                symSetThis.Add(thisPath);
+                SymbolSet symSetThis = new SymbolSet
+                {
+                    thisPath
+                };
                 this.RegisterDefinitionReferenceSymbols(definition, kind, symSetThis);
                 symbolsRef = symSetThis;
             }
@@ -754,11 +774,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal static CdmDocumentDefinition FetchPriorityDocument(List<CdmDocumentDefinition> docs, IDictionary<CdmDocumentDefinition, int> importPriority)
         {
             CdmDocumentDefinition docBest = null;
-            int indexBest = Int32.MaxValue;
+            int indexBest = int.MaxValue;
             foreach (CdmDocumentDefinition docDefined in docs)
             {
                 // is this one of the imported docs?
-                int indexFound = Int32.MaxValue;
+                int indexFound = int.MaxValue;
                 bool worked = importPriority.TryGetValue(docDefined, out indexFound);
                 if (worked && indexFound < indexBest)
                 {
@@ -766,7 +786,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     docBest = docDefined;
                     // hard to be better than the best
                     if (indexBest == 0)
+                    {
                         break;
+                    }
                 }
             }
             return docBest;
@@ -783,7 +805,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal void RemoveDocumentObjects(CdmFolderDefinition folder, CdmDocumentDefinition docDef)
         {
             CdmDocumentDefinition doc = docDef as CdmDocumentDefinition;
-            // don't worry about definitionWrtTag because it uses the doc ID that won't get re-used in this session unless there are more than 4 billion objects
 
             // every symbol defined in this document is pointing at the document, so remove from cache.
             // also remove the list of docs that it depends on
@@ -794,79 +815,86 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.documentLibrary.RemoveDocumentPath(path, folder, doc);
         }
 
-        internal bool IndexDocuments(ResolveOptions resOpt)
+        internal bool IndexDocuments(ResolveOptions resOpt, bool strictValidation)
         {
             List<CdmDocumentDefinition> docsNotIndexed = this.documentLibrary.ListDocsNotIndexed();
 
-            if (docsNotIndexed.Count > 0)
+            if (docsNotIndexed.Count == 0)
             {
-                // index any imports
-                foreach (CdmDocumentDefinition doc in docsNotIndexed)
+                return true;
+            }
+
+            // clear caches.
+            foreach (CdmDocumentDefinition doc in docsNotIndexed)
+            {
+                if (!doc.DeclarationsIndexed)
                 {
-                    if (doc.NeedsIndexing)
+                    Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"index start: {doc.AtCorpusPath}", nameof(this.IndexDocuments));
+                    doc.ClearCaches();
+                }
+            }
+
+            // check basic integrity.
+            foreach (CdmDocumentDefinition doc in docsNotIndexed)
+            {
+                if (!doc.DeclarationsIndexed)
+                {
+                    doc.IsValid = true; // assume valid unless this fails
+                    if (!this.CheckObjectIntegrity(doc))
                     {
-                        Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"index start: {doc.AtCorpusPath}", nameof(this.IndexDocuments));
-                        doc.ClearCaches();
-                        doc.GetImportPriorities();
+                        doc.IsValid = false;
                     }
                 }
-                // check basic integrity
-                foreach (CdmDocumentDefinition doc in docsNotIndexed)
+            }
+
+            // declare definitions in objects in this doc.
+            foreach (CdmDocumentDefinition doc in docsNotIndexed)
+            {
+                if (!doc.DeclarationsIndexed && doc.IsValid)
                 {
-                    if (doc.NeedsIndexing)
-                    {
-                        doc.IsValid = true; // assume valid unless this fails
-                        if (!this.CheckObjectIntegrity(doc))
-                        {
-                            doc.IsValid = false;
-                        }
-                    }
+                    this.DeclareObjectDefinitions(doc, "");
                 }
-                // declare definitions in objects in this doc
+            }
+
+            if (strictValidation)
+            {
+                // index any imports.
                 foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
-                    if (doc.NeedsIndexing && doc.IsValid)
-                    {
-                        this.DeclareObjectDefinitions(doc, "");
-                    }
+                    doc.GetImportPriorities();
                 }
-                // make sure we can find everything that is named by reference
+
+                // make sure we can find everything that is named by reference.
                 foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
-                    if (doc.NeedsIndexing && doc.IsValid)
+                    if (doc.IsValid)
                     {
                         ResolveOptions resOptLocal = CdmObjectBase.CopyResolveOptions(resOpt);
                         resOptLocal.WrtDoc = doc;
                         this.ResolveObjectDefinitions(resOptLocal, doc);
                     }
                 }
-                // now resolve any trait arguments that are type object
+
+                // now resolve any trait arguments that are type object.
                 foreach (CdmDocumentDefinition doc in docsNotIndexed)
                 {
-                    if (doc.NeedsIndexing && doc.IsValid)
+                    if (doc.IsValid)
                     {
                         ResolveOptions resOptLocal = CdmObjectBase.CopyResolveOptions(resOpt);
                         resOptLocal.WrtDoc = doc;
                         this.ResolveTraitArguments(resOptLocal, doc);
                     }
                 }
-                // finish up
-                foreach (CdmDocumentDefinition doc in docsNotIndexed)
-                {
-                    if (doc.NeedsIndexing)
-                    {
-                        Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"index finish: { doc.AtCorpusPath}", nameof(this.IndexDocuments));
-                        this.FinishDocumentResolve(doc);
-                    }
-                }
+            }
+
+            // finish up.
+            foreach (CdmDocumentDefinition doc in docsNotIndexed)
+            {                    
+                Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"index finish: { doc.AtCorpusPath}", nameof(this.IndexDocuments));
+                this.FinishDocumentResolve(doc, strictValidation);
             }
 
             return true;
-        }
-
-        internal bool Visit(string path, VisitCallback preChildren, VisitCallback postChildren)
-        {
-            return false;
         }
 
         internal async Task<CdmContainerDefinition> LoadFolderOrDocument(string objectPath, bool forceReload = false, ResolveOptions resOpt = null)
@@ -915,9 +943,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Fetches an object by the path from the corpus.
         /// </summary>
-        internal async Task<CdmObject> _FetchObjectAsync(string objectPath, CdmObject obj = null, bool forceReload = false, bool shallowValidation = false)
+        /// /// <typeparam name="T"> Type of the object to be fetched</typeparam>
+        /// <param name="objectPath">Object path, absolute or relative.</param>
+        /// <param name="obj">Optional parameter. When provided, it is used to obtain the FolderPath and the Namespace needed to create the absolute path from a relative path.</param>
+        /// <param name="resOpt">Optional parameter. When provided, will use be used to determine how the symbols are resolved.</param>
+        /// <param name="forceReload">Optional parameter. When true, the document containing the requested object is reloaded from storage to access any external changes made to the document since it may have been cached by the corpus.</param>
+        /// <returns>The object obtained from the provided path.</returns>
+        public async Task<T> FetchObjectAsync<T>(string objectPath, CdmObject obj = null, ResolveOptions resOpt = null, bool forceReload = false)
+            where T: CdmObject
         {
-            // Convert the object path to the absolute corpus path.
+            if (resOpt == null)
+            {
+                resOpt = new ResolveOptions();
+            }
+
+            // convert the object path to the absolute corpus path.
             objectPath = this.Storage.CreateAbsoluteCorpusPath(objectPath, obj);
 
             var documentPath = objectPath;
@@ -930,36 +970,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 documentPath = objectPath.Slice(0, documentNameIndex);
             }
 
-            Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"request object: {objectPath}", nameof(this._FetchObjectAsync));
+            Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"request object: {objectPath}", nameof(this.FetchObjectAsync));
             CdmContainerDefinition newObj = await LoadFolderOrDocument(documentPath, forceReload);
 
             if (newObj != null)
             {
-                ResolveOptions resOpt = new ResolveOptions(newObj, new AttributeResolutionDirectiveSet());
                 // get imports and index each document that is loaded
                 if (newObj is CdmDocumentDefinition doc)
                 {
-                    resOpt.ShallowValidation = shallowValidation;
                     if (!await doc.IndexIfNeeded(resOpt))
                     {
-                        return null;
+                        return default;
                     }
 
                     if (!doc.IsValid)
                     {
-                        Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, $"The requested path: {objectPath} involves a document that failed validation", nameof(this._FetchObjectAsync));
-
-                        return null;
+                        Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, $"The requested path: {objectPath} involves a document that failed validation", nameof(this.FetchObjectAsync));
+                        return default;
                     }
                 }
 
                 if (documentPath.Equals(objectPath))
-                    return newObj;
+                {
+                    return (T)newObj;
+                }
 
                 if (documentNameIndex == -1)
                 {
                     // there is no remaining path to be loaded, so return.
-                    return null;
+                    return default;
                 }
 
                 // trim off the document path to get the object path in the doc
@@ -968,13 +1007,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 var result = ((CdmDocumentDefinition)newObj).FetchObjectFromDocumentPath(remainingObjectPath, resOpt);
                 if (result == null)
                 {
-                    Logger.Error(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, $"Could not find symbol '{objectPath}' in document[{newObj.AtCorpusPath}]", nameof(_FetchObjectAsync));
+                    Logger.Error(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, $"Could not find symbol '{objectPath}' in document[{newObj.AtCorpusPath}]", nameof(FetchObjectAsync));
                 }
 
-                return result;
+                return (T)result;
             }
 
-            return null;
+            return default;
         }
 
         /// <summary>
@@ -986,9 +1025,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="shallowValidation">Optional parameter. When provided, shallow validation in ResolveOptions is enabled, which logs errors regarding resolving/loading references as warnings.</param>
         /// <param name="forceReload">Optional parameter. When true, the document containing the requested object is reloaded from storage to access any external changes made to the document since it may have been cached by the corpus.</param>
         /// <returns>The object obtained from the provided path.</returns>
-        public async Task<T> FetchObjectAsync<T>(string objectPath, CdmObject obj = null, bool shallowValidation = false, bool forceReload = false)
+        public async Task<T> FetchObjectAsync<T>(string objectPath, CdmObject obj, bool shallowValidation, bool forceReload = false)
+            where T : CdmObject
         {
-            return (T)(await _FetchObjectAsync(objectPath, obj, forceReload, shallowValidation));
+            var resOpt = new ResolveOptions
+            {
+                ShallowValidation = shallowValidation
+            };
+            return await FetchObjectAsync<T>(objectPath, obj, resOpt, forceReload);
         }
 
         /// <summary>
@@ -1126,7 +1170,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         errorCount++;
                     }
                     else
+                    {
                         (iObject as CdmObjectBase).Ctx = ctx;
+                    }
 
                     Logger.Info(nameof(CdmCorpusDefinition), ctx, $"checked '{path}'", CurrentDoc.FolderPath + path);
                     return false;
@@ -1485,18 +1531,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     ParameterCollection paramCollection = ctx.CurrentScope.CurrentTrait.FetchAllParameters(resOpt);
                                     CdmParameterDefinition paramFound = null;
                                     dynamic aValue;
-                                    if (ot == CdmObjectType.ArgumentDef)
-                                    {
-                                        paramFound = paramCollection.ResolveParameter(ctx.CurrentScope.CurrentParameter, (iObject as CdmArgumentDefinition).Name);
-                                        (iObject as CdmArgumentDefinition).ResolvedParameter = paramFound;
-                                        aValue = (iObject as CdmArgumentDefinition).Value;
+                                    paramFound = paramCollection.ResolveParameter(ctx.CurrentScope.CurrentParameter, (iObject as CdmArgumentDefinition).Name);
+                                    (iObject as CdmArgumentDefinition).ResolvedParameter = paramFound;
+                                    aValue = (iObject as CdmArgumentDefinition).Value;
 
-                                        // if parameter type is entity, then the value should be an entity or ref to one
-                                        // same is true of 'dataType' dataType
-                                        aValue = this.ConstTypeCheck(resOpt, CurrentDoc, paramFound, aValue);
-                                        if (aValue != null)
-                                            (iObject as CdmArgumentDefinition).Value = aValue;
+                                    // if parameter type is entity, then the value should be an entity or ref to one
+                                    // same is true of 'dataType' dataType
+                                    aValue = this.ConstTypeCheck(resOpt, CurrentDoc, paramFound, aValue);
+                                    if (aValue != null)
+                                    {
+                                        (iObject as CdmArgumentDefinition).Value = aValue;
                                     }
+                                            
                                 }
                             }
                             catch (Exception e)
@@ -1527,14 +1573,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return;
         }
 
-        internal void FinishDocumentResolve(CdmDocumentDefinition doc)
+        internal void FinishDocumentResolve(CdmDocumentDefinition doc, bool strictValidation)
         {
+            bool wasIndexedPreviously = doc.DeclarationsIndexed;
+
             doc.CurrentlyIndexing = false;
-            doc.ImportsIndexed = true;
-            doc.NeedsIndexing = false;
+            doc.ImportsIndexed = doc.ImportsIndexed || !strictValidation;
+            doc.DeclarationsIndexed = true;
+            doc.NeedsIndexing = !strictValidation;
             this.documentLibrary.MarkDocumentAsIndexed(doc);
 
-            if (doc.IsValid)
+            // if the document declarations were indexed previously, do not log again.
+            if (!wasIndexedPreviously && doc.IsValid)
             {
                 doc.Definitions.AllItems.ForEach(def =>
                 {
@@ -1558,7 +1608,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             int l = AllDocuments.Count;
             for (int i = 0; i < l; i++)
             {
-                this.FinishDocumentResolve(AllDocuments[i]);
+                this.FinishDocumentResolve(AllDocuments[i], false);
             }
         }
 
@@ -2044,18 +2094,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// Resolves references according to the provided stages and validates.
         /// </summary>
         /// <returns>The validation step that follows the completed step.</returns>
+        [Obsolete("This function is likely to be removed soon.")]
         public async Task<CdmValidationStep> ResolveReferencesAndValidateAsync(CdmValidationStep stage, CdmValidationStep stageThrough, ResolveOptions resOpt)
         {
             // use the provided directives or use the current default
             AttributeResolutionDirectiveSet directives = null;
             if (resOpt != null)
+            {
                 directives = resOpt.Directives;
+            }
             else
+            {
                 directives = this.DefaultResolutionDirectives;
+            }
+
             resOpt = new ResolveOptions { WrtDoc = null, Directives = directives, RelationshipDepth = 0 };
 
             foreach (CdmDocumentDefinition doc in this.documentLibrary.ListAllDocuments())
+            {
                 await doc.IndexIfNeeded(resOpt);
+            }
 
             bool finishResolve = stageThrough == stage;
             switch (stage)
@@ -2389,44 +2447,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 Logger.Warning(nameof(CdmCorpusDefinition), this.Ctx as ResolveContext, $"There is a primary key missing for the entry {resolvedEntity.GetName()}.");
             }
-        }
-
-        private static string PathToSymbol(string symbol, CdmDocumentDefinition docFrom, DocsResult docResultTo)
-        {
-            // if no destination given, no path to look for
-            if (docResultTo.DocBest == null)
-                return null;
-
-            // if there, return
-            if (docFrom == docResultTo.DocBest)
-                return docResultTo.NewSymbol;
-
-            // if the to Doc is imported directly here,
-            int pri;
-            if (docFrom.ImportPriorities.ImportPriority.TryGetValue(docResultTo.DocBest, out pri))
-            {
-                // if the imported version is the highest priority, we are good
-                if (docResultTo.DocList == null || docResultTo.DocList.Count == 1)
-                    return symbol;
-
-                // more than 1 symbol, see if highest pri
-                int maxPri = docResultTo.DocList.Max((docCheck) => docFrom.ImportPriorities.ImportPriority[docCheck]);
-                if (maxPri == pri)
-                    return symbol;
-            }
-
-            // can't get there directly, check the monikers
-            if (docFrom.ImportPriorities.MonikerPriorityMap != null)
-            {
-                foreach (var kv in docFrom.ImportPriorities.MonikerPriorityMap)
-                {
-                    string tryMoniker = PathToSymbol(symbol, kv.Value, docResultTo);
-                    if (tryMoniker != null)
-                        return $"{kv.Key}/{tryMoniker}";
-
-                }
-            }
-            return null;
         }
 
         /// <summary>

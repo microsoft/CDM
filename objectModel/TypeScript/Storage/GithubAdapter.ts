@@ -3,19 +3,18 @@
 
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
 import { NetworkAdapter } from './NetworkAdapter';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
+import { configObjectType } from './StorageAdapter';
 
 /**
  * @deprecated Please use the CdmStandardsAdapter instead.
  */
-export class GithubAdapter extends NetworkAdapter implements StorageAdapter {
+export class GithubAdapter extends NetworkAdapter {
     private static readonly ghHost: string = 'raw.githubusercontent.com';
     private static readonly ghPath: string = '/Microsoft/CDM/master/schemaDocuments';
     /**
      * @internal
      */
     public readonly type: string = 'github';
-    public locationHint: string;
 
     private readonly url: string;
 
@@ -47,14 +46,6 @@ export class GithubAdapter extends NetworkAdapter implements StorageAdapter {
         return cdmHttpResponse.content;
     }
 
-    public canWrite(): boolean {
-        throw new Error('Method not implemented.');
-    }
-
-    public async writeAsync(corpusPath: string, data: string): Promise<void> {
-        throw new Error('Method not implemented.');
-    }
-
     public createAdapterPath(corpusPath: string): string {
         return `${GithubAdapter.ghRawRoot()}${corpusPath}`;
     }
@@ -68,16 +59,6 @@ export class GithubAdapter extends NetworkAdapter implements StorageAdapter {
 
         return undefined;
     }
-
-    public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
-        return new Date();
-    }
-
-    public async fetchAllFilesAsync(currFullPath: string): Promise<string[]> {
-        return undefined;
-    }
-
-    public clearCache(): void {}
 
     public fetchConfig(): string {
         const resultConfig: configObjectType = {

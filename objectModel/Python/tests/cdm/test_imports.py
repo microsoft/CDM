@@ -4,6 +4,7 @@
 import os
 import unittest
 
+from cdm.utilities import ResolveOptions
 from cdm.storage import LocalAdapter
 
 from tests.common import async_test, TestHelper
@@ -17,8 +18,10 @@ class ImportsTests(unittest.TestCase):
         """The path between TestDataPath and TestName."""
         test_name = 'TestEntityWithMissingImport'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
 
-        doc = await corpus.fetch_object_async('local:/missingImport.cdm.json')
+        doc = await corpus.fetch_object_async('local:/missingImport.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(doc)
         self.assertEqual(1, len(doc.imports))
         self.assertEqual('missing.cdm.json', doc.imports[0].corpus_path)
@@ -28,8 +31,10 @@ class ImportsTests(unittest.TestCase):
     async def test_entity_with_missing_nested_imports_async(self):
         test_name = 'TestEntityWithMissingNestedImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
 
-        doc = await corpus.fetch_object_async('local:/missingNestedImport.cdm.json')
+        doc = await corpus.fetch_object_async('local:/missingNestedImport.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(doc)
         self.assertEqual(1, len(doc.imports))
         first_import = doc.imports[0]._document
@@ -42,8 +47,10 @@ class ImportsTests(unittest.TestCase):
     async def test_entity_with_same_imports_async(self):
         test_name = 'TestEntityWithSameImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
 
-        doc = await corpus.fetch_object_async('local:/multipleImports.cdm.json')
+        doc = await corpus.fetch_object_async('local:/multipleImports.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(doc)
         self.assertEqual(2, len(doc.imports))
         first_import = doc.imports[0]._document
@@ -75,8 +82,10 @@ class ImportsTests(unittest.TestCase):
         """Testing docs that load the same import"""
         test_name = 'TestLoadingSameImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
 
-        main_doc = await corpus.fetch_object_async('mainEntity.cdm.json')
+        main_doc = await corpus.fetch_object_async('mainEntity.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(main_doc)
         self.assertEqual(2, len(main_doc.imports))
 
@@ -96,8 +105,10 @@ class ImportsTests(unittest.TestCase):
         """Testing docs that load the same import"""
         test_name = 'TestLoadingSameMissingImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
 
-        main_doc = await corpus.fetch_object_async('mainEntity.cdm.json')
+        main_doc = await corpus.fetch_object_async('mainEntity.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(main_doc)
         self.assertEqual(2, len(main_doc.imports))
 
@@ -116,9 +127,11 @@ class ImportsTests(unittest.TestCase):
         """Testing docs that load the same import"""
         test_name = 'TestLoadingAlreadyPresentImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
+        res_opt = ResolveOptions()
+        res_opt.strict_validation = True
 
         # load the first doc
-        main_doc = await corpus.fetch_object_async('mainEntity.cdm.json')
+        main_doc = await corpus.fetch_object_async('mainEntity.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(main_doc)
         self.assertEqual(1, len(main_doc.imports))
 
@@ -127,7 +140,7 @@ class ImportsTests(unittest.TestCase):
 
         # now load the second doc, which uses the same import
         # the import should not be loaded again, it should be the same object
-        second_doc = await corpus.fetch_object_async('secondEntity.cdm.json')
+        second_doc = await corpus.fetch_object_async('secondEntity.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(second_doc)
         self.assertEqual(1, len(second_doc.imports))
 

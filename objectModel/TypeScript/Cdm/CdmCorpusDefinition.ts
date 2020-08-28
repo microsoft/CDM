@@ -95,6 +95,7 @@ import {
 } from '../Utilities/cdmObjectTypeGuards';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { VisitCallback } from '../Utilities/VisitCallback';
+import { type } from 'os';
 
 export class CdmCorpusDefinition {
     public get profiler(): ICdmProfiler {
@@ -141,17 +142,12 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public objectCache: Map<string, CdmObject>;
-    /**
-     * @internal
-     */
     public documentLibrary: DocumentLibrary;
     /**
      * @internal
      */
     public readonly resEntMap: Map<string, string>;
     private readonly symbolDefinitions: Map<string, CdmDocumentDefinition[]>;
-    private readonly defintionWrtTag: Map<string, string>;
     private readonly emptyRTS: Map<string, ResolvedTraitSet>;
     private readonly namespaceFolders: Map<string, CdmFolderDefinition>;
 
@@ -167,12 +163,10 @@ export class CdmCorpusDefinition {
             this.namespaceFolders = new Map<string, CdmFolderDefinition>();
             this.symbolDefinitions = new Map<string, CdmDocumentDefinition[]>();
             this.definitionReferenceSymbols = new Map<string, SymbolSet>();
-            this.defintionWrtTag = new Map<string, string>();
             this.emptyRTS = new Map<string, ResolvedTraitSet>();
             this.outgoingRelationships = new Map<CdmObjectDefinition, CdmE2ERelationship[]>();
             this.incomingRelationships = new Map<CdmObjectDefinition, CdmE2ERelationship[]>();
             this.resEntMap = new Map<string, string>();
-            this.objectCache = new Map<string, CdmObject>();
             this.documentLibrary = new DocumentLibrary();
 
             this.ctx = new resolveContext(this);
@@ -284,7 +278,7 @@ export class CdmCorpusDefinition {
      */
     public async createRootManifest(corpusPath: string): Promise<CdmManifestDefinition> {
         if (this.isPathManifestDocument(corpusPath)) {
-            this.rootManifest = await this._fetchObjectAsync(corpusPath, undefined, false) as CdmManifestDefinition;
+            this.rootManifest = await this.fetchObjectAsync(corpusPath, undefined, false) as CdmManifestDefinition;
 
             return this.rootManifest;
         }
@@ -398,65 +392,65 @@ export class CdmCorpusDefinition {
         expectedType: cdmObjectType,
         retry: boolean
     ): CdmObjectBase {
-        // let bodyCode = () =>
-        {
-            // given a symbolic name,
-            // find the 'highest priority' definition of the object from the point of view of a given document (with respect to, wrtDoc)
-            // (meaning given a document and the things it defines and the files it imports and the files they import,
-            // where is the 'last' definition found)
-            if (!resOpt || !resOpt.wrtDoc) {
-                return undefined;
-            } // no way to figure this out
-            const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
+        // given a symbolic name,
+        // find the 'highest priority' definition of the object from the point of view of a given document (with respect to, wrtDoc)
+        // (meaning given a document and the things it defines and the files it imports and the files they import,
+        // where is the 'last' definition found)
+        if (!resOpt || !resOpt.wrtDoc) {
+            return undefined;
+        } // no way to figure this out
+        const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
 
-            // get the array of documents where the symbol is defined
-            const symbolDocsResult: docsResult = this.docsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
-            let docBest: CdmDocumentDefinition = symbolDocsResult.docBest;
-            symbolDef = symbolDocsResult.newSymbol;
-            const docs: CdmDocumentDefinition[] = symbolDocsResult.docList;
-            if (docs) {
-                // add this symbol to the set being collected in resOpt, we will need this when caching
-                if (!resOpt.symbolRefSet) {
-                    resOpt.symbolRefSet = new SymbolSet();
-                }
-                resOpt.symbolRefSet.add(symbolDef);
-                // for the given doc, there is a sorted list of imported docs (including the doc itself as item 0).
-                // find the lowest number imported document that has a definition for this symbol
-                if (!wrtDoc.importPriorities) {
-                    return undefined; // need to index imports first, should have happened
-                }
-                const importPriority: Map<CdmDocumentDefinition, number> = wrtDoc.importPriorities.importPriority;
-                if (importPriority.size === 0) {
-                    return undefined;
-                }
-
-                if (!docBest) {
-                    docBest = CdmCorpusDefinition.fetchPriorityDoc(docs, importPriority) || docBest;
-                }
-            }
-
-            // perhaps we have never heard of this symbol in the imports for this document?
-            if (!docBest) {
-                return undefined;
-            }
-
-            // return the definition found in the best document
-            let found: CdmObjectBase = docBest.internalDeclarations.get(symbolDef);
-            if (found === undefined && retry === true) {
-                // maybe just locatable from here not defined here.
-                // this happens when the symbol is monikered, but the moniker path doesn't lead to the document where the symbol is defined.
-                // it leads to the document from where the symbol can be found.
-                // Ex.: resolvedFrom/Owner, while resolvedFrom is the Account that imports Owner.
-                found = this.resolveSymbolReference(resOpt, docBest, symbolDef, expectedType, false);
-            }
-
-            if (found && expectedType !== cdmObjectType.error) {
-                found = this.reportErrorStatus(found, symbolDef, expectedType);
-            }
-
-            return found;
+        if (wrtDoc.needsIndexing && !wrtDoc.currentlyIndexing) {
+            Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Document not index previsouly. Please when calling fetchObjectAsync specify the 'strictValidation' flag on the ResolveOptions object.`, this.resolveSymbolReference.name);
         }
-        // return p.measure(bodyCode);
+
+        // get the array of documents where the symbol is defined
+        const symbolDocsResult: docsResult = this.docsForSymbol(resOpt, wrtDoc, fromDoc, symbolDef);
+        let docBest: CdmDocumentDefinition = symbolDocsResult.docBest;
+        symbolDef = symbolDocsResult.newSymbol;
+        const docs: CdmDocumentDefinition[] = symbolDocsResult.docList;
+        if (docs) {
+            // add this symbol to the set being collected in resOpt, we will need this when caching
+            if (!resOpt.symbolRefSet) {
+                resOpt.symbolRefSet = new SymbolSet();
+            }
+            resOpt.symbolRefSet.add(symbolDef);
+            // for the given doc, there is a sorted list of imported docs (including the doc itself as item 0).
+            // find the lowest number imported document that has a definition for this symbol
+            if (!wrtDoc.importPriorities) {
+                return undefined; // need to index imports first, should have happened
+            }
+            const importPriority: Map<CdmDocumentDefinition, number> = wrtDoc.importPriorities.importPriority;
+            if (importPriority.size === 0) {
+                return undefined;
+            }
+
+            if (!docBest) {
+                docBest = CdmCorpusDefinition.fetchPriorityDoc(docs, importPriority) || docBest;
+            }
+        }
+
+        // perhaps we have never heard of this symbol in the imports for this document?
+        if (!docBest) {
+            return undefined;
+        }
+
+        // return the definition found in the best document
+        let found: CdmObjectBase = docBest.internalDeclarations.get(symbolDef);
+        if (found === undefined && retry === true) {
+            // maybe just locatable from here not defined here.
+            // this happens when the symbol is monikered, but the moniker path doesn't lead to the document where the symbol is defined.
+            // it leads to the document from where the symbol can be found.
+            // Ex.: resolvedFrom/Owner, while resolvedFrom is the Account that imports Owner.
+            found = this.resolveSymbolReference(resOpt, docBest, symbolDef, expectedType, false);
+        }
+
+        if (found && expectedType !== cdmObjectType.error) {
+            found = this.reportErrorStatus(found, symbolDef, expectedType);
+        }
+
+        return found;
     }
 
     /**
@@ -763,8 +757,7 @@ export class CdmCorpusDefinition {
         // let bodyCode = () =>
         {
             const doc: CdmDocumentDefinition = docDef;
-            // don't worry about defintionWrtTag because it uses the doc ID
-            // that won't get re-used in this session unless there are more than 4 billion objects
+
             // every symbol defined in this document is pointing at the document, so remove from cache.
             // also remove the list of docs that it depends on
             this.removeObjectDefinitions(doc);
@@ -780,64 +773,73 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public indexDocuments(resOpt: resolveOptions): boolean {
-        // let bodyCode = () =>
-        {
-            const docsNotIndexed: Set<CdmDocumentDefinition> = this.documentLibrary.listDocsNotIndexed();
-            if (docsNotIndexed.size > 0) {
-                // index any imports
-                for (const doc of docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        Logger.debug(CdmCorpusDefinition.name, this.ctx, `index start: ${doc.atCorpusPath}`, this.indexDocuments.name);
-                        doc.clearCaches();
-                        doc.getImportPriorities();
-                    }
-                }
-                // check basic integrity
-                for (const doc of docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        doc.isValid = true; // assume valid unless this fails
-                        if (!this.checkObjectIntegrity(doc)) {
-                            doc.isValid = false;
-                        }
-                    }
-                }
-                // declare definitions of objects in this doc
-                for (const doc of docsNotIndexed) {
-                    if (doc.needsIndexing && doc.isValid) {
-                        this.declareObjectDefinitions(doc, '');
-                    }
-                }
-                // make sure we can find everything that is named by reference
-                for (const doc of docsNotIndexed) {
-                    if (doc.needsIndexing && doc.isValid) {
-                        const resOptLocal: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
-                        resOptLocal.wrtDoc = doc;
-                        this.resolveObjectDefinitions(resOptLocal, doc);
-                    }
-                }
-                // now resolve any trait arguments that are type object
-                for (const doc of docsNotIndexed) {
-                    if (doc.needsIndexing && doc.isValid) {
-                        const resOptLocal: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
-                        resOptLocal.wrtDoc = doc;
-                        this.resolveTraitArguments(resOptLocal, doc);
-                    }
-                }
-                // finish up
-                for (const doc of docsNotIndexed) {
-                    if (doc.needsIndexing) {
-                        Logger.debug(CdmCorpusDefinition.name, this.ctx, `index finish: ${doc.atCorpusPath}`, this.indexDocuments.name);
-                        this.finishDocumentResolve(doc);
-                    }
-                }
-                // return p.measure(bodyCode);
-            }
+    public indexDocuments(resOpt: resolveOptions, strictValidation: boolean): boolean {
+        const docsNotIndexed: Set<CdmDocumentDefinition> = this.documentLibrary.listDocsNotIndexed();
 
+        if (docsNotIndexed.size == 0) {
             return true;
         }
+        
+        for (const doc of docsNotIndexed) {
+            if (!doc.declarationsIndexed) {
+                Logger.debug(CdmCorpusDefinition.name, this.ctx, `index start: ${doc.atCorpusPath}`, this.indexDocuments.name);
+                doc.clearCaches();
+            }
+        }
+
+        // check basic integrity
+        for (const doc of docsNotIndexed) {
+            if (!doc.declarationsIndexed) {
+                doc.isValid = true; // assume valid unless this fails
+                if (!this.checkObjectIntegrity(doc)) {
+                    doc.isValid = false;
+                }
+            }
+        }
+
+        // declare definitions of objects in this doc
+        for (const doc of docsNotIndexed) {
+            if (!doc.declarationsIndexed && doc.isValid) {
+                this.declareObjectDefinitions(doc, '');
+            }
+        }
+
+        if (strictValidation) {
+            // index any imports
+            for (const doc of docsNotIndexed) {
+                doc.getImportPriorities();
+            }
+
+            // make sure we can find everything that is named by reference
+            for (const doc of docsNotIndexed) {
+                if (doc.isValid) {
+                    const resOptLocal: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+                    resOptLocal.wrtDoc = doc;
+                    this.resolveObjectDefinitions(resOptLocal, doc);
+                }
+            }
+            // now resolve any trait arguments that are type object
+            for (const doc of docsNotIndexed) {
+                if (doc.isValid) {
+                    const resOptLocal: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+                    resOptLocal.wrtDoc = doc;
+                    this.resolveTraitArguments(resOptLocal, doc);
+                }
+            }
+        }
+
+        // finish up
+        for (const doc of docsNotIndexed) {
+            Logger.debug(CdmCorpusDefinition.name, this.ctx, `index finish: ${doc.atCorpusPath}`, this.indexDocuments.name);
+            this.finishDocumentResolve(doc, strictValidation);
+        }
+
+        return true;
     }
 
+    /**
+     * @deprecated
+     */
     public visit(path: string, preChildren: VisitCallback, postChildren: VisitCallback): boolean {
         return false;
     }
@@ -896,14 +898,28 @@ export class CdmCorpusDefinition {
     }
 
     /**
-     * @internal
+     * Fetches an object by the path from the corpus.
+     * @param objectPath Object path, absolute or relative.
+     * @param obj Optional parameter. When provided, it is used to obtain the FolderPath and the Namespace needed
+     * to create the absolute path from a relative path.
+     * @param shallowValidationOrResOpt Optional parameter. When provided, shallow validation in ResolveOptions is enabled,
+     * which logs errors regarding resolving/loading references as warnings.
+     * It also accepts a ResolveOptions object. When provided, will use be used to determine how the symbols are resolved.
+     * @param forceReload Optional parameter. When true, the document containing the requested object is reloaded from storage
+     * to access any external changes made to the document since it may have been cached by the corpus.
+     * @returns The object obtained from the provided path.
      */
-    public async _fetchObjectAsync(
-        objectPath: string,
-        obj: CdmObject,
-        forceReload: boolean = false,
-        shallowValidation: boolean = false
-    ): Promise<CdmObject> {
+    public async fetchObjectAsync<T>(objectPath: string, obj?: CdmObject, shallowValidationOrResOpt: boolean | resolveOptions | undefined = undefined, forceReload: boolean = false): Promise<T> {
+        let resOpt: resolveOptions;
+        if (typeof(shallowValidationOrResOpt) === 'boolean') {
+            resOpt = new resolveOptions();
+            resOpt.shallowValidation = shallowValidationOrResOpt;
+        } else if (shallowValidationOrResOpt === undefined) {
+            resOpt = new resolveOptions();
+        } else {
+            resOpt = shallowValidationOrResOpt;
+        }
+
         objectPath = this.storage.createAbsoluteCorpusPath(objectPath, obj);
 
         let documentPath: string = objectPath;
@@ -915,14 +931,12 @@ export class CdmCorpusDefinition {
             documentPath = objectPath.slice(0, documentNameIndex);
         }
 
-        Logger.debug(CdmCorpusDefinition.name, this.ctx, `request object: ${objectPath}`, this._fetchObjectAsync.name);
+        Logger.debug(CdmCorpusDefinition.name, this.ctx, `request object: ${objectPath}`, this.fetchObjectAsync.name);
         const newObj: CdmContainerDefinition = await this.loadFolderOrDocument(documentPath, forceReload);
 
         if (newObj) {
-            const resOpt: resolveOptions = new resolveOptions(newObj, new AttributeResolutionDirectiveSet());
             // get imports and index each document that is loaded
             if (newObj instanceof CdmDocumentDefinition) {
-                resOpt.shallowValidation = shallowValidation;
                 if (!await newObj.indexIfNeeded(resOpt)) {
                     return undefined;
                 }
@@ -930,19 +944,19 @@ export class CdmCorpusDefinition {
                     Logger.error(
                         CdmCorpusDefinition.name, this.ctx,
                         `The requested path: ${objectPath} involves a document that failed validation`,
-                        this._fetchObjectAsync.name);
+                        this.fetchObjectAsync.name);
 
                     return undefined;
                 }
             }
 
             if (documentPath === objectPath) {
-                return newObj;
+                return newObj as unknown as T;
             }
 
             if (documentNameIndex === -1) {
                 // there is no remaining path to be loaded, so return.
-                return;
+                return undefined;
             }
 
             // trim off the document path to get the object path in the doc
@@ -954,27 +968,12 @@ export class CdmCorpusDefinition {
                     CdmCorpusDefinition.name,
                     this.ctx,
                     `Could not find symbol '${remainingObjectPath}' in document [${newObj.atCorpusPath}]`,
-                    this._fetchObjectAsync.name
+                    this.fetchObjectAsync.name
                 );
             }
 
-            return result;
+            return result as unknown as T;
         }
-    }
-
-    /**
-     * Fetches an object by the path from the corpus.
-     * @param objectPath Object path, absolute or relative.
-     * @param obj Optional parameter. When provided, it is used to obtain the FolderPath and the Namespace needed
-     * to create the absolute path from a relative path.
-     * @param shallowValidation Optional parameter. When provided, shallow validation in ResolveOptions is enabled,
-     * which logs errors regarding resolving/loading references as warnings.
-     * @param forceReload Optional parameter. When true, the document containing the requested object is reloaded from storage
-     * to access any external changes made to the document since it may have been cached by the corpus.
-     * @returns The object obtained from the provided path.
-     */
-    public async fetchObjectAsync<T>(objectPath: string, obj?: CdmObject, shallowValidation: boolean = false, forceReload: boolean = false): Promise<T> {
-        return this._fetchObjectAsync(objectPath, obj, forceReload, shallowValidation) as undefined as T;
     }
 
     public setEventCallback(
@@ -1445,12 +1444,17 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public finishDocumentResolve(doc: CdmDocumentDefinition): void {
+    public finishDocumentResolve(doc: CdmDocumentDefinition, strictValidation: boolean): void {
+        const wasIndexedPreviously = doc.declarationsIndexed;
+
         doc.currentlyIndexing = false;
-        doc.importsIndexed = true;
-        doc.needsIndexing = false;
+        doc.importsIndexed = doc.importsIndexed || !strictValidation;
+        doc.declarationsIndexed = true;
+        doc.needsIndexing = !strictValidation;
         this.documentLibrary.markDocumentAsIndexed(doc);
-        if (doc.isValid) {
+
+        // if the document declarations were indexed previously, do not log again.
+        if (!wasIndexedPreviously && doc.isValid) {
             for (const def of doc.definitions.allItems) {
                 if (isEntityDefinition(def)) {
                     Logger.debug(CdmCorpusDefinition.name, this.ctx as resolveContext, `indexed entity: ${def.atCorpusPath}`);
@@ -1468,7 +1472,7 @@ export class CdmCorpusDefinition {
             const ctx: resolveContext = this.ctx as resolveContext;
             Logger.debug(CdmCorpusDefinition.name, ctx, 'finishing...');
             for (const doc of this.documentLibrary.listAllDocuments()) {
-                this.finishDocumentResolve(doc);
+                this.finishDocumentResolve(doc, false);
             }
         }
         // return p.measure(bodyCode);
@@ -1871,6 +1875,7 @@ export class CdmCorpusDefinition {
     /**
      * Resolves references according to the provided stages and validates.
      * @returns The validation step that follows the completed step
+     * @deprecated
      */
     public async resolveReferencesAndValidateAsync(
         stage: cdmValidationStep,

@@ -11,17 +11,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
     class TestUtils
     {
         /// <summary>
-        /// Get resolved entity
+        /// Resolves an entity
         /// </summary>
-        /// <param name="corpus"></param>
-        /// <param name="inputEntity"></param>
-        /// <param name="resolutionOptions"></param>
-        /// <returns></returns>
-        public static async Task<CdmEntityDefinition> GetResolvedEntity(CdmCorpusDefinition corpus, CdmEntityDefinition inputEntity, List<string> resolutionOptions)
+        /// <param name="corpus">The corpus</param>
+        /// <param name="inputEntity">The entity to resolve</param>
+        /// <param name="resolutionOptions">The resolution options</param>
+        /// <param name="addResOptToName">Whether to add the resolution options as part of the resolved entity name</param>
+        public static async Task<CdmEntityDefinition> GetResolvedEntity(CdmCorpusDefinition corpus, CdmEntityDefinition inputEntity, List<string> resolutionOptions, bool addResOptToName = false)
         {
             HashSet<string> roHashSet = new HashSet<string>(resolutionOptions);
 
-            string resolvedEntityName = $"Resolved_{inputEntity.EntityName}";
+            string resolvedEntityName = "";
+
+            if (addResOptToName)
+            {
+                string fileNameSuffix = GetResolutionOptionNameSuffix(resolutionOptions);
+                resolvedEntityName = $"Resolved_{inputEntity.EntityName}{fileNameSuffix}";
+            }
+            else
+            {
+                resolvedEntityName = $"Resolved_{inputEntity.EntityName}";
+            }
 
             ResolveOptions ro = new ResolveOptions(inputEntity.InDocument)
             {
@@ -30,9 +40,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
 
             CdmFolderDefinition resolvedFolder = corpus.Storage.FetchRootFolder("output");
             CdmEntityDefinition resolvedEntity = await inputEntity.CreateResolvedEntityAsync(resolvedEntityName, ro, resolvedFolder);
-            resolvedEntity.InDocument.SaveAsAsync($"{resolvedEntityName}.cdm.json", saveReferenced: false).GetAwaiter().GetResult();
+            await resolvedEntity.InDocument.SaveAsAsync($"{resolvedEntityName}.cdm.json", saveReferenced: false);
 
             return resolvedEntity;
+        }
+
+        /// <summary>
+        /// Returns a suffix that contains the file name and resolution option used
+        /// </summary>
+        /// <param name="resolutionOptions">The resolution options</param>
+        public static string GetResolutionOptionNameSuffix(List<string> resolutionOptions)
+        {
+            string fileNamePrefix = string.Empty;
+
+            for (int i = 0; i < resolutionOptions.Count; i++)
+            {
+                fileNamePrefix = $"{fileNamePrefix}_{resolutionOptions[i]}";
+            }
+
+            if (string.IsNullOrWhiteSpace(fileNamePrefix))
+            {
+                fileNamePrefix = "_default";
+            }
+
+            return fileNamePrefix;
         }
     }
 }

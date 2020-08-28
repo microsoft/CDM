@@ -90,7 +90,7 @@ export class ResolvedAttribute {
      * @internal
      */
     public resolvedAttributeCount: number;
-    public insertOrder: number;
+    public insertOrder: number = 0;
     public attCtx: CdmAttributeContext;
     public applierState?: any;
     public arc: AttributeResolutionContext;

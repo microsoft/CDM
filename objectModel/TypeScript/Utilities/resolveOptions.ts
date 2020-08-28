@@ -13,6 +13,7 @@ export class resolveOptions {
     public wrtDoc?: CdmDocumentDefinition; // the document to use as a point of reference when resolving relative paths and symbol names.
     public directives?: AttributeResolutionDirectiveSet; // a set of string flags that direct how attribute resolving traits behave
     public shallowValidation?: boolean; // when enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead
+    public strictValidation: boolean = true; // when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
     public resolvedAttributeLimit?: number = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
 
     /**

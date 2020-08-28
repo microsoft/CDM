@@ -31,13 +31,12 @@ import org.slf4j.LoggerFactory;
 /**
  * Implementation of the storage adapter interface which operates over a local filesystem.
  */
-public class LocalAdapter implements StorageAdapter {
+public class LocalAdapter extends StorageAdapterBase {
   private static final Logger LOGGER = LoggerFactory.getLogger(LocalAdapter.class);
 
   static final String TYPE = "local";
   private String root;
   private String fullRoot;
-  private String locationHint;
 
   public LocalAdapter(final String root) {
     this.root = root;
@@ -57,8 +56,10 @@ public class LocalAdapter implements StorageAdapter {
 
     final ObjectNode configObject = JsonNodeFactory.instance.objectNode();
     configObject.put("root", this.root);
-    if (this.locationHint != null) {
-      configObject.put("locationHint", this.locationHint);
+
+    String locationHint = this.getLocationHint();
+    if (locationHint != null) {
+      configObject.put("locationHint", locationHint);
     }
 
     resultConfig.put("config", configObject);
@@ -69,10 +70,12 @@ public class LocalAdapter implements StorageAdapter {
     }
   }
 
+  @Override
   public boolean canRead() {
     return true;
   }
 
+  @Override
   public CompletableFuture<String> readAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
       final String path = createAdapterPath(corpusPath);
@@ -90,10 +93,12 @@ public class LocalAdapter implements StorageAdapter {
     });
   }
 
+  @Override
   public boolean canWrite() {
     return true;
   }
 
+  @Override
   public CompletableFuture<Void> writeAsync(final String corpusPath, final String data) {
     return CompletableFuture.runAsync(() -> {
       // ensure that the path exists before trying to write the file
@@ -117,6 +122,7 @@ public class LocalAdapter implements StorageAdapter {
     return CompletableFuture.supplyAsync(() -> Files.isDirectory(Paths.get(createAdapterPath(folderPath))));
   }
 
+  @Override
   public String createAdapterPath(String corpusPath) {
     final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
     if (pathTuple == null) {
@@ -132,11 +138,7 @@ public class LocalAdapter implements StorageAdapter {
     return convertPathToAbsolutePath(Paths.get(Paths.get(System.getProperty("user.dir"), this.fullRoot).toString(), corpusPath).toString());
   }
 
-  public void clearCache() {
-    // Intended to return none.
-    return;
-  }
-
+  @Override
   public String createCorpusPath(final String adapterPath) {
     if (StringUtils.isNullOrTrimEmpty(adapterPath) || adapterPath.startsWith("http")) {
       return null;
@@ -161,6 +163,7 @@ public class LocalAdapter implements StorageAdapter {
     return null; // signal that we didn't recognize path as one for this adapter
   }
 
+  @Override
   public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
       final Path adapterPath = Paths.get(this.createAdapterPath(corpusPath));
@@ -179,6 +182,7 @@ public class LocalAdapter implements StorageAdapter {
     });
   }
 
+  @Override
   public CompletableFuture<List<String>> fetchAllFilesAsync(final String folderCorpusPath) {
     // Returns a list corpus paths to all files and folders at or under the
     // provided corpus path to a folder
@@ -261,16 +265,6 @@ public class LocalAdapter implements StorageAdapter {
     }
   }
 
-  @Override
-  public String getLocationHint() {
-    return locationHint;
-  }
-
-  @Override
-  public void setLocationHint(final String locationHint) {
-    this.locationHint = locationHint;
-  }
-
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
@@ -295,7 +289,7 @@ public class LocalAdapter implements StorageAdapter {
     }
     this.root = configsJson.get("root").asText();
     if (configsJson.has("locationHint")) {
-      this.locationHint = configsJson.get("locationHint").asText();
+      this.setLocationHint(configsJson.get("locationHint").asText());
     }
     this.fullRoot = new File(this.root).toString();
   }

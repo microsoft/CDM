@@ -5,7 +5,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as util from 'util';
 import { StorageUtils } from '../Utilities/StorageUtils';
-import { configObjectType, StorageAdapter } from './StorageAdapter';
+import { configObjectType } from './StorageAdapter';
+import { StorageAdapterBase } from './StorageAdapterBase';
 
 let readFile, writeFile, stat, mkdir, readdir;
 
@@ -17,14 +18,12 @@ if (fs.readFile) {
     readdir = util.promisify(fs.readdir);
 }
 
-export class LocalAdapter implements StorageAdapter {
+export class LocalAdapter extends StorageAdapterBase {
     public root: string;
     /**
      * @internal
      */
     public fullRoot: string;
-
-    public locationHint: string;
 
     /**
      * @internal
@@ -32,6 +31,7 @@ export class LocalAdapter implements StorageAdapter {
     public readonly type: string = 'local';
 
     constructor(root?: string) {
+        super();
         if (root) {
             this.root = root;
             this.fullRoot = path.resolve(root);
@@ -100,10 +100,6 @@ export class LocalAdapter implements StorageAdapter {
         }
 
         return; // signal that we didn't recognize path as one for this adapter
-    }
-
-    public clearCache(): void {
-        return;
     }
 
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {

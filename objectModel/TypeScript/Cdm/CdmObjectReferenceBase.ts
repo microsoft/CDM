@@ -157,7 +157,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 }
             } else {
                 // normal symbolic reference, look up from the Corpus, it knows where everything is
-                res = (this.ctx.corpus).resolveSymbolReference(resOpt, this.inDocument, this.namedReference, this.objectType, true);
+                res = this.ctx.corpus.resolveSymbolReference(resOpt, this.inDocument, this.namedReference, this.objectType, true);
             }
 
             return res;
@@ -241,6 +241,36 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         {
             if (!resOpt) {
                 resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+            }
+
+            let def: T = this.fetchResolvedReference(resOpt) as unknown as T;
+            if (def !== undefined) {
+                if (isCdmObjectReference(def)) {
+                    def = def.fetchResolvedReference() as unknown as T;
+                }
+            }
+            if (def !== undefined && !isCdmObjectReference(def)) {
+                return def;
+            }
+        }
+        // return p.measure(bodyCode);
+    }
+
+    public async fetchObjectDefinitionAsync<T extends CdmObjectDefinition>(resOpt?: resolveOptions): Promise<T> {
+        // let bodyCode = () =>
+        {
+            if (!resOpt) {
+                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+            }
+
+            if (!resOpt.wrtDoc) {
+                return undefined;
+            }
+
+            const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
+            if (!await wrtDoc.indexIfNeeded(resOpt, true)) {
+                Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Could not index document ${wrtDoc.atCorpusPath}.`, this.fetchObjectDefinitionAsync.name);
+                return null;
             }
 
             let def: T = this.fetchResolvedReference(resOpt) as unknown as T;

@@ -24,6 +24,7 @@ import {
     VisitCallback
 } from '../internal';
 import { isLocalEntityDeclarationDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
+import { StorageAdapterBase, StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
 
 const rel2CacheKey = (rel: CdmE2ERelationship): string => {
@@ -448,26 +449,35 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeAsyncFromObject(this);
+        let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
+        let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
+        try {
+            const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeAsyncFromObject(this);
 
-        for (const entity of this.entities) {
-            await entity.fileStatusCheckAsync();
+            for (const entity of this.entities) {
+                await entity.fileStatusCheckAsync();
+            }
+
+            for (const subManifest of this.subManifests) {
+                await subManifest.fileStatusCheckAsync();
+            }
+
+            this.lastFileStatusCheckTime = new Date();
+            if (!this.lastFileModifiedTime) {
+                this.lastFileModifiedTime = this._fileSystemModifiedTime;
+            }
+
+            // reload the manifest if it has been updated in the file system
+            if (modifiedTime && this._fileSystemModifiedTime && modifiedTime.getTime() !== this._fileSystemModifiedTime.getTime()) {
+                await this.reload();
+                this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
+                this._fileSystemModifiedTime = this.lastFileModifiedTime;
+            }
         }
-
-        for (const subManifest of this.subManifests) {
-            await subManifest.fileStatusCheckAsync();
-        }
-
-        this.lastFileStatusCheckTime = new Date();
-        if (!this.lastFileModifiedTime) {
-            this.lastFileModifiedTime = this._fileSystemModifiedTime;
-        }
-
-        // reload the manifest if it has been updated in the file system
-        if (modifiedTime && this._fileSystemModifiedTime && modifiedTime.getTime() !== this._fileSystemModifiedTime.getTime()) {
-            await this.reload();
-            this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
-            this._fileSystemModifiedTime = this.lastFileModifiedTime;
+        finally {
+            if(cacheContext != null) {
+                cacheContext.dispose()
+            }
         }
     }
 

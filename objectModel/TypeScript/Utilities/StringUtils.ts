@@ -9,4 +9,8 @@ export class StringUtils {
     public static equalsWithIgnoreCase(strA: string, strB: string): boolean {
         return strA.toLowerCase() === strB.toLowerCase();
     }
+
+    public static isNullOrWhiteSpace(s: string) : boolean {
+        return s === null || s === undefined || s.trim() === '';
+    }
 }

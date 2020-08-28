@@ -4,6 +4,8 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmRelationshipDiscoveryStyle;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
@@ -350,28 +352,42 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
     return CompletableFuture.runAsync(() -> {
-      final OffsetDateTime modifiedTime = getCtx().getCorpus()
-          .computeLastModifiedTimeFromObjectAsync(this).join();
+      StorageAdapter storageAdapterInterface = this.getCtx().getCorpus().getStorage().fetchAdapter(this.getInDocument().getNamespace()); 
+      StorageAdapterBase.CacheContext cacheContext = null;
+      if(storageAdapterInterface instanceof StorageAdapterBase) {
+        cacheContext = ((StorageAdapterBase)storageAdapterInterface).createFileQueryCacheContext();
+      }      
+      try {
 
-      for (final CdmEntityDeclarationDefinition entity : getEntities()) {
-        entity.fileStatusCheckAsync().join();
+        final OffsetDateTime modifiedTime = getCtx().getCorpus()
+            .computeLastModifiedTimeFromObjectAsync(this).join();
+
+        for (final CdmEntityDeclarationDefinition entity : getEntities()) {
+          entity.fileStatusCheckAsync().join();
+        }
+
+        for (final CdmManifestDeclarationDefinition subManifest : getSubManifests()) {
+          subManifest.fileStatusCheckAsync().join();
+        }
+
+        setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
+
+        if (getLastFileModifiedTime() == null) {
+          setLastFileModifiedTime(getFileSystemModifiedTime());
+        }
+
+        // reload the manifest if it has been updated in the file system
+        if (!Objects.equals(modifiedTime, getFileSystemModifiedTime())) {
+          reloadAsync().join();
+          setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
+          setFileSystemModifiedTime(getLastFileModifiedTime());
+        }
       }
-
-      for (final CdmManifestDeclarationDefinition subManifest : getSubManifests()) {
-        subManifest.fileStatusCheckAsync().join();
-      }
-
-      setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
-
-      if (getLastFileModifiedTime() == null) {
-        setLastFileModifiedTime(getFileSystemModifiedTime());
-      }
-
-      // reload the manifest if it has been updated in the file system
-      if (!Objects.equals(modifiedTime, getFileSystemModifiedTime())) {
-        reloadAsync().join();
-        setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
-        setFileSystemModifiedTime(getLastFileModifiedTime());
+      finally{
+        if(cacheContext != null)
+        {
+          cacheContext.dispose();
+        }
       }
     });
   }

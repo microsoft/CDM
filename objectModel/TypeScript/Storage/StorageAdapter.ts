@@ -1,6 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+/**
+ * The CDM Def interface for an adapter object that can read and write documents from a data source.
+ * This was the previous method for a user to create their own storage adapter. The current method is 
+ * to extend the StorageAdapterBase class.
+ * @deprecated Please use the StorageAdapterBase class instead.
+ */
 export interface StorageAdapter {
     /**
      * The location hint, gives a hint to the reader app about the

@@ -9,7 +9,7 @@ import {
     CdmE2ERelationship,
     CdmEntityDefinition,
     CdmFolderDefinition,
-    CdmManifestDefinition,
+    CdmManifestDefinition
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
 import { testUtils } from '../../testUtils';
@@ -148,7 +148,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
     function getRelationshipStrings(relationships: CdmCollection<CdmE2ERelationship>): string {
         let bldr: string = '';
         for (const rel of relationships.allItems) {
-            bldr += `${rel.name}|${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
+            bldr += `${rel.name ? rel.name : ''}|${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
             bldr += endOfLine;
         }
 

@@ -4,6 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.TestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
@@ -222,7 +223,7 @@ public class ProjectionFKTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            String fileNameSuffix = getResolutionOptionNameSuffix(resOpts);
+            String fileNameSuffix = TestUtils.getResolutionOptionNameSuffix(resOpts);
 
             CdmEntityDefinition entSalesForeignKeyProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
             Assert.assertNotNull(entSalesForeignKeyProjection);
@@ -232,20 +233,6 @@ public class ProjectionFKTest {
         });
     }
 
-    private String getResolutionOptionNameSuffix(List<String> resolutionOptions) {
-        String fileNamePrefix = "";
-
-        for (int i = 0; i < resolutionOptions.size(); i++) {
-            fileNamePrefix = fileNamePrefix + "_" + resolutionOptions.get(i);
-        }
-
-        if (StringUtils.isNullOrTrimEmpty(fileNamePrefix)) {
-            fileNamePrefix = "_default";
-        }
-
-        return fileNamePrefix;
-    }
-
     private CompletableFuture<CdmEntityDefinition> saveResolved(CdmCorpusDefinition corpus, CdmManifestDefinition manifest, String testName, CdmEntityDefinition inputEntity, List<String> resolutionOptions) {
         return CompletableFuture.supplyAsync(() -> {
             HashSet<String> roHashSet = new HashSet<String>();
@@ -253,7 +240,7 @@ public class ProjectionFKTest {
                 roHashSet.add(resolutionOptions.get(i));
             }
 
-            String fileNameSuffix = getResolutionOptionNameSuffix(resolutionOptions);
+            String fileNameSuffix = TestUtils.getResolutionOptionNameSuffix(resolutionOptions);
 
             String resolvedEntityName = "Resolved_" + inputEntity.getEntityName() + fileNameSuffix + ".cdm.json";
 

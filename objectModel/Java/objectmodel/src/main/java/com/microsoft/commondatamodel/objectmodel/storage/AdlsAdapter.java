@@ -20,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -37,13 +38,13 @@ import org.apache.http.entity.StringEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
+public class AdlsAdapter extends NetworkAdapter {
+  protected static final Duration ADLS_DEFAULT_TIMEOUT = Duration.ofMillis(5000);
   static final String TYPE = "adls";
   private final static Logger LOGGER = LoggerFactory.getLogger(AdlsAdapter.class);
 
   private String root;
   private String hostname;
-  private String locationHint;
 
   /**
    * The map from corpus path to adapter path.
@@ -64,27 +65,28 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
    * The sub-path.
    */
   private String subPath = "";
+  private Map<String, OffsetDateTime> fileModifiedTimeCache = new LinkedHashMap<String, OffsetDateTime>();
   private AdlsAdapterAuthenticator adlsAdapterAuthenticator;
 
 
   public AdlsAdapter(final String hostname, final String root, final String tenant, final String clientId, final String secret) {
+    this();
     this.updateRoot(root);
     this.updateHostname(hostname);
-    this.httpClient = new CdmHttpClient();
     this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(tenant, clientId, secret);
   }
 
   public AdlsAdapter(final String hostname, final String root, final String sharedKey) {
+    this();
     this.updateRoot(root);
     this.updateHostname(hostname);
-    this.httpClient = new CdmHttpClient();
     this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(sharedKey);
   }
 
   public AdlsAdapter(final String hostname, final String root, final TokenProvider tokenProvider) {
+    this();
     this.updateRoot(root);
     this.updateHostname(hostname);
-    this.httpClient = new CdmHttpClient();
     this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(tokenProvider);
   }
 
@@ -93,12 +95,15 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
    */
   public AdlsAdapter() {
     this.httpClient = new CdmHttpClient();
+    this.setTimeout(ADLS_DEFAULT_TIMEOUT);
   }
 
+  @Override
   public boolean canRead() {
     return true;
   }
 
+  @Override
   public CompletableFuture<String> readAsync(final String corpusPath) {
     return CompletableFuture.supplyAsync(() -> {
       final CdmHttpRequest cdmHttpRequest;
@@ -114,10 +119,12 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     });
   }
 
+  @Override
   public boolean canWrite() {
     return true;
   }
 
+  @Override
   public CompletableFuture<Void> writeAsync(final String corpusPath, final String data) {
     if (!ensurePath(root + corpusPath)) {
       throw new IllegalArgumentException("Could not create folder for document '" + corpusPath + "'");
@@ -141,6 +148,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     });
   }
 
+  @Override
   public String createAdapterPath(final String corpusPath) {
     final String formattedCorpusPath = this.formatCorpusPath(corpusPath);
     if (formattedCorpusPath == null) {
@@ -153,6 +161,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     return "https://" + hostname + root + this.formatCorpusPath(corpusPath);
   }
 
+  @Override
   public String createCorpusPath(final String adapterPath) {
     if (!StringUtils.isNullOrEmpty(adapterPath))
     {
@@ -177,32 +186,48 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
     return null;
   }
 
+  @Override
   public void clearCache() {
+    this.fileModifiedTimeCache.clear();
   }
 
-  public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
+  @Override
+  public CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) { 
     return CompletableFuture.supplyAsync(() -> {
-      final String url = this.createAdapterPath(corpusPath);
-
-      try {
-        final CdmHttpRequest request = this.buildRequest(url, "HEAD");
-        CdmHttpResponse cdmResponse = executeRequest(request).join();
-
-        if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
-          return DateUtils.parseDate(cdmResponse.getResponseHeaders().get("Last-Modified"))
-              .toInstant()
-              .atOffset(ZoneOffset.UTC);
-        }
-      // We're capturing CompletionException as this is of interest to us, it wraps any exception created inside
-      // the body of the executeRequest method.
-      } catch (CompletionException ex) {
-        LOGGER.debug("ADLS file not found, skipping last modified time calculation for it.", ex.getCause());
+      OffsetDateTime cachedValue = this.getIsCacheEnabled() ? this.fileModifiedTimeCache.get(corpusPath) : null;
+      if(cachedValue != null)
+      {
+        return cachedValue;
       }
-      
-      return null;
+      else{
+        final String url = this.createAdapterPath(corpusPath);
+
+        try {
+          final CdmHttpRequest request = this.buildRequest(url, "HEAD");
+          CdmHttpResponse cdmResponse = executeRequest(request).join();
+
+          if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
+            OffsetDateTime lastTime = 
+              DateUtils.parseDate(cdmResponse.getResponseHeaders().get("Last-Modified"))
+                  .toInstant()
+                  .atOffset(ZoneOffset.UTC);
+              if(this.getIsCacheEnabled()) {
+                this.fileModifiedTimeCache.put(corpusPath, lastTime);
+              }
+              return lastTime;
+          }
+        // We're capturing CompletionException as this is of interest to us, it wraps any exception created inside
+        // the body of the executeRequest method.
+        } catch (CompletionException ex) {
+          LOGGER.debug("ADLS file not found, skipping last modified time calculation for it.", ex.getCause());
+        }
+        
+        return null;
+      }
     });
   }
 
+  @Override
   public CompletableFuture<List<String>> fetchAllFilesAsync(final String folderCorpusPath) {
     return CompletableFuture.supplyAsync(() -> {
       if (folderCorpusPath == null) {
@@ -237,7 +262,16 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
                 String nameWithoutSubPath = this.subPath.length() > 0 && name.startsWith(this.subPath)
                     ? name.substring(this.subPath.length() + 1)
                     : name;
-                result.add(this.formatCorpusPath(nameWithoutSubPath));
+                String filepath = this.formatCorpusPath(nameWithoutSubPath);
+                result.add(filepath);
+
+                OffsetDateTime lastTime = DateUtils.parseDate(path.get("lastModified").asText())
+                  .toInstant()
+                  .atOffset(ZoneOffset.UTC);
+
+                if(this.getIsCacheEnabled()) {
+                  this.fileModifiedTimeCache.put(filepath, lastTime);
+                }
               }
             }
           }
@@ -378,16 +412,6 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
   }
 
   @Override
-  public void setLocationHint(final String locationHint) {
-    this.locationHint = locationHint;
-  }
-
-  @Override
-  public String getLocationHint() {
-    return this.locationHint;
-  }
-
-  @Override
   public String fetchConfig() {
     final ObjectNode resultConfig = JsonNodeFactory.instance.objectNode();
     resultConfig.put("type", TYPE);
@@ -405,8 +429,9 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
       configObject.set(stringJsonNodeEntry.getKey(), stringJsonNodeEntry.getValue());
     }
 
-    if (this.locationHint != null) {
-      configObject.put("locationHint", this.locationHint);
+    String locationHint = this.getLocationHint();
+    if (locationHint != null) {
+      configObject.put("locationHint", locationHint);
     }
     resultConfig.set("config", configObject);
     try {
@@ -443,7 +468,7 @@ public class AdlsAdapter extends NetworkAdapter implements StorageAdapter {
           configsJson.get("clientId").asText(),
           configsJson.has("secret") ? configsJson.get("secret").asText() : null);
     }
-    this.locationHint = configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null;
+    this.setLocationHint(configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null);
   }
 
   private void updateRoot(String value) {

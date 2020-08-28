@@ -35,8 +35,8 @@ public class DocumentDefinitionTest {
         docC.getImports().add("B.cdm.json");
 
         // forces docB to be indexed first.
-        docB.indexIfNeededAsync(new ResolveOptions()).join();
-        docA.indexIfNeededAsync(new ResolveOptions()).join();
+        docB.indexIfNeededAsync(new ResolveOptions(), true).join();
+        docA.indexIfNeededAsync(new ResolveOptions(), true).join();
         
         // should contain A, B and C.
         Assert.assertEquals(3, docA.getImportPriorities().getImportPriority().size());
@@ -74,7 +74,7 @@ public class DocumentDefinitionTest {
         docD.getImports().add("C.cdm.json");
 
         // indexIfNeededAsync will internally call prioritizeImports on every document.
-        docA.indexIfNeededAsync(new ResolveOptions()).join();
+        docA.indexIfNeededAsync(new ResolveOptions(), true).join();
         
         Assert.assertEquals(4, docA.getImportPriorities().getImportPriority().size());
 
@@ -82,14 +82,14 @@ public class DocumentDefinitionTest {
         markDocumentsToIndex(folder.getDocuments());
 
         // force docC to be indexed first, so the priorityList will be read from the cache this time.
-        docC.indexIfNeededAsync(new ResolveOptions()).join();
-        docA.indexIfNeededAsync(new ResolveOptions()).join();
+        docC.indexIfNeededAsync(new ResolveOptions(), true).join();
+        docA.indexIfNeededAsync(new ResolveOptions(), true).join();
 
         Assert.assertEquals(4, docA.getImportPriorities().getImportPriority().size());
 
         // indexes the rest of the documents.
-        docB.indexIfNeededAsync(new ResolveOptions()).join();
-        docD.indexIfNeededAsync(new ResolveOptions()).join();
+        docB.indexIfNeededAsync(new ResolveOptions(), true).join();
+        docD.indexIfNeededAsync(new ResolveOptions(), true).join();
 
         Assert.assertFalse(docA.getImportPriorities().getHasCircularImport());
         Assert.assertFalse(docB.getImportPriorities().getHasCircularImport());
@@ -118,8 +118,8 @@ public class DocumentDefinitionTest {
         folder.getDocuments().add(docC);
 
         // forces docB to be indexed first, so the priorityList will be read from the cache this time.
-        docB.indexIfNeededAsync(new ResolveOptions(docB)).join();
-        docA.indexIfNeededAsync(new ResolveOptions(docA)).join();
+        docB.indexIfNeededAsync(new ResolveOptions(docB), true).join();
+        docA.indexIfNeededAsync(new ResolveOptions(docA), true).join();
 
         // should only contain docA and docC, docB should be excluded.
         Assert.assertEquals(2, docA.getImportPriorities().getImportPriority().size());

@@ -4,6 +4,7 @@
 import { CdmHttpClient, CdmHttpRequest, CdmHttpResponse } from '../Utilities/Network';
 import { configObjectType } from './StorageAdapter';
 import { StorageAdapterConfigCallback } from './StorageAdapterConfigCallback';
+import { StorageAdapterBase } from './StorageAdapterBase'
 
 /**
  * Network adapter is an abstract class that contains logic for adapters dealing with data across network.
@@ -13,7 +14,7 @@ import { StorageAdapterConfigCallback } from './StorageAdapterConfigCallback';
  * If a user doesn't specify timeout, maximutimeout or number of retries in the config under 'httpConfig' property
  * default values will be used as specified in the class.
  */
-export abstract class NetworkAdapter {
+export abstract class NetworkAdapter extends StorageAdapterBase {
 
     // Use some default values in the case a user doesn't set them up.
     protected readonly defaultTimeout: number = 5000;
@@ -23,33 +24,33 @@ export abstract class NetworkAdapter {
 
     protected httpClient: CdmHttpClient;
 
-    protected _timeout: number;
-    protected _maximumTimeout: number;
-    protected _numberOfRetries: number;
+    protected _timeout: number = this.defaultTimeout;
+    protected _maximumTimeout: number = this.defaultMaximumTimeout;
+    protected _numberOfRetries: number = this.defaultNumberOfRetries;
     protected _waitTimeCallback: StorageAdapterConfigCallback;
 
     public get timeout(): number {
-        return this._timeout !== undefined ? this._timeout : this.defaultTimeout;
+        return this._timeout;
     }
 
     public set timeout(val: number) {
-        this._timeout = val;
+        this._timeout = (val === undefined || val < 0) ? this.defaultTimeout : val;
     }
 
     public get maximumTimeout(): number {
-        return this._maximumTimeout !== undefined ? this._maximumTimeout : this.defaultMaximumTimeout;
+        return this._maximumTimeout;
     }
 
     public set maximumTimeout(val: number) {
-        this._maximumTimeout = val;
+        this._maximumTimeout = (val === undefined || val < 0) ? this.defaultMaximumTimeout : val;
     }
 
     public get numberOfRetries(): number {
-        return this._numberOfRetries !== undefined ? this._numberOfRetries : this.defaultNumberOfRetries;
+        return this._numberOfRetries;
     }
 
     public set numberOfRetries(val: number) {
-        this._numberOfRetries = val;
+        this._numberOfRetries = (val === undefined || val < 0) ? this.defaultNumberOfRetries : val;
     }
 
     public get waitTimeCallback(): StorageAdapterConfigCallback {

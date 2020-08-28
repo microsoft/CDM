@@ -211,13 +211,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         int iArg = 0;
                         if (this.Arguments != null)
                         {
-                            foreach (CdmArgumentDefinition a in this.Arguments)
+                            foreach (CdmArgumentDefinition argument in this.Arguments)
                             {
-                                paramFound = param.ResolveParameter(iArg, a.Name);
-                                a.ResolvedParameter = paramFound;
-                                aValue = a.Value;
+                                paramFound = param.ResolveParameter(iArg, argument.Name);
+                                argument.ResolvedParameter = paramFound;
+                                aValue = argument.Value;
                                 aValue = ctx.Corpus.ConstTypeCheck(resOpt, this.InDocument, paramFound, aValue);
-                                a.Value = aValue;
+                                argument.Value = aValue;
                                 iArg++;
                             }
                         }

@@ -83,7 +83,7 @@ export class CdmHttpClient {
             cdmRequest.headers.set(key, value);
         });
 
-        return this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback));
+        return this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback), 'Maximum timeout exceeded.');
     }
 
     /**
@@ -128,7 +128,8 @@ export class CdmHttpClient {
                 try {
                     response = await this.raceAsyncTaskAgainstTimeout(
                         cdmRequest.timeout,
-                        this.httpHandler(fullUrl, cdmRequest.method, cdmRequest.content, outgoingHeaders));
+                        this.httpHandler(fullUrl, cdmRequest.method, cdmRequest.content, outgoingHeaders),
+                            'Request timeout.');
                 } catch (err) {
                     hasFailed = true;
 
@@ -186,12 +187,12 @@ export class CdmHttpClient {
      * @param {Promise} promise The promise that is competing against the timeout promise.
      * @return {Promise} which one the race.
      */
-    private async raceAsyncTaskAgainstTimeout(ms: number, promise: Promise<CdmHttpResponse>): Promise<CdmHttpResponse> {
+    private async raceAsyncTaskAgainstTimeout(ms: number, promise: Promise<CdmHttpResponse>, errorMessage: string): Promise<CdmHttpResponse> {
         let timeout;
         const timeoutPromise = new Promise<CdmHttpResponse>((resolve, reject) => {
             timeout = setTimeout(() => {
                 clearTimeout(timeout);
-                reject('Request timeout.');
+                reject(errorMessage);
             }, ms);
         });
 
