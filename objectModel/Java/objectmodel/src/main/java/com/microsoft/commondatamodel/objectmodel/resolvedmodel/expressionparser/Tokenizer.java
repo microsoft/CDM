@@ -29,6 +29,8 @@ public final class Tokenizer {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param expression String
+     * @return List of List of Object
      */
     @Deprecated
     public static List<List<Object>> getExpressionAsTokenList(String expression) {

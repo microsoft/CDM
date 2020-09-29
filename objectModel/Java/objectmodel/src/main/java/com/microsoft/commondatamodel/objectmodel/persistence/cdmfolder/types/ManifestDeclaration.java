@@ -32,7 +32,7 @@ public class ManifestDeclaration extends FileStatusExtended {
   /**
    * Gets the corpus path to the definition of the sub manifest.
    *
-   * @return
+   * @return string
    */
   public String getDefinition() {
     return definition;
@@ -41,7 +41,7 @@ public class ManifestDeclaration extends FileStatusExtended {
   /**
    * Sets the corpus path to the definition of the sub manifest.
    *
-   * @param definition
+   * @param definition String
    */
   public void setDefinition(final String definition) {
     this.definition = definition;

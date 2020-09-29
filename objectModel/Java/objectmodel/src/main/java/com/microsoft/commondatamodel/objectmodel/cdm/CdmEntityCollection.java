@@ -112,7 +112,7 @@ public class CdmEntityCollection extends CdmCollection<CdmEntityDeclarationDefin
    *
    * @param entityDefToRemove {@link CdmEntityDefinition}
    *                          whose reference needs to be removed from the collection.
-   * @return >Whether the operation completed successfully.
+   * @return Whether the operation completed successfully.
    */
   public boolean remove(final CdmEntityDefinition entityDefToRemove) {
     for (final CdmEntityDeclarationDefinition entity : this.getAllItems()) {

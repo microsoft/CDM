@@ -259,8 +259,11 @@ export class ResolvedTraitSet {
         // let bodyCode = () =>
         {
             const altered: ResolvedTraitSet = this.shallowCopyWithException(toTrait);
-            altered.get(toTrait).parameterValues
-                .setParameterValue(this.resOpt, paramName, value);
+            const currTrait: ResolvedTrait = altered.get(toTrait);
+            if (currTrait) {
+                currTrait.parameterValues
+                    .setParameterValue(this.resOpt, paramName, value);
+            }
 
             return altered;
         }
@@ -275,7 +278,7 @@ export class ResolvedTraitSet {
             const l: number = traitSetResult.set.length;
             for (let i: number = 0; i < l; i++) {
                 let rt: ResolvedTrait = traitSetResult.set[i];
-                if (rt.trait.isDerivedFrom(toTrait, this.resOpt)) {
+                if (rt && rt.trait.isDerivedFrom(toTrait, this.resOpt)) {
                     if (rt.parameterValues) {
                         const pc: ParameterCollection = rt.parameterValues.pc;
                         let av: ArgumentValue[] = rt.parameterValues.values;

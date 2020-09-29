@@ -6,6 +6,7 @@ import {
     CdmDocumentDefinition,
     CdmObject,
     CdmObjectBase,
+    importsLoadStrategy,
     SymbolSet
 } from '../internal';
 
@@ -13,8 +14,9 @@ export class resolveOptions {
     public wrtDoc?: CdmDocumentDefinition; // the document to use as a point of reference when resolving relative paths and symbol names.
     public directives?: AttributeResolutionDirectiveSet; // a set of string flags that direct how attribute resolving traits behave
     public shallowValidation?: boolean; // when enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead
-    public strictValidation: boolean = true; // when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
+    public importsLoadStrategy: importsLoadStrategy = importsLoadStrategy.lazyLoad; // defines at which point the Object Model will try to load the imported documents.
     public resolvedAttributeLimit?: number = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
+    public maxOrdinalForArrayExpansion: number = 20; // the maximum value for the end ordinal in an ArrayExpansion operation
 
     /**
      * @internal
@@ -51,6 +53,31 @@ export class resolveOptions {
      * @internal
      */
     public fromMoniker?: string; // moniker that was found on the ref
+
+    /**
+     * @deprecated please use importsLoadStrategy instead.
+     * when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
+     */
+    public get strictValidation(): boolean | undefined {
+        if (this.importsLoadStrategy === importsLoadStrategy.lazyLoad) {
+            return undefined;
+        }
+        return this.importsLoadStrategy == importsLoadStrategy.load;
+    }
+
+    /**
+     * @deprecated please use importsLoadStrategy instead.
+     * when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
+     */
+    public set strictValidation(strictValidation: boolean | undefined) {
+        if (strictValidation === undefined) {
+            this.importsLoadStrategy = importsLoadStrategy.lazyLoad;
+        } else if (strictValidation) {
+            this.importsLoadStrategy = importsLoadStrategy.load;
+        } else {
+            this.importsLoadStrategy = importsLoadStrategy.doNotLoad;
+        }
+    }
 
     public constructor(parameter?: CdmDocumentDefinition | CdmObject, directives?: AttributeResolutionDirectiveSet) {
         if (!parameter) {

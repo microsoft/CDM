@@ -215,6 +215,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the trait associated properties.
+   * @return List of strings
    */
   public List<String> getAssociatedProperties() {
     return this.associatedProperties;
@@ -234,6 +235,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the trait elevated.
+   * @return boolean
    */
   public Boolean getElevated() {
     return this.elevated;
@@ -245,6 +247,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the trait extended by this trait.
+   * @return CdmTraitReference
    */
   public CdmTraitReference getExtendsTrait() {
     return this.extendsTrait;
@@ -256,6 +259,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets the trait parameters.
+   * @return CdmCollection of CdmParameterDefinition
    */
   public CdmCollection<CdmParameterDefinition> getParameters() {
     if (this.parameters == null) {
@@ -266,6 +270,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the trait name.
+   * @return String
    */
   public String getTraitName() {
     return this.traitName;
@@ -277,6 +282,7 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets if trait is user facing or not.
+   * @return Boolean
    */
   public Boolean getUgly() {
     return this.ugly;
@@ -320,9 +326,9 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved option
+   * @param options copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -362,6 +368,9 @@ public class CdmTraitDefinition extends CdmObjectDefinitionBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param under attribute context
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated

@@ -21,7 +21,8 @@ import {
     copyOptions,
     OperationTypeConvertor,
     resolveOptions,
-    Logger
+    Logger,
+    StringUtils
 } from '../../../internal';
 import { EntityReferencePersistence } from '../EntityReferencePersistence';
 import {
@@ -132,10 +133,19 @@ export class ProjectionPersistence {
             return undefined;
         }
 
-        const source: EntityReferenceDefinition = EntityReferencePersistence.toData(instance.source as CdmEntityReference, resOpt, options) as EntityReferenceDefinition;
+        let source: any = undefined;
+        if (instance.source && typeof instance.source === 'string') {
+            source = instance.source;
+        }
+        else if (instance.source && !StringUtils.isNullOrWhiteSpace(instance.source.namedReference) && instance.source.explicitReference === undefined) {
+            source = instance.source.namedReference;
+        }
+        else if (instance.source && typeof instance.source === typeof (CdmEntityReference)) {
+            source = EntityReferencePersistence.toData(instance.source as CdmEntityReference, resOpt, options) as EntityReferenceDefinition;
+        }
 
         let operations: OperationBase[];
-        if (instance.operations) {
+        if (instance.operations && instance.operations.length > 0) {
             operations = [];
             instance.operations.allItems.forEach((operation: CdmOperationBase) => {
                 switch (operation.objectType) {

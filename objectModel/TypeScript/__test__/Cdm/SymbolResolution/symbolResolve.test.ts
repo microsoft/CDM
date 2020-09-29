@@ -1,19 +1,18 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmAttributeGroupDefinition } from '../../../Cdm/CdmAttributeGroupDefinition';
-import { CdmTraitDefinition } from '../../../Cdm/CdmTraitDefinition';
 import {
+    CdmAttributeGroupDefinition,
     CdmCorpusDefinition,
     CdmEntityDefinition,
     CdmObjectBase,
     cdmObjectType,
-    cdmStatusLevel,
+    CdmTraitDefinition,
+    importsLoadStrategy,
     resolveOptions
 } from '../../../internal';
 import { isAttributeGroupDefinition, isAttributeGroupReference, isCdmTraitDefinition, isCdmTraitReference, isTypeAttributeDefinition } from '../../../Utilities/cdmObjectTypeGuards';
 import { testHelper } from '../../testHelper';
-import { resolveContextScope } from '../../../Utilities/resolveContextScope';
 
 describe('Cdm/SymbolResolution/SymbolResolve', () => {
     const testsSubpath: string = 'Cdm/SymbolResolution';
@@ -26,7 +25,7 @@ describe('Cdm/SymbolResolution/SymbolResolve', () => {
 
         // load the file
         const resOpt: resolveOptions = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
         const ent: CdmEntityDefinition = await corpus.fetchObjectAsync('local:/symbolEntity.cdm.json/symbolEnt', null, resOpt);
         resOpt.wrtDoc = ent.inDocument;
 

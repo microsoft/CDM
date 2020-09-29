@@ -268,6 +268,7 @@ public class LocalAdapter extends StorageAdapterBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return String
    */
   @Deprecated
   public String getFullRoot() {

@@ -4,7 +4,7 @@
 import os
 import unittest
 
-from cdm.enums import CdmStatusLevel
+from cdm.enums import CdmStatusLevel, ImportsLoadStrategy
 from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
 
 from tests.common import async_test, TestHelper
@@ -37,23 +37,25 @@ class CorpusTests(unittest.TestCase):
         await corpus._compute_last_modified_time_async('local:/default.manifest.cdm.json')
 
     @async_test
-    async def test_strict_validation_off(self):
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_strict_validation')  # type: CdmCorpusDefinition
+    async def test_lazy_load_imports(self):
+        """Tests the fetch_object_async function with the lazy imports load."""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_imports_load_strategy')  # type: CdmCorpusDefinition
         def callback(status_level: CdmStatusLevel, message: str):
-            # when the strict validation is disabled, there should be no reference validation.
+            # when the imports are not loaded, there should be no reference validation.
             # no error should be logged.
             self.fail(message)
         corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
 
-        # load with strict validation disabled.
+        # load with deferred imports.
         res_opt = ResolveOptions()
-        res_opt.strict_validation = False
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LAZY_LOAD
         await corpus.fetch_object_async('local:/doc.cdm.json', res_opt=res_opt)
 
     @async_test
-    async def test_strict_validation_on(self):
+    async def test_load_imports(self):
+        """Tests the fetch_object_async function with the imports load strategy set to load."""
         error_count = 0
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_strict_validation')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_imports_load_strategy')
         def callback(status_level: CdmStatusLevel, message: str):
             nonlocal error_count
             if message.index('Unable to resolve the reference') != -1:
@@ -64,12 +66,12 @@ class CorpusTests(unittest.TestCase):
 
         # load with strict validation.
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
         await corpus.fetch_object_async('local:/doc.cdm.json', res_opt=res_opt)
         self.assertEqual(1, error_count)
 
         error_count = 0
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_strict_validation')
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_imports_load_strategy')
         def callback1(status_level: CdmStatusLevel, message: str):
             nonlocal error_count
             if status_level == CdmStatusLevel.WARNING and message.index('Unable to resolve the reference') != -1:
@@ -80,7 +82,7 @@ class CorpusTests(unittest.TestCase):
 
         # load with strict validation and shallow validation.
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
         res_opt.shallow_validation = True
         await corpus.fetch_object_async('local:/doc.cdm.json', res_opt=res_opt)
         self.assertEqual(1, error_count)

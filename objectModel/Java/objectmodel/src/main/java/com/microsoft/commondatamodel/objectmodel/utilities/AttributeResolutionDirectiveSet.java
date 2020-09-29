@@ -35,6 +35,7 @@ public class AttributeResolutionDirectiveSet {
 
   /**
    * Create a copy of this object.
+   * @return AttributeResolutionDirectiveSet
    */
   public AttributeResolutionDirectiveSet copy() {
     final AttributeResolutionDirectiveSet result = new AttributeResolutionDirectiveSet();
@@ -56,6 +57,7 @@ public class AttributeResolutionDirectiveSet {
    * Returns true if this set contains the specified directive.
    *
    * @param directive Directive to check
+   * @return boolean
    */
   public boolean has(final String directive) {
     if (set != null) {
@@ -127,6 +129,7 @@ public class AttributeResolutionDirectiveSet {
 
   /**
    * Returns the sorted tag.
+   * @return String
    */
   public String getTag() {
     if (Strings.isNullOrEmpty(sortedTag)) {

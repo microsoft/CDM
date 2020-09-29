@@ -30,6 +30,7 @@ public class SymbolSet implements Iterable<String> {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return int
    */
   @Deprecated
   public int getSize() {
@@ -69,6 +70,7 @@ public class SymbolSet implements Iterable<String> {
    * 
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return SymbolSet
    */
   @Deprecated
   public SymbolSet copy() {

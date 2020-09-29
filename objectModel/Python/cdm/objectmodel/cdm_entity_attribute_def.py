@@ -1,4 +1,4 @@
-# Copyright (c) Microsoft Corporation. All rights reserved.
+﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import cast, Optional, TYPE_CHECKING
@@ -70,7 +70,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         acp_ent = None
 
         ctx_ent_obj_def = ctx_ent.fetch_object_definition(res_opt)
-        if ctx_ent_obj_def.object_type == CdmObjectType.PROJECTION_DEF:
+        if ctx_ent_obj_def and ctx_ent_obj_def.object_type == CdmObjectType.PROJECTION_DEF:
             # A Projection
 
             proj_directive = ProjectionDirective(res_opt, self, ctx_ent)

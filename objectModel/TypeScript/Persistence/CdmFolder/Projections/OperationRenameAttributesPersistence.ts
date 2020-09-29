@@ -35,7 +35,14 @@ export class OperationRenameAttributesPersistence {
         }
 
         renameAttributesOp.renameFormat = object.renameFormat;
-        renameAttributesOp.applyTo = object.applyTo;
+
+        if (typeof(object.applyTo) === 'string') {
+            renameAttributesOp.applyTo = [ object.applyTo ]
+        } else if (Array.isArray(object.applyTo)) {
+            renameAttributesOp.applyTo = object.applyTo;
+        } else if (object.applyTo !== undefined) {
+            Logger.error(OperationRenameAttributes.name, ctx, 'Unsupported: applyTo property type should be string or List<string>.');
+        }
 
         return renameAttributesOp;
     }

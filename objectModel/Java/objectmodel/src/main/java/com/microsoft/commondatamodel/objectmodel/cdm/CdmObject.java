@@ -14,7 +14,9 @@ import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
 public interface CdmObject {
 
   /**
+   *
    * Gets or sets the object id.
+   * @return int ID
    */
   int getId();
 
@@ -22,6 +24,7 @@ public interface CdmObject {
 
   /**
    * Gets or sets the object context.
+   * @return CDM Corpus context
    */
   CdmCorpusContext getCtx();
 
@@ -29,6 +32,7 @@ public interface CdmObject {
 
   /**
    * Gets or sets the declaration document of the object.
+   * @return CDM Document Definition   
    */
   CdmDocumentDefinition getInDocument();
 
@@ -36,11 +40,13 @@ public interface CdmObject {
 
   /**
    * Gets the object declared path.
+   * @return string corpus path
    */
   String getAtCorpusPath();
 
   /**
    * Gets or sets the object type.
+   * @return CDM Object Type   
    */
   CdmObjectType getObjectType();
 
@@ -48,6 +54,7 @@ public interface CdmObject {
 
   /**
    * The object that owns or contains this object.
+   * @return CDM Object
    */
   CdmObject getOwner();
 
@@ -55,6 +62,8 @@ public interface CdmObject {
 
   /**
    * Returns the resolved object reference.
+   * @param <T> Type
+   * @return List of CDM Object definitions
    */
   default <T extends CdmObjectDefinition> T fetchObjectDefinition() {
     return fetchObjectDefinition(new ResolveOptions(this));
@@ -62,18 +71,24 @@ public interface CdmObject {
 
   /**
    * Returns the resolved object reference.
+   * @param resOpt resolve options
+   * @param <T> Type
+   * @return List of CDM Object definitions   
    */
   <T extends CdmObjectDefinition> T fetchObjectDefinition(ResolveOptions resOpt);
 
   /**
    * Returns the name of the object if this is a definition or the name of the referenced object if
    * this is an object reference.
+   * @return String object name definition
    */
   String fetchObjectDefinitionName();
 
   /**
    * Returns true if the object (or the referenced object) is an extension in some way from the
    * specified symbol name.
+   * @param baseDef Base definition
+   * @return boolean if the version is derived from base definition 
    */
   default boolean isDerivedFrom(String baseDef) {
     return this.isDerivedFrom(baseDef, null);
@@ -82,23 +97,31 @@ public interface CdmObject {
   /**
    * Returns true if the object (or the referenced object) is an extension in some way from the
    * specified symbol name.
+   * @param baseDef Base definition
+   * @param resOpt Resolved options
+   * @return boolean if the version is derived from base definition   
    */
   boolean isDerivedFrom(String baseDef, ResolveOptions resOpt);
 
   /**
    * Runs the preChildren and postChildren input functions with this object as input, also calls
    * recursively on any objects this one contains.
+   * @param pathRoot Root path
+   * @param preChildren pre call back
+   * @param postChildren post Call back
+   * @return boolean
    */
   boolean visit(String pathRoot, VisitCallback preChildren, VisitCallback postChildren);
 
   /**
    * Validates that the object is configured properly.
+   * @return boolean
    */
   boolean validate();
 
   /**
    *
-   * @return
+   * @return Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -109,8 +132,8 @@ public interface CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolv options
+   * @return Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -121,9 +144,9 @@ public interface CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolve options
+   * @param options copy options
+   * @return Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -132,7 +155,7 @@ public interface CdmObject {
 
   /**
    *
-   * @return
+   * @return Resolved traits list
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -143,8 +166,8 @@ public interface CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolve options
+   * @return Resolved traits set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -153,7 +176,7 @@ public interface CdmObject {
 
   /**
    *
-   * @return
+   * @return Resolved attribute set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -164,8 +187,8 @@ public interface CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolve options
+   * @return Tesolved attribute set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -174,9 +197,9 @@ public interface CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @param acpInContext
-   * @return
+   * @param resOpt Resolve options
+   * @param acpInContext Attribute context parameters
+   * @return Resolved attribute set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -187,9 +210,8 @@ public interface CdmObject {
   /**
    * Creates a copy of this object.
    * Uses the default {@link ResolveOptions}. {@link CdmObject} is null by default.
-   *
    * @return A copy of the object.
-   * @see #copy(ResolveOptions, CdmObject).
+   * @see #copy(ResolveOptions, CdmObject)
    */
   default CdmObject copy() {
     return this.copy(new ResolveOptions(this));
@@ -197,10 +219,9 @@ public interface CdmObject {
 
   /**
    * Creates a copy of this object. {@link CdmObject} is null by default.
-   *
    * @param resOpt The resolve options.
    * @return A copy of the object.
-   * @see #copy(ResolveOptions, CdmObject).
+   * @see #copy(ResolveOptions, CdmObject)
    */
   default CdmObject copy(ResolveOptions resOpt) {
     return this.copy(resOpt, null);
@@ -218,7 +239,7 @@ public interface CdmObject {
 
   /**
    *
-   * @return
+   * @return CDM Object reference
    */
   default CdmObjectReference createSimpleReference() {
     return this.createSimpleReference(new ResolveOptions(this));
@@ -226,8 +247,8 @@ public interface CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolve Options
+   * @return CDM Object reference
    */
   CdmObjectReference createSimpleReference(ResolveOptions resOpt);
 }

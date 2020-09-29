@@ -42,7 +42,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public abstract override CdmObjectType GetObjectType();
 
         /// <inheritdoc />
-        public abstract override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null);
+        public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
+        {
+            return false;
+        }
 
         /// <inheritdoc />
         public abstract override bool Validate();
@@ -89,7 +92,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 foreach (string trait in addedSimpleRefTraits)
                 {
                     if (targetAttr.AppliedTraits.Item(trait) == null)
+                    {
                         targetAttr.AppliedTraits.Add(trait, true);
+                    }
                 }
             }
 

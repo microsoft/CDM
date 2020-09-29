@@ -49,8 +49,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         /// </summary>
         public string SharedKey { get; private set; }
 
-        public string LocationHint { get; set; }
-
         /// <summary>
         /// The predefined ADLS resource.
         /// </summary>

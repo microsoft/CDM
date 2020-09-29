@@ -49,9 +49,9 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolve Options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -133,6 +133,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Gets or sets the data partition pattern name.
+   * @return String
    */
   @Override
   public String getName() {
@@ -145,6 +146,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Gets or sets the starting location corpus path for searching for inferred data partitions.
+   * @return String
    */
   public String getRootLocation() {
     return rootLocation;
@@ -157,6 +159,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
   /**
    * Gets or sets the glob pattern used to search for partitions.
    * If both globPattern and regularExpression is set, globPattern will be used.
+   * @return String
    */
   public String getGlobPattern() {
     return globPattern;
@@ -168,6 +171,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Gets or sets the regular expression string to use for searching partitions.
+   * @return String
    */
   public String getRegularExpression() {
     return regularExpression;
@@ -179,6 +183,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Gets or sets the names for replacement values from regular expression.
+   * @return List of String
    */
   public List<String> getParameters() {
     return parameters;
@@ -190,6 +195,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Gets or sets the corpus path for specialized schema to use for matched pattern partitions.
+   * @return String
    */
   public String getSpecializedSchema() {
     return specializedSchema;
@@ -201,6 +207,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Last time the modified times were updated.
+   * @return Offset time
    */
   @Override
   public OffsetDateTime getLastFileStatusCheckTime() {
@@ -214,6 +221,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Last time this file was modified according to the OM.
+   * @return Offset time
    */
   @Override
   public OffsetDateTime getLastFileModifiedTime() {
@@ -227,6 +235,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+   * @return Offset time
    */
   @Override
   public OffsetDateTime getLastChildFileModifiedTime() {
@@ -235,6 +244,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * LastChildFileModifiedTime is not valid for DataPartitions since they do not contain any children objects.
+   * @param time offset time
    */
   @Override
   public void setLastChildFileModifiedTime(final OffsetDateTime time) {
@@ -243,6 +253,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Updates the object and any children with changes made in the document file where it came from.
+   * @return CompletableFuture
    */
   @Override
   public CompletableFuture<Void> fileStatusCheckAsync() {
@@ -367,6 +378,8 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Report most recent modified time (of current or children objects) to the parent object.
+   * @param childTime offset time
+   * @return Completable future
    */
   @Override
   public CompletableFuture<Void> reportMostRecentTimeAsync(final OffsetDateTime childTime) {
@@ -379,6 +392,8 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
 
   /**
    * Converts a glob pattern to a regular expression
+   * @param pattern string
+   * @return String
    */
   private String globPatternToRegex(String pattern) {
     ArrayList<String> newPattern = new ArrayList<String>();

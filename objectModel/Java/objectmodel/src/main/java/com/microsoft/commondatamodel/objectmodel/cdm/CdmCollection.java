@@ -95,9 +95,9 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
   public int getCount() {
     return this.allItems.size();
   }
-
-  /**
-   * @return
+  
+  /** 
+   * @return List of items of type T
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -246,15 +246,20 @@ public class CdmCollection<T extends CdmObject> implements Iterable<T> {
     this.allItems.add(index, element);
   }
 
-  /**
+  /** 
    * Creates a copy of the current CdmCollection.
+   * @param resOpt Resolve Options
+   * @return CdmCollection of type T
    */
   public CdmCollection<T> copy(final ResolveOptions resOpt) {
     return copy(resOpt, null);
   }
-
-  /**
+  
+  /** 
    * Creates a copy of the current CdmCollection.
+   * @param resOpt  Resolve Options
+   * @param host CDM Host Object
+   * @return CdmCollection of type T
    */
   public CdmCollection<T> copy(final ResolveOptions resOpt, final CdmObject host) {
     final CdmCollection<T> copy =

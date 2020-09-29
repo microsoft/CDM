@@ -1,10 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { 
+import {
     CdmCorpusDefinition,
     CdmDocumentCollection,
     CdmDocumentDefinition,
+    CdmEntityDefinition,
     CdmFolderDefinition,
     resolveOptions
 } from '../../internal';
@@ -12,7 +13,7 @@ import { testHelper } from '../testHelper';
 
 /**
  * Sets the document's isDirty flag to true and reset the importPriority.
- * @param documents 
+ * @param documents
  */
 function markDocumentsToIndex(documents: CdmDocumentCollection) {
     documents.allItems.forEach((document: CdmDocumentDefinition) => {
@@ -25,6 +26,8 @@ function markDocumentsToIndex(documents: CdmDocumentCollection) {
  * Test methods for the CdmDocumentDefinition class.
  */
 describe('Cdm/CdmDocumentDefinition', () => {
+    const testsSubpath: string = 'Cdm/Document';
+
     /**
      * Test when A -> M/B -> C -> B.
      * In this case, although A imports B with a moniker, B should be in the priorityImports because it is imported by C.
@@ -33,15 +36,15 @@ describe('Cdm/CdmDocumentDefinition', () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
-        var docA = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
+        let docA = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
         folder.documents.push(docA);
         docA.imports.push('B.cdm.json', 'moniker');
 
-        var docB = new CdmDocumentDefinition(corpus.ctx, 'B.cdm.json');
+        let docB = new CdmDocumentDefinition(corpus.ctx, 'B.cdm.json');
         folder.documents.push(docB);
         docB.imports.push('C.cdm.json');
 
-        var docC = new CdmDocumentDefinition(corpus.ctx, 'C.cdm.json');
+        let docC = new CdmDocumentDefinition(corpus.ctx, 'C.cdm.json');
         folder.documents.push(docC);
         docC.imports.push('B.cdm.json');
 
@@ -71,19 +74,19 @@ describe('Cdm/CdmDocumentDefinition', () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
-        var docA = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
+        let docA = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
         folder.documents.push(docA);
         docA.imports.push('B.cdm.json');
 
-        var docB = new CdmDocumentDefinition(corpus.ctx, 'B.cdm.json');
+        let docB = new CdmDocumentDefinition(corpus.ctx, 'B.cdm.json');
         folder.documents.push(docB);
         docB.imports.push('C.cdm.json', 'moniker');
 
-        var docC = new CdmDocumentDefinition(corpus.ctx, 'C.cdm.json');
+        let docC = new CdmDocumentDefinition(corpus.ctx, 'C.cdm.json');
         folder.documents.push(docC);
         docC.imports.push('D.cdm.json');
 
-        var docD = new CdmDocumentDefinition(corpus.ctx, 'D.cdm.json');
+        let docD = new CdmDocumentDefinition(corpus.ctx, 'D.cdm.json');
         folder.documents.push(docD);
         docD.imports.push('C.cdm.json');
 
@@ -124,15 +127,15 @@ describe('Cdm/CdmDocumentDefinition', () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus('', '');
         const folder: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
-        var docA = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
+        let docA = new CdmDocumentDefinition(corpus.ctx, 'A.cdm.json');
         folder.documents.push(docA);
         docA.imports.push('B.cdm.json', 'moniker');
 
-        var docB = new CdmDocumentDefinition(corpus.ctx, 'B.cdm.json');
+        let docB = new CdmDocumentDefinition(corpus.ctx, 'B.cdm.json');
         folder.documents.push(docB);
         docB.imports.push('C.cdm.json');
-        
-        var docC = new CdmDocumentDefinition(corpus.ctx, 'C.cdm.json');
+
+        let docC = new CdmDocumentDefinition(corpus.ctx, 'C.cdm.json');
         folder.documents.push(docC);
 
         // forces docB to be indexed first, so the priorityList will be read from the cache this time.
@@ -149,5 +152,22 @@ describe('Cdm/CdmDocumentDefinition', () => {
             .toBe(false);
         expect(docC.importPriorities.hasCircularImport)
             .toBe(false);
+    });
+
+    /**
+     * Setting the forceReload flag to true correctly reloads the document
+     */
+    it('testDocumentForceReload', async () => {
+        const testName: string = 'testDocumentForceReload';
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+
+        // load the document and entity the first time
+        await corpus.fetchObjectAsync('doc.cdm.json/entity');
+        // reload the same doc and make sure it is reloaded correctly
+        const reloadedEntity: CdmEntityDefinition = await corpus.fetchObjectAsync('doc.cdm.json/entity', undefined, undefined, true);
+
+        // if the reloaded doc is not indexed correctly, the entity will not be able to be found
+        expect(reloadedEntity).not
+            .toBeUndefined();
     });
 });

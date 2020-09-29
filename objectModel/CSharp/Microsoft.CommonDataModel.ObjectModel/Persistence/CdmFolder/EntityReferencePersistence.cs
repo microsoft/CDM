@@ -48,7 +48,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
         public static dynamic ToData(CdmEntityReference instance, ResolveOptions resOpt, CopyOptions options)
         {
-            return CdmObjectRefPersistence.ToData(instance, resOpt, options);
+            if (instance.ExplicitReference != null && instance.ExplicitReference.GetType() == typeof(CdmProjection))
+            {
+                return ProjectionPersistence.ToData(instance.ExplicitReference as CdmProjection, resOpt, options);
+            }
+            else
+            {
+                return CdmObjectRefPersistence.ToData(instance, resOpt, options);
+            }
         }
 
         private static dynamic GetEntityReference(CdmCorpusContext ctx, JToken obj)

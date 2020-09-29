@@ -66,12 +66,6 @@ public class CdmOperationAddSupportingAttribute extends CdmOperationBase {
     }
 
     @Override
-    public boolean isDerivedFrom(String baseDef, ResolveOptions resOpt) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "isDerivedFrom");
-        return false;
-    }
-
-    @Override
     public boolean validate() {
         ArrayList<String> missingFields = new ArrayList<>();
 

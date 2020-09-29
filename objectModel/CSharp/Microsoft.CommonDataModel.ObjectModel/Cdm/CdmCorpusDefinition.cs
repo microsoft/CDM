@@ -260,7 +260,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // given a symbolic name, find the 'highest prirority' definition of the object from the point of view of a given document (with respect to, wrtDoc)
             // (meaning given a document and the things it defines and the files it imports and the files they import, where is the 'last' definition found)
             if (resOpt?.WrtDoc == null)
+            {
                 return null; // no way to figure this out
+            }
             CdmDocumentDefinition wrtDoc = resOpt.WrtDoc as CdmDocumentDefinition;
 
             var indexTask = wrtDoc.IndexIfNeeded(resOpt, true);
@@ -269,6 +271,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (!indexTask.Result)
             {
                 Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, "Couldn't index source document.", nameof(ResolveSymbolReference));
+                return null;
+            }
+
+            if (wrtDoc.NeedsIndexing && resOpt.ImportsLoadStrategy == ImportsLoadStrategy.DoNotLoad)
+            {
+                Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, $"Cannot find symbol definition '{symbolDef}' because the ImportsLoadStrategy is set to DoNotLoad", nameof(ResolveSymbolReference));
                 return null;
             }
 
@@ -815,7 +823,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.documentLibrary.RemoveDocumentPath(path, folder, doc);
         }
 
-        internal bool IndexDocuments(ResolveOptions resOpt, bool strictValidation)
+        internal bool IndexDocuments(ResolveOptions resOpt, bool loadImports)
         {
             List<CdmDocumentDefinition> docsNotIndexed = this.documentLibrary.ListDocsNotIndexed();
 
@@ -856,7 +864,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
             }
 
-            if (strictValidation)
+            if (loadImports)
             {
                 // index any imports.
                 foreach (CdmDocumentDefinition doc in docsNotIndexed)
@@ -891,7 +899,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             foreach (CdmDocumentDefinition doc in docsNotIndexed)
             {                    
                 Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"index finish: { doc.AtCorpusPath}", nameof(this.IndexDocuments));
-                this.FinishDocumentResolve(doc, strictValidation);
+                this.FinishDocumentResolve(doc, loadImports);
             }
 
             return true;
@@ -1573,14 +1581,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return;
         }
 
-        internal void FinishDocumentResolve(CdmDocumentDefinition doc, bool strictValidation)
+        internal void FinishDocumentResolve(CdmDocumentDefinition doc, bool importsLoaded)
         {
             bool wasIndexedPreviously = doc.DeclarationsIndexed;
 
             doc.CurrentlyIndexing = false;
-            doc.ImportsIndexed = doc.ImportsIndexed || !strictValidation;
+            doc.ImportsIndexed = doc.ImportsIndexed || importsLoaded;
             doc.DeclarationsIndexed = true;
-            doc.NeedsIndexing = !strictValidation;
+            doc.NeedsIndexing = !importsLoaded;
             this.documentLibrary.MarkDocumentAsIndexed(doc);
 
             // if the document declarations were indexed previously, do not log again.
@@ -2299,7 +2307,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             ResolvedTrait rt = rts.Set[i];
                             int found = 0;
                             int resolved = 0;
-                            if (rt.ParameterValues != null)
+                            if (rt?.ParameterValues != null)
                             {
                                 for (int iParam = 0; iParam < rt.ParameterValues.Length; iParam++)
                                 {

@@ -22,6 +22,7 @@ public class Node {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Object
      */
     @Deprecated
     public Object getValue() {
@@ -31,6 +32,7 @@ public class Node {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param value Object 
      */
     @Deprecated
     public void setValue(final Object value) {
@@ -42,6 +44,7 @@ public class Node {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return PredefinedType
      */
     @Deprecated
     public PredefinedType getValueType() {
@@ -51,6 +54,7 @@ public class Node {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param valueType PredefinedType
      */
     @Deprecated
     public void setValueType(final PredefinedType valueType) {
@@ -62,6 +66,7 @@ public class Node {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Node
      */
     @Deprecated
     public Node getLeft() {
@@ -71,6 +76,7 @@ public class Node {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param left Node
      */
     @Deprecated
     public void setLeft(final Node left) {
@@ -82,6 +88,7 @@ public class Node {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Node
      */
     @Deprecated
     public Node getRight() {
@@ -91,6 +98,7 @@ public class Node {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param right Node
      */
     @Deprecated
     public void setRight(final Node right) {

@@ -26,6 +26,10 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   private CdmEntityReference entityShape;
   private List<List<String>> constantValues;
 
+  
+  /** 
+   * @return String
+   */
   @Override
   public String getName() {
     // make up a name if one not given
@@ -44,6 +48,13 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     this.setConstantEntityName(constantEntityName);
   }
 
+  
+  /** 
+   * @param pathFrom Path From
+   * @param preChildren Pre Children
+   * @param postChildren Post Children
+   * @return boolean
+   */
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
     String path = "";
@@ -73,6 +84,11 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     return postChildren != null && postChildren.invoke(this, path);
   }
 
+  
+  /** 
+   * @param rtsb ResolvedTraitSetBuilder
+   * @param resOpt ResolveOptions
+   */
   @Override
   void constructResolvedTraits(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
 //    LEFT BLANK INTENTIONALLY.
@@ -82,6 +98,8 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -92,6 +110,9 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param under CdmAttributeContext
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -116,6 +137,10 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     return rasb;
   }
 
+  
+  /** 
+   * @return boolean
+   */
   @Override
   public boolean validate() {
     if (null == this.constantValues) {
@@ -136,9 +161,9 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -149,6 +174,12 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     return CdmObjectBase.copyData(this, resOpt, options, CdmConstantEntityDefinition.class);
   }
 
+  
+  /** 
+   * @param resOpt Resolved options
+   * @param host CDM Object
+   * @return CdmObject
+   */
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
@@ -171,6 +202,12 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
     return copy;
   }
 
+  
+  /** 
+   * @param baseDef String
+   * @param resOpt Resolved options
+   * @return boolean
+   */
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
@@ -178,45 +215,60 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the constant entity name.
+   * @return String
    */
   public String getConstantEntityName() {
     return this.constantEntityName;
   }
 
+  
+  /** 
+   * @param value String
+   */
   public void setConstantEntityName(final String value) {
     this.constantEntityName = value;
   }
 
   /**
    * Gets or sets the constant entity constant values.
+   * @return List of List of String
    */
   public List<List<String>> getConstantValues() {
     return this.constantValues;
   }
 
+  
+  /** 
+   * @param value List of List of String
+   */
   public void setConstantValues(final List<List<String>> value) {
     this.constantValues = value;
   }
 
   /**
    * Gets or sets the constant entity shape.
+   * @return CdmEntityReference
    */
   public CdmEntityReference getEntityShape() {
     return this.entityShape;
   }
 
+  
+  /** 
+   * @param value CdmEntityReference
+   */
   public void setEntityShape(final CdmEntityReference value) {
     this.entityShape = value;
   }
 
   /**
    * Returns constantValue.attReturn where constantValue.attSearch equals valueSearch.
-   * @param resOpt
-   * @param attReturn
-   * @param attSearch
-   * @param valueSearch
-   * @param order
-   * @return
+   * @param resOpt Resolved options
+   * @param attReturn Attribute return
+   * @param attSearch Attribute Search
+   * @param valueSearch Value search
+   * @param order Order object
+   * @return String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -228,13 +280,13 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Returns constantValue.attReturn where constantValue.attSearch equals valueSearch.
-   * @param resOpt
-   * @param attReturn
-   * @param newValue
-   * @param attSearch
-   * @param valueSearch
-   * @param order
-   * @return
+   * @param resOpt Resolved options
+   * @param attReturn Attribute return
+   * @param newValue String 
+   * @param attSearch Attribute Search
+   * @param valueSearch Value search
+   * @param order Order object
+   * @return String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -245,6 +297,15 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
   }
 
 
+  
+  /** 
+   * @param resOpt Resolved options
+   * @param attReturn Attribute return
+   * @param attSearch Attribute Search
+   * @param valueSearch Value search
+   * @param order Order object
+   * @return String
+   */
   private String findValue(final ResolveOptions resOpt, final Object attReturn, final Object attSearch,
                            final String valueSearch, final int order) {
     int resultAtt = -1;

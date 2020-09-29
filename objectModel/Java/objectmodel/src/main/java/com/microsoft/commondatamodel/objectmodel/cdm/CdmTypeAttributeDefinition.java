@@ -83,6 +83,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   /**
    * @deprecated Please use updateDisplayName instead.
+   * @param value String value
    */
   @Deprecated
   public void setDisplayName(final String value) {
@@ -165,6 +166,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   /**
    * @deprecated Please use updateSourceOrdering instead
+   * @param value value
    */
   @Deprecated
   public void updateSourceOrderingToTrait(final Integer value) {
@@ -185,8 +187,8 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   /**
    *
-   * @param propertyName
-   * @return
+   * @param propertyName CdmPropertyName
+   * @return Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
    */
@@ -350,9 +352,9 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved option
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.

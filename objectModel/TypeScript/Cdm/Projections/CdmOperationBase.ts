@@ -53,7 +53,9 @@ export abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     /**
      * @inheritdoc
      */
-    public abstract isDerivedFrom(base: string, resOpt?: resolveOptions): boolean;
+    public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
+        return false;
+    }
 
     /**
      * @inheritdoc

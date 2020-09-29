@@ -44,6 +44,8 @@ public class ExpressionTree {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param expression String 
+     * @return Node
      */
     @Deprecated
     public Node constructExpressionTree(String expression) {
@@ -188,6 +190,9 @@ public class ExpressionTree {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param top Node
+     * @param input InputValues
+     * @return Object
      */
     @Deprecated
     public static Object evaluateExpressionTree(Node top, InputValues input) {
@@ -287,6 +292,7 @@ public class ExpressionTree {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param top Node 
      */
     @Deprecated
     public static void inOrderTraversal(Node top) {
@@ -306,6 +312,9 @@ public class ExpressionTree {
     /**
      * Converts left and right to the correct types and checks for equality.
      * left and right can be an int, string, or a boolean.
+     * @param left Object 
+     * @param right Object
+     * @return boolean 
      */
     private static boolean convertToTypeAndCheckEquality(Object left, Object right) {
         if (left == null || right == null) {
@@ -330,6 +339,9 @@ public class ExpressionTree {
     /**
      * Converts left and right to the correct types and checks for inequality.
      * left and right can be an int, string, or a boolean.
+     * @param left Object 
+     * @param right Object
+     * @return boolean 
      */
     private static boolean convertToTypeAndCheckInequality(Object left, Object right) {
         if (left == null || right == null) {

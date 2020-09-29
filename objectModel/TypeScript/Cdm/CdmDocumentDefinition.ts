@@ -24,6 +24,7 @@ import {
     cdmObjectType,
     copyOptions,
     Errors,
+    importsLoadStrategy,
     Logger,
     ResolvedAttributeSetBuilder,
     ResolvedTraitSetBuilder,
@@ -303,6 +304,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 copy.ctx = this.ctx;
                 copy.name = this.name;
                 copy.definitions.clear();
+                copy.declarationsIndexed = false;
                 copy.internalDeclarations = new Map<string, CdmObjectBase>();
                 copy.needsIndexing = true;
                 copy.imports.clear();
@@ -497,7 +499,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
      * @internal
      * Remove any old document content from caches and re-declare and resolve with new content
      */
-    public async indexIfNeeded(resOpt: resolveOptions, strictValidation: boolean = false): Promise<boolean> {
+    public async indexIfNeeded(resOpt: resolveOptions, loadImports: boolean = false): Promise<boolean> {
         // let bodyCode = () =>
         {
             if (this.needsIndexing && !this.currentlyIndexing) {
@@ -508,18 +510,21 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
 
                 const corpus: CdmCorpusDefinition = this.folder.corpus;
 
-                if (resOpt.strictValidation !== undefined) {
-                    strictValidation = resOpt.strictValidation;
+                // if the imports load strategy is "lazyLoad", loadImports value will be the one sent by the called function.
+                if (resOpt.importsLoadStrategy == importsLoadStrategy.doNotLoad) {
+                    loadImports = false;
+                } else if (resOpt.importsLoadStrategy == importsLoadStrategy.load) {
+                    loadImports = true;
                 }
 
-                if (strictValidation) {
+                if (loadImports) {
                     await corpus.resolveImportsAsync(this, resOpt);
                 }
-                
-                // make the corpus internal machinery pay attention to this document for this call
+
+                // make the corpus internal machinery pay attention to this document for this call.
                 corpus.documentLibrary.markDocumentForIndexing(this);
 
-                return corpus.indexDocuments(resOpt, strictValidation);
+                return corpus.indexDocuments(resOpt, loadImports);
             }
 
             return true;
@@ -680,15 +685,15 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
 
         // maps document to priority.
         const priorityMap: Map<CdmDocumentDefinition, number> = importPriorities.importPriority;
-        
+
         // maps moniker to document.
         const monikerMap: Map<string, CdmDocumentDefinition> = importPriorities.monikerPriorityMap;
-        
+
         // if already in list, don't do this again
         if (processedSet.has(this)) {
             // if the first document in the priority map is this then the document was the starting point of the recursion.
             // and if this document is present in the processedSet we know that there is a cicular list of imports.
-            if (priorityMap.has(this) && priorityMap.get(this) == 0) {
+            if (priorityMap.has(this) && priorityMap.get(this) === 0) {
                 importPriorities.hasCircularImport = true;
             }
 
@@ -714,7 +719,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             for (const imp of revImp) {
                 const impDoc: CdmDocumentDefinition = imp.document;
                 const isMoniker: boolean = !!imp.moniker;
-                
+
                 // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
                 // since the document itself will always be the first one on the list.
                 if (impDoc !== undefined && impDoc.importPriorities !== undefined && !impDoc.importPriorities.hasCircularImport) {

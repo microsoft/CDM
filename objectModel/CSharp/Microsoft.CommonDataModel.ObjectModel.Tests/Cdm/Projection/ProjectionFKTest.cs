@@ -43,7 +43,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             }
         }
 
-
         [TestMethod]
         public async Task TestEntityAttributeProj()
         {
@@ -230,7 +229,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"local:/default.manifest.cdm.json");
 
             string expectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
-            string fileNameSuffix = TestUtils.GetResolutionOptionNameSuffix(resOpts);
+            string fileNameSuffix = ProjectionTestUtils.GetResolutionOptionNameSuffix(resOpts);
 
             CdmEntityDefinition entSalesForeignKeyProjection = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entSalesForeignKeyProjection);
@@ -247,7 +246,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 roHashSet.Add(resolutionOptions[i]);
             }
 
-            string fileNameSuffix = TestUtils.GetResolutionOptionNameSuffix(resolutionOptions);
+            string fileNameSuffix = ProjectionTestUtils.GetResolutionOptionNameSuffix(resolutionOptions);
 
             string resolvedEntityName = $"Resolved_{inputEntity.EntityName}{fileNameSuffix}.cdm.json";
 

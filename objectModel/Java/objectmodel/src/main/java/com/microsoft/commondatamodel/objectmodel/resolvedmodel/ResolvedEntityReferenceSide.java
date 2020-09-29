@@ -20,8 +20,8 @@ public class ResolvedEntityReferenceSide {
 
   /**
    *
-   * @param entity
-   * @param rasb
+   * @param entity CdmEntityDefinition
+   * @param rasb ResolvedAttributeSetBuilder
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -58,7 +58,7 @@ public class ResolvedEntityReferenceSide {
 
   /**
    *
-   * @return
+   * @return ResolvedAttributeSetBuilder
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -69,7 +69,7 @@ public class ResolvedEntityReferenceSide {
 
   /**
    *
-   * @param resolvedAttributeSetBuilder
+   * @param resolvedAttributeSetBuilder ResolvedAttributeSetBuilder
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

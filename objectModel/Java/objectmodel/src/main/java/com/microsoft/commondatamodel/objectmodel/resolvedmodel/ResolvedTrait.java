@@ -23,10 +23,10 @@ public class ResolvedTrait {
 
   /**
    *
-   * @param trait
-   * @param parameterCollection
-   * @param values
-   * @param wasSet
+   * @param trait CdmTraitDefinition
+   * @param parameterCollection ParameterCollection
+   * @param values List of Object
+   * @param wasSet List of Boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -82,7 +82,7 @@ public class ResolvedTrait {
 
   /**
    *
-   * @return
+   * @return ParameterValueSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

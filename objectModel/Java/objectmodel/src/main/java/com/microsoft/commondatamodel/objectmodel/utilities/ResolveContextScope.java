@@ -17,6 +17,7 @@ public class ResolveContextScope {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param currentParameter int
    */
   @Deprecated
   public void setCurrentParameter(final int currentParameter) {
@@ -26,6 +27,7 @@ public class ResolveContextScope {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return CdmTraitDefinition
    */
   @Deprecated
   public CdmTraitDefinition getCurrentTrait() {
@@ -35,6 +37,7 @@ public class ResolveContextScope {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return int
    */
   @Deprecated
   public int getCurrentParameter() {
@@ -44,6 +47,7 @@ public class ResolveContextScope {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param currentTrait CdmTraitDefinition 
    */
   @Deprecated
   public void setCurrentTrait(final CdmTraitDefinition currentTrait) {

@@ -34,12 +34,15 @@ export class AttributeGroupPersistence {
             attributeGroup.exhibitsTraits,
             utils.createTraitReferenceArray(ctx, object.exhibitsTraits)
         );
-        for (const att of object.members) {
-            attributeGroup.members.push(utils.createAttribute(ctx, att, entityName));
+        if (object.members) {
+            for (const att of object.members) {
+                attributeGroup.members.push(utils.createAttribute(ctx, att, entityName));
+            }
         }
 
         return attributeGroup;
     }
+
     public static toData(instance: CdmAttributeGroupDefinition, resOpt: resolveOptions, options: copyOptions): AttributeGroup {
         return {
             explanation: instance.explanation,

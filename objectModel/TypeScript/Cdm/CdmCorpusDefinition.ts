@@ -402,7 +402,7 @@ export class CdmCorpusDefinition {
         const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
 
         if (wrtDoc.needsIndexing && !wrtDoc.currentlyIndexing) {
-            Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Document not index previsouly. Please when calling fetchObjectAsync specify the 'strictValidation' flag on the ResolveOptions object.`, this.resolveSymbolReference.name);
+            Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Document not index previsouly. Please when calling fetchObjectAsync specify the 'importsLoadStrategy' to 'load' on the ResolveOptions object.`, this.resolveSymbolReference.name);
         }
 
         // get the array of documents where the symbol is defined
@@ -773,10 +773,10 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public indexDocuments(resOpt: resolveOptions, strictValidation: boolean): boolean {
+    public indexDocuments(resOpt: resolveOptions, loadImports: boolean): boolean {
         const docsNotIndexed: Set<CdmDocumentDefinition> = this.documentLibrary.listDocsNotIndexed();
 
-        if (docsNotIndexed.size == 0) {
+        if (docsNotIndexed.size === 0) {
             return true;
         }
         
@@ -804,7 +804,7 @@ export class CdmCorpusDefinition {
             }
         }
 
-        if (strictValidation) {
+        if (loadImports) {
             // index any imports
             for (const doc of docsNotIndexed) {
                 doc.getImportPriorities();
@@ -831,7 +831,7 @@ export class CdmCorpusDefinition {
         // finish up
         for (const doc of docsNotIndexed) {
             Logger.debug(CdmCorpusDefinition.name, this.ctx, `index finish: ${doc.atCorpusPath}`, this.indexDocuments.name);
-            this.finishDocumentResolve(doc, strictValidation);
+            this.finishDocumentResolve(doc, loadImports);
         }
 
         return true;
@@ -1444,13 +1444,13 @@ export class CdmCorpusDefinition {
     /**
      * @internal
      */
-    public finishDocumentResolve(doc: CdmDocumentDefinition, strictValidation: boolean): void {
+    public finishDocumentResolve(doc: CdmDocumentDefinition, loadedImports: boolean): void {
         const wasIndexedPreviously = doc.declarationsIndexed;
 
         doc.currentlyIndexing = false;
-        doc.importsIndexed = doc.importsIndexed || !strictValidation;
+        doc.importsIndexed = doc.importsIndexed || loadedImports;
         doc.declarationsIndexed = true;
-        doc.needsIndexing = !strictValidation;
+        doc.needsIndexing = !loadedImports;
         this.documentLibrary.markDocumentAsIndexed(doc);
 
         // if the document declarations were indexed previously, do not log again.
@@ -2098,7 +2098,7 @@ export class CdmCorpusDefinition {
                     const rt: ResolvedTrait = rts.set[i];
                     let found: number = 0;
                     let resolved: number = 0;
-                    if (rt.parameterValues) {
+                    if (rt && rt.parameterValues) {
                         const parameterValuesCount: number = rt.parameterValues.length;
                         for (let iParam: number = 0; iParam < parameterValuesCount; iParam++) {
                             if (rt.parameterValues.fetchParameterAtIndex(iParam)

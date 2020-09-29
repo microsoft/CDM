@@ -57,14 +57,6 @@ export class CdmOperationCombineAttributes extends CdmOperationBase {
     /**
      * @inheritdoc
      */
-    public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.isDerivedFrom.name);
-        return false;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public validate(): boolean {
         const missingFields: string[] = [];
 

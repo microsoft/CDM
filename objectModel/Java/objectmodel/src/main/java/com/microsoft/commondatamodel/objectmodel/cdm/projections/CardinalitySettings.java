@@ -28,6 +28,7 @@ public class CardinalitySettings {
 
     /**
      * CardinalitySettings constructor
+     * @param owner CDM Attribute
      */
     public CardinalitySettings(CdmAttribute owner) {
         this.owner = owner;
@@ -35,10 +36,11 @@ public class CardinalitySettings {
     }
 
     /**
-     * Minimum cardinality (range -->> "0" .. "n")
+     * Minimum cardinality (range is "0" .. "n")
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @return minimum int number
      */
     @Deprecated
     public int getMinimumNumber() {
@@ -48,6 +50,7 @@ public class CardinalitySettings {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @param minimumNumber minimum number
      */
     @Deprecated
     public void setMinimumNumber(final int minimumNumber) {
@@ -55,10 +58,11 @@ public class CardinalitySettings {
     }
 
     /**
-     * Maximum cardinality (range -->> "1" .. "*")
+     * Maximum cardinality (range is "1" .. "*")
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @return Max number
      */
     @Deprecated
     public int getMaximumNumber() {
@@ -68,6 +72,7 @@ public class CardinalitySettings {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @param maximumNumber maximum Number
      */
     @Deprecated
     public void setMaximumNumber(final int maximumNumber) {
@@ -105,8 +110,13 @@ public class CardinalitySettings {
         }
     }
 
-    /**
+
+    
+    /** 
      * Converts the string cardinality to number
+     * @param value String value
+     * @param defaultValue default in value
+     * @return int
      */
     private int getNumber(String value, int defaultValue) {
         if (StringUtils.equalsWithIgnoreCase(value, "*")) {
@@ -130,6 +140,8 @@ public class CardinalitySettings {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @param minimum String minimum
+     * @return boolean
      */
     @Deprecated
     public static boolean isMinimumValid(String minimum) {
@@ -156,6 +168,8 @@ public class CardinalitySettings {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @param maximum Maximum
+     * @return boolean
      */
     @Deprecated
     public static boolean isMaximumValid(String maximum) {

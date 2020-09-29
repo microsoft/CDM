@@ -4,11 +4,9 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.relationship;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.TestUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projection.AttributeContextUtil;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -20,9 +18,6 @@ import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Test to validate calculateEntityGraphAsync function
@@ -126,7 +121,7 @@ public class CalculateRelationshipTest {
         Assert.assertNotNull(manifest);
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entity);
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
         String actualAttrCtx = getAttributeContextString(resolvedEntity, entityName, actualOutputFolder);
 
         try {

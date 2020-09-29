@@ -277,7 +277,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             AttributeContextParameters acpEnt = null;
 
             var ctxEntObjDef = ctxEnt.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
-            if (ctxEntObjDef.ObjectType == CdmObjectType.ProjectionDef)
+            if (ctxEntObjDef?.ObjectType == CdmObjectType.ProjectionDef)
             {
                 // A Projection
 

@@ -54,13 +54,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
-        {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(IsDerivedFrom));
-            return false;
-        }
-
-        /// <inheritdoc />
         public override bool Validate()
         {
             List<string> missingFields = new List<string>();

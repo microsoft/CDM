@@ -222,7 +222,10 @@ public class ResolvedTraitSet {
   public ResolvedTraitSet setTraitParameterValue(final ResolveOptions resOpt, final CdmTraitDefinition toTrait,
                                                  final String paramName, final Object value) {
     final ResolvedTraitSet altered = shallowCopyWithException(toTrait);
-    altered.get(toTrait).getParameterValues().setParameterValue(resOpt, paramName, value);
+    final ResolvedTrait currTrait = altered.get(toTrait);
+    if (currTrait != null) {
+      currTrait.getParameterValues().setParameterValue(resOpt, paramName, value);
+    }
     return altered;
   }
 
@@ -236,7 +239,7 @@ public class ResolvedTraitSet {
     for (int i = 0; i < traitSetResult.getSet().size(); i++) {
       ResolvedTrait rt = traitSetResult.getSet().get(i);
 
-      if (rt.getTrait().isDerivedFrom(toTrait, resOpt)) {
+      if (rt != null && rt.getTrait().isDerivedFrom(toTrait, resOpt)) {
         if (rt.getParameterValues() != null) {
           final ParameterCollection pc = rt.getParameterValues().getPc();
           List<Object> av = rt.getParameterValues().getValues();

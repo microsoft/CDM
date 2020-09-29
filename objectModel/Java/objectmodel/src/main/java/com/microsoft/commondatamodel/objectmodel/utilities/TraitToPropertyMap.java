@@ -86,6 +86,7 @@ public class TraitToPropertyMap {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param host CdmObject 
    */
   @Deprecated
   public TraitToPropertyMap(final CdmObject host) {
@@ -99,6 +100,8 @@ public class TraitToPropertyMap {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param propertyName CdmPropertyName 
+   * @return Object
    */
   @Deprecated
   public Object fetchPropertyValue(final CdmPropertyName propertyName) {
@@ -108,6 +111,9 @@ public class TraitToPropertyMap {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param propertyName CdmPropertyName
+   * @param  onlyFromProperty boolean
+   * @return Object
    */
   @Deprecated
   public Object fetchPropertyValue(
@@ -183,6 +189,8 @@ public class TraitToPropertyMap {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param  traitName Object
+   * @return CdmTraitReference
    */
   @Deprecated
   public CdmTraitReference fetchTraitReferenceName(final Object traitName) {
@@ -192,6 +200,9 @@ public class TraitToPropertyMap {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param  traitName Object
+   * @param onlyFromProperty boolean 
+   * @return CdmTraitReference
    */
   @Deprecated
   private CdmTraitReference fetchTraitReferenceName(final Object traitName, final boolean onlyFromProperty) {
@@ -202,6 +213,8 @@ public class TraitToPropertyMap {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param propertyName CdmPropertyName
+   * @param newValue Object
    */
   @Deprecated
   public void updatePropertyValue(final CdmPropertyName propertyName, final Object newValue) {

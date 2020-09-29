@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projecti
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
@@ -105,10 +106,19 @@ public class ProjectionPersistence {
             return null;
         }
 
-        Object source = EntityReferencePersistence.toData(instance.getSource(), resOpt, options);
+        Object source = null;
+        if (instance.getSource() != null &&
+                !Strings.isNullOrEmpty(instance.getSource().getNamedReference()) &&
+                instance.getSource().getExplicitReference() == null) {
+            source = instance.getSource().getNamedReference();
+        } else if (instance.getSource() != null && instance.getSource() instanceof CdmEntityReference) {
+            source = EntityReferencePersistence.toData(instance.getSource(), resOpt, options);
+        } else if (instance.getSource() != null) {
+            source = instance.getSource();
+        }
 
         List<OperationBase> operations = null;
-        if (instance.getOperations() != null) {
+        if (instance.getOperations() != null && instance.getOperations().getCount() > 0) {
             operations = new ArrayList<OperationBase>();
             for (CdmOperationBase operation : instance.getOperations()) {
                 switch (operation.getObjectType()) {
@@ -160,7 +170,7 @@ public class ProjectionPersistence {
                 }
             }
         }
-        
+
         Projection obj = new Projection();
         obj.setExplanation(instance.getExplanation());
         obj.setSource(source);

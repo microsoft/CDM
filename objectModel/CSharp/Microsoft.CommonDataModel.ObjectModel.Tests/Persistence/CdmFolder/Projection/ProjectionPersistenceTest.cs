@@ -5,6 +5,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.Collections.Generic;
     using System.IO;
@@ -149,6 +151,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             Assert.AreEqual("TestProjectionAttributeB", ((CdmTypeAttributeDefinition)entTestProjectionExtendsTrait.Attributes[0]).Name);
             Assert.AreEqual("testExtendsDataTypeB", ((CdmTypeAttributeDefinition)entTestProjectionExtendsTrait.Attributes[0]).DataType.NamedReference);
             #endregion // TestProjectionExtendsTrait.cdm.json
+        }
+
+        /// <summary>
+        /// Basic test to save persisted Projections based entities
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestSaveProjection()
+        {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestSaveProjection");
+
+            CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"local:/default.manifest.cdm.json");
+
+            CdmEntityDefinition entitySales = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/Sales.cdm.json/Sales", manifest);
+            Assert.IsNotNull(entitySales);
+
+            CdmFolderDefinition actualRoot = corpus.Storage.FetchRootFolder("output");
+            Assert.IsNotNull(actualRoot);
+
+            actualRoot.Documents.Add(entitySales.InDocument, "Persisted_Sales.cdm.json");
+            await actualRoot.Documents[0].SaveAsAsync("output:/Persisted_Sales.cdm.json");
+
+            CdmEntityDefinition entityActual = await corpus.FetchObjectAsync<CdmEntityDefinition>($"output:/Persisted_Sales.cdm.json/Sales", manifest);
+            Assert.IsNotNull(entityActual);
+
+            Entity entityContentActual = PersistenceLayer.ToData<CdmEntityDefinition, Entity>(entityActual, null, null, "CdmFolder");
+            Assert.IsNotNull(entityContentActual);
+            Assert.IsNotNull(entityContentActual.HasAttributes);
+            Assert.IsTrue(entityContentActual.HasAttributes.Count == 1);
+            Assert.IsFalse(entityContentActual.HasAttributes[0].ToString().Contains(@"""entityReference"""));
         }
     }
 }

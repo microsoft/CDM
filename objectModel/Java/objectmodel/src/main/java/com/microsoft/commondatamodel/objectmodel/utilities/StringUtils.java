@@ -79,4 +79,27 @@ public class StringUtils {
   public static boolean equalsWithCase(final String strA, final String strB) {
     return strA.equals(strB);
   }
+
+  /**
+   * Replaces in the pattern in the source with the value
+   * @param source The source string
+   * @param pattern A pattern in the format {p}. The code will try to find {p} and {P}
+   * @param value The value to be replaced instead of the pattern
+   */
+  public static String replace(String source, char pattern, String value) {
+    if (value == null) {
+      value = "";
+    }
+
+    char lowerCasePattern = Character.toLowerCase(pattern);
+    char upperCasePattern = Character.toUpperCase(pattern);
+    String upperCaseValue = "";
+    
+    if (!isNullOrEmpty(value)) {
+        upperCaseValue = capitalize(value);
+    }
+
+    String result = source.replace("{" + lowerCasePattern + "}", value);
+    return result.replace("{" + upperCasePattern + "}", upperCaseValue);
+  }
 }

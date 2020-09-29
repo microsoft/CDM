@@ -22,6 +22,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.EntityPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.TypeAttributePersistence;
@@ -123,7 +124,7 @@ public class TypeAttributeTest {
     final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testReadingIsPrimaryKey", null);
 
     final ResolveOptions resOpt = new ResolveOptions();
-    resOpt.setStrictValidation(true);
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
     // Read from an unresolved entity schema.
     final CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/TeamMembership.cdm.json/TeamMembership", null, resOpt).join();
     final CdmAttributeGroupReference attributeGroupRef = (CdmAttributeGroupReference) entity.getAttributes().get(0);

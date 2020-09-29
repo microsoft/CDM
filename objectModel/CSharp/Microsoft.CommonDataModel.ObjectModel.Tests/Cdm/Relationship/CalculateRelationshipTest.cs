@@ -115,7 +115,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.IsNotNull(manifest);
             CdmEntityDefinition entity = corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest).GetAwaiter().GetResult();
             Assert.IsNotNull(entity);
-            CdmEntityDefinition resolvedEntity = TestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" }).GetAwaiter().GetResult();
+            CdmEntityDefinition resolvedEntity = ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" }).GetAwaiter().GetResult();
 
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputFolder, entityName, resolvedEntity);
 

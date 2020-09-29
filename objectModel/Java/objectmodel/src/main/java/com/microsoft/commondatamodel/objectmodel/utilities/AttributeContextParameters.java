@@ -27,6 +27,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return CdmObject
    */
   @Deprecated
   public CdmObject getRegarding() {
@@ -36,6 +37,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param regarding CdmObject
    */
   @Deprecated
   public void setRegarding(final CdmObject regarding) {
@@ -45,6 +47,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return boolean
    */
   @Deprecated
   public boolean isIncludeTraits() {
@@ -54,6 +57,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param includeTraits boolean
    */
   @Deprecated
   public void setIncludeTraits(final boolean includeTraits) {
@@ -63,6 +67,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return CdmAttributeContextType
    */
   @Deprecated
   public CdmAttributeContextType getType() {
@@ -72,6 +77,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param type CdmAttributeContextType
    */
   @Deprecated
   public void setType(final CdmAttributeContextType type) {
@@ -81,6 +87,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return String
    */
   @Deprecated
   public String getName() {
@@ -90,6 +97,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param name String
    */
   @Deprecated
   public void setName(final String name) {
@@ -99,6 +107,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return CdmAttributeContext
    */
   @Deprecated
   public CdmAttributeContext getUnder() {
@@ -108,6 +117,7 @@ public class AttributeContextParameters {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param under CdmAttributeContext 
    */
   @Deprecated
   public void setUnder(final CdmAttributeContext under) {

@@ -15,6 +15,7 @@ import {
     CdmTraitCollection,
     CdmTraitReference,
     CdmTypeAttributeDefinition,
+    importsLoadStrategy,
     resolveContext,
     resolveOptions
 } from '../../../../internal';
@@ -74,7 +75,7 @@ describe('Persistence.CdmFolder.TypeAttribute', () => {
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestReadingIsPrimaryKey');
 
         const resOpt: resolveOptions = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         // Read from an unresolved entity schema.
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/TeamMembership.cdm.json/TeamMembership', null, resOpt);

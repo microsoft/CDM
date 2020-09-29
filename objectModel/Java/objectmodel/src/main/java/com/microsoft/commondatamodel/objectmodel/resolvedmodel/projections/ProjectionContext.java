@@ -30,6 +30,7 @@ public final class ProjectionContext {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return ProjectionDirective
      */
     @Deprecated
     public ProjectionDirective getProjectionDirective() {
@@ -39,6 +40,7 @@ public final class ProjectionContext {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projectionDirective ProjectionDirective
      */
     @Deprecated
     public void setProjectionDirective(final ProjectionDirective projectionDirective) {
@@ -50,6 +52,7 @@ public final class ProjectionContext {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return ResolvedAttributeSet
      */
     @Deprecated
     public ResolvedAttributeSet getOriginalSourceResolvedAttributeSet() {
@@ -59,6 +62,7 @@ public final class ProjectionContext {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param originalSourceResolvedAttributeSet ResolvedAttributeSet
      */
     @Deprecated
     public void setOriginalSourceResolvedAttributeSet(final ResolvedAttributeSet originalSourceResolvedAttributeSet) {
@@ -70,6 +74,7 @@ public final class ProjectionContext {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return CdmAttributeContext
      */
     @Deprecated
     public CdmAttributeContext getCurrentAttributeContext() {
@@ -79,6 +84,7 @@ public final class ProjectionContext {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param currentAttributeContext CdmAttributeContext
      */
     @Deprecated
     public void setCurrentAttributeContext(final CdmAttributeContext currentAttributeContext) {
@@ -90,6 +96,7 @@ public final class ProjectionContext {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return ProjectionAttributeStateSet
      */
     @Deprecated
     public ProjectionAttributeStateSet getCurrentAttributeStateSet() {
@@ -99,6 +106,7 @@ public final class ProjectionContext {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param currentAttributeStateSet ProjectionAttributeStateSet
      */
     @Deprecated
     public void setCurrentAttributeStateSet(final ProjectionAttributeStateSet currentAttributeStateSet) {

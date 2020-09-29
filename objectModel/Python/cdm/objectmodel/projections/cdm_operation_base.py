@@ -45,9 +45,8 @@ class CdmOperationBase(CdmObjectDefinition):
     def object_type(self) -> 'CdmObjectType':
         raise NotImplementedError()
 
-    @abc.abstractmethod
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
-        raise NotImplementedError()
+        return False
 
     @abc.abstractmethod
     def validate(self) -> bool:

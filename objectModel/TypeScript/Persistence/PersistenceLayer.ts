@@ -380,6 +380,8 @@ export class PersistenceLayer {
                 const content: string = JSON.stringify(persistedDoc, undefined, 4);
                 await adapter.writeAsync(newPath, content);
 
+                doc._fileSystemModifiedTime = await adapter.computeLastModifiedTimeAsync(newPath);
+
                 // write the adapter's config.
                 if (options.isTopLevelDocument) {
                     await this.corpus.storage.saveAdaptersConfigAsync('/config.json', adapter);

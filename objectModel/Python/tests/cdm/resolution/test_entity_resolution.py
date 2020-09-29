@@ -5,7 +5,7 @@ import os
 import unittest
 from typing import Optional
 
-from cdm.enums import CdmStatusLevel
+from cdm.enums import CdmStatusLevel, ImportsLoadStrategy
 from cdm.objectmodel import CdmCorpusDefinition, CdmReferencedEntityDeclarationDefinition, CdmManifestDefinition
 from cdm.resolvedmodel import ResolvedEntity
 from cdm.storage import LocalAdapter
@@ -219,7 +219,7 @@ class EntityResolution(unittest.TestCase):
 
                     corpus_path = corpus.storage.create_absolute_corpus_path(ent.entity_path, current_file)
                     res_opt = ResolveOptions()
-                    res_opt.strict_validation = True
+                    res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
                     new_ent = await corpus.fetch_object_async(corpus_path, res_opt=res_opt)
                     res_opt.wrt_doc = new_ent.in_document
                     res_opt.directives = directives

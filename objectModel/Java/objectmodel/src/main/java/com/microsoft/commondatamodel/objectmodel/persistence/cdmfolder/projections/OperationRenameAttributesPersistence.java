@@ -17,6 +17,9 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  * Operation RenameAttributes persistence
  */
@@ -41,8 +44,18 @@ public class OperationRenameAttributesPersistence {
         if (obj.get("renameFormat") != null) {
             renameAttributesOp.setRenameFormat(obj.get("renameFormat").asText());
         }
-        renameAttributesOp.setApplyTo(obj.get("applyTo") == null ? null : JMapper.MAP.convertValue(obj.get("applyTo"), new TypeReference<Object>() {
-        }));
+
+        if (obj.get("applyTo") != null) {
+            if (obj.get("applyTo").isValueNode()) {
+                renameAttributesOp.setApplyTo(
+                        new ArrayList<>(Arrays.asList(obj.get("applyTo").asText())));
+            } else if (obj.get("applyTo").isArray()) {
+                renameAttributesOp.setApplyTo(JMapper.MAP.convertValue(obj.get("applyTo"), new TypeReference<ArrayList<String>>() {
+                }));
+            } else {
+                Logger.error(OperationRenameAttributesPersistence.class.getSimpleName(), ctx, "Unsupported: applyTo property type should be string or List<string>.");
+            }
+        }
 
         return renameAttributesOp;
     }

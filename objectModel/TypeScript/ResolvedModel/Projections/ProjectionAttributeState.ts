@@ -22,13 +22,33 @@ export class ProjectionAttributeState {
 
     /**
      * Keep a list of original polymorphic source states
+     * @internal
      */
-    public previousStateList: ProjectionAttributeState[]
+    public previousStateList: ProjectionAttributeState[];
+
+    /**
+     * The attribute ordinal originated from the array expansion operation.
+     * @internal
+     */
+    public ordinal?: number;
 
     /**
      * Create a new empty state
      */
     constructor(ctx: CdmCorpusContext) {
         this.ctx = ctx;
+    }
+
+    /**
+     * Creates a copy of the state and sets its previous state to be itself
+     * @internal
+     */
+    public copy(): ProjectionAttributeState {
+        const copy: ProjectionAttributeState = new ProjectionAttributeState(this.ctx);
+        copy.currentResolvedAttribute = this.currentResolvedAttribute;
+        copy.previousStateList = [this];
+        copy.ordinal = this.ordinal;
+
+        return copy;
     }
 }

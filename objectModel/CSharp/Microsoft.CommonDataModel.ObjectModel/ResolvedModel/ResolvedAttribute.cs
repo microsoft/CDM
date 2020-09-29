@@ -31,7 +31,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             }
         }
         private string _resolvedName;
-        public string previousResolvedName { get; set; }
+        public string PreviousResolvedName { get; set; }
         public string ResolvedName
         {
             get
@@ -42,8 +42,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             set
             {
                 this._resolvedName = value;
-                if (this.previousResolvedName == null)
-                    this.previousResolvedName = value;
+                if (this.PreviousResolvedName == null)
+                    this.PreviousResolvedName = value;
             }
         }
         internal int ResolvedAttributeCount { get; set; }
@@ -58,7 +58,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.Target = target;
             this.ResolvedTraits = new ResolvedTraitSet(resOpt);
             this.ResolvedName = defaultName;
-            this.previousResolvedName = defaultName;
+            this.PreviousResolvedName = defaultName;
             this.AttCtx = attCtx;
         }
 
@@ -67,6 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ResolveOptions resOpt = this.ResolvedTraits.ResOpt; // use the options from the traits
             ResolvedAttribute copy = new ResolvedAttribute(resOpt, this.Target, this._resolvedName, this.AttCtx)
             {
+                PreviousResolvedName = this.PreviousResolvedName,
                 ResolvedName = this.ResolvedName,
                 ResolvedAttributeCount = this.ResolvedAttributeCount,
                 ResolvedTraits = this.ResolvedTraits.ShallowCopy(),

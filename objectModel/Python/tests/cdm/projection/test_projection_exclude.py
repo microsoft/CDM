@@ -10,7 +10,8 @@ from cdm.objectmodel import CdmCorpusDefinition, CdmFolderDefinition, CdmEntityD
 from cdm.storage import LocalAdapter
 from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
-from tests.common import async_test, TestHelper, TestUtils
+from tests.common import async_test, TestHelper
+from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
 class ProjectionExcludeTest(unittest.TestCase):
@@ -28,9 +29,6 @@ class ProjectionExcludeTest(unittest.TestCase):
         ['referenceOnly', 'normalized', 'structured']
     ]
 
-    # Path to foundations
-    foundation_json_path = 'cdm:/foundations.cdm.json'
-
     # The path between TestDataPath and TestName.
     tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionExclude')
 
@@ -42,10 +40,10 @@ class ProjectionExcludeTest(unittest.TestCase):
         local_root = corpus.storage.fetch_root_folder('local')
 
         # Create an entity
-        entity = self._create_entity(corpus, local_root)
+        entity = ProjectionTestUtils.create_entity(corpus, local_root)
 
         # Create a projection
-        projection = self._create_projection(corpus, local_root)
+        projection = ProjectionTestUtils.create_projection(corpus, local_root)
 
         # Create an ExcludeAttributes operation
         exclude_attrs_op = corpus.make_object(CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF)
@@ -80,10 +78,10 @@ class ProjectionExcludeTest(unittest.TestCase):
         local_root = corpus.storage.fetch_root_folder('local')
 
         # Create an entity
-        entity = self._create_entity(corpus, local_root)
+        entity = ProjectionTestUtils.create_entity(corpus, local_root)
 
         # Create a projection
-        projection = self._create_projection(corpus, local_root)
+        projection = ProjectionTestUtils.create_projection(corpus, local_root)
 
         # Create an ExcludeAttributes operation
         exclude_attrs_op = corpus.make_object(CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF)
@@ -116,10 +114,10 @@ class ProjectionExcludeTest(unittest.TestCase):
         local_root = corpus.storage.fetch_root_folder('local')
 
         # Create an entity
-        entity = self._create_entity(corpus, local_root)
+        entity = ProjectionTestUtils.create_entity(corpus, local_root)
 
         # Create a projection
-        projection = self._create_projection(corpus, local_root)
+        projection = ProjectionTestUtils.create_projection(corpus, local_root)
 
         # Create an ExcludeAttributes operation
         exclude_attrs_op = corpus.make_object(CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF)
@@ -166,10 +164,10 @@ class ProjectionExcludeTest(unittest.TestCase):
         local_root = corpus.storage.fetch_root_folder('local')
 
         # Create an entity
-        entity = self._create_entity(corpus, local_root)
+        entity = ProjectionTestUtils.create_entity(corpus, local_root)
 
         # Create a projection with a condition that states the operation should only execute when the resolution directive is 'referenceOnly'
-        projection = self._create_projection(corpus, local_root)
+        projection = ProjectionTestUtils.create_projection(corpus, local_root)
         projection.condition = 'referenceOnly==True'
 
         # Create an ExcludeAttributes operation
@@ -219,13 +217,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on an entity attribute"""
         test_name = 'test_exclude_attributes'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -238,13 +236,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity attribute"""
         test_name = 'test_SSAN'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['PersonInfoName', 'PersonInfoAge', 'PersonInfoAddress', 'PersonInfoPhoneNumber', 'PersonInfoEmail']
         # Excluded attributes: ['PersonInfoAddress', 'PersonInfoPhoneNumber', 'PersonInfoEmail']
@@ -257,13 +255,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity attribute that has renameFormat = '{m}'"""
         test_name = 'test_SSAN_rename'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -276,13 +274,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """A nested ExcludeAttributes operation in a single projection"""
         test_name = 'test_single_nested_proj'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -295,13 +293,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """Nested projections with ExcludeAttributes"""
         test_name = 'test_nested_proj'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['address', 'phoneNumber', 'email'], ['age']
@@ -313,13 +311,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """Multiple ExcludeAttributes in a single projection"""
         test_name = 'test_multiple_exclude'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['name', 'age', 'address'], ['address', 'email']
@@ -334,13 +332,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on an entity definition"""
         test_name = 'test_extends_entity_proj'
         entity_name = 'Child'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['phoneNumber', 'email']
@@ -354,13 +352,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity definition"""
         test_name = 'test_extends_entity'
         entity_name = 'Child'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['phoneNumber', 'email']
@@ -374,13 +372,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on a polymorphic source"""
         test_name = 'test_polymorphic_proj'
         entity_name = 'BusinessPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['emailId', 'address', 'isPrimary', 'phoneId', 'number', 'socialId', 'account']
         # Excluded attributes: ['socialId', 'account']
@@ -396,13 +394,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on a polymorphic source"""
         test_name = 'test_polymorphic'
         entity_name = 'BusinessPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['emailId', 'address', 'isPrimary', 'phoneId', 'number', 'socialId', 'account']
         # Excluded attributes: ['socialId', 'account']
@@ -418,13 +416,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on an array source"""
         test_name = 'test_array_source_proj'
         entity_name = 'FriendGroup'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['personCount', 'name1', 'age1', 'address1', 'phoneNumber1', 'email1', ..., 'email3'] (16 total)
         # Excluded attributes: ['age1', 'age2', 'age3']
@@ -448,13 +446,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an array source"""
         test_name = 'test_array_source'
         entity_name = 'FriendGroup'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['GroupOfPeoplePersonCount', 'GroupOfPeopleName1', 'GroupOfPeopleAge1', 'GroupOfPeopleAddress1',
         #                              'GroupOfPeoplePhoneNumber1', 'GroupOfPeopleEmail1', ..., 'GroupOfPeopleEmail3'] (16 total)
@@ -479,13 +477,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an array source that has renameFormat = '{m}'"""
         test_name = 'test_array_source_rename'
         entity_name = 'FriendGroup'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['personCount', 'name1', 'age1', 'address1', 'phoneNumber1', 'email1', ..., 'email3'] (16 total)
         # Excluded attributes: ['age1', 'age2', 'age3']
@@ -509,13 +507,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes with a condition"""
         test_name = 'test_conditional_proj'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, ['referenceOnly'])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -523,7 +521,7 @@ class ProjectionExcludeTest(unittest.TestCase):
         self.assertEqual('name', resolved_entity.attributes[0].name)
         self.assertEqual('age', resolved_entity.attributes[1].name)
 
-        resolved_entity2 = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity2 = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: none, condition was false
@@ -539,13 +537,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes with an empty exclude attributes list"""
         test_name = 'test_empty_exclude'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: []
@@ -561,13 +559,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """ExcludeAttributes on an entity with an attribute group"""
         test_name = 'test_group_proj'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -580,13 +578,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity with an attribute group"""
         test_name = 'test_group'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['PersonInfoName', 'PersonInfoAge', 'PersonInfoAddress', 'PersonInfoPhoneNumber', 'PersonInfoEmail']
         # Excluded attributes: ['PersonInfoAddress', 'PersonInfoPhoneNumber', 'PersonInfoEmail']
@@ -599,13 +597,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """SelectsSomeAvoidNames on an entity with an attribute group that has renameFormat = '{m}'"""
         test_name = 'test_group_rename'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, [])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         # Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -622,13 +620,13 @@ class ProjectionExcludeTest(unittest.TestCase):
         """
         test_name = 'test_EA_name_proj'
         entity_name = 'NewPerson'
-        corpus = self._get_corpus(test_name)
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
 
         for res_opt in self.res_opts_combinations:
-            await self._load_entity_for_resolution_option_and_save(corpus, test_name, entity_name, res_opt)
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, ['structured'])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['structured'])
 
         # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email', 'title', 'company', 'tenure']
         # Excluded attributes: ['OccupationInfo'] (name of entity attribute that contains 'title', 'company', 'tenure')
@@ -640,73 +638,3 @@ class ProjectionExcludeTest(unittest.TestCase):
         self.assertEqual('address', att_group.members[2].name)
         self.assertEqual('phoneNumber', att_group.members[3].name)
         self.assertEqual('email', att_group.members[4].name)
-
-    def _get_corpus(self, test_name: str) -> 'CdmCorpusDefinition':
-        """Creates a corpus"""
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
-        return corpus
-
-    def _create_entity(self, corpus: 'CdmCorpusDefinition', local_root: 'CdmFolderDefinition') -> 'CdmEntityDefinition':
-        """Creates an entity"""
-        entity_name = 'TestEntity'
-        entity = corpus.make_object(CdmObjectType.ENTITY_DEF, entity_name)
-
-        entity_doc = corpus.make_object(CdmObjectType.DOCUMENT_DEF, '{}.cdm.json'.format(entity_name), False)
-        entity_doc.imports.append(self.foundation_json_path)
-        entity_doc.definitions.append(entity)
-        local_root.documents.append(entity_doc, entity_doc.name)
-
-        return entity
-
-    def _create_source_entity(self, corpus: 'CdmCorpusDefinition', local_root: 'CdmFolderDefinition') -> 'CdmEntityDefinition':
-        """Creates a source entity for a projection"""
-        entity_name = 'SourceEntity'
-        entity = corpus.make_object(CdmObjectType.ENTITY_DEF, entity_name)
-
-        attribute_name1 = 'id'
-        attribute1 = corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, attribute_name1)
-        attribute1.date_type = corpus.make_ref(CdmObjectType.DATA_TYPE_REF, 'string', True)
-        entity.attributes.append(attribute1)
-
-        attributeName2 = 'name'
-        attribute2 = corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, attributeName2)
-        attribute2.date_type = corpus.make_ref(CdmObjectType.DATA_TYPE_REF, 'string', True)
-        entity.attributes.append(attribute2)
-
-        attributeName3 = 'value'
-        attribute3 = corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, attributeName3)
-        attribute3.date_type = corpus.make_ref(CdmObjectType.DATA_TYPE_REF, 'integer', True)
-        entity.attributes.append(attribute3)
-
-        attributeName4 = 'date'
-        attribute4 = corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, attributeName4)
-        attribute4.date_type = corpus.make_ref(CdmObjectType.DATA_TYPE_REF, 'date', True)
-        entity.attributes.append(attribute4)
-
-        entity_doc = corpus.make_object(CdmObjectType.DOCUMENT_DEF, '{}.cdm.json'.format(entity_name), False)
-        entity_doc.imports.append(self.foundation_json_path)
-        entity_doc.definitions.append(entity)
-        local_root.documents.append(entity_doc, entity_doc.name)
-
-        return entity
-
-    def _create_projection(self, corpus: 'CdmCorpusDefinition', local_root: 'CdmFolderDefinition') -> 'CdmProjection':
-        """Creates a projection"""
-        # Create an entity reference to use as the source of the projection
-        projection_source = corpus.make_object(CdmObjectType.ENTITY_REF, None)
-        projection_source.explicit_reference = self._create_source_entity(corpus, local_root)
-
-        # Create the projection
-        projection = corpus.make_object(CdmObjectType.PROJECTION_DEF)
-        projection.source = projection_source
-
-        return projection
-
-    async def _load_entity_for_resolution_option_and_save(self, corpus: 'CdmCorpusDefinition', test_name: str, entity_name: str, res_opts: List[str]) -> None:
-        """Loads an entity, resolves it, and then validates the generated attribute contexts"""
-        expected_output_path = TestHelper.get_expected_output_folder_path(self.tests_subpath, test_name)
-        file_name_suffix = TestUtils.get_resolution_option_name_suffix(res_opts)
-
-        entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, res_opts, True)
-        AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, '{}{}'.format(entity_name, file_name_suffix), resolved_entity)

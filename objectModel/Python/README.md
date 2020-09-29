@@ -20,3 +20,8 @@ Note: These instructions were verified on Windows. For Mac, the steps might chan
    }
 
 Note: If in step 6 on Mac you receive error mentioning TLSV1_ALERT_PROTOCOL_VERSION, you need to upgrade pip with command `curl https://bootstrap.pypa.io/get-pip.py | python3 - 'pip==9.0.3' --user`, followed by `pip3 install --upgrade setuptools --user`. Then repeat the command to install all of the project requirements from step 6.
+
+# Run Unit Tests
+
+1. To run the unit tests type `python -m unittest`
+1. A set of Azure Data Lake Storage Gen2 tests are included but disabled by default. To enable them follow the instructions [here](../CSharp/Microsoft.CommonDataModel.ObjectModel.Tests/README.md)

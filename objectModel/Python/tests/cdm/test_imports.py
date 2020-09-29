@@ -4,8 +4,9 @@
 import os
 import unittest
 
-from cdm.utilities import ResolveOptions
+from cdm.enums import ImportsLoadStrategy
 from cdm.storage import LocalAdapter
+from cdm.utilities import ResolveOptions
 
 from tests.common import async_test, TestHelper
 
@@ -19,7 +20,7 @@ class ImportsTests(unittest.TestCase):
         test_name = 'TestEntityWithMissingImport'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
         doc = await corpus.fetch_object_async('local:/missingImport.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(doc)
@@ -32,7 +33,7 @@ class ImportsTests(unittest.TestCase):
         test_name = 'TestEntityWithMissingNestedImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
         doc = await corpus.fetch_object_async('local:/missingNestedImport.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(doc)
@@ -48,7 +49,7 @@ class ImportsTests(unittest.TestCase):
         test_name = 'TestEntityWithSameImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
         doc = await corpus.fetch_object_async('local:/multipleImports.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(doc)
@@ -83,7 +84,7 @@ class ImportsTests(unittest.TestCase):
         test_name = 'TestLoadingSameImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
         main_doc = await corpus.fetch_object_async('mainEntity.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(main_doc)
@@ -106,7 +107,7 @@ class ImportsTests(unittest.TestCase):
         test_name = 'TestLoadingSameMissingImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
         main_doc = await corpus.fetch_object_async('mainEntity.cdm.json', res_opt=res_opt)
         self.assertIsNotNone(main_doc)
@@ -128,7 +129,7 @@ class ImportsTests(unittest.TestCase):
         test_name = 'TestLoadingAlreadyPresentImportsAsync'
         corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
         # load the first doc
         main_doc = await corpus.fetch_object_async('mainEntity.cdm.json', res_opt=res_opt)

@@ -232,7 +232,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             let acpEnt: AttributeContextParameters;
 
             const ctxEntObjDef: CdmObjectDefinition = ctxEnt.fetchObjectDefinition<CdmObjectDefinition>(resOpt);
-            if (ctxEntObjDef.objectType === cdmObjectType.projectionDef) {
+            if (ctxEntObjDef && ctxEntObjDef.objectType === cdmObjectType.projectionDef) {
                 // A Projection
 
                 const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this, ctxEnt);
@@ -291,7 +291,6 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                             for (let i: number = 0; i < l; i++) {
                                 if (attsPick.allItems[i].getObjectType() === cdmObjectType.entityAttributeDef) {
                                     // a table within a table. as expected with a selectsOne attribute
-                                    // tslint:disable-next-line: max-line-length
                                     // since this is by ref, we won't get the atts from the table, but we do need the traits that hold the key
                                     // these are the same contexts that would get created if we recursed
                                     // first this attribute

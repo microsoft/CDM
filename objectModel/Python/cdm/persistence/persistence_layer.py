@@ -281,6 +281,8 @@ class PersistenceLayer:
             content = persisted_doc.encode()
             await adapter.write_async(new_path, content)
 
+            doc._file_system_modified_time = await adapter.compute_last_modified_time_async(new_path)
+
             # Write the adapter's config.
             if options._is_top_level_document:
                 await self._corpus.storage.save_adapters_config_async('/config.json', adapter)

@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
@@ -50,30 +51,30 @@ public class CorpusTest {
     }
 
     /**
-     * Tests the FetchObjectAsync function with the StrictValidation off.
+     * Tests the FetchObjectAsync function with the lazy imports load.
      */
     @Test
-    public void testStrictValidationOff() throws InterruptedException {
-        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestStrictValidation", null);
+    public void testLazyLoadImports() throws InterruptedException {
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy", null);
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-            // when the strict validation is disabled, there should be no reference validation.
+            // when the imports are not loaded, there should be no reference validation.
             // no error should be logged.
             Assert.fail(message);
         }, CdmStatusLevel.Warning);
 
-        // load with strict validation disabled.
+        // load with deferred imports.
         final ResolveOptions resOpt = new ResolveOptions();
-        resOpt.setStrictValidation(false);
+        resOpt.setImportsLoadStrategy(ImportsLoadStrategy.LazyLoad);
         corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/doc.cdm.json", null, resOpt).join();
     }
 
     /**
-     * Tests the FetchObjectAsync function with the StrictValidation on.
+     * Tests the FetchObjectAsync function with the lazy imports load.
      */
     @Test
-    public void testStrictValidationOn() throws InterruptedException {
+    public void testLoadImports() throws InterruptedException {
         final AtomicInteger errorCount = new AtomicInteger(0);
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "TestStrictValidation", null);
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy", null);
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (message.contains("Unable to resolve the reference")) {
                 errorCount.getAndIncrement();
@@ -82,14 +83,14 @@ public class CorpusTest {
             }
         }, CdmStatusLevel.Error);
 
-        // load with strict validation.
+        // load imports.
         ResolveOptions resOpt = new ResolveOptions();
-        resOpt.setStrictValidation(true);
+        resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
         corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/doc.cdm.json", null, resOpt).join();
         Assert.assertEquals(1, errorCount.get());
 
         errorCount.set(0);
-        corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testStrictValidation", null);
+        corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testImportsLoadStrategy", null);
         corpus.setEventCallback((CdmStatusLevel level, String message) -> {
             if (level == CdmStatusLevel.Warning && message.contains("Unable to resolve the reference")) {
                 errorCount.getAndIncrement();
@@ -98,9 +99,9 @@ public class CorpusTest {
             }
         }, CdmStatusLevel.Warning);
 
-        // load with strict validation and shallow validation.
+        // load imports with shallow validation.
         resOpt = new ResolveOptions();
-        resOpt.setStrictValidation(true);
+        resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
         resOpt.setShallowValidation(true);
         corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/doc.cdm.json", null, resOpt).join();
         Assert.assertEquals(1, errorCount.get());

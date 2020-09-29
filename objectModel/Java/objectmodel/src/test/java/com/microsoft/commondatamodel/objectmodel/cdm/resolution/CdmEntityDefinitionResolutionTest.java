@@ -18,6 +18,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntity;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
@@ -104,7 +105,7 @@ public class CdmEntityDefinitionResolutionTest {
             currentFile = ent;
           }
           final ResolveOptions resOpt = new ResolveOptions();
-          resOpt.setStrictValidation(true);
+          resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
           final CdmEntityDefinition newEnt = cdmCorpus
               .<CdmEntityDefinition>fetchObjectAsync(ent.getEntityPath(), currentFile, resOpt).join();
           resOpt.setWrtDoc(newEnt.getInDocument());

@@ -6,6 +6,8 @@ package com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -23,9 +25,11 @@ public final class ProjectionAttributeState {
     private CdmCorpusContext ctx;
     private ResolvedAttribute currentResolvedAttribute;
     private List<ProjectionAttributeState> previousStateList;
+    private Integer ordinal;
 
     /**
      * Create a new empty state
+     * @param ctx CdmCorpusContext
      */
     public ProjectionAttributeState(CdmCorpusContext ctx) {
         this.ctx = ctx;
@@ -38,6 +42,7 @@ public final class ProjectionAttributeState {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return ResolvedAttribute
      */
     @Deprecated
     public ResolvedAttribute getCurrentResolvedAttribute() {
@@ -47,6 +52,7 @@ public final class ProjectionAttributeState {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param currentResolvedAttribute ResolvedAttribute
      */
     @Deprecated
     public void setCurrentResolvedAttribute(final ResolvedAttribute currentResolvedAttribute) {
@@ -58,6 +64,7 @@ public final class ProjectionAttributeState {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return List of ProjectionAttributeState
      */
     @Deprecated
     public List<ProjectionAttributeState> getPreviousStateList() {
@@ -67,9 +74,46 @@ public final class ProjectionAttributeState {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param previousStateList List of ProjectionAttributeState
      */
     @Deprecated
     public void setPreviousStateList(final List<ProjectionAttributeState> previousStateList) {
         this.previousStateList = previousStateList;
+    }
+
+    /**
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     */
+    @Deprecated
+    public Integer getOrdinal() {
+        return ordinal;
+    }
+
+    /**
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     */
+    @Deprecated
+    public void setOrdinal(final int ordinal) {
+        this.ordinal = ordinal;
+    }
+
+    /**
+     * Creates a copy of the state and sets its previous state to be itself
+     * 
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     */
+    @Deprecated
+    public ProjectionAttributeState copy() {
+        ProjectionAttributeState copy = new ProjectionAttributeState(this.ctx);
+        copy.setCurrentResolvedAttribute(this.currentResolvedAttribute);
+        copy.setPreviousStateList(new ArrayList<>(Arrays.asList(this)));
+        if (this.ordinal != null) {
+            copy.setOrdinal(this.ordinal);
+        }
+
+        return copy;
     }
 }

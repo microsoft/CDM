@@ -242,8 +242,15 @@ public class Utils {
     return annotationToTraitMap.get(name);
   }
 
-  /**
+
+  
+  /** 
    * Creates a list of JSON objects that is a copy of the input Iterable object.
+   * @param source Source iterable
+   * @param resOpt Resolve Options
+   * @param options Copy Options
+   * @param <T> Type
+   * @return List of JsonNode
    */
   public static <T> List<JsonNode> listCopyData(
           final Iterable<T> source,

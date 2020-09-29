@@ -36,7 +36,12 @@ class OperationRenameAttributesPersistence:
             rename_attributes_op.explanation = data.explanation
 
         rename_attributes_op.rename_format = data.renameFormat
-        rename_attributes_op.apply_to = data.applyTo
+        if isinstance(data.applyTo, str):
+            rename_attributes_op.apply_to = [data.applyTo]
+        elif isinstance(data.applyTo, list):
+            rename_attributes_op.apply_to = data.applyTo
+        elif data.applyTo is not None:
+            logger.error(_TAG, ctx, 'Unsupported: applyTo property type should be string or List<string>.')
 
         return rename_attributes_op
 

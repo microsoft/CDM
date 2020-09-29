@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ThreeMusketeers",
+      "extendsEntity": "CdmEntity",
+      "hasAttributes": [
+        {
+          "name": "ThreePeople",
+          "entity": {
+            "operations": [
+              {
+                "$type": "renameAttributes",
+                "renameFormat": "{m}{o}"
+              }
+            ],
+            "source": {
+              "operations": [
+                {
+                  "$type": "arrayExpansion",
+                  "startOrdinal": -2,
+                  "endOrdinal": 2
+                }
+              ],
+              "source": "Person"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

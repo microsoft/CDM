@@ -10,7 +10,7 @@ import {
     resolveOptions
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
-import { testUtils } from '../../testUtils';
+import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { AttributeContextUtil } from './AttributeContextUtil';
 
 describe('Cdm/Projection/ProjectionFKTest', () => {
@@ -179,7 +179,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
         const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
 
         const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const fileNameSuffix: string = testUtils.getResolutionOptionNameSuffix(resOpts);
+        const fileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix(resOpts);
 
         const entSalesForeignKeyProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entSalesForeignKeyProjection)
@@ -196,7 +196,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
             roHashSet.add(resolutionOptions[i]);
         }
 
-        const fileNameSuffix: string = testUtils.getResolutionOptionNameSuffix(resolutionOptions);
+        const fileNameSuffix: string = projectionTestUtils.getResolutionOptionNameSuffix(resolutionOptions);
 
         const resolvedEntityName: string = `Resolved_${inputEntity.entityName}${fileNameSuffix}.cdm.json`;
 

@@ -252,8 +252,9 @@ public class CdmLocalEntityDeclarationDefinition extends CdmObjectDefinitionBase
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolved optoions
+   * @param host Host
+   * @return CDM Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.

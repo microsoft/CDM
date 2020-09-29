@@ -82,7 +82,7 @@ class ProjectionResolutionCommonUtil:
         """Get leaf nodes of the projection state tree for polymorphic scenarios"""
         result = None
 
-        for top in proj_ctx._current_attribute_state_set._values:
+        for top in proj_ctx._current_attribute_state_set._states:
             st = SearchStructure()
             st = SearchStructure._build_structure(top, top, attr_name, st, False, 0)
             if st and st._result.found_flag == True and len(st._result.leaf) > 0:
@@ -101,7 +101,7 @@ class ProjectionResolutionCommonUtil:
         for attr_name in attr_names:
             # Iterate through each projection attribute state in the current set and check if its
             # current resolved attribute's name is the top-level name of the current attrName
-            for top in proj_ctx._current_attribute_state_set._values:
+            for top in proj_ctx._current_attribute_state_set._states:
                 st = SearchStructure()
                 st = SearchStructure._build_structure(top, top, attr_name, st, False, 0)
                 # Found the top-level name

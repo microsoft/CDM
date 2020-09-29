@@ -10,6 +10,7 @@ public interface CdmAttributeItem extends CdmObject, CdmReferencesEntities {
 
   /**
    * Gets the attribute applied traits.
+   * @return Cdm Trait Collection
    */
   CdmTraitCollection getAppliedTraits();
 }

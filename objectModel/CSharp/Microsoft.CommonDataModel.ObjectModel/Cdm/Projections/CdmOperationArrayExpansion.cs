@@ -30,8 +30,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationArrayExpansion(this.Ctx);
+            CdmOperationArrayExpansion copy = new CdmOperationArrayExpansion(this.Ctx)
+            {
+                StartOrdinal = this.StartOrdinal,
+                EndOrdinal = this.EndOrdinal
+            };
+            return copy;
         }
 
         /// <inheritdoc />
@@ -54,22 +58,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
-        {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(IsDerivedFrom));
-            return false;
-        }
-
-        /// <inheritdoc />
         public override bool Validate()
         {
             List<string> missingFields = new List<string>();
 
             if (this.StartOrdinal == null)
+            {
                 missingFields.Add("StartOrdinal");
+            }
 
             if (this.EndOrdinal == null)
+            {
                 missingFields.Add("EndOrdinal");
+            }
 
             if (missingFields.Count > 0)
             {
@@ -109,8 +110,103 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ProjectionAttributeStateSet projOutputSet,
             CdmAttributeContext attrCtx)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(AppendProjectionAttributeState));
-            return null;
+            // Create a new attribute context for the operation
+            AttributeContextParameters attrCtxOpArrayExpansionParam = new AttributeContextParameters
+            {
+                under = attrCtx,
+                type = CdmAttributeContextType.OperationArrayExpansion,
+                Name = $"operation/index{Index}/operationArrayExpansion"
+            };
+            CdmAttributeContext attrCtxOpArrayExpansion = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxOpArrayExpansionParam);
+
+            // Expansion steps start at round 0
+            int round = 0;
+            List<ProjectionAttributeState> projAttrStatesFromRounds = new List<ProjectionAttributeState>();
+
+            // Ordinal validation
+            if (this.StartOrdinal > this.EndOrdinal)
+            {
+                Logger.Warning(TAG, this.Ctx, $"startOrdinal {this.StartOrdinal} should not be greater than endOrdinal {this.EndOrdinal}", nameof(AppendProjectionAttributeState));
+            }
+            else
+            {
+                // Ordinals should start at startOrdinal or 0, whichever is larger.
+                int startingOrdinal = Math.Max(0, (int)this.StartOrdinal);
+
+                // Ordinals should end at endOrdinal or the maximum ordinal allowed (set in resolve options), whichever is smaller.
+                if (this.EndOrdinal > projCtx.ProjectionDirective.ResOpt.MaxOrdinalForArrayExpansion)
+                {
+                    Logger.Warning(TAG, this.Ctx, $"endOrdinal {this.EndOrdinal} is greater than the maximum allowed ordinal of {projCtx.ProjectionDirective.ResOpt.MaxOrdinalForArrayExpansion}. Using the maximum allowed ordinal instead.", nameof(AppendProjectionAttributeState));
+                }
+                int endingOrdinal = Math.Min(projCtx.ProjectionDirective.ResOpt.MaxOrdinalForArrayExpansion, (int)this.EndOrdinal);
+
+                // For each ordinal, create a copy of the input resolved attribute
+                for (int i = startingOrdinal; i <= endingOrdinal; i++)
+                {
+                    // Create a new attribute context for the round
+                    AttributeContextParameters attrCtxRoundParam = new AttributeContextParameters
+                    {
+                        under = attrCtxOpArrayExpansion,
+                        type = CdmAttributeContextType.GeneratedRound,
+                        Name = $"_generatedAttributeRound{round}"
+                    };
+                    CdmAttributeContext attrCtxRound = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxRoundParam);
+
+                    // Iterate through all the projection attribute states generated from the source's resolved attributes
+                    // Each projection attribute state contains a resolved attribute that it is corresponding to
+                    foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
+                    {
+                        // Create a new attribute context for the expanded attribute with the current ordinal
+                        AttributeContextParameters attrCtxExpandedAttrParam = new AttributeContextParameters
+                        {
+                            under = attrCtxRound,
+                            type = CdmAttributeContextType.AttributeDefinition,
+                            Name = $"{currentPAS.CurrentResolvedAttribute.ResolvedName}@{i}"
+                        };
+                        CdmAttributeContext attrCtxExpandedAttr = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxExpandedAttrParam);
+
+                        // Create a new resolved attribute for the expanded attribute
+                        ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.CurrentResolvedAttribute.Target, currentPAS.CurrentResolvedAttribute.ResolvedName);
+
+                        // Create a projection attribute state for the expanded attribute
+                        ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.Ctx)
+                        {
+                            CurrentResolvedAttribute = newResAttr,
+                            PreviousStateList = new List<ProjectionAttributeState> { currentPAS },
+                            Ordinal = i
+                        };
+
+                        projAttrStatesFromRounds.Add(newPAS);
+                    }
+
+                    if (i == endingOrdinal)
+                    {
+                        break;
+                    }
+
+                    // Increment the round
+                    round++;
+                }
+            }
+
+            if (projAttrStatesFromRounds.Count == 0)
+            {
+                // No rounds were produced from the array expansion - input passes through
+                foreach (ProjectionAttributeState pas in projCtx.CurrentAttributeStateSet.States)
+                {
+                    projOutputSet.Add(pas);
+                }
+            }
+            else
+            {
+                // Add all the projection attribute states containing the expanded attributes to the output
+                foreach (ProjectionAttributeState pas in projAttrStatesFromRounds)
+                {
+                    projOutputSet.Add(pas);
+                }
+            }
+
+            return projOutputSet;
         }
     }
 }

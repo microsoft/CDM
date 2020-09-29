@@ -222,18 +222,11 @@ class CdmProjection(CdmObjectDefinition):
 
                 ac_gen_attr_set = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_gen_attr_set)
 
-                acp_gen_attr_round0 = AttributeContextParameters()
-                acp_gen_attr_round0._under = ac_gen_attr_set
-                acp_gen_attr_round0._type = CdmAttributeContextType.GENERATED_ROUND
-                acp_gen_attr_round0._name = '_generatedAttributeRound0'
-
-                ac_gen_attr_round0 = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_gen_attr_round0)
-
                 # Start with an empty list for each projection
                 pas_operations = ProjectionAttributeStateSet(proj_context._current_attribute_state_set._ctx)
                 for operation in self.operations:
                     # Evaluate projections and apply to empty state
-                    new_pas_operations = operation._append_projection_attribute_state(proj_context, pas_operations, ac_gen_attr_round0)
+                    new_pas_operations = operation._append_projection_attribute_state(proj_context, pas_operations, ac_gen_attr_set)
 
                     # If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
                     if new_pas_operations is not None:
@@ -249,7 +242,7 @@ class CdmProjection(CdmObjectDefinition):
         resolved_attribute_set = ResolvedAttributeSet()
         resolved_attribute_set.attribute_context = proj_ctx._current_attribute_context
 
-        for pas in proj_ctx._current_attribute_state_set._values:
+        for pas in proj_ctx._current_attribute_state_set._states:
             resolved_attribute_set.merge(pas._current_resolved_attribute, pas._current_resolved_attribute.att_ctx)
 
         return resolved_attribute_set

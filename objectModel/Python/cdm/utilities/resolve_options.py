@@ -2,8 +2,9 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from typing import Optional, Union, TYPE_CHECKING
+import warnings
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, ImportsLoadStrategy
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmDocumentDefinition, CdmObject
@@ -40,11 +41,14 @@ class ResolveOptions:
         # When enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead.
         self.shallow_validation = None  # type: Optional[bool]
 
-        # When enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
-        self.strict_validation = True  # type: bool
+        # Defines at which point the Object Model will try to load the imported documents.
+        self.imports_load_strategy = ImportsLoadStrategy.LAZY_LOAD  # type: ImportsLoadStrategy
 
         # The limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
         self._resolved_attribute_limit = 4000  # type: Optional[int]
+
+        # The maximum value for the end ordinal in an ArrayExpansion operation
+        self.max_ordinal_for_array_expansion = 20  # type: int
         
         # Set of symbol that the current chain of resolution depends upon. Used with import_priority to find what docs and versions of symbols to use.
         self._symbol_ref_set = SymbolSet()  # type: SymbolSet
@@ -62,6 +66,25 @@ class ResolveOptions:
         self._indexing_doc = None  # type: Optional[CdmDocumentDefinition]
 
         self._from_moniker = None  # type: Optional[str]
+
+    @property
+    def strict_validation(self) -> Optional[bool]:
+        """When enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required."""
+        warnings.warn('Please use imports_load_strategy instead.', DeprecationWarning)
+        if self.imports_load_strategy == ImportsLoadStrategy.LAZY_LOAD:
+            return None
+        return self.imports_load_strategy == ImportsLoadStrategy.LOAD
+
+    @strict_validation.setter
+    def strict_validation(self, value: Optional[bool]) -> None:
+        """When enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required."""
+        warnings.warn('Please use imports_load_strategy instead.', DeprecationWarning)
+        if value is None:
+            self.imports_load_strategy = ImportsLoadStrategy.LAZY_LOAD
+        elif value:
+            self.imports_load_strategy = ImportsLoadStrategy.LOAD
+        else:
+            self.imports_load_strategy = ImportsLoadStrategy.DO_NOT_LOAD
 
     def _check_attribute_count(self, amount: int) -> bool:
         """

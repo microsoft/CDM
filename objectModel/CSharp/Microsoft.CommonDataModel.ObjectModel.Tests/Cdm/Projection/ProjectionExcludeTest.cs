@@ -33,11 +33,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         };
 
         /// <summary>
-        /// Path to foundations
-        /// </summary>
-        private const string foundationJsonPath = "cdm:/foundations.cdm.json";
-
-        /// <summary>
         /// The path between TestDataPath and TestName
         /// </summary>
         private string testsSubpath = Path.Combine("Cdm", "Projection", "ProjectionExcludeTest");
@@ -53,10 +48,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity
-            CdmEntityDefinition entity = CreateEntity(corpus, localRoot);
+            CdmEntityDefinition entity = ProjectionTestUtils.CreateEntity(corpus, localRoot);
 
             // Create a projection
-            CdmProjection projection = CreateProjection(corpus, localRoot);
+            CdmProjection projection = ProjectionTestUtils.CreateProjection(corpus, localRoot);
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
@@ -95,10 +90,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity
-            CdmEntityDefinition entity = CreateEntity(corpus, localRoot);
+            CdmEntityDefinition entity = ProjectionTestUtils.CreateEntity(corpus, localRoot);
 
             // Create a projection
-            CdmProjection projection = CreateProjection(corpus, localRoot);
+            CdmProjection projection = ProjectionTestUtils.CreateProjection(corpus, localRoot);
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
@@ -135,10 +130,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity
-            CdmEntityDefinition entity = CreateEntity(corpus, localRoot);
+            CdmEntityDefinition entity = ProjectionTestUtils.CreateEntity(corpus, localRoot);
 
             // Create a projection
-            CdmProjection projection = CreateProjection(corpus, localRoot);
+            CdmProjection projection = ProjectionTestUtils.CreateProjection(corpus, localRoot);
 
             // Create an ExcludeAttributes operation
             CdmOperationExcludeAttributes excludeAttrsOp = corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
@@ -189,10 +184,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity
-            CdmEntityDefinition entity = CreateEntity(corpus, localRoot);
+            CdmEntityDefinition entity = ProjectionTestUtils.CreateEntity(corpus, localRoot);
 
             // Create a projection with a condition that states the operation should only execute when the resolution directive is 'referenceOnly'
-            CdmProjection projection = CreateProjection(corpus, localRoot);
+            CdmProjection projection = ProjectionTestUtils.CreateProjection(corpus, localRoot);
             projection.Condition = "referenceOnly==true";
 
             // Create an ExcludeAttributes operation
@@ -246,15 +241,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExcludeAttributes";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -271,15 +266,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSSAN";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["PersonInfoName", "PersonInfoAge", "PersonInfoAddress", "PersonInfoPhoneNumber", "PersonInfoEmail"]
             // Excluded attributes: ["PersonInfoAddress", "PersonInfoPhoneNumber", "PersonInfoEmail"]
@@ -296,15 +291,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSSANRename";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -321,15 +316,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestSingleNestedProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -346,15 +341,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestNestedProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["address", "phoneNumber", "email"], ["age"]
@@ -370,15 +365,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestMultipleExclude";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["name", "age", "address"], ["address", "email"]
@@ -397,15 +392,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExtendsEntityProj";
             string entityName = "Child";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["phoneNumber", "email"]
@@ -423,15 +418,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestExtendsEntity";
             string entityName = "Child";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["phoneNumber", "email"]
@@ -449,15 +444,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphicProj";
             string entityName = "BusinessPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["emailId", "address", "isPrimary", "phoneId", "number", "socialId", "account"]
             // Excluded attributes: ["socialId", "account"]
@@ -477,15 +472,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestPolymorphic";
             string entityName = "BusinessPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["emailId", "address", "isPrimary", "phoneId", "number", "socialId", "account"]
             // Excluded attributes: ["socialId", "account"]
@@ -505,15 +500,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySourceProj";
             string entityName = "FriendGroup";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["personCount", "name1", "age1", "address1", "phoneNumber1", "email1", ..., "email3"] (16 total)
             // Excluded attributes: ["age1", "age2", "age3"]
@@ -541,15 +536,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySource";
             string entityName = "FriendGroup";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["GroupOfPeoplePersonCount", "GroupOfPeopleName1", "GroupOfPeopleAge1", "GroupOfPeopleAddress1",
             //                              "GroupOfPeoplePhoneNumber1", "GroupOfPeopleEmail1", ..., "GroupOfPeopleEmail3"] (16 total)
@@ -578,15 +573,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestArraySourceRename";
             string entityName = "FriendGroup";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["personCount", "name1", "age1", "address1", "phoneNumber1", "email1", ..., "email3"] (16 total)
             // Excluded attributes: ["age1", "age2", "age3"]
@@ -614,15 +609,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestConditionalProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -630,7 +625,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.AreEqual("name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
 
-            CdmEntityDefinition resolvedEntity2 = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity2 = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: none, condition was false
@@ -650,15 +645,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestEmptyExclude";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: []
@@ -678,15 +673,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroupProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -703,15 +698,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroup";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["PersonInfoName", "PersonInfoAge", "PersonInfoAddress", "PersonInfoPhoneNumber", "PersonInfoEmail"]
             // Excluded attributes: ["PersonInfoAddress", "PersonInfoPhoneNumber", "PersonInfoEmail"]
@@ -728,15 +723,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestGroupRename";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
             // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -755,15 +750,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             string testName = "TestEANameProj";
             string entityName = "NewPerson";
-            CdmCorpusDefinition corpus = GetCorpus(testName);
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
 
             foreach (List<string> resOpt in resOptsCombinations)
             {
-                await LoadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
             }
 
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, new List<string> { "structured" });
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "structured" });
 
             // Original set of attributes: ["name", "age", "address", "phoneNumber", "email", "title", "company", "tenure"]
             // Excluded attributes: ["OccupationInfo"] (name of entity attribute that contains "title", "company", "tenure")
@@ -775,96 +770,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.AreEqual("address", (attGroup.Members[2] as CdmTypeAttributeDefinition).Name, "address");
             Assert.AreEqual("phoneNumber", (attGroup.Members[3] as CdmTypeAttributeDefinition).Name, "phoneNumber");
             Assert.AreEqual("email", (attGroup.Members[4] as CdmTypeAttributeDefinition).Name, "email");
-        }
-
-        /// <summary>
-        /// Creates a corpus
-        /// </summary>
-        private CdmCorpusDefinition GetCorpus(string testName)
-        {
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
-            return corpus;
-        }
-
-        /// <summary>
-        /// Creates an entity
-        /// </summary>
-        private CdmEntityDefinition CreateEntity(CdmCorpusDefinition corpus, CdmFolderDefinition localRoot)
-        {
-            string entityName = "TestEntity";
-            CdmEntityDefinition entity = corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, entityName);
-
-            CdmDocumentDefinition entityDoc = corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, $"{entityName}.cdm.json", false);
-            entityDoc.Imports.Add(foundationJsonPath);
-            entityDoc.Definitions.Add(entity);
-            localRoot.Documents.Add(entityDoc, entityDoc.Name);
-
-            return entity;
-        }
-
-        /// <summary>
-        /// Creates a source entity for a projection
-        /// </summary>
-        private CdmEntityDefinition CreateSourceEntity(CdmCorpusDefinition corpus, CdmFolderDefinition localRoot)
-        {
-            string entityName = "SourceEntity";
-            CdmEntityDefinition entity = corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, entityName);
-
-            string attributeName1 = "id";
-            CdmTypeAttributeDefinition attribute1 = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, attributeName1);
-            attribute1.DataType = corpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "string", true);
-            entity.Attributes.Add(attribute1);
-
-            string attributeName2 = "name";
-            CdmTypeAttributeDefinition attribute2 = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, attributeName2);
-            attribute2.DataType = corpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "string", true);
-            entity.Attributes.Add(attribute2);
-
-            string attributeName3 = "value";
-            CdmTypeAttributeDefinition attribute3 = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, attributeName3);
-            attribute3.DataType = corpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "integer", true);
-            entity.Attributes.Add(attribute3);
-
-            string attributeName4 = "date";
-            CdmTypeAttributeDefinition attribute4 = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, attributeName4);
-            attribute4.DataType = corpus.MakeRef<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "date", true);
-            entity.Attributes.Add(attribute4);
-
-            CdmDocumentDefinition entityDoc = corpus.MakeObject<CdmDocumentDefinition>(CdmObjectType.DocumentDef, $"{entityName}.cdm.json", false);
-            entityDoc.Imports.Add(foundationJsonPath);
-            entityDoc.Definitions.Add(entity);
-            localRoot.Documents.Add(entityDoc, entityDoc.Name);
-
-            return entity;
-        }
-
-        /// <summary>
-        /// Creates a projection
-        /// </summary>
-        private CdmProjection CreateProjection(CdmCorpusDefinition corpus, CdmFolderDefinition localRoot)
-        {
-            // Create an entity reference to use as the source of the projection
-            CdmEntityReference projectionSource = corpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, null);
-            projectionSource.ExplicitReference = CreateSourceEntity(corpus, localRoot);
-
-            // Create the projection
-            CdmProjection projection = corpus.MakeObject<CdmProjection>(CdmObjectType.ProjectionDef);
-            projection.Source = projectionSource;
-
-            return projection;
-        }
-
-        /// <summary>
-        /// Loads an entity, resolves it, and then validates the generated attribute contexts
-        /// </summary>
-        private async Task LoadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, string testName, string entityName, List<string> resOpts)
-        {
-            string expectedOutputPath = TestHelper.GetExpectedOutputFolderPath(testsSubpath, testName);
-            string fileNameSuffix = TestUtils.GetResolutionOptionNameSuffix(resOpts);
-
-            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
-            CdmEntityDefinition resolvedEntity = await TestUtils.GetResolvedEntity(corpus, entity, resOpts, true);
-            AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, $"{entityName}{fileNameSuffix}", resolvedEntity);
         }
     }
 }

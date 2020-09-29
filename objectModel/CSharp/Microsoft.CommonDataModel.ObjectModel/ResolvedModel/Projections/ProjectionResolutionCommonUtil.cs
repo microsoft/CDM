@@ -117,7 +117,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         {
             SearchResult result = null;
 
-            foreach (ProjectionAttributeState top in projCtx.CurrentAttributeStateSet.Values)
+            foreach (ProjectionAttributeState top in projCtx.CurrentAttributeStateSet.States)
             {
                 SearchStructure st = new SearchStructure();
                 st = SearchStructure.BuildStructure(top, top, attrName, st, false, 0);
@@ -145,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 // Iterate through each projection attribute state in the current set and check if its
                 // current resolved attribute's name is the top-level name of the current attrName
-                foreach (ProjectionAttributeState top in projCtx.CurrentAttributeStateSet.Values)
+                foreach (ProjectionAttributeState top in projCtx.CurrentAttributeStateSet.States)
                 {
                     SearchStructure st = new SearchStructure();
                     st = SearchStructure.BuildStructure(top, top, attrName, st, false, 0);

@@ -13,7 +13,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests
     public class TestStorageAdapter : StorageAdapterBase
     {
         public ConcurrentDictionary<string, string> Target { get; }
-        public string LocationHint { get; set; }
 
         public TestStorageAdapter(ConcurrentDictionary<string, string> target)
         {

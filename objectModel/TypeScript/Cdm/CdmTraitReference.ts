@@ -116,7 +116,7 @@ export class CdmTraitReference extends CdmObjectReferenceBase {
         }
         // there is only one resolved trait
         const rt: ResolvedTrait = rts.first;
-        if (rt.parameterValues && rt.parameterValues.length > 0) {
+        if (rt && rt.parameterValues && rt.parameterValues.length > 0) {
             const l: number = rt.parameterValues.length;
             for (let i: number = 0; i < l; i++) {
                 const p: CdmParameterDefinition = rt.parameterValues.fetchParameterAtIndex(i);

@@ -8,7 +8,8 @@ from typing import List
 from cdm.objectmodel import CdmCorpusDefinition, CdmManifestDefinition, CdmEntityDefinition
 from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
-from tests.common import async_test, TestHelper, TestUtils
+from tests.common import async_test, TestHelper
+from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
 class ProjectionFKTest(unittest.TestCase):
@@ -161,7 +162,7 @@ class ProjectionFKTest(unittest.TestCase):
         manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')
 
         expected_output_path = TestHelper.get_expected_output_folder_path(self.tests_subpath, test_name)
-        file_name_suffix = TestUtils.get_resolution_option_name_suffix(res_opts)
+        file_name_suffix = ProjectionTestUtils.get_resolution_option_name_suffix(res_opts)
 
         ent_sales_foreign_key_projection = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_sales_foreign_key_projection)
@@ -181,7 +182,7 @@ class ProjectionFKTest(unittest.TestCase):
         for i in range(len(resolution_options)):
             ro_hash_set.add(resolution_options[i])
 
-        file_name_suffix = TestUtils.get_resolution_option_name_suffix(resolution_options)
+        file_name_suffix = ProjectionTestUtils.get_resolution_option_name_suffix(resolution_options)
 
         resolved_entity_name = 'Resolved_{}{}.cdm.json'.format(input_entity.entity_name, file_name_suffix)
 

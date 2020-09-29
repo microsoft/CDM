@@ -5,6 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
+    using Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
@@ -23,13 +24,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             this.ObjectType = CdmObjectType.OperationIncludeAttributesDef;
             this.Type = CdmOperationType.IncludeAttributes;
+
+            this.IncludeAttributes = new List<string>();
         }
 
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationIncludeAttributes(this.Ctx);
+            List<string> includeAttributes = new List<string>();
+            includeAttributes.AddRange(this.IncludeAttributes);
+
+            CdmOperationIncludeAttributes copy = new CdmOperationIncludeAttributes(this.Ctx)
+            {
+                IncludeAttributes = includeAttributes
+            };
+            return copy;
         }
 
         /// <inheritdoc />
@@ -52,18 +61,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <inheritdoc />
-        public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
-        {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(IsDerivedFrom));
-            return false;
-        }
-
-        /// <inheritdoc />
         public override bool Validate()
         {
             List<string> missingFields = new List<string>();
 
-            if (this.IncludeAttributes == null || this.IncludeAttributes.Count == 0)
+            if (this.IncludeAttributes == null)
                 missingFields.Add("IncludeAttributes");
 
             if (missingFields.Count > 0)
@@ -104,8 +106,57 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ProjectionAttributeStateSet projOutputSet,
             CdmAttributeContext attrCtx)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(AppendProjectionAttributeState));
-            return null;
+            // Create a new attribute context for the operation
+            AttributeContextParameters attrCtxOpIncludeAttrsParam = new AttributeContextParameters
+            {
+                under = attrCtx,
+                type = CdmAttributeContextType.OperationIncludeAttributes,
+                Name = $"operation/index{Index}/operationIncludeAttributes"
+            };
+            CdmAttributeContext attrCtxOpIncludeAttrs = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxOpIncludeAttrsParam);
+
+            // Get the top-level attribute names for each of the included attributes
+            // Since the include operation allows providing either current state resolved attribute names 
+            //   or the previous state resolved attribute names, we search for the name in the PAS tree 
+            //   and fetch the top level resolved attribute names.
+            Dictionary<string, string> topLevelIncludeAttributeNames = ProjectionResolutionCommonUtil.GetTopList(projCtx, this.IncludeAttributes);
+
+            // Initialize a projection attribute context tree builder with the created attribute context for the operation
+            ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpIncludeAttrs);
+
+            // Iterate through all the PAS in the PASSet generated from the projection source's resolved attributes
+            foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
+            {
+                // Check if the current PAS's RA is in the list of attributes to include.
+                if (topLevelIncludeAttributeNames.ContainsKey(currentPAS.CurrentResolvedAttribute.ResolvedName))
+                {
+                    // Get the attribute name the way it appears in the include list
+                    string includeAttributeName = null;
+                    topLevelIncludeAttributeNames.TryGetValue(currentPAS.CurrentResolvedAttribute.ResolvedName, out includeAttributeName);
+
+                    // Create the attribute context parameters and just store it in the builder for now
+                    // We will create the attribute contexts at the end
+                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute, CdmAttributeContextType.AttributeDefinition);
+
+                    // Create a projection attribute state for the included attribute by creating a copy of the current state
+                    // Copy() sets the current state as the previous state for the new one
+                    // We only create projection attribute states for attributes in the include list
+                    ProjectionAttributeState newPAS = currentPAS.Copy();
+
+                    projOutputSet.Add(newPAS);
+                }
+                else
+                {
+                    // Create the attribute context parameters and just store it in the builder for now
+                    // We will create the attribute contexts at the end
+                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(null, currentPAS, currentPAS.CurrentResolvedAttribute, CdmAttributeContextType.AttributeDefinition);
+                }
+            }
+
+            // Create all the attribute contexts and construct the tree
+            attrCtxTreeBuilder.ConstructAttributeContextTree(projCtx);
+
+            return projOutputSet;
         }
     }
 }

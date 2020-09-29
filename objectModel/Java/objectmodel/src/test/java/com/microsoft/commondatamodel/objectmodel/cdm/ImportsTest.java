@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import static org.testng.Assert.assertNotNull;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import java.io.File;
@@ -27,7 +28,7 @@ public class ImportsTest {
 
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
-    resOpt.setStrictValidation(true);
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     final CdmDocumentDefinition doc =
             cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync(
@@ -50,7 +51,7 @@ public class ImportsTest {
 
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
-    resOpt.setStrictValidation(true);
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     final CdmDocumentDefinition doc =
             cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync(
@@ -74,7 +75,7 @@ public class ImportsTest {
 
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
-    resOpt.setStrictValidation(true);
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     final CdmDocumentDefinition doc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("local:/multipleImports.cdm.json", null, resOpt).join();
 
@@ -116,7 +117,7 @@ public class ImportsTest {
     final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingSameImportsAsync");
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
-    resOpt.setStrictValidation(true);
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json", null, resOpt).join();
     Assert.assertNotNull(mainDoc);
@@ -142,7 +143,7 @@ public class ImportsTest {
     final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingSameMissingImportsAsync");
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
-    resOpt.setStrictValidation(true);
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json", null, resOpt).join();
     Assert.assertNotNull(mainDoc);
@@ -167,7 +168,7 @@ public class ImportsTest {
     final StorageAdapter localAdapter = this.createStorageAdapterForTest("testLoadingAlreadyPresentImportsAsync");
     final CdmCorpusDefinition cdmCorpus = this.createTestCorpus(localAdapter);
     final ResolveOptions resOpt = new ResolveOptions();
-    resOpt.setStrictValidation(true);
+    resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
 
     // Load the first doc.
     CdmDocumentDefinition mainDoc = cdmCorpus.<CdmDocumentDefinition>fetchObjectAsync("mainEntity.cdm.json", null, resOpt).join();

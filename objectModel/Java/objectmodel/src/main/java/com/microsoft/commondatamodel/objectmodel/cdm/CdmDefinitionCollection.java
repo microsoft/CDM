@@ -25,7 +25,7 @@ public class CdmDefinitionCollection extends CdmCollection<CdmObjectDefinition> 
    * with the provided name and adds it to the collection.
    *
    * @param ofType The type of the object to be created and added to the list.
-   * @param name   The name to be used for the created object.<
+   * @param name   The name to be used for the created object.
    * @return The created object after it was added to the collection.
    */
   public CdmObjectDefinition add(final CdmObjectType ofType, final String name) {

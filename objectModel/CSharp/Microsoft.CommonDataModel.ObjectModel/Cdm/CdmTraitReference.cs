@@ -80,7 +80,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             // there is only one resolved trait
             ResolvedTrait rt = rts.First;
-            if (rt.ParameterValues != null && rt.ParameterValues.Length > 0)
+            if (rt?.ParameterValues != null && rt.ParameterValues.Length > 0)
             {
                 int l = rt.ParameterValues.Length;
                 for (int i = 0; i < l; i++)

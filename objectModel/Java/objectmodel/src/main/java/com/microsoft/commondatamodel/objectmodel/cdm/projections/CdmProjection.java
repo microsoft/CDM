@@ -36,6 +36,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
 
     /**
      * Projection constructor
+     * @param ctx corpus context
      */
     public CdmProjection(final CdmCorpusContext ctx) {
         super(ctx);
@@ -45,6 +46,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
 
     /**
      * Property of a projection that holds the condition expression string
+     * @return String
      */
     public String getCondition() {
         return condition;
@@ -59,6 +61,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Node
      */
     @Deprecated
     public Node getConditionExpressionTreeRoot() {
@@ -68,6 +71,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param conditionExpressionTreeRoot Node
      */
     @Deprecated
     public void setConditionExpressionTreeRoot(final Node conditionExpressionTreeRoot) {
@@ -76,6 +80,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
 
     /**
      * Property of a projection that holds a collection of operations
+     * @return CdmOperationCollection
      */
     public CdmOperationCollection getOperations() {
         return operations;
@@ -83,6 +88,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
 
     /**
      * Property of a projection that holds the source of the operation
+     * @return CdmEntityReference
      */
     public CdmEntityReference getSource() {
         return source;
@@ -213,12 +219,15 @@ public class CdmProjection extends CdmObjectDefinitionBase {
      * A function to construct projection context and populate the resolved attribute set that ExtractResolvedAttributes method can then extract
      * This function is the entry point for projection resolution.
      * This function is expected to do the following 3 things:
-     * - Create an condition expression tree & default if appropriate
+     * - Create an condition expression tree and default if appropriate
      * - Create and initialize Projection Context
      * - Process operations
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projDirective ProjectionDirective
+     * @param attrCtx CdmAttributeContext
+     * @return ProjectionContext
      */
     @Deprecated
     public ProjectionContext constructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx) {
@@ -321,17 +330,11 @@ public class CdmProjection extends CdmObjectDefinitionBase {
                 acpGenAttrSet.setName("_generatedAttributeSet");
                 CdmAttributeContext acGenAttrSet = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpGenAttrSet);
 
-                AttributeContextParameters acpGenAttrRound0 = new AttributeContextParameters();
-                acpGenAttrRound0.setUnder(acGenAttrSet);
-                acpGenAttrRound0.setType(CdmAttributeContextType.GeneratedRound);
-                acpGenAttrRound0.setName("_generatedAttributeRound0");
-                CdmAttributeContext acGenAttrRound0 = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpGenAttrRound0);
-
                 // Start with an empty list for each projection
                 ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.getCurrentAttributeStateSet().getCtx());
                 for (CdmOperationBase operation : this.operations) {
                     // Evaluate projections and apply to empty state
-                    ProjectionAttributeStateSet newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrRound0);
+                    ProjectionAttributeStateSet newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
 
                     // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
                     if (newPasOperations != null)
@@ -355,13 +358,15 @@ public class CdmProjection extends CdmObjectDefinitionBase {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projCtx ProjectionContext
+     * @return ResolvedAttributeSet
      */
     @Deprecated
     public ResolvedAttributeSet extractResolvedAttributes(ProjectionContext projCtx) {
         ResolvedAttributeSet resolvedAttributeSet = new ResolvedAttributeSet();
         resolvedAttributeSet.setAttributeContext(projCtx.getCurrentAttributeContext());
 
-        for (ProjectionAttributeState pas : projCtx.getCurrentAttributeStateSet().getValues()) {
+        for (ProjectionAttributeState pas : projCtx.getCurrentAttributeStateSet().getStates()) {
             resolvedAttributeSet.merge(pas.getCurrentResolvedAttribute(), pas.getCurrentResolvedAttribute().getAttCtx());
         }
 

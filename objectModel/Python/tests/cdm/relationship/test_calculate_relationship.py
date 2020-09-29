@@ -6,7 +6,8 @@ import unittest
 
 from cdm.objectmodel import CdmEntityDefinition, CdmCorpusDefinition, CdmE2ERelationship, CdmCollection
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
-from tests.common import async_test, TestHelper, TestUtils
+from tests.common import async_test, TestHelper
+from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
 class CalculateRelationshipTest(unittest.TestCase):
@@ -76,7 +77,7 @@ class CalculateRelationshipTest(unittest.TestCase):
         self.assertIsNotNone(manifest)
         entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(entity)
-        resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, ['referenceOnly'])
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])
         actual_attr_ctx = self._get_attribute_context_string(resolved_entity, entity_name, actual_output_folder)
 
         with open(os.path.join(expected_output_folder, 'AttrCtx_{}.txt'.format(entity_name))) as expected_file:

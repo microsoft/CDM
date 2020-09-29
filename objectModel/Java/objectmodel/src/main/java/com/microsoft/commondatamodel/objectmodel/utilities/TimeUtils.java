@@ -16,6 +16,8 @@ public class TimeUtils {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param date OffsetDateTime 
+   * @return String
    */
   @Deprecated
   public static String formatDateStringIfNotNull(final OffsetDateTime date) {
@@ -28,6 +30,9 @@ public class TimeUtils {
    * 
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param first OffsetDateTime
+   * @param second OffsetDateTime
+   * @return OffsetDateTime
    */
   @Deprecated
   public static OffsetDateTime maxTime(final OffsetDateTime first, final OffsetDateTime second) {

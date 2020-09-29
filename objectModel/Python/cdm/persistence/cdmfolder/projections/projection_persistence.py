@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Union
 
 from cdm.enums import CdmObjectType
 from cdm.enums.cdm_operation_type import CdmOperationType, OperationTypeConvertor
-from cdm.objectmodel import CdmOperationBase
+from cdm.objectmodel import CdmOperationBase, CdmEntityReference
 from cdm.persistence.cdmfolder.projections.operation_add_attribute_group_persistence import \
     OperationAddAttributeGroupPersistence
 from cdm.persistence.cdmfolder.projections.operation_add_count_attribute_persistence import OperationAddCountAttributePersistence
@@ -100,10 +100,15 @@ class ProjectionPersistence:
         if not instance:
             return None
 
-        source = EntityReferencePersistence.to_data(instance.source, res_opt, options)
+        if instance.source and isinstance(instance.source, str):
+            source = instance.source
+        elif instance.source and instance.source.named_reference and instance.source.explicit_reference == None:
+            source = instance.source.named_reference
+        elif instance.source and isinstance(instance.source, CdmEntityReference):
+            source = EntityReferencePersistence.to_data(instance.source, res_opt, options)
 
         operations = None
-        if instance.operations:
+        if instance.operations and len(instance.operations) > 0:
             operations = []
             for operation in instance.operations:
                 if operation.object_type == CdmObjectType.OPERATION_ADD_COUNT_ATTRIBUTE_DEF:

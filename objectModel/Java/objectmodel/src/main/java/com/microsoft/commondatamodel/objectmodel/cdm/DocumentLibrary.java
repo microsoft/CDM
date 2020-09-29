@@ -114,6 +114,7 @@ public class DocumentLibrary {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @return List of CdmDocumentDefinition
      */
     @Deprecated
     public List<CdmDocumentDefinition> listAllDocuments() {
@@ -245,7 +246,7 @@ public class DocumentLibrary {
     /**
      * Whether a specific pair of folder-document exists in the list of all documents in the corpus.
      * @param fd The folder-document pair.
-     *
+     * @return boolean
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
      */

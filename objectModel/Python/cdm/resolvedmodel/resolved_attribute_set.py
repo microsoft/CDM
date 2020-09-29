@@ -1,7 +1,7 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from typing import cast, List, Dict, Optional, Set, Tuple, Union, TYPE_CHECKING
 import re
 
@@ -19,12 +19,12 @@ class ResolvedAttributeSet(RefCounted):
     def __init__(self):
         super().__init__()
 
-        self.attctx_to_rattr = {}  # type:  Dict[CdmAttributeContext, ResolvedAttribute]
+        self.attctx_to_rattr = OrderedDict()  # type:  Dict[CdmAttributeContext, ResolvedAttribute]
         self.attribute_context = None  # type: CdmAttributeContext
         self.base_trait_to_attributes = None  # type: Optional[Dict[string, Set[ResolvedAttribute]]]
         self.insert_order = 0  # type: int
-        self.rattr_to_attctxset = defaultdict(set)  # type: Dict[ResolvedAttribute, Set[CdmAttributeContext]]
-        self._resolved_name_to_resolved_attribute = {}  # type: Dict[string, ResolvedAttribute]
+        self.rattr_to_attctxset = OrderedDict()  # type: Dict[ResolvedAttribute, List[CdmAttributeContext]]
+        self._resolved_name_to_resolved_attribute = OrderedDict()  # type: Dict[string, ResolvedAttribute]
         # we need this instead of checking the size of the set because there may be attributes
         # nested in an attribute group and we need each of those attributes counted here as well
         self._resolved_attribute_count = 0  # type: int
@@ -57,13 +57,16 @@ class ResolvedAttributeSet(RefCounted):
             self.attctx_to_rattr[att_ctx] = ra
 
             # Set collection will take care of adding context to set.
-            self.rattr_to_attctxset[ra].add(att_ctx)
+            if ra not in self.rattr_to_attctxset:
+                self.rattr_to_attctxset[ra] = []
+            if att_ctx not in self.rattr_to_attctxset[ra]:
+                self.rattr_to_attctxset[ra].append(att_ctx)
 
     def _remove_cached_attribute_context(self, att_ctx: 'CdmAttributeContext') -> None:
         if att_ctx is not None:
             old_ra = self.attctx_to_rattr.get(att_ctx)
             if old_ra is not None and old_ra in self.rattr_to_attctxset:
-                self.attctx_to_rattr.pop(att_ctx)
+                del self.attctx_to_rattr[att_ctx]
                 self.rattr_to_attctxset[old_ra].remove(att_ctx)
                 if not self.rattr_to_attctxset[old_ra]:
                     del self.rattr_to_attctxset[old_ra]
@@ -96,8 +99,9 @@ class ResolvedAttributeSet(RefCounted):
                 existing.target = to_merge.target  # replace with newest version.
                 existing.arc = to_merge.arc
 
-                # remove old context mappings with mappings to new attribute
+                # Replace old context mappings with mappings to new attribute
                 ras_result._remove_cached_attribute_context(existing.att_ctx)
+                ras_result._cache_attribute_context(att_ctx, existing)
 
                 rts_merge = existing.resolved_traits.merge_set(to_merge.resolved_traits)  # newest one may replace.
                 if rts_merge != existing.resolved_traits:
@@ -130,7 +134,7 @@ class ResolvedAttributeSet(RefCounted):
             if ra.resolved_name not in self._resolved_name_to_resolved_attribute:
                 self._resolved_name_to_resolved_attribute[ra.resolved_name] = ra
 
-    def copy_att_ctx_mappings_into(self, rattr_to_attctxset: Dict['ResolvedAttribute', Set['CdmAttributeContext']],
+    def copy_att_ctx_mappings_into(self, rattr_to_attctxset: Dict['ResolvedAttribute', List['CdmAttributeContext']],
                                    attctx_to_rattr: Dict['CdmAttributeContext', 'ResolvedAttribute'],
                                    source_ra: 'ResolvedAttribute', new_ra: 'ResolvedAttribute' = None) -> None:
 
@@ -138,12 +142,14 @@ class ResolvedAttributeSet(RefCounted):
             if new_ra is None:
                 new_ra = source_ra
             # Get the set of attribute contexts for the old resolved attribute.
-            att_ctx_set = self.rattr_to_attctxset[source_ra]
+            att_ctx_set = self.rattr_to_attctxset[source_ra] if source_ra in self.rattr_to_attctxset else None
             if att_ctx_set is not None:
                 # Map the new resolved attribute to the old context set.
                 if new_ra in rattr_to_attctxset:
                     current_set = rattr_to_attctxset[new_ra]
-                    current_set.update(att_ctx_set)
+                    for att_ctx in att_ctx_set:
+                        if att_ctx not in current_set:
+                            current_set.append(att_ctx)
                 else:
                     rattr_to_attctxset[new_ra] = att_ctx_set
                 # Map the old contexts to the new resolved attributes.
@@ -403,17 +409,20 @@ class ResolvedAttributeSet(RefCounted):
                     filtered_sub_set = set()
                     for ra in sub_set:
                         # Get parameters of the the actual trait matched.
-                        pvals = ra.resolved_traits.find(res_opt, q.trait_base_name).parameter_values
-                        # Compare to all query params.
-                        match = True
-                        for key, val in q.parameters:
-                            pv = pvals.fetch_parameter_value(key)
-                            if not pv or pv.fetch_value_string(res_opt) != val:
-                                match = False
-                                break
+                        trait_obj = ra.resolved_traits.find(res_opt, q.trait_base_name)
+                        if trait_obj:
+                            pvals = trait_obj.parameter_values
+                            # Compare to all query params.
+                            match = True
 
-                        if match:
-                            filtered_sub_set.add(ra)
+                            for key, val in q.parameters:
+                                pv = pvals.fetch_parameter_value(key)
+                                if not pv or pv.fetch_value_string(res_opt) != val:
+                                    match = False
+                                    break
+
+                            if match:
+                                filtered_sub_set.add(ra)
 
                     sub_set = filtered_sub_set
 
@@ -456,7 +465,7 @@ class ResolvedAttributeSet(RefCounted):
         copy.attribute_context = self.attribute_context
 
         # Save the mappings to overwrite. Maps from merge may not be correct.
-        new_rattr_to_attctxset = defaultdict(set)  # type: Dict[ResolvedAttribute, Set[CdmAttributeContext]]
+        new_rattr_to_attctxset = OrderedDict()  # type: Dict[ResolvedAttribute, List[CdmAttributeContext]]
         new_attctx_to_rattr = {}  # type: Dict[CdmAttributeContext, ResolvedAttribute]
 
         for source_ra in self._set:

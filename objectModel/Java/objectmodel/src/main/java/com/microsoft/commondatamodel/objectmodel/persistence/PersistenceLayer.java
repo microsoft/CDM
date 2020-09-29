@@ -130,6 +130,10 @@ public class PersistenceLayer {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param folder folder
+   * @param docName document name
+   * @param docContainer Doc container
+   * @return CompletableFuture of CdmDocumentDefinition 
    */
   @Deprecated
   public CompletableFuture<CdmDocumentDefinition> loadDocumentFromPathAsync(
@@ -139,9 +143,16 @@ public class PersistenceLayer {
     return loadDocumentFromPathAsync(folder, docName, docContainer, null);
   }
 
-  /**
+
+  
+  /** 
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param folder folder
+   * @param docName document name
+   * @param docContainer Doc container
+   * @param resOpt Resolve options
+   * @return CompletableFuture of CdmDocumentDefinition 
    */
   @Deprecated
   public CompletableFuture<CdmDocumentDefinition> loadDocumentFromPathAsync(
@@ -281,6 +292,9 @@ public class PersistenceLayer {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param doc Document
+   * @param newName New name
+   * @return CompletableFuture 
    */
   @Deprecated
   public CompletableFuture<Boolean> saveDocumentAsAsync(final CdmDocumentDefinition doc, final String newName) {
@@ -290,15 +304,26 @@ public class PersistenceLayer {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param doc Document
+   * @param newName New name
+   * @param saveReferenced Save referenced
+   * @return CompletableFuture 
    */
   @Deprecated
   public CompletableFuture<Boolean> saveDocumentAsAsync(final CdmDocumentDefinition doc, final String newName, final boolean saveReferenced) {
     return saveDocumentAsAsync(doc, newName, saveReferenced, null);
   }
  
-  /**
+
+  
+  /** 
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param doc Document
+   * @param newName New name
+   * @param saveReferenced Save referenced
+   * @param options Options
+   * @return CompletableFuture 
    */
   @Deprecated
   public CompletableFuture<Boolean> saveDocumentAsAsync(
@@ -442,6 +467,8 @@ public class PersistenceLayer {
         // ask the adapter to make it happen
         try {
           adapter.writeAsync(newPath, JMapper.WRITER.writeValueAsString(persistedDoc)).join();
+
+          doc.setFileSystemModifiedTime(adapter.computeLastModifiedTimeAsync(newPath).join());
 
           if (options.isTopLevelDocument()) {
             this.corpus.getStorage().saveAdapterConfigAsync("/config.json", adapter).join();

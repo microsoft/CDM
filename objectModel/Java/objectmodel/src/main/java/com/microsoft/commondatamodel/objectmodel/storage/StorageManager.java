@@ -196,8 +196,8 @@ public class StorageManager {
   /**
    * Allow replacing a storage adapter with another one for testing, leaving folders intact.
    *
-   * @param nameSpace
-   * @param adapter
+   * @param nameSpace String
+   * @param adapter StorageAdapter
    * @deprecated This should only be used for testing only. And is very likely to be removed from
    * public interface.
    */
@@ -429,7 +429,7 @@ public class StorageManager {
    * Saves adapters config into a file.
    *  @param name    The name of a file.
    * @param adapter The adapter used to save the config to a file.
-   * @return
+   * @return CompletableFuture
    */
   public CompletableFuture<Void> saveAdapterConfigAsync(final String name, final StorageAdapter adapter) {
     return adapter.writeAsync(name, fetchConfig());

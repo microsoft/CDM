@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Dict, Optional, Set, Tuple, TYPE_CHECKING
 import warnings
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, ImportsLoadStrategy
 from cdm.utilities import CopyOptions, logger, ResolveOptions, Errors
 
 from .cdm_container_def import CdmContainerDefinition
@@ -120,6 +120,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             copy.ctx = self.ctx
             copy.name = self.name
             copy.definitions.clear()
+            copy._declarations_indexed = False
             copy.internal_declarations = {}
             copy._needs_indexing = True
             copy.imports.clear()
@@ -139,7 +140,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         return copy
 
-    async def _index_if_needed(self, res_opt: 'ResolveOptions', strict_validation: bool = False) -> bool:
+    async def _index_if_needed(self, res_opt: 'ResolveOptions', load_imports: bool = False) -> bool:
         if not self._needs_indexing or self._currently_indexing:
             return True
 
@@ -149,17 +150,19 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         corpus = self.folder._corpus
 
-        # if the strictValidation is specified by the user in the ResolveOptions that value has precedence.
-        if res_opt.strict_validation is not None:
-            strict_validation = res_opt.strict_validation
+        # if the imports load strategy is "LAZY_LOAD", loadImports value will be the one sent by the called function.
+        if res_opt.imports_load_strategy == ImportsLoadStrategy.DO_NOT_LOAD:
+            load_imports = False
+        elif res_opt.imports_load_strategy == ImportsLoadStrategy.LOAD:
+            load_imports = True
 
-        if strict_validation:
+        if load_imports:
             await corpus._resolve_imports_async(self, res_opt)
 
         # make the corpus internal machinery pay attention to this document for this call
         corpus._document_library._mark_document_for_indexing(self)
 
-        return corpus._index_documents(res_opt, strict_validation)
+        return corpus._index_documents(res_opt, load_imports)
 
     def _get_import_priorities(self) -> 'ImportPriorities':
         if not self._import_priorities:

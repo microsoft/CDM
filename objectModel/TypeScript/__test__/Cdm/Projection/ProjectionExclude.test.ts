@@ -6,8 +6,6 @@ import {
     CdmAttributeGroupDefinition,
     CdmAttributeGroupReference,
     CdmCorpusDefinition,
-    CdmDataTypeReference,
-    CdmDocumentDefinition,
     CdmEntityAttributeDefinition,
     CdmEntityDefinition,
     CdmEntityReference,
@@ -20,8 +18,7 @@ import {
 } from '../../../internal';
 import { LocalAdapter } from '../../../Storage';
 import { testHelper } from '../../testHelper';
-import { testUtils } from '../../testUtils';
-import { AttributeContextUtil } from './AttributeContextUtil';
+import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 
 /**
  * A test class for testing the ExcludeAttributes operation in a projection as well as SelectsSomeAvoidNames in a resolution guidance
@@ -42,11 +39,6 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     ];
 
     /**
-     * Path to foundations
-     */
-    const foundationJsonPath: string = 'cdm:/foundations.cdm.json';
-
-    /**
      * The path between TestDataPath and TestName.
      */
     const testsSubpath: string = 'Cdm/Projection/TestProjectionExclude';
@@ -60,10 +52,10 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         // Create an entity
-        const entity: CdmEntityDefinition = createEntity(corpus, localRoot);
+        const entity: CdmEntityDefinition = projectionTestUtils.createEntity(corpus, localRoot);
 
         // Create a projection
-        const projection: CdmProjection = createProjection(corpus, localRoot);
+        const projection: CdmProjection = projectionTestUtils.createProjection(corpus, localRoot);
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
@@ -103,10 +95,10 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         // Create an entity
-        const entity: CdmEntityDefinition = createEntity(corpus, localRoot);
+        const entity: CdmEntityDefinition = projectionTestUtils.createEntity(corpus, localRoot);
 
         // Create a projection
-        const projection: CdmProjection = createProjection(corpus, localRoot);
+        const projection: CdmProjection = projectionTestUtils.createProjection(corpus, localRoot);
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
@@ -144,10 +136,10 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         // Create an entity
-        const entity: CdmEntityDefinition = createEntity(corpus, localRoot);
+        const entity: CdmEntityDefinition = projectionTestUtils.createEntity(corpus, localRoot);
 
         // Create a projection
-        const projection: CdmProjection = createProjection(corpus, localRoot);
+        const projection: CdmProjection = projectionTestUtils.createProjection(corpus, localRoot);
 
         // Create an ExcludeAttributes operation
         const excludeAttrsOp: CdmOperationExcludeAttributes = corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
@@ -198,10 +190,10 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
         const localRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder('local');
 
         // Create an entity
-        const entity: CdmEntityDefinition = createEntity(corpus, localRoot);
+        const entity: CdmEntityDefinition = projectionTestUtils.createEntity(corpus, localRoot);
 
         // Create a projection with a condition that states the operation should only execute when the resolution directive is 'referenceOnly'
-        const projection: CdmProjection = createProjection(corpus, localRoot);
+        const projection: CdmProjection = projectionTestUtils.createProjection(corpus, localRoot);
         projection.condition = 'referenceOnly==true';
 
         // Create an ExcludeAttributes operation
@@ -261,14 +253,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestExcludeAttributes', async () => {
         const testName: string = 'TestExcludeAttributes';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -286,14 +278,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestSSAN', async () => {
         const testName: string = 'TestSSAN';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['PersonInfoName', 'PersonInfoAge', 'PersonInfoAddress', 'PersonInfoPhoneNumber', 'PersonInfoEmail']
         // Excluded attributes: ['PersonInfoAddress', 'PersonInfoPhoneNumber', 'PersonInfoEmail']
@@ -311,14 +303,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestSSANRename', async () => {
         const testName: string = 'TestSSANRename';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -336,14 +328,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestSingleNestedProj', async () => {
         const testName: string = 'TestSingleNestedProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -361,14 +353,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestNestedProj', async () => {
         const testName: string = 'TestNestedProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['address', 'phoneNumber', 'email'], ['age']
@@ -384,14 +376,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestMultipleExclude', async () => {
         const testName: string = 'TestMultipleExclude';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['name', 'age', 'address'], ['address', 'email']
@@ -413,14 +405,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestExtendsEntityProj', async () => {
         const testName: string = 'TestExtendsEntityProj';
         const entityName: string = 'Child';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['phoneNumber', 'email']
@@ -440,14 +432,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestExtendsEntity', async () => {
         const testName: string = 'TestExtendsEntity';
         const entityName: string = 'Child';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['phoneNumber', 'email']
@@ -467,14 +459,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestPolymorphicProj', async () => {
         const testName: string = 'TestPolymorphicProj';
         const entityName: string = 'BusinessPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['emailId', 'address', 'isPrimary', 'phoneId', 'number', 'socialId', 'account']
         // Excluded attributes: ['socialId', 'account']
@@ -498,14 +490,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestPolymorphic', async () => {
         const testName: string = 'TestPolymorphic';
         const entityName: string = 'BusinessPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['emailId', 'address', 'isPrimary', 'phoneId', 'number', 'socialId', 'account']
         // Excluded attributes: ['socialId', 'account']
@@ -529,14 +521,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestArraySourceProj', async () => {
         const testName: string = 'TestArraySourceProj';
         const entityName: string = 'FriendGroup';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['personCount', 'name1', 'age1', 'address1', 'phoneNumber1', 'email1', ..., 'email3'] (16 total)
         // Excluded attributes: ['age1', 'age2', 'age3']
@@ -576,14 +568,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestArraySource', async () => {
         const testName: string = 'TestArraySource';
         const entityName: string = 'FriendGroup';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['GroupOfPeoplePersonCount', 'GroupOfPeopleName1', 'GroupOfPeopleAge1', 'GroupOfPeopleAddress1',
         //                              'GroupOfPeoplePhoneNumber1', 'GroupOfPeopleEmail1', ..., 'GroupOfPeopleEmail3'] (16 total)
@@ -624,14 +616,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestArraySourceRename', async () => {
         const testName: string = 'TestArraySourceRename';
         const entityName: string = 'FriendGroup';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['personCount', 'name1', 'age1', 'address1', 'phoneNumber1', 'email1', ..., 'email3'] (16 total)
         // Excluded attributes: ['age1', 'age2', 'age3']
@@ -671,14 +663,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestConditionalProj', async () => {
         const testName: string = 'TestConditionalProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -689,7 +681,7 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
         expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
             .toEqual('age');
 
-        const resolvedEntity2: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity2: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: none, condition was false
@@ -713,14 +705,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestEmptyExclude', async () => {
         const testName: string = 'TestEmptyExclude';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: []
@@ -744,14 +736,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestGroupProj', async () => {
         const testName: string = 'TestGroupProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -769,14 +761,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestGroup', async () => {
         const testName: string = 'TestGroup';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['PersonInfoName', 'PersonInfoAge', 'PersonInfoAddress', 'PersonInfoPhoneNumber', 'PersonInfoEmail']
         // Excluded attributes: ['PersonInfoAddress', 'PersonInfoPhoneNumber', 'PersonInfoEmail']
@@ -794,14 +786,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestGroupRename', async () => {
         const testName: string = 'TestGroupRename';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, []);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, []);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
         // Excluded attributes: ['address', 'phoneNumber', 'email']
@@ -821,14 +813,14 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
     it('TestEANameProj', async () => {
         const testName: string = 'TestEANameProj';
         const entityName: string = 'NewPerson';
-        const corpus: CdmCorpusDefinition = getCorpus(testName);
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
 
         for (const resOpt of resOptsCombinations) {
-            await loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt);
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
         }
 
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, ['structured']);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['structured']);
 
         // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email', 'title', 'company', 'tenure']
         // Excluded attributes: ['OccupationInfo'] (name of entity attribute that contains 'title', 'company', 'tenure')
@@ -848,90 +840,4 @@ describe('Cdm/Projection/ProjectionExcludeTest', () => {
         expect((attGroup.members.allItems[4] as CdmTypeAttributeDefinition).name)
             .toEqual('email');
     });
-
-    /**
-     * Creates a corpus
-     */
-    function getCorpus(testName: string): CdmCorpusDefinition {
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-
-        return corpus;
-    }
-
-    /**
-     * Creates an entity
-     */
-    function createEntity(corpus: CdmCorpusDefinition, localRoot: CdmFolderDefinition): CdmEntityDefinition {
-        const entityName: string = 'TestEntity';
-        const entity: CdmEntityDefinition = corpus.MakeObject<CdmEntityDefinition>(cdmObjectType.entityDef, entityName);
-
-        const entityDoc: CdmDocumentDefinition = corpus.MakeObject<CdmDocumentDefinition>(cdmObjectType.documentDef, `${entityName}.cdm.json`, false);
-        entityDoc.imports.push(foundationJsonPath);
-        entityDoc.definitions.push(entity);
-        localRoot.documents.push(entityDoc, entityDoc.name);
-
-        return entity;
-    }
-
-    /**
-     * Creates a source entity for a projection
-     */
-    function createSourceEntity(corpus: CdmCorpusDefinition, localRoot: CdmFolderDefinition): CdmEntityDefinition {
-        const entityName: string = 'SourceEntity';
-        const entity: CdmEntityDefinition = corpus.MakeObject<CdmEntityDefinition>(cdmObjectType.entityDef, entityName);
-
-        const attributeName1: string = 'id';
-        const attribute1: CdmTypeAttributeDefinition = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, attributeName1);
-        attribute1.dataType = corpus.MakeRef<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'string', true);
-        entity.attributes.push(attribute1);
-
-        const attributeName2: string = 'name';
-        const attribute2: CdmTypeAttributeDefinition = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, attributeName2);
-        attribute2.dataType = corpus.MakeRef<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'string', true);
-        entity.attributes.push(attribute2);
-
-        const attributeName3: string = 'value';
-        const attribute3: CdmTypeAttributeDefinition = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, attributeName3);
-        attribute3.dataType = corpus.MakeRef<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'integer', true);
-        entity.attributes.push(attribute3);
-
-        const attributeName4: string = 'date';
-        const attribute4: CdmTypeAttributeDefinition = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, attributeName4);
-        attribute4.dataType = corpus.MakeRef<CdmDataTypeReference>(cdmObjectType.dataTypeRef, 'date', true);
-        entity.attributes.push(attribute4);
-
-        const entityDoc: CdmDocumentDefinition = corpus.MakeObject<CdmDocumentDefinition>(cdmObjectType.documentDef, `${entityName}.cdm.json`, false);
-        entityDoc.imports.push(foundationJsonPath);
-        entityDoc.definitions.push(entity);
-        localRoot.documents.push(entityDoc, entityDoc.name);
-
-        return entity;
-    }
-
-    /**
-     * Creates a projection
-     */
-    function createProjection(corpus: CdmCorpusDefinition, localRoot: CdmFolderDefinition): CdmProjection {
-        // Create an entity reference to use as the source of the projection
-        const projectionSource: CdmEntityReference = corpus.MakeObject<CdmEntityReference>(cdmObjectType.entityRef, undefined);
-        projectionSource.explicitReference = createSourceEntity(corpus, localRoot);
-
-        // Create the projection
-        const projection: CdmProjection = corpus.MakeObject<CdmProjection>(cdmObjectType.projectionDef);
-        projection.source = projectionSource;
-
-        return projection;
-    }
-
-    /**
-     * Loads an entity, resolves it, and then validates the generated attribute contexts
-     */
-    async function loadEntityForResolutionOptionAndSave(corpus: CdmCorpusDefinition, testName: string, entityName: string, resOpts: string[]): Promise<void> {
-        const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
-        const fileNameSuffix: string = testUtils.getResolutionOptionNameSuffix(resOpts);
-
-        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, resOpts, true);
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, `${entityName}${fileNameSuffix}`, resolvedEntity);
-    }
 });

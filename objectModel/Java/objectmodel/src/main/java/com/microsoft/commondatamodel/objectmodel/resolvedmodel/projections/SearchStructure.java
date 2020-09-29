@@ -65,6 +65,7 @@ public class SearchStructure {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param pas ProjectionAttributeState
      */
     @Deprecated
     public void add(ProjectionAttributeState pas) {
@@ -80,6 +81,13 @@ public class SearchStructure {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param curr ProjectionAttributeState
+     * @param top ProjectionAttributeState
+     * @param attrName String 
+     * @param st SearchStructure
+     * @param foundFlag boolean
+     * @param foundDepth int
+     * @return SearchStructure
      */
     @Deprecated
     public static SearchStructure buildStructure(
@@ -115,6 +123,7 @@ public class SearchStructure {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return SearchResult
      */
     @Deprecated
     public SearchResult getResult() {
@@ -124,6 +133,7 @@ public class SearchStructure {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param result SearchResult
      */
     @Deprecated
     public void setResult(final SearchResult result) {
@@ -133,6 +143,7 @@ public class SearchStructure {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return int
      */
     @Deprecated
     public int getCount() {

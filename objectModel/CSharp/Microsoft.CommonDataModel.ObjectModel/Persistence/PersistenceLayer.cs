@@ -384,6 +384,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence
                     var content = JsonConvert.SerializeObject(persistedDoc, Formatting.Indented, new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() });
                     await adapter.WriteAsync(newPath, content);
 
+                    doc._fileSystemModifiedTime = await adapter.ComputeLastModifiedTimeAsync(newPath);
+
                     // Write the adapter's config.
                     if (options.IsTopLevelDocument)
                     {

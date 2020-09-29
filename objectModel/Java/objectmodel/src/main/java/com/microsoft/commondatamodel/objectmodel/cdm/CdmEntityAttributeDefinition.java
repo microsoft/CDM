@@ -61,8 +61,8 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   }
 
   /**
-   * @param propertyName
-   * @return
+   * @param propertyName CDM Property Name
+   * @return object
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
    */
@@ -112,6 +112,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
   /**
    * Gets or sets the entity attribute entity reference.
+   * @return CdmEntityReference
    */
   public CdmEntityReference getEntity() {
     return this.entity;
@@ -124,6 +125,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   /**
    * For projection based models, a source is explicitly tagged as a polymorphic source for it to be recognized as such.
    * This property of the entity attribute allows us to do that.
+   * @return Boolean
    */
   public Boolean getIsPolymorphicSource() {
     return isPolymorphicSource;
@@ -228,9 +230,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -346,6 +348,8 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -356,6 +360,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param under CdmAttributeContext
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -372,7 +379,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     AttributeContextParameters acpEnt = null;
 
     CdmObjectDefinition ctxEntObjDef = ctxEnt.fetchObjectDefinition(resOpt);
-    if (ctxEntObjDef.getObjectType() == CdmObjectType.ProjectionDef) {
+    if (ctxEntObjDef != null && ctxEntObjDef.getObjectType() == CdmObjectType.ProjectionDef) {
       // A Projection
 
       ProjectionDirective projDirective = new ProjectionDirective(resOpt, this, ctxEnt);

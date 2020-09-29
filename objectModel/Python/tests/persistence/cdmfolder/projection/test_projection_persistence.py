@@ -6,6 +6,7 @@ import unittest
 
 from cdm.enums import CdmObjectType
 from cdm.enums.cdm_operation_type import CdmOperationType
+from cdm.persistence import PersistenceLayer
 from tests.common import TestHelper, async_test
 
 
@@ -127,3 +128,28 @@ class ProjectionsTest(unittest.TestCase):
         self.assertIsNotNone(ent_test_projection_extends_trait)
         self.assertEqual('TestProjectionAttributeB', ent_test_projection_extends_trait.attributes[0].name)
         self.assertEqual('testExtendsDataTypeB', ent_test_projection_extends_trait.attributes[0].data_type.named_reference)
+
+    @async_test
+    async def test_save_projection(self):
+        """Basic test to save persisted Projections based entities"""
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_save_projection')  # type CdmCorpusDefinition
+
+        manifest = await corpus.fetch_object_async('local:/default.manifest.cdm.json')  # type CdmManifestDefinition
+
+        entity_sales = await corpus.fetch_object_async('local:/Sales.cdm.json/Sales', manifest)  # type CdmEntityDefinition
+        self.assertIsNotNone(entity_sales)
+
+        actual_root = corpus.storage.fetch_root_folder("output")  # type CdmFolderDefinition
+        self.assertIsNotNone(actual_root)
+
+        actual_root._documents.append(entity_sales.in_document, 'Persisted_Sales.cdm.json')
+        await actual_root._documents.__getitem__(0).save_as_async('output:/Persisted_Sales.cdm.json')
+
+        entity_actual = await corpus.fetch_object_async('output:/Persisted_Sales.cdm.json/Sales', manifest)  # type CdmEntityDefinition
+        self.assertIsNotNone(entity_actual)
+
+        entity_content_actual = PersistenceLayer.to_data(entity_actual, None, None, 'CdmFolder')  # type Entity
+        self.assertIsNotNone(entity_content_actual)
+        self.assertIsNotNone(entity_content_actual.hasAttributes)
+        self.assertTrue(len(entity_content_actual.hasAttributes) == 1)
+        self.assertFalse('"entityReference"' in str(entity_content_actual.hasAttributes[0]))

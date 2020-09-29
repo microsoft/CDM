@@ -8,7 +8,7 @@ import {
     CdmTypeAttributeDefinition,
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
-import { testUtils } from '../../testUtils';
+import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { AttributeContextUtil } from './AttributeContextUtil';
 
 /**
@@ -34,7 +34,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityStringReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityStringReference)
             .toBeTruthy();
-        const resolvedTestEntityStringReference: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityStringReference, []);
+        const resolvedTestEntityStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, []);
         expect(resolvedTestEntityStringReference)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
@@ -54,7 +54,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityEntityReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityEntityReference)
             .toBeTruthy();
-        const resolvedTestEntityEntityReference: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityEntityReference, []);
+        const resolvedTestEntityEntityReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityEntityReference, []);
         expect(resolvedTestEntityEntityReference)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityEntityReference);
@@ -74,7 +74,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityProjection)
             .toBeTruthy();
-        const resolvedTestEntityProjection: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityProjection, []);
+        const resolvedTestEntityProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityProjection, []);
         expect(resolvedTestEntityProjection)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityProjection);
@@ -94,7 +94,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityNestedProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityNestedProjection)
             .toBeTruthy();
-        const resolvedTestEntityNestedProjection: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityNestedProjection, []);
+        const resolvedTestEntityNestedProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityNestedProjection, []);
         expect(resolvedTestEntityNestedProjection)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityNestedProjection);
@@ -114,7 +114,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityAttributeStringReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityAttributeStringReference)
             .toBeTruthy();
-        const resolvedTestEntityAttributeStringReference: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityAttributeStringReference, []);
+        const resolvedTestEntityAttributeStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeStringReference, []);
         expect(resolvedTestEntityAttributeStringReference)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeStringReference);
@@ -134,7 +134,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityAttributeEntityReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityAttributeEntityReference)
             .toBeTruthy();
-        const resolvedTestEntityAttributeEntityReference: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityAttributeEntityReference, []);
+        const resolvedTestEntityAttributeEntityReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeEntityReference, []);
         expect(resolvedTestEntityAttributeEntityReference)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeEntityReference);
@@ -154,7 +154,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityAttributeProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityAttributeProjection)
             .toBeTruthy();
-        const resolvedTestEntityAttributeProjection: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityAttributeProjection, []);
+        const resolvedTestEntityAttributeProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeProjection, []);
         expect(resolvedTestEntityAttributeProjection)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeProjection);
@@ -174,7 +174,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityAttributeNestedProjection: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityAttributeNestedProjection)
             .toBeTruthy();
-        const resolvedTestEntityAttributeNestedProjection: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityAttributeNestedProjection, []);
+        const resolvedTestEntityAttributeNestedProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeNestedProjection, []);
         expect(resolvedTestEntityAttributeNestedProjection)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeNestedProjection);
@@ -194,7 +194,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityTrait: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityTrait)
             .toBeTruthy();
-        const resolvedTestEntityTrait: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityTrait, []);
+        const resolvedTestEntityTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityTrait, []);
         expect(resolvedTestEntityTrait)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityTrait);
@@ -230,7 +230,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestEntityExtendsTrait: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestEntityExtendsTrait)
             .toBeTruthy();
-        const resolvedTestEntityExtendsTrait: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityExtendsTrait, []);
+        const resolvedTestEntityExtendsTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityExtendsTrait, []);
         expect(resolvedTestEntityExtendsTrait)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityExtendsTrait);
@@ -266,7 +266,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestProjectionTrait: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestProjectionTrait)
             .toBeTruthy();
-        const resolvedTestProjectionTrait: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestProjectionTrait, []);
+        const resolvedTestProjectionTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestProjectionTrait, []);
         expect(resolvedTestProjectionTrait)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionTrait);
@@ -302,7 +302,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const entTestProjectionExtendsTrait: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entTestProjectionExtendsTrait)
             .toBeTruthy();
-        const resolvedTestProjectionExtendsTrait: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestProjectionExtendsTrait, []);
+        const resolvedTestProjectionExtendsTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestProjectionExtendsTrait, []);
         expect(resolvedTestProjectionExtendsTrait)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionExtendsTrait);

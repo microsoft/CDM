@@ -24,6 +24,10 @@ public final class ProjectionResolutionCommonUtil {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projDir ProjectionDirective
+     * @param ctx CdmCorpusContext 
+     * @param orgSrcRAS ResolvedAttributeSet 
+     * @return ProjectionAttributeStateSet
      */
     @Deprecated
     public static ProjectionAttributeStateSet initializeProjectionAttributeStateSet(ProjectionDirective projDir, CdmCorpusContext ctx, ResolvedAttributeSet orgSrcRAS) {
@@ -35,6 +39,11 @@ public final class ProjectionResolutionCommonUtil {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projDir ProjectionDirective
+     * @param ctx CdmCorpusContext 
+     * @param orgSrcRAS ResolvedAttributeSet 
+     * @param isSourcePolymorphic boolean 
+     * @return ProjectionAttributeStateSet
      */
     @Deprecated
     public static ProjectionAttributeStateSet initializeProjectionAttributeStateSet(
@@ -49,6 +58,12 @@ public final class ProjectionResolutionCommonUtil {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projDir ProjectionDirective
+     * @param ctx CdmCorpusContext 
+     * @param orgSrcRAS ResolvedAttributeSet 
+     * @param isSourcePolymorphic boolean 
+     * @param polymorphicSet Map of String and List of ProjectionAttributeState 
+     * @return ProjectionAttributeStateSet
      */
     @Deprecated
     public static ProjectionAttributeStateSet initializeProjectionAttributeStateSet(
@@ -80,6 +95,11 @@ public final class ProjectionResolutionCommonUtil {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projDir ProjectionDirective
+     * @param ctx CdmCorpusContext 
+     * @param source CdmEntityReference 
+     * @param attrCtxParam AttributeContextParameters  
+     * @return Map of String and List of ProjectionAttributeState
      */
     @Deprecated
     public static Map<String, List<ProjectionAttributeState>> getPolymorphicSourceSet(
@@ -122,12 +142,15 @@ public final class ProjectionResolutionCommonUtil {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projCtx ProjectionContext
+     * @param attrName String
+     * @return List of ProjectionAttributeState
      */
     @Deprecated
     public static List<ProjectionAttributeState> getLeafList(ProjectionContext projCtx, String attrName) {
         SearchResult result = null;
 
-        for (ProjectionAttributeState top : projCtx.getCurrentAttributeStateSet().getValues()) {
+        for (ProjectionAttributeState top : projCtx.getCurrentAttributeStateSet().getStates()) {
             SearchStructure st = new SearchStructure();
             st = SearchStructure.buildStructure(top, top, attrName, st, false, 0);
             if (st != null && st.getResult().getFoundFlag() == true && st.getResult().getLeaf().size() > 0) {
@@ -142,6 +165,9 @@ public final class ProjectionResolutionCommonUtil {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projCtx ProjectionContext
+     * @param attrNames List of String
+     * @return List of ProjectionAttributeState
      */
     @Deprecated
     public static Map<String, String> getTopList(ProjectionContext projCtx, List<String> attrNames) {
@@ -153,7 +179,7 @@ public final class ProjectionResolutionCommonUtil {
         for (String attrName : attrNames) {
             // Iterate through each projection attribute state in the current set and check if its
             // current resolved attribute's name is the top-level name of the current attrName
-            for (ProjectionAttributeState top : projCtx.getCurrentAttributeStateSet().getValues()) {
+            for (ProjectionAttributeState top : projCtx.getCurrentAttributeStateSet().getStates()) {
                 SearchStructure st = new SearchStructure();
                 st = SearchStructure.buildStructure(top, top, attrName, st, false, 0);
                 // Found the top-level name
@@ -171,6 +197,8 @@ public final class ProjectionResolutionCommonUtil {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param top ProjectionAttributeState
+     * @return List of ProjectionAttributeState
      */
     @Deprecated
     public static List<ProjectionAttributeState> convertToList(ProjectionAttributeState top) {
@@ -194,6 +222,10 @@ public final class ProjectionResolutionCommonUtil {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projDir ProjectionDirective
+     * @param corpus CdmCorpusDefinition
+     * @param refFoundList Listof ProjectionAttributeState
+     * @return CdmEntityReference
      */
     @Deprecated
     public static CdmEntityReference createForeignKeyLinkedEntityIdentifierTraitParameter(ProjectionDirective projDir, CdmCorpusDefinition corpus, List<ProjectionAttributeState> refFoundList) {

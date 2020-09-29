@@ -21,9 +21,15 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
     this.setObjectType(CdmObjectType.AttributeGroupRef);
   }
 
-  /**
+
+  
+  /** 
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param refTo Ref object
+   * @param simpleReference simple reference
+   * @return CdmObjectReferenceBase
    */
   @Override
   @Deprecated
@@ -37,6 +43,11 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param refTo Ref object
+   * @param simpleReference simple reference
+   * @param host host reference
+   * @return CdmObjectReferenceBase
    */
   @Override
   @Deprecated
@@ -62,9 +73,9 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -75,6 +86,11 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
     return CdmObjectBase.copyData(this, resOpt, options, CdmAttributeGroupReference.class);
   }
 
+  
+  /** 
+   * @param resOpt Resolved options
+   * @return ResolvedEntityReferenceSet
+   */
   public ResolvedEntityReferenceSet fetchResolvedEntityReferences(ResolveOptions resOpt) {
     if (resOpt == null) {
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
@@ -92,10 +108,10 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
 
   /**
    *
-   * @param pathRoot
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathRoot Path root
+   * @param preChildren Pre Children
+   * @param postChildren Post Children
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -105,6 +121,10 @@ public class CdmAttributeGroupReference extends CdmObjectReferenceBase implement
     return false;
   }
 
+  
+  /** 
+   * @return CdmCollection of CdmAttributeItem
+   */
   public CdmCollection<CdmAttributeItem> getMembers() {
     if (this.members == null) {
       this.members = new CdmCollection<>(this.getCtx(), this, CdmObjectType.TypeAttributeDef);

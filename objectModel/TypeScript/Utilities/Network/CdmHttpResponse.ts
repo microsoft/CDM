@@ -32,7 +32,7 @@ export class CdmHttpResponse {
     public isSuccessful: boolean;
 
     constructor(statusCode: number = undefined) {
-        if (statusCode != undefined) {
+        if (statusCode !== undefined) {
             this.statusCode = statusCode;
         }
 

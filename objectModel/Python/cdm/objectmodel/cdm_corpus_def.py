@@ -4,12 +4,13 @@
 import asyncio
 from collections import defaultdict
 from datetime import datetime
-import nest_asyncio
 from typing import cast, Callable, Dict, List, Optional, Set, TypeVar, Union, TYPE_CHECKING, Tuple
 import warnings
 
+import nest_asyncio
+
 from cdm.storage import StorageManager
-from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmStatusLevel, CdmValidationStep
+from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmStatusLevel, CdmValidationStep, ImportsLoadStrategy
 from cdm.objectmodel import CdmContainerDefinition
 from cdm.utilities import AttributeResolutionDirectiveSet, DocsResult, logger, ResolveOptions, SymbolSet, StorageUtils
 
@@ -549,7 +550,7 @@ class CdmCorpusDefinition:
 
         return None
 
-    def _index_documents(self, res_opt: 'ResolveOptions', strict_validation: bool) -> bool:
+    def _index_documents(self, res_opt: 'ResolveOptions', load_imports: bool) -> bool:
         docs_not_indexed = self._document_library._list_docs_not_indexed()  # type: Set[CdmDocumentDefinition]
 
         if not docs_not_indexed:
@@ -570,7 +571,7 @@ class CdmCorpusDefinition:
             if not doc._declarations_indexed and doc._is_valid:
                 self._declare_object_definitions(doc, '')
 
-        if strict_validation:
+        if load_imports:
             # index any imports
             for doc in docs_not_indexed:
                 doc._get_import_priorities()
@@ -592,7 +593,7 @@ class CdmCorpusDefinition:
         # make a copy to avoid error iterating over set that is modified in loop
         for doc in docs_not_indexed.copy():
             logger.debug(self._TAG, self.ctx, 'index finish: {}'.format(doc.at_corpus_path), self._index_documents.__name__)
-            self._finish_document_resolve(doc, strict_validation)
+            self._finish_document_resolve(doc, load_imports)
 
         return True
 
@@ -707,13 +708,13 @@ class CdmCorpusDefinition:
 
         return rts
 
-    def _finish_document_resolve(self, doc: 'CdmDocumentDetinition', strict_validation: bool) -> None:
+    def _finish_document_resolve(self, doc: 'CdmDocumentDetinition', loaded_imports: bool) -> None:
         was_indexed_previously = doc._declarations_indexed
 
         doc._currently_indexing = False
-        doc._imports_indexed = doc._imports_indexed or not strict_validation
+        doc._imports_indexed = doc._imports_indexed or loaded_imports
         doc._declarations_indexed = True
-        doc._needs_indexing = not strict_validation
+        doc._needs_indexing = not loaded_imports
         self._document_library._mark_document_as_indexed(doc)
 
         # if the document declarations were indexed previously, do not log again.
@@ -1002,7 +1003,7 @@ class CdmCorpusDefinition:
             for rt in rts:
                 found = 0
                 resolved = 0
-                if rt.parameter_values is not None:
+                if rt and rt.parameter_values:
                     for i_param in range(len(rt.parameter_values)):
                         param = rt.parameter_values.fetch_parameter_at_index(i_param)
                         if param.required:
@@ -1091,6 +1092,13 @@ class CdmCorpusDefinition:
         nest_asyncio.apply(loop)
         if not loop.run_until_complete(wrt_doc._index_if_needed(res_opt, True)):
             logger.error(self._TAG, self.ctx, 'Couldn\'t index source document.', '_resolve_symbol_reference')
+            return None
+
+        if wrt_doc._needs_indexing and res_opt.imports_load_strategy == ImportsLoadStrategy.DO_NOT_LOAD:
+            logger.error(self._TAG, self.ctx,
+                        'Cannot find symbol definition \'{}\' because the ImportsLoadStrategy is set to DO_NOT_LOAD'.format(symbol_def),
+                        '_resolve_symbol_reference')
+            return None
 
         # get the array of documents where the symbol is defined
         symbol_docs_result = self._docs_for_symbol(res_opt, wrt_doc, from_doc, symbol_def)

@@ -35,6 +35,7 @@ public class RemoteAdapter extends NetworkAdapter {
 
   /**
    * The default constructor, a user has to apply JSON config or add hosts after creating it this way.
+   * @param hosts Map of String and String
    */
   public RemoteAdapter(Map<String, String> hosts) {
     if (hosts != null) {

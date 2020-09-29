@@ -4,6 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
@@ -68,6 +69,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return boolean
    */
   @Deprecated
   public boolean getNeedsIndexing() {
@@ -77,6 +79,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param value boolean
    */
   @Deprecated
   public void setNeedsIndexing(final boolean value) {
@@ -84,7 +87,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   * @return
+   * @return String
    * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -95,7 +98,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   * @param folderPath
+   * @param folderPath String
    * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -106,7 +109,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   * @return
+   * @return String
    * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -117,7 +120,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   * @param namespace
+   * @param namespace String
    * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -152,7 +155,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   * @return
+   * @return CdmFolderDefinition
    * @deprecated Use the owner property instead. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -162,7 +165,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   * @param folder
+   * @param folder CdmFolderDefinition
    * @deprecated Use the owner property instead. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -204,6 +207,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * Finds any relative corpus paths that are held within this document and makes them relative to
    * the new folder instead.
+   * @param newFolder CdmFolderDefinition
+   * @return boolean
    */
   boolean localizeCorpusPaths(CdmFolderDefinition newFolder) {
     final AtomicBoolean allWentWell = new AtomicBoolean(true);
@@ -317,8 +322,14 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return allWentWell.get();
   }
 
-  /**
+
+  
+  /** 
    * Changes a relative corpus path to be relative to the new folder.
+   * @param corpusPath corpus path
+   * @param newFolder new foldser
+   * @param allWentWell atomic boolean
+   * @return String
    */
   private String localizeCorpusPath(
       final String corpusPath,
@@ -384,9 +395,11 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @return CompletableFuture
    */
   @Deprecated
-  public CompletableFuture<Boolean> indexIfNeededAsync(final ResolveOptions resOpt, final boolean strictValidation) {
+  public CompletableFuture<Boolean> indexIfNeededAsync(final ResolveOptions resOpt, final boolean finalLoadImports) {
 
     return CompletableFuture.supplyAsync(() -> {
       if (this.getNeedsIndexing() && !this.currentlyIndexing) {
@@ -401,14 +414,21 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
         }
 
         final CdmCorpusDefinition corpus = this.getFolder().getCorpus();
-        final boolean finalStrictValidation = resOpt.getStrictValidation() != null ? resOpt.getStrictValidation() : strictValidation;
 
-        if (finalStrictValidation) {
+        boolean loadImports = finalLoadImports;
+        // If the imports load strategy is "LazyLoad", loadImports value will be the one sent by the called function.
+        if (resOpt.getImportsLoadStrategy() == ImportsLoadStrategy.DoNotLoad) {
+          loadImports = false;
+        } else if (resOpt.getImportsLoadStrategy() == ImportsLoadStrategy.Load) {
+          loadImports = true;
+        }
+
+        if (loadImports) {
           corpus.resolveImportsAsync(this, resOpt).join();
         }
 
         corpus.getDocumentLibrary().markDocumentForIndexing(this);
-        return corpus.indexDocuments(resOpt, finalStrictValidation);
+        return corpus.indexDocuments(resOpt, loadImports);
       }
       return true;
     });
@@ -532,9 +552,9 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -559,6 +579,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
       copy.setCtx(this.getCtx());
       copy.setName(this.getName());
       copy.getDefinitions().clear();
+      copy.declarationsIndexed = false;
       copy.internalDeclarations = new LinkedHashMap<>();
       copy.needsIndexing = true;
       copy.getImports().clear();
@@ -586,6 +607,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -596,6 +619,9 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param under context
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -615,7 +641,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   /**
-   * @param _fileSystemModifiedTime
+   * @param _fileSystemModifiedTime date time offset
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -720,6 +746,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return CompletableFuture
    */
   @Deprecated
   public CompletableFuture<Boolean> saveLinkedDocumentsAsync() {
@@ -729,6 +756,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param options Copy options
+   * @return CompletableFuture
    */
   @Deprecated
   public CompletableFuture<Boolean> saveLinkedDocumentsAsync(final CopyOptions options) {
@@ -784,6 +813,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return boolean
    */
   @Deprecated
   public boolean isDirty() {
@@ -793,6 +823,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param dirty boolean
    */
   @Deprecated
   public void setDirty(final boolean dirty) {

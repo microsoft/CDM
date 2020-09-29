@@ -43,11 +43,11 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param instance
-   * @param resOpt
-   * @param options
-   * @param <T>
-   * @return
+   * @param instance  instance
+   * @param resOpt Resolved option
+   * @param options Copy Options
+   * @param <T> Type
+   * @return CDM Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -61,12 +61,12 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param instance
-   * @param resOpt
-   * @param options
-   * @param classInterface
-   * @param <T>
-   * @return
+   * @param instance instance
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @param classInterface class interface
+   * @param <T> Type
+   * @return CDM Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -153,11 +153,11 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    * Calls the Visit function on all objects in the collection.
-   * @param items
-   * @param path
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param items Items
+   * @param path path
+   * @param preChildren pre visit callback
+   * @param postChildren post visit callback
+   * @return Boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -184,7 +184,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @return
+   * @return string path
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -195,7 +195,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param declaredPath
+   * @param declaredPath Declared path
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -271,6 +271,8 @@ public abstract class CdmObjectBase implements CdmObject {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOptl Resolved Options
+   * @return Resolved Attribute Set Builder
    */
   @Deprecated
   public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOptl) {
@@ -280,6 +282,9 @@ public abstract class CdmObjectBase implements CdmObject {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved Options
+   * @param under CDM attribute context
+   * @return Resolved Attribute Set Builder
    */
   @Deprecated
   public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt,
@@ -290,8 +295,8 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolve Options
+   * @return Resolved trait set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -367,8 +372,8 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolve Options
+   * @return Resolved attribute set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -380,9 +385,9 @@ public abstract class CdmObjectBase implements CdmObject {
 
   /**
    *
-   * @param resOpt
-   * @param acpInContext
-   * @return
+   * @param resOpt Resolve Options
+   * @param acpInContext Attribute context
+   * @return Resolved attribute set
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -528,6 +533,7 @@ public abstract class CdmObjectBase implements CdmObject {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return Resolved traits set map
    */
   @Deprecated
   public Map<String, ResolvedTraitSetBuilder> getTraitCache() {
@@ -537,6 +543,7 @@ public abstract class CdmObjectBase implements CdmObject {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param traitCache cache of trait
    */
   @Deprecated
   public void setTraitCache(final Map<String, ResolvedTraitSetBuilder> traitCache) {

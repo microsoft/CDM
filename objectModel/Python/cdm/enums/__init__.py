@@ -8,6 +8,7 @@ from .cdm_operation_type import CdmOperationType
 from .cdm_relationship_discovery_style import CdmRelationshipDiscoveryStyle
 from .cdm_status_level import CdmStatusLevel
 from .cdm_validation_step import CdmValidationStep
+from .imports_load_strategy import ImportsLoadStrategy
 
 __all__ = [
     'CdmAttributeContextType',
@@ -16,5 +17,6 @@ __all__ = [
     'CdmOperationType',
     'CdmRelationshipDiscoveryStyle',
     'CdmStatusLevel',
-    'CdmValidationStep'
+    'CdmValidationStep',
+    'ImportsLoadStrategy'
 ]

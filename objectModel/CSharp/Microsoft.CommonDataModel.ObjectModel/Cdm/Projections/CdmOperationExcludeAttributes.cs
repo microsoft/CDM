@@ -5,6 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
+    using Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using System;
@@ -29,8 +30,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationExcludeAttributes(this.Ctx);
+            List<string> excludeAttributes = new List<string>();
+            excludeAttributes.AddRange(this.ExcludeAttributes);
+
+            CdmOperationExcludeAttributes copy = new CdmOperationExcludeAttributes(this.Ctx)
+            {
+                ExcludeAttributes = excludeAttributes
+            };
+            return copy;
         }
 
         /// <inheritdoc />
@@ -50,13 +57,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public override CdmObjectType GetObjectType()
         {
             return CdmObjectType.OperationExcludeAttributesDef;
-        }
-
-        /// <inheritdoc />
-        public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)
-        {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(IsDerivedFrom));
-            return false;
         }
 
         /// <inheritdoc />
@@ -118,31 +118,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // We use the top-level names because the exclude list may contain a previous name our current resolved attributes had
             Dictionary<string, string> topLevelExcludeAttributeNames = ProjectionResolutionCommonUtil.GetTopList(projCtx, this.ExcludeAttributes);
 
+            // Initialize a projection attribute context tree builder with the created attribute context for the operation
+            ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpExcludeAttrs);
+
             // Iterate through all the projection attribute states generated from the source's resolved attributes
             // Each projection attribute state contains a resolved attribute that it is corresponding to
-            foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.Values)
+            foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
             {
                 // Check if the current projection attribute state's resolved attribute is in the list of attributes to exclude
                 // If this attribute is not in the exclude list, then we are including it in the output
                 if (!topLevelExcludeAttributeNames.ContainsKey(currentPAS.CurrentResolvedAttribute.ResolvedName))
                 {
-                    // Create a new attribute context for the attribute that we are including
-                    AttributeContextParameters attrCtxAddedAttrParam = new AttributeContextParameters
-                    {
-                        under = attrCtx,
-                        type = CdmAttributeContextType.AttributeDefinition,
-                        Name = currentPAS.CurrentResolvedAttribute.ResolvedName
-                    };
-                    CdmAttributeContext attrCtxAddedAttr = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxAddedAttrParam);
+                    // Create the attribute context parameters and just store it in the builder for now
+                    // We will create the attribute contexts at the end
+                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(null, currentPAS, currentPAS.CurrentResolvedAttribute, CdmAttributeContextType.AttributeDefinition);
 
-                    // Create a projection attribute state for the included attribute
+                    // Create a projection attribute state for the included attribute by creating a copy of the current state
+                    // Copy() sets the current state as the previous state for the new one
                     // We only create projection attribute states for attributes that are not in the exclude list    
-                    // Add the current projection attribute state as the previous state of the new projection attribute state
-                    ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.Ctx)
-                    {
-                        CurrentResolvedAttribute = currentPAS.CurrentResolvedAttribute,
-                        PreviousStateList = new List<ProjectionAttributeState> { currentPAS }
-                    };
+                    ProjectionAttributeState newPAS = currentPAS.Copy();
 
                     projOutputSet.Add(newPAS);
                 }
@@ -151,20 +145,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // The current projection attribute state's resolved attribute is in the exclude list
 
                     // Get the attribute name the way it appears in the exclude list
-                    // For our attribute context, we want to use the attribute name the attribute has in the exclude list rather than its current name
                     string excludeAttributeName = null;
                     topLevelExcludeAttributeNames.TryGetValue(currentPAS.CurrentResolvedAttribute.ResolvedName, out excludeAttributeName);
 
-                    // Create a new attribute context for the excluded attribute
-                    AttributeContextParameters attrCtxExcludedAttrParam = new AttributeContextParameters
-                    {
-                        under = attrCtxOpExcludeAttrs,
-                        type = CdmAttributeContextType.AttributeDefinition,
-                        Name = excludeAttributeName
-                    };
-                    CdmAttributeContext attrCtxExcludedAttr = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxExcludedAttrParam);
+                    // Create the attribute context parameters and just store it in the builder for now
+                    // We will create the attribute contexts at the end
+                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute, CdmAttributeContextType.AttributeDefinition);
                 }
             }
+
+            // Create all the attribute contexts and construct the tree
+            attrCtxTreeBuilder.ConstructAttributeContextTree(projCtx);
 
             return projOutputSet;
         }

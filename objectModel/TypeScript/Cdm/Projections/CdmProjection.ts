@@ -288,22 +288,14 @@ export class CdmProjection extends CdmObjectDefinitionBase {
                 };
                 const acGenAttrSet: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpGenAttrSet);
 
-                const acpGenAttrRound0: AttributeContextParameters = {
-                    under: acGenAttrSet,
-                    type: cdmAttributeContextType.generatedRound,
-                    name: '_generatedAttributeRound0'
-                };
-                const acGenAttrRound0: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpGenAttrRound0);
-
                 // Start with an empty list for each projection
                 let pasOperations: ProjectionAttributeStateSet = new ProjectionAttributeStateSet(projContext.currentAttributeStateSet.ctx);
                 for (const operation of this.operations) {
                     // Evaluate projections and apply to empty state
-                    const newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrRound0);
+                    const newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
 
-                    // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
-                    if (newPasOperations != null)
-                    {
+                    // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
+                    if (newPasOperations !== undefined) {
                         pasOperations = newPasOperations;
                     }
                 }
@@ -326,7 +318,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         const resolvedAttributeSet: ResolvedAttributeSet = new ResolvedAttributeSet();
         resolvedAttributeSet.attributeContext = projCtx.currentAttributeContext;
 
-        for (const pas of projCtx.currentAttributeStateSet.values) {
+        for (const pas of projCtx.currentAttributeStateSet.states) {
             resolvedAttributeSet.merge(pas.currentResolvedAttribute, pas.currentResolvedAttribute.attCtx);
         }
 

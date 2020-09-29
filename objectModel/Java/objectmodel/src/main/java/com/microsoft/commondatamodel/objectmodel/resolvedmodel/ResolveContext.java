@@ -122,7 +122,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -133,7 +133,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @param relativePath
+   * @param relativePath String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -144,7 +144,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return Stack of ResolveContextScope
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -155,7 +155,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return ResolveContextScope
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -166,7 +166,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -177,7 +177,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @param corpusPathRoot
+   * @param corpusPathRoot String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -188,7 +188,7 @@ public class ResolveContext implements CdmCorpusContext {
 
   /**
    *
-   * @return
+   * @return Map of String to Object
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

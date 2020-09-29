@@ -1,0 +1,196 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "local:/Sales.cdm.json",
+      "moniker": "resolvedFrom"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Resolved_Sales_normalized",
+      "attributeContext": {
+        "type": "entity",
+        "name": "Resolved_Sales_normalized",
+        "definition": "resolvedFrom/Sales",
+        "contents": [
+          {
+            "type": "entityReferenceExtends",
+            "name": "extends",
+            "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "CdmEntity",
+                "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/extends",
+                "definition": "resolvedFrom/CdmEntity"
+              }
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "ProductsBought",
+            "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized",
+            "definition": "resolvedFrom/Sales/hasAttributes/ProductsBought",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "ProductsOfThree",
+                "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought",
+                "definition": "resolvedFrom/ProductsOfThree",
+                "contents": [
+                  {
+                    "type": "entityReferenceExtends",
+                    "name": "extends",
+                    "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/ProductsOfThree",
+                    "contents": [
+                      {
+                        "type": "entity",
+                        "name": "CdmEntity",
+                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/ProductsOfThree/extends",
+                        "definition": "resolvedFrom/CdmEntity"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "attributeDefinition",
+                    "name": "ThreeProductsBought",
+                    "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/ProductsOfThree",
+                    "definition": "resolvedFrom/ProductsOfThree/hasAttributes/ThreeProductsBought",
+                    "contents": [
+                      {
+                        "type": "entity",
+                        "name": "Product",
+                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/ProductsOfThree/ThreeProductsBought",
+                        "definition": "resolvedFrom/Product",
+                        "contents": [
+                          {
+                            "type": "entityReferenceExtends",
+                            "name": "extends",
+                            "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/ProductsOfThree/ThreeProductsBought/Product",
+                            "contents": [
+                              {
+                                "type": "entity",
+                                "name": "CdmEntity",
+                                "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/ProductsOfThree/ThreeProductsBought/Product/extends",
+                                "definition": "resolvedFrom/CdmEntity"
+                              }
+                            ]
+                          },
+                          {
+                            "type": "attributeDefinition",
+                            "name": "ProductId",
+                            "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/ProductsOfThree/ThreeProductsBought/Product",
+                            "definition": "resolvedFrom/Product/hasAttributes/ProductId"
+                          },
+                          {
+                            "type": "attributeDefinition",
+                            "name": "ProductName",
+                            "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/ProductsOfThree/ThreeProductsBought/Product",
+                            "definition": "resolvedFrom/Product/hasAttributes/ProductName"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "generatedSet",
+                "name": "_generatedAttributeSet",
+                "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought",
+                "contents": [
+                  {
+                    "type": "generatedRound",
+                    "name": "_generatedAttributeRound0",
+                    "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet",
+                    "contents": [
+                      {
+                        "type": "attributeDefinition",
+                        "name": "ProductName1",
+                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/_generatedAttributeRound0",
+                        "definition": "resolvedFrom/Product/hasAttributes/ProductName",
+                        "contents": [
+                          "Resolved_Sales_normalized/hasAttributes/ProductsBoughtProductName1"
+                        ]
+                      },
+                      {
+                        "type": "attributeDefinition",
+                        "name": "ProductCount",
+                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/_generatedAttributeRound0",
+                        "definition": "resolvedFrom/ProductsOfThree/hasAttributes/ThreeProductsBought/resolutionGuidance/countAttribute/ProductCount",
+                        "contents": [
+                          "Resolved_Sales_normalized/hasAttributes/ProductsBoughtProductCount"
+                        ]
+                      },
+                      {
+                        "type": "attributeDefinition",
+                        "name": "ProductName3",
+                        "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/_generatedAttributeRound0",
+                        "definition": "resolvedFrom/Product/hasAttributes/ProductName",
+                        "contents": [
+                          "Resolved_Sales_normalized/hasAttributes/ProductsBoughtProductName3"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "TotalPricePaid",
+            "parent": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized",
+            "definition": "resolvedFrom/Sales/hasAttributes/TotalPricePaid",
+            "contents": [
+              "Resolved_Sales_normalized/hasAttributes/TotalPricePaid"
+            ]
+          }
+        ]
+      },
+      "hasAttributes": [
+        {
+          "name": "ProductsBoughtProductName1",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/_generatedAttributeRound0/ProductName1",
+          "dataFormat": "String"
+        },
+        {
+          "name": "ProductsBoughtProductCount",
+          "appliedTraits": [
+            "is.dataFormat.integer",
+            "is.linkedEntity.array.count"
+          ],
+          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/_generatedAttributeRound0/ProductCount",
+          "dataFormat": "Int32"
+        },
+        {
+          "name": "ProductsBoughtProductName3",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/ProductsBought/_generatedAttributeSet/_generatedAttributeRound0/ProductName3",
+          "dataFormat": "String"
+        },
+        {
+          "name": "TotalPricePaid",
+          "appliedTraits": [
+            {
+              "traitReference": "is.dataFormat.numeric.shaped"
+            }
+          ],
+          "attributeContext": "Resolved_Sales_normalized/attributeContext/Resolved_Sales_normalized/TotalPricePaid",
+          "dataFormat": "Decimal"
+        }
+      ],
+      "version": "1.0"
+    }
+  ]
+}

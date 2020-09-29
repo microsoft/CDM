@@ -152,7 +152,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         internal string SearchTreeTraversal(ProjectionContext pc, string val)
         {
             SearchResult result = new SearchResult();
-            foreach (var top in pc.CurrentAttributeStateSet.Values)
+            foreach (var top in pc.CurrentAttributeStateSet.States)
             {
                 SearchStructure st = new SearchStructure();
                 st = SearchStructure.BuildStructure(top, top, val, st, false, 0);

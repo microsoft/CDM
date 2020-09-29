@@ -22,6 +22,7 @@ public final class ConditionExpression {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return String
      */
     @Deprecated
     public static String getEntityAttributeOverallConditionExpression() {
@@ -31,6 +32,8 @@ public final class ConditionExpression {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param owner CdmObject
+     * @return String
      */
     @Deprecated
     public static String getEntityAttributeOverallConditionExpression(CdmObject owner) {
@@ -50,6 +53,8 @@ public final class ConditionExpression {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param operations CdmOperationCollection
+     * @return String
      */
     @Deprecated
     public static String getDefaultConditionExpression(CdmOperationCollection operations) {
@@ -62,6 +67,9 @@ public final class ConditionExpression {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param operations CdmOperationCollection
+     * @param owner CdmObject
+     * @return String
      */
     @Deprecated
     public static String getDefaultConditionExpression(CdmOperationCollection operations, CdmObject owner) {
@@ -96,6 +104,8 @@ public final class ConditionExpression {
 
     /**
      * Function to find if the operations collection has a foreign key
+     * @param operations CdmOperationCollection
+     * @return boolean
      */
     private static boolean hasForeignKeyOperations(CdmOperationCollection operations) {
         List<CdmOperationBase> list = operations.getAllItems()
@@ -107,6 +117,8 @@ public final class ConditionExpression {
 
     /**
      * Function to find if the operations collection has an operation that is not resolved for structured directive
+     * @param operations CdmOperationCollection
+     * @return boolean
      */
     private static boolean hasNotStructuredOperations(CdmOperationCollection operations) {
         List<CdmOperationBase> list = operations.getAllItems()
