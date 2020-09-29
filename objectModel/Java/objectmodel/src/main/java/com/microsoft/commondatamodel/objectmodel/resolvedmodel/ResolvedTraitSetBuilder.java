@@ -22,7 +22,7 @@ public class ResolvedTraitSetBuilder {
 
   /**
    *
-   * @param rtsNew
+   * @param rtsNew ResolvedTraitSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -38,7 +38,7 @@ public class ResolvedTraitSetBuilder {
 
   /**
    *
-   * @param rtsNew
+   * @param rtsNew ResolvedTraitSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -67,7 +67,7 @@ public class ResolvedTraitSetBuilder {
 
   /**
    *
-   * @return
+   * @return ResolvedTraitSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -78,7 +78,7 @@ public class ResolvedTraitSetBuilder {
 
   /**
    *
-   * @param resolvedTraitSet
+   * @param resolvedTraitSet ResolvedTraitSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

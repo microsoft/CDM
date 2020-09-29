@@ -149,7 +149,7 @@ describe('Cdm/Projection/SearchStructureUnitTest', () => {
 
     function searchTreeTraversal(pc: ProjectionContext, val: string): string {
         let result: SearchResult = new SearchResult();
-        for (const top of pc.currentAttributeStateSet.values) {
+        for (const top of pc.currentAttributeStateSet.states) {
             let st: SearchStructure = new SearchStructure();
             st = SearchStructure.buildStructure(top, top, val, st, false, 0);
             if (st?.result.foundFlag === true) {

@@ -45,9 +45,9 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolve options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -135,6 +135,8 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -145,6 +147,9 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param under attribue context
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -155,6 +160,7 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the data type name.
+   * @return String 
    */
   public String getDataTypeName() {
     return this.dataTypeName;
@@ -166,6 +172,7 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the data type extended by this data type.
+   * @return CdmDataTypeReference
    */
   public CdmDataTypeReference getExtendsDataType() {
     return this.extendsDataType;

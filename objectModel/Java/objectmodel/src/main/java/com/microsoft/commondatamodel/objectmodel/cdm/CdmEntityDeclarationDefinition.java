@@ -7,6 +7,7 @@ public interface CdmEntityDeclarationDefinition extends CdmObjectDefinition, Cdm
 
   /**
    * Gets or sets the entity name.
+   * @return String
    */
   String getEntityName();
 
@@ -14,6 +15,7 @@ public interface CdmEntityDeclarationDefinition extends CdmObjectDefinition, Cdm
 
   /**
    * Gets or sets the entity schema.
+   * @return String
    */
   String getEntityPath();
 
@@ -21,11 +23,13 @@ public interface CdmEntityDeclarationDefinition extends CdmObjectDefinition, Cdm
 
   /**
    * Gets the data partitions, implemented only by CdmLocalEntityDeclarationDefinition.
+   * @return CdmCollection of CdmDataPartitionDefinition
    */
   CdmCollection<CdmDataPartitionDefinition> getDataPartitions();
 
   /**
    * Gets the data partition patterns, implemented only by CdmLocalEntityDeclarationDefinition.
+   * @return CdmCollection of CdmDataPartitionPatternDefinition
    */
   CdmCollection<CdmDataPartitionPatternDefinition> getDataPartitionPatterns();
 }

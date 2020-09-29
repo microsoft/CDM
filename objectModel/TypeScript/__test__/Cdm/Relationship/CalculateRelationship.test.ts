@@ -12,7 +12,7 @@ import {
     CdmManifestDefinition
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
-import { testUtils } from '../../testUtils';
+import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { AttributeContextUtil } from '../Projection/AttributeContextUtil';
 
 /**
@@ -108,7 +108,7 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
         const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
         expect(entity)
             .toBeTruthy();
-        const resolvedEntity: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
         const actualAttrCtx: string = getAttributeContextString(resolvedEntity, entityName, actualOutputFolder);
 
         const expectedAttrCtx: string = fs.readFileSync(`${expectedOutputFolder}/AttrCtx_${entityName}.txt`).toString();

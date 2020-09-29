@@ -9,6 +9,7 @@ public interface CdmObjectDefinition extends CdmObject {
 
   /**
    * Gets or sets the object explanation.
+   * @return string explanation
    */
   String getExplanation();
 
@@ -16,12 +17,14 @@ public interface CdmObjectDefinition extends CdmObject {
 
   /**
    * Gets the object exhibits traits.
+   * @return Cdm Trait Collection
    */
   CdmTraitCollection getExhibitsTraits();
 
   /**
    * all objectDefs have some kind of name,
    * this method returns the name independent of the name of the name property.
+   * @return String Name
    */
   String getName();
 }

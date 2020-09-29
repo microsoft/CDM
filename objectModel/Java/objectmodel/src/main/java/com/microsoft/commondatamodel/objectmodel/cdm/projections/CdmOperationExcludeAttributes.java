@@ -10,10 +10,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeState;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeStateSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionResolutionCommonUtil;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
@@ -38,8 +35,9 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "copy");
-        return new CdmOperationExcludeAttributes(this.getCtx());
+        CdmOperationExcludeAttributes copy = new CdmOperationExcludeAttributes(this.getCtx());
+        copy.excludeAttributes = new ArrayList<String>(this.excludeAttributes);
+        return copy;
     }
 
     public List<String> getExcludeAttributes() {
@@ -73,12 +71,6 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
     @Deprecated
     public CdmObjectType getObjectType() {
         return CdmObjectType.OperationExcludeAttributesDef;
-    }
-
-    @Override
-    public boolean isDerivedFrom(String baseDef, ResolveOptions resOpt) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "isDerivedFrom");
-        return false;
     }
 
     @Override
@@ -136,44 +128,39 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
         // We use the top-level names because the exclude list may contain a previous name our current resolved attributes had
         Map<String, String> topLevelExcludeAttributeNames = ProjectionResolutionCommonUtil.getTopList(projCtx, this.excludeAttributes);
 
+        // Initialize a projection attribute context tree builder with the created attribute context for the operation
+        ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpExcludeAttrs);
+
         // Iterate through all the projection attribute states generated from the source's resolved attributes
         // Each projection attribute state contains a resolved attribute that it is corresponding to
-        for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getValues()) {
+        for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
             // Check if the current projection attribute state's resolved attribute is in the list of attributes to exclude
             // If this attribute is not in the exclude list, then we are including it in the output
             if (!topLevelExcludeAttributeNames.containsKey(currentPAS.getCurrentResolvedAttribute().getResolvedName())) {
-                // Create a new attribute context for the attribute that we are including
-                AttributeContextParameters attrCtxAddedAttrParam = new AttributeContextParameters();
-                attrCtxAddedAttrParam.setUnder(attrCtx);
-                attrCtxAddedAttrParam.setType(CdmAttributeContextType.AttributeDefinition);
-                attrCtxAddedAttrParam.setName(currentPAS.getCurrentResolvedAttribute().getResolvedName());
+                // Create the attribute context parameters and just store it in the builder for now
+                // We will create the attribute contexts at the end
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(null, currentPAS, currentPAS.getCurrentResolvedAttribute(), CdmAttributeContextType.AttributeDefinition);
 
-                CdmAttributeContext attrCtxAddedAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxAddedAttrParam);
-
-                // Create a projection attribute state for the included attribute
+                // Create a projection attribute state for the included attribute by creating a copy of the current state
+                // Copy() sets the current state as the previous state for the new one
                 // We only create projection attribute states for attributes that are not in the exclude list
-                // Add the current projection attribute state as the previous state of the new projection attribute state
-                ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.getCtx());
-                newPAS.setCurrentResolvedAttribute(currentPAS.getCurrentResolvedAttribute());
-                newPAS.setPreviousStateList(new ArrayList<>(Arrays.asList(currentPAS)));
+                ProjectionAttributeState newPAS = currentPAS.copy();
 
                 projOutputSet.add(newPAS);
             } else {
                 // The current projection attribute state's resolved attribute is in the exclude list
 
                 // Get the attribute name the way it appears in the exclude list
-                // For our attribute context, we want to use the attribute name the attribute has in the exclude list rather than its current name
                 String excludeAttributeName = topLevelExcludeAttributeNames.get(currentPAS.getCurrentResolvedAttribute().getResolvedName());
 
-                // Create a new attribute context for the excluded attribute
-                AttributeContextParameters attrCtxExcludedAttrParam = new AttributeContextParameters();
-                attrCtxExcludedAttrParam.setUnder(attrCtxOpExcludeAttrs);
-                attrCtxExcludedAttrParam.setType(CdmAttributeContextType.AttributeDefinition);
-                attrCtxExcludedAttrParam.setName(excludeAttributeName);
-
-                CdmAttributeContext attrCtxExcludedAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxExcludedAttrParam);
+                // Create the attribute context parameters and just store it in the builder for now
+                // We will create the attribute contexts at the end
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.getCurrentResolvedAttribute(), CdmAttributeContextType.AttributeDefinition);
             }
         }
+
+        // Create all the attribute contexts and construct the tree
+        attrCtxTreeBuilder.constructAttributeContextTree(projCtx);
 
         return projOutputSet;
     }

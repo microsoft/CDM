@@ -4,14 +4,13 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.TestUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -223,7 +222,7 @@ public class ProjectionFKTest {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            String fileNameSuffix = TestUtils.getResolutionOptionNameSuffix(resOpts);
+            String fileNameSuffix = ProjectionTestUtils.getResolutionOptionNameSuffix(resOpts);
 
             CdmEntityDefinition entSalesForeignKeyProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
             Assert.assertNotNull(entSalesForeignKeyProjection);
@@ -240,7 +239,7 @@ public class ProjectionFKTest {
                 roHashSet.add(resolutionOptions.get(i));
             }
 
-            String fileNameSuffix = TestUtils.getResolutionOptionNameSuffix(resolutionOptions);
+            String fileNameSuffix = ProjectionTestUtils.getResolutionOptionNameSuffix(resolutionOptions);
 
             String resolvedEntityName = "Resolved_" + inputEntity.getEntityName() + fileNameSuffix + ".cdm.json";
 

@@ -37,6 +37,7 @@ public class CdmImport extends CdmObjectSimple {
 
   /**
    * Gets or sets the document.
+   * @return CdmDocumentDefinition
    */
   CdmDocumentDefinition getDocument() {
     return document;
@@ -48,6 +49,7 @@ public class CdmImport extends CdmObjectSimple {
 
   /**
    * Gets or sets the import path.
+   * @return String
    */
   public String getCorpusPath() {
     return corpusPath;
@@ -59,6 +61,7 @@ public class CdmImport extends CdmObjectSimple {
 
   /**
    * Gets or sets the import moniker.
+   * @return String
    */
   public String getMoniker() {
     return moniker;
@@ -84,8 +87,9 @@ public class CdmImport extends CdmObjectSimple {
 
   /**
    *
-   * @param resOpt
-   * @return
+   * @param resOpt Resolved options
+   * @param host host
+   * @return CDM Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.

@@ -6,6 +6,7 @@ import {
     CdmEntityAttributeDefinition,
     CdmEntityDefinition,
     CdmEntityReference,
+    CdmFolderDefinition,
     CdmManifestDefinition,
     cdmObjectType,
     CdmOperationCollection,
@@ -13,6 +14,8 @@ import {
     CdmProjection,
     CdmTypeAttributeDefinition
 } from '../../../../internal';
+import { PersistenceLayer } from '../../../../Persistence';
+import { Entity } from '../../../../Persistence/CdmFolder/types';
 import { testHelper } from '../../../testHelper';
 
 describe('Persistence/CdmFolder/Projection', () => {
@@ -183,5 +186,40 @@ describe('Persistence/CdmFolder/Projection', () => {
             .toEqual('TestProjectionAttributeB');
         expect((entTestProjectionExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).dataType.namedReference)
             .toEqual('testExtendsDataTypeB');
+    });
+
+    /**
+     * Basic test to save persisted Projections based entities
+     */
+    it('TestSaveProjection', async () => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestSaveProjection');
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('local:/default.manifest.cdm.json');
+
+        const entitySales: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/Sales.cdm.json/Sales', manifest);
+        expect(entitySales)
+            .toBeTruthy();
+
+        const actualRoot: CdmFolderDefinition = corpus.storage.fetchRootFolder("output");
+        expect(actualRoot)
+            .toBeTruthy();
+
+        actualRoot.documents.push(entitySales.inDocument, 'Persisted_Sales.cdm.json');
+        await actualRoot.documents.allItems[0].saveAsAsync('output:/Persisted_Sales.cdm.json');
+
+        const entityActual: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>('output:/Persisted_Sales.cdm.json/Sales', manifest);
+        expect(entityActual)
+            .toBeTruthy();
+
+        const entityContentActual: Entity = PersistenceLayer.toData<CdmEntityDefinition, Entity>(entityActual, null, null, "CdmFolder");
+        expect(entityContentActual)
+            .toBeTruthy();
+        expect(entityContentActual.hasAttributes)
+            .toBeTruthy();
+        expect(entityContentActual.hasAttributes.length === 1)
+            .toBeTruthy();
+
+        expect(JSON.stringify(entityContentActual.hasAttributes[0]).indexOf('"entityReference"'))
+            .toBe(-1);
     });
 });

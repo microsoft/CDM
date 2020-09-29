@@ -130,8 +130,8 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   }
 
   /**
-   *
-   * @return
+   * @param options Copy Oprions
+   * @return CompletableFuture
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -362,14 +362,6 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         final OffsetDateTime modifiedTime = getCtx().getCorpus()
             .computeLastModifiedTimeFromObjectAsync(this).join();
 
-        for (final CdmEntityDeclarationDefinition entity : getEntities()) {
-          entity.fileStatusCheckAsync().join();
-        }
-
-        for (final CdmManifestDeclarationDefinition subManifest : getSubManifests()) {
-          subManifest.fileStatusCheckAsync().join();
-        }
-
         setLastFileStatusCheckTime(OffsetDateTime.now(ZoneOffset.UTC));
 
         if (getLastFileModifiedTime() == null) {
@@ -381,6 +373,14 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
           reloadAsync().join();
           setLastFileModifiedTime(TimeUtils.maxTime(modifiedTime, getLastFileModifiedTime()));
           setFileSystemModifiedTime(getLastFileModifiedTime());
+        }
+
+        for (final CdmEntityDeclarationDefinition entity : getEntities()) {
+          entity.fileStatusCheckAsync().join();
+        }
+
+        for (final CdmManifestDeclarationDefinition subManifest : getSubManifests()) {
+          subManifest.fileStatusCheckAsync().join();
         }
       }
       finally{
@@ -483,6 +483,9 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
    * Every instance of the string {n} is replaced with the entity name from the source manifest.
    * Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
    * (if there is one that is possible as a relative location, else nothing).
+   * @param newManifestName name string
+   * @param newEntityDocumentNameFormat format string
+   * @return CompletableFuture
    */
   public CompletableFuture<CdmManifestDefinition> createResolvedManifestAsync(
     String newManifestName,
@@ -497,6 +500,10 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
    * Every instance of the string {n} is replaced with the entity name from the source manifest.
    * Every instance of the string {f} is replaced with the folder path from the source manifest to the source entity
    * (if there is one that is possible as a relative location, else nothing).
+   * @param newManifestName name string
+   * @param newEntityDocumentNameFormat format string
+   * @param directives Resolution directive
+   * @return CompletableFuture
    */
   public CompletableFuture<CdmManifestDefinition> createResolvedManifestAsync(
       String newManifestName,
@@ -687,6 +694,9 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
   /**
    * finds and returns an entity object from an EntityDeclaration object that probably comes from a manifest.
+   * @param entity CdmEntityDeclarationDefinition
+   * @param manifest CdmManifestDefinition
+   * @return CompletableFuture
    */
   private CompletableFuture<CdmEntityDefinition> getEntityFromReferenceAsync(
       final CdmEntityDeclarationDefinition entity,
@@ -713,6 +723,8 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param entityDec CdmEntityDeclarationDefinition
+   * @return CompletableFuture
    */
   @Deprecated
   public CompletableFuture<String> createEntityPathFromDeclarationAsync(
@@ -792,8 +804,12 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
     return relCopy;
   }
 
-  // standardized way of turning a relationship object into a key for caching
-  // without using the object itself as a key (could be duplicate relationship objects)
+  /**
+   * standardized way of turning a relationship object into a key for caching
+   * without using the object itself as a key (could be duplicate relationship objects)
+   * @param rel CdmE2ERelationship
+   * @return String
+   */
   String rel2CacheKey(final CdmE2ERelationship rel) {
     String nameAndPipe = "";
     if (!StringUtils.isNullOrTrimEmpty(rel.getName())) {

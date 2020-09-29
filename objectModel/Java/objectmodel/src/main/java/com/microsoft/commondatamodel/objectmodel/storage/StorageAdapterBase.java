@@ -31,7 +31,6 @@ public abstract class StorageAdapterBase implements StorageAdapter {
    * The location hint, gives a hint to the reader app about the location where the adapter
    * implementation (Nuget, NPM...) can be obtained.
    * 
-   * @return The location hint
    */
   public void setLocationHint(final String locationHint) {
     this.locationHint = locationHint;
@@ -139,6 +138,7 @@ public abstract class StorageAdapterBase implements StorageAdapter {
 
   /**
    * If true, inherited classes should cache and reuse file query results if they support caching
+   * @return boolean 
    */
   protected boolean getIsCacheEnabled() 
   { 
@@ -152,6 +152,7 @@ public abstract class StorageAdapterBase implements StorageAdapter {
    * function called. If createFileQueryCacheContext is called multiple times, caching is allowed until 
    * all objects returned have thier dispose function called. Intended usage is for callers to wrap a 
    * set of operations that should use caching with a try-finally block and call dispose inside finally.
+   * @return CacheContext
    */
   public CacheContext createFileQueryCacheContext()
   {

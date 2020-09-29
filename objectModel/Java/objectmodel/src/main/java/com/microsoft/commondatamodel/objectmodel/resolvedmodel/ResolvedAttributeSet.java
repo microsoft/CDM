@@ -64,8 +64,8 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @param attCtx
-   * @param ra
+   * @param attCtx CdmAttributeContext
+   * @param ra ResolvedAttribute
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -83,7 +83,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @param attCtx
+   * @param attCtx CdmAttributeContext
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -103,8 +103,8 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @param toMerge
-   * @return
+   * @param toMerge ResolvedAttribute
+   * @return ResolvedAttributeSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -115,9 +115,9 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @param toMerge
-   * @param attCtx
-   * @return
+   * @param toMerge ResolvedAttribute
+   * @param attCtx CdmAttributeContext
+   * @return ResolvedAttributeSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -155,8 +155,9 @@ public class ResolvedAttributeSet extends RefCounted {
         existing.setTarget(toMerge.getTarget()); // replace with newest version
         existing.setArc(toMerge.getArc());
 
-        // remove old context mappings with mappings to new attribute
+        // Replace old context mappings with mappings to new attribute
         rasResult.removeCachedAttributeContext(existing.getAttCtx());
+        rasResult.cacheAttributeContext(attCtx, existing);
 
         final ResolvedTraitSet rtsMerge = existing.fetchResolvedTraits()
             .mergeSet(toMerge.fetchResolvedTraits()); // newest one may replace
@@ -533,8 +534,8 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @param name
-   * @return
+   * @param name String
+   * @return ResolvedAttribute
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -673,25 +674,27 @@ public class ResolvedAttributeSet extends RefCounted {
           final Set<ResolvedAttribute> filteredSubSet = new LinkedHashSet<>();
 
           for (final ResolvedAttribute ra : subSet) {
-            final ParameterValueSet pvals = ra.fetchResolvedTraits().find(resOpt, q.getTraitBaseName())
-                .getParameterValues();
+            final ResolvedTrait traitObj = ra.fetchResolvedTraits().find(resOpt, q.getTraitBaseName());
+            if (traitObj != null) {
+              final ParameterValueSet pvals = traitObj.getParameterValues();
 
-            // compare to all query params
-//                        int lParams = q.getParameters().size();
-            int iParam = 0;
+              // compare to all query params
+              // int lParams = q.getParameters().size();
+              int iParam = 0;
 
-            for (final Map.Entry<String, String> param : q.getParameters().entrySet()) {
-              final ParameterValue pv = pvals.fetchParameterValue(param.getKey());
-              // TODO-BQ: We need to handle the JSON exception somehow (or propagate?)
-              if (pv == null || !Objects.equals(pv.fetchValueString(resOpt), param.getValue())) {
-                break;
+              for (final Map.Entry<String, String> param : q.getParameters().entrySet()) {
+                final ParameterValue pv = pvals.fetchParameterValue(param.getKey());
+                // TODO-BQ: We need to handle the JSON exception somehow (or propagate?)
+                if (pv == null || !Objects.equals(pv.fetchValueString(resOpt), param.getValue())) {
+                  break;
+                }
+                iParam++;
               }
-              iParam++;
-            }
 
-            // stop early means no match
-            if (iParam == q.getParameters().size()) {
-              filteredSubSet.add(ra);
+              // stop early means no match
+              if (iParam == q.getParameters().size()) {
+                filteredSubSet.add(ra);
+              }
             }
           }
 
@@ -733,7 +736,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @return
+   * @return Map of ResolvedAttribute and Set of CdmAttributeContext
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -744,7 +747,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @param ra2attCtxSet
+   * @param ra2attCtxSet Map of ResolvedAttribute and Set of CdmAttributeContext
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -755,7 +758,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @return
+   * @return Map of CdmAttributeContext and ResolvedAttribute
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -766,7 +769,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @param attCtx2ra
+   * @param attCtx2ra Map of CdmAttributeContext and ResolvedAttribute
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -777,7 +780,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @return
+   * @return List of ResolvedAttribute
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -788,7 +791,7 @@ public class ResolvedAttributeSet extends RefCounted {
 
   /**
    *
-   * @param set
+   * @param set List of ResolvedAttribute
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -802,6 +805,7 @@ public class ResolvedAttributeSet extends RefCounted {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return int count
    */
   @Deprecated
   public int getResolvedAttributeCount() { return this.resolvedAttributeCount; }
@@ -809,6 +813,7 @@ public class ResolvedAttributeSet extends RefCounted {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param resolvedAttributeCount count
    */
   @Deprecated
   public void setResolvedAttributeCount(final int resolvedAttributeCount) { this.resolvedAttributeCount = resolvedAttributeCount; }

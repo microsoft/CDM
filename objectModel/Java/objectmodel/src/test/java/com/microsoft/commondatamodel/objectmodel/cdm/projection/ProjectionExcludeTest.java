@@ -4,7 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.TestUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationExcludeAttributes;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
@@ -20,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * A test class for testing the ExcludeAttributes operation in a projection as well as SelectsSomeAvoidNames in a resolution guidance
@@ -43,11 +42,6 @@ public class ProjectionExcludeTest {
     );
 
     /**
-     * Path to foundations
-     */
-    private static final String foundationJsonPath = "cdm:/foundations.cdm.json";
-
-    /**
      * The path between TestDataPath and TestName.
      */
     private static final String TESTS_SUBPATH =
@@ -67,10 +61,10 @@ public class ProjectionExcludeTest {
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
         // Create an entity
-        CdmEntityDefinition entity = createEntity(corpus, localRoot);
+        CdmEntityDefinition entity = ProjectionTestUtils.createEntity(corpus, localRoot);
 
         // Create a projection
-        CdmProjection projection = createProjection(corpus, localRoot);
+        CdmProjection projection = ProjectionTestUtils.createProjection(corpus, localRoot);
 
         // Create an ExcludeAttributes operation
         CdmOperationExcludeAttributes excludeAttrsOp = corpus.makeObject(CdmObjectType.OperationExcludeAttributesDef);
@@ -108,10 +102,10 @@ public class ProjectionExcludeTest {
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
         // Create an entity
-        CdmEntityDefinition entity = createEntity(corpus, localRoot);
+        CdmEntityDefinition entity = ProjectionTestUtils.createEntity(corpus, localRoot);
 
         // Create a projection
-        CdmProjection projection = createProjection(corpus, localRoot);
+        CdmProjection projection = ProjectionTestUtils.createProjection(corpus, localRoot);
 
         // Create an ExcludeAttributes operation
         CdmOperationExcludeAttributes excludeAttrsOp = corpus.makeObject(CdmObjectType.OperationExcludeAttributesDef);
@@ -147,10 +141,10 @@ public class ProjectionExcludeTest {
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
         // Create an entity
-        CdmEntityDefinition entity = createEntity(corpus, localRoot);
+        CdmEntityDefinition entity = ProjectionTestUtils.createEntity(corpus, localRoot);
 
         // Create a projection
-        CdmProjection projection = createProjection(corpus, localRoot);
+        CdmProjection projection = ProjectionTestUtils.createProjection(corpus, localRoot);
 
         // Create an ExcludeAttributes operation
         CdmOperationExcludeAttributes excludeAttrsOp = corpus.makeObject(CdmObjectType.OperationExcludeAttributesDef);
@@ -200,10 +194,10 @@ public class ProjectionExcludeTest {
         CdmFolderDefinition localRoot = corpus.getStorage().fetchRootFolder("local");
 
         // Create an entity
-        CdmEntityDefinition entity = createEntity(corpus, localRoot);
+        CdmEntityDefinition entity = ProjectionTestUtils.createEntity(corpus, localRoot);
 
         // Create a projection with a condition that states the operation should only execute when the resolution directive is 'referenceOnly'
-        CdmProjection projection = createProjection(corpus, localRoot);
+        CdmProjection projection = ProjectionTestUtils.createProjection(corpus, localRoot);
         projection.setCondition("referenceOnly==true");
 
         // Create an ExcludeAttributes operation
@@ -256,14 +250,14 @@ public class ProjectionExcludeTest {
     public void testExcludeAttributes() throws InterruptedException {
         String testName = "testExcludeAttributes";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -279,14 +273,14 @@ public class ProjectionExcludeTest {
     public void testSSAN() throws InterruptedException {
         String testName = "testSSAN";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["PersonInfoName", "PersonInfoAge", "PersonInfoAddress", "PersonInfoPhoneNumber", "PersonInfoEmail"]
         // Excluded attributes: ["PersonInfoAddress", "PersonInfoPhoneNumber", "PersonInfoEmail"]
@@ -302,14 +296,14 @@ public class ProjectionExcludeTest {
     public void testSSANRename() throws InterruptedException {
         String testName = "testSSANRename";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -325,14 +319,14 @@ public class ProjectionExcludeTest {
     public void testSingleNestedProj() throws InterruptedException {
         String testName = "testSingleNestedProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -348,14 +342,14 @@ public class ProjectionExcludeTest {
     public void testNestedProj() throws InterruptedException {
         String testName = "testNestedProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["address", "phoneNumber", "email"], ["age"]
@@ -370,14 +364,14 @@ public class ProjectionExcludeTest {
     public void testMultipleExclude() throws InterruptedException {
         String testName = "testMultipleExclude";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["name", "age", "address"], ["address", "email"]
@@ -395,14 +389,14 @@ public class ProjectionExcludeTest {
     public void testExtendsEntityProj() throws InterruptedException {
         String testName = "testExtendsEntityProj";
         String entityName = "Child";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["phoneNumber", "email"]
@@ -419,14 +413,14 @@ public class ProjectionExcludeTest {
     public void testExtendsEntity() throws InterruptedException {
         String testName = "testExtendsEntity";
         String entityName = "Child";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["phoneNumber", "email"]
@@ -443,14 +437,14 @@ public class ProjectionExcludeTest {
     public void testPolymorphicProj() throws InterruptedException {
         String testName = "testPolymorphicProj";
         String entityName = "BusinessPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["emailId", "address", "isPrimary", "phoneId", "number", "socialId", "account"]
         // Excluded attributes: ["socialId", "account"]
@@ -469,14 +463,14 @@ public class ProjectionExcludeTest {
     public void testPolymorphic() throws InterruptedException {
         String testName = "testPolymorphic";
         String entityName = "BusinessPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["emailId", "address", "isPrimary", "phoneId", "number", "socialId", "account"]
         // Excluded attributes: ["socialId", "account"]
@@ -495,14 +489,14 @@ public class ProjectionExcludeTest {
     public void testArraySourceProj() throws InterruptedException {
         String testName = "testArraySourceProj";
         String entityName = "FriendGroup";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["personCount", "name1", "age1", "address1", "phoneNumber1", "email1", ..., "email3"] (16 total)
         // Excluded attributes: ["age1", "age2", "age3"]
@@ -529,14 +523,14 @@ public class ProjectionExcludeTest {
     public void testArraySource() throws InterruptedException {
         String testName = "testArraySource";
         String entityName = "FriendGroup";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["GroupOfPeoplePersonCount", "GroupOfPeopleName1", "GroupOfPeopleAge1", "GroupOfPeopleAddress1",
         //                              "GroupOfPeoplePhoneNumber1", "GroupOfPeopleEmail1", ..., "GroupOfPeopleEmail3"] (16 total)
@@ -564,14 +558,14 @@ public class ProjectionExcludeTest {
     public void testArraySourceRename() throws InterruptedException {
         String testName = "testArraySourceRename";
         String entityName = "FriendGroup";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["personCount", "name1", "age1", "address1", "phoneNumber1", "email1", ..., "email3"] (16 total)
         // Excluded attributes: ["age1", "age2", "age3"]
@@ -598,14 +592,14 @@ public class ProjectionExcludeTest {
     public void testConditionalProj() throws InterruptedException {
         String testName = "testConditionalProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -613,7 +607,7 @@ public class ProjectionExcludeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "name");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "age");
 
-        CdmEntityDefinition resolvedEntity2 = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity2 = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: none, condition was false
@@ -632,14 +626,14 @@ public class ProjectionExcludeTest {
     public void testEmptyExclude() throws InterruptedException {
         String testName = "testEmptyExclude";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: []
@@ -658,14 +652,14 @@ public class ProjectionExcludeTest {
     public void testGroupProj() throws InterruptedException {
         String testName = "testGroupProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -681,14 +675,14 @@ public class ProjectionExcludeTest {
     public void testGroup() throws InterruptedException {
         String testName = "testGroup";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["PersonInfoName", "PersonInfoAge", "PersonInfoAddress", "PersonInfoPhoneNumber", "PersonInfoEmail"]
         // Excluded attributes: ["PersonInfoAddress", "PersonInfoPhoneNumber", "PersonInfoEmail"]
@@ -704,14 +698,14 @@ public class ProjectionExcludeTest {
     public void testGroupRename() throws InterruptedException {
         String testName = "testGroupRename";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList())).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
         // Excluded attributes: ["address", "phoneNumber", "email"]
@@ -729,14 +723,14 @@ public class ProjectionExcludeTest {
     public void testEANameProj() throws InterruptedException {
         String testName = "testEANameProj";
         String entityName = "NewPerson";
-        CdmCorpusDefinition corpus = getCorpus(testName);
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
 
         for (List<String> resOpt : resOptsCombinations) {
-            loadEntityForResolutionOptionAndSave(corpus, testName, entityName, resOpt).join();
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
         }
 
         CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-        CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("structured"))).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("structured"))).join();
 
         // Original set of attributes: ["name", "age", "address", "phoneNumber", "email", "title", "company", "tenure"]
         // Excluded attributes: ["OccupationInfo"] (name of entity attribute that contains "title", "company", "tenure")
@@ -748,97 +742,5 @@ public class ProjectionExcludeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) attGroup.getMembers().get(2)).getName(), "address");
         Assert.assertEquals(((CdmTypeAttributeDefinition) attGroup.getMembers().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) attGroup.getMembers().get(4)).getName(), "email");
-    }
-
-    /**
-     * Creates a corpus
-     */
-    private CdmCorpusDefinition getCorpus(String testName) throws InterruptedException {
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        return corpus;
-    }
-
-    /**
-     * Creates an entity
-     */
-    private CdmEntityDefinition createEntity(CdmCorpusDefinition corpus, CdmFolderDefinition localRoot) {
-        String entityName = "TestEntity";
-        CdmEntityDefinition entity = corpus.makeObject(CdmObjectType.EntityDef, entityName);
-
-        CdmDocumentDefinition entityDoc = corpus.makeObject(CdmObjectType.DocumentDef, entityName + ".cdm.json", false);
-        entityDoc.getImports().add(foundationJsonPath);
-        entityDoc.getDefinitions().add(entity);
-        localRoot.getDocuments().add(entityDoc, entityDoc.getName());
-
-        return entity;
-    }
-
-    /**
-     * Creates a source entity for a projection
-     */
-    private CdmEntityDefinition createSourceEntity(CdmCorpusDefinition corpus, CdmFolderDefinition localRoot) {
-        String entityName = "SourceEntity";
-        CdmEntityDefinition entity = corpus.makeObject(CdmObjectType.EntityDef, entityName);
-
-        String attributeName1 = "id";
-        CdmTypeAttributeDefinition attribute1 = corpus.makeObject(CdmObjectType.TypeAttributeDef, attributeName1);
-        attribute1.setDataType(corpus.makeRef(CdmObjectType.DataTypeRef, "String", true));
-        entity.getAttributes().add(attribute1);
-
-        String attributeName2 = "name";
-        CdmTypeAttributeDefinition attribute2 = corpus.makeObject(CdmObjectType.TypeAttributeDef, attributeName2);
-        attribute2.setDataType(corpus.makeRef(CdmObjectType.DataTypeRef, "String", true));
-        entity.getAttributes().add(attribute2);
-
-        String attributeName3 = "value";
-        CdmTypeAttributeDefinition attribute3 = corpus.makeObject(CdmObjectType.TypeAttributeDef, attributeName3);
-        attribute3.setDataType(corpus.makeRef(CdmObjectType.DataTypeRef, "integer", true));
-        entity.getAttributes().add(attribute3);
-
-        String attributeName4 = "date";
-        CdmTypeAttributeDefinition attribute4 = corpus.makeObject(CdmObjectType.TypeAttributeDef, attributeName4);
-        attribute4.setDataType(corpus.makeRef(CdmObjectType.DataTypeRef, "date", true));
-        entity.getAttributes().add(attribute4);
-
-        CdmDocumentDefinition entityDoc = corpus.makeObject(CdmObjectType.DocumentDef, entityName + ".cdm.json", false);
-        entityDoc.getImports().add(foundationJsonPath);
-        entityDoc.getDefinitions().add(entity);
-        localRoot.getDocuments().add(entityDoc, entityDoc.getName());
-
-        return entity;
-    }
-
-    /**
-     * Creates a projection
-     */
-    private CdmProjection createProjection(CdmCorpusDefinition corpus, CdmFolderDefinition localRoot) {
-        // Create an entity reference to use as the source of the projection
-        CdmEntityReference projectionSource = corpus.makeObject(CdmObjectType.EntityRef, null);
-        projectionSource.setExplicitReference(createSourceEntity(corpus, localRoot));
-
-        // Create the projection
-        CdmProjection projection = corpus.makeObject(CdmObjectType.ProjectionDef);
-        projection.setSource(projectionSource);
-
-        return projection;
-    }
-
-    /**
-     * Loads an entity, resolves it, and then validates the generated attribute contexts
-     */
-    private CompletableFuture<Void> loadEntityForResolutionOptionAndSave(CdmCorpusDefinition corpus, String testName, String entityName, List<String> resOpts) {
-        return CompletableFuture.runAsync(() -> {
-            String expectedOutputPath = null;
-            try {
-                expectedOutputPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            String fileNameSuffix = TestUtils.getResolutionOptionNameSuffix(resOpts);
-
-            CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
-            CdmEntityDefinition resolvedEntity = TestUtils.getResolvedEntity(corpus, entity, resOpts, true).join();
-            AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName + fileNameSuffix, resolvedEntity);
-        });
     }
 }

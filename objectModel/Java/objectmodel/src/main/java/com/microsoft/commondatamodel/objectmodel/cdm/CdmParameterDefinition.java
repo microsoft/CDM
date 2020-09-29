@@ -81,6 +81,7 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the parameter default value.
+   * @return Object
    */
   public Object getDefaultValue() {
     return this.defaultValue;
@@ -92,6 +93,7 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets if the parameter is required.
+   * @return Boolean
    */
   public Boolean isRequired() {
     return isRequired;
@@ -103,6 +105,7 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the parameter data type reference.
+   * @return CDM Data type reference
    */
   public CdmDataTypeReference getDataTypeRef() {
     return dataTypeRef;
@@ -123,9 +126,9 @@ public class CdmParameterDefinition extends CdmObjectDefinitionBase {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt resolved options
+   * @param options Copy option
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.

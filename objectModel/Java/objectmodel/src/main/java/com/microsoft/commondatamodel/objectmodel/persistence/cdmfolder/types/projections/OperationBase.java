@@ -22,6 +22,7 @@ public class OperationBase {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param type String
      */
     @Deprecated
     public void setType(final String type) {

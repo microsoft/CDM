@@ -14,6 +14,7 @@ import {
     ParameterValueSet,
     refCounted,
     ResolvedAttribute,
+    ResolvedTrait,
     ResolvedTraitSet,
     resolveOptions,
     spewCatcher,
@@ -70,7 +71,7 @@ export class ResolvedAttributeSet extends refCounted {
     /**
      * @internal
      */
-    public get set() : ResolvedAttribute[] {
+    public get set(): ResolvedAttribute[] {
         return this._set;
     }
     public setAttributeContext(under: CdmAttributeContext): void {
@@ -156,8 +157,9 @@ export class ResolvedAttributeSet extends refCounted {
                     existing.target = toMerge.target; // replace with newest version
                     existing.arc = toMerge.arc;
 
-                    // remove old context mappings with mappings to new attribute
+                    // Replace old context mappings with mappings to new attribute
                     rasResult.removeCachedAttributeContext(existing.attCtx);
+                    rasResult.cacheAttributeContext(attCtx, existing);
 
                     const rtsMerge: ResolvedTraitSet = existing.resolvedTraits.mergeSet(toMerge.resolvedTraits); // newest one may replace
                     if (rtsMerge !== existing.resolvedTraits) {
@@ -542,20 +544,23 @@ export class ResolvedAttributeSet extends refCounted {
                         const filteredSubSet: Set<ResolvedAttribute> = new Set<ResolvedAttribute>();
                         subSet.forEach((ra: ResolvedAttribute) => {
                             // get parameters of the the actual trait matched
-                            const pvals: ParameterValueSet = ra.resolvedTraits.find(resOpt, q.traitBaseName).parameterValues;
-                            // compare to all query params
-                            const lParams: number = q.params.length;
-                            let iParam: number;
-                            for (iParam = 0; iParam < lParams; iParam++) {
-                                const param: { paramName: string; paramValue: string } = q.params[i];
-                                const pv: ParameterValue = pvals.fetchParameterValueByName(param.paramName);
-                                if (!pv || pv.fetchValueString(resOpt) !== param.paramValue) {
-                                    break;
+                            const traitObj: ResolvedTrait = ra.resolvedTraits.find(resOpt, q.traitBaseName);
+                            if (traitObj) {
+                                const pvals: ParameterValueSet = traitObj.parameterValues;
+                                // compare to all query params
+                                const lParams: number = q.params.length;
+                                let iParam: number;
+                                for (iParam = 0; iParam < lParams; iParam++) {
+                                    const param: { paramName: string; paramValue: string } = q.params[i];
+                                    const pv: ParameterValue = pvals.fetchParameterValueByName(param.paramName);
+                                    if (!pv || pv.fetchValueString(resOpt) !== param.paramValue) {
+                                        break;
+                                    }
                                 }
-                            }
-                            // stop early means no match
-                            if (iParam === lParams) {
-                                filteredSubSet.add(ra);
+                                // stop early means no match
+                                if (iParam === lParams) {
+                                    filteredSubSet.add(ra);
+                                }
                             }
                         });
                         subSet = filteredSubSet;

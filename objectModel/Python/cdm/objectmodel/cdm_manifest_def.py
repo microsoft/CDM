@@ -233,12 +233,6 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         try:
             modified_time = await self.ctx.corpus._fetch_last_modified_time_from_object_async(self)
 
-            for entity in self.entities:
-                await entity.file_status_check_async()
-
-            for sub_manifest in self.sub_manifests:
-                await sub_manifest.file_status_check_async()
-
             self.last_file_status_check_time = datetime.now(timezone.utc)
             if not self.last_file_modified_time:
                 self.last_file_modified_time = self._file_system_modified_time
@@ -248,6 +242,13 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
                 await self._reload_async()
                 self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
                 self._file_system_modified_time = self.last_file_modified_time
+            
+            for entity in self.entities:
+                await entity.file_status_check_async()
+
+            for sub_manifest in self.sub_manifests:
+                await sub_manifest.file_status_check_async()
+                
         finally:
             context.dispose()
 

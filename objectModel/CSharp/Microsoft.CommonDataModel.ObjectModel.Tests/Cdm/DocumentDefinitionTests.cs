@@ -6,6 +6,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.IO;
     using System.Threading.Tasks;
 
     /// <summary>
@@ -14,6 +15,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     [TestClass]
     public class DocumentDefinitionTests
     {
+        private readonly string testsSubpath = Path.Combine("Cdm", "Document");
+
         /// <summary>
         /// Test when A -> M/B -> C -> B.
         /// In this case, although A imports B with a moniker, B should be in the priorityImports because it is imported by C.
@@ -131,6 +134,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.IsFalse(docA.ImportPriorities.hasCircularImport);
             Assert.IsFalse(docB.ImportPriorities.hasCircularImport);
             Assert.IsFalse(docC.ImportPriorities.hasCircularImport);
+        }
+
+        /// <summary>
+        /// Setting the forceReload flag to true correctly reloads the document
+        /// </summary>
+        [TestMethod]
+        public async Task TestDocumentForceReload()
+        {
+            string testName = "testDocumentForceReload";
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            // load the document and entity the first time
+            await corpus.FetchObjectAsync<CdmEntityDefinition>("doc.cdm.json/entity");
+            // reload the same doc and make sure it is reloaded correctly
+            CdmEntityDefinition reloadedEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>("doc.cdm.json/entity", null, null, true);
+
+            // if the reloaded doc is not indexed correctly, the entity will not be able to be found
+            Assert.IsNotNull(reloadedEntity);
         }
 
         /// <summary>

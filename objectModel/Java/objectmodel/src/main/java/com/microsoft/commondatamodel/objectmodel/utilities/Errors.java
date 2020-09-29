@@ -17,6 +17,7 @@ public class Errors {
     * @param onlyOneRequired When true, indicates that only one of the missing
     *                        fields is required, false means all missing fields are
     *                        required. False by default.
+    * @return String
     */
     public static String validateErrorString(String corpusPath, ArrayList<String> missingFields, boolean onlyOneRequired) {
         String missingFieldString = String.join(", ", missingFields

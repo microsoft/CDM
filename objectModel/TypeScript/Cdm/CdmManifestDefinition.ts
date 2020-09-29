@@ -454,14 +454,6 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         try {
             const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeAsyncFromObject(this);
 
-            for (const entity of this.entities) {
-                await entity.fileStatusCheckAsync();
-            }
-
-            for (const subManifest of this.subManifests) {
-                await subManifest.fileStatusCheckAsync();
-            }
-
             this.lastFileStatusCheckTime = new Date();
             if (!this.lastFileModifiedTime) {
                 this.lastFileModifiedTime = this._fileSystemModifiedTime;
@@ -472,6 +464,14 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
                 await this.reload();
                 this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
                 this._fileSystemModifiedTime = this.lastFileModifiedTime;
+            }
+
+            for (const entity of this.entities) {
+                await entity.fileStatusCheckAsync();
+            }
+
+            for (const subManifest of this.subManifests) {
+                await subManifest.fileStatusCheckAsync();
             }
         }
         finally {

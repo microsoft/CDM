@@ -16,13 +16,20 @@ export class CdmCollection<T extends CdmObject> {
      * @internal
      */
     public allItems: T[];
-    protected owner: CdmObject;
+    private _owner: CdmObject;
 
     constructor(ctx: CdmCorpusContext, owner: CdmObject, defaultType: cdmObjectType) {
         this.ctx = ctx;
         this.owner = owner;
         this.allItems = [];
         this.defaultType = defaultType;
+    }
+
+    protected get owner(): CdmObject {
+        return this._owner;
+    }
+    protected set owner(value: CdmObject) {
+        this._owner = value;
     }
 
     public get length(): number {

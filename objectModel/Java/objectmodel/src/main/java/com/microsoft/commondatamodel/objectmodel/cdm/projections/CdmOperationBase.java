@@ -31,6 +31,7 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return int index
      */
     @Deprecated
     public int getIndex() {
@@ -40,6 +41,7 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param index Int Index
      */
     @Deprecated
     public void setIndex(final int index) {
@@ -53,6 +55,7 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param type CdmOperationType
      */
     @Deprecated
     public void setType(final CdmOperationType type) {
@@ -62,9 +65,14 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     @Override
     public abstract CdmObject copy(ResolveOptions resOpt, CdmObject host);
 
-    /**
+
+    
+    /** 
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param resOpt Resolved options
+     * @param options Copy options
+     * @return Object
      */
     @Override
     @Deprecated
@@ -82,7 +90,9 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     public abstract CdmObjectType getObjectType();
 
     @Override
-    public abstract boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt);
+    public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
+        return false;
+    }
 
     @Override
     public abstract boolean validate();
@@ -95,6 +105,10 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projCtx ProjectionContext 
+     * @param projAttrStateSet ProjectionAttributeStateSet 
+     * @param attrCtx CdmAttributeContext
+     * @return ProjectionAttributeStateSet
      */
     @Deprecated
     public abstract ProjectionAttributeStateSet appendProjectionAttributeState(ProjectionContext projCtx, ProjectionAttributeStateSet projAttrStateSet, CdmAttributeContext attrCtx);
@@ -105,6 +119,10 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projCtx ProjectionContext
+     * @param attrCtxUnder CdmAttributeContext
+     * @param targetAttr CdmAttribute
+     * @return ResolvedAttribute
      */
     @Deprecated
     public static ResolvedAttribute createNewResolvedAttribute(ProjectionContext projCtx, CdmAttributeContext attrCtxUnder, CdmAttribute targetAttr) {
@@ -117,25 +135,38 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projCtx ProjectionContext
+     * @param attrCtxUnder CdmAttributeContext
+     * @param targetAttr CdmAttribute
+     * @param overrideDefaultName String
+     * @return ResolvedAttribute
      */
     @Deprecated
     public static ResolvedAttribute createNewResolvedAttribute(ProjectionContext projCtx, CdmAttributeContext attrCtxUnder, CdmAttribute targetAttr, String overrideDefaultName) {
         return createNewResolvedAttribute(projCtx, attrCtxUnder, targetAttr, overrideDefaultName, null);
     }
 
-    /**
+
+    
+    /** 
      * Projections require a new resolved attribute to be created multiple times
      * This function allows us to create new resolved attributes based on a input attribute
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param projCtx ProjectionContext
+     * @param attrCtxUnder CdmAttributeContext
+     * @param targetAttr CdmAttribute
+     * @param overrideDefaultName String
+     * @param addedSimpleRefTraits List of String
+     * @return ResolvedAttribute
      */
     @Deprecated
     public static ResolvedAttribute createNewResolvedAttribute(ProjectionContext projCtx, CdmAttributeContext attrCtxUnder, CdmAttribute targetAttr, String overrideDefaultName, List<String> addedSimpleRefTraits) {
         ResolvedAttribute newResAttr = new ResolvedAttribute(
-            projCtx.getProjectionDirective().getResOpt(),
-            targetAttr,
-            !StringUtils.isNullOrTrimEmpty(overrideDefaultName) ? overrideDefaultName : targetAttr.getName(), attrCtxUnder);
+                projCtx.getProjectionDirective().getResOpt(),
+                targetAttr,
+                !StringUtils.isNullOrTrimEmpty(overrideDefaultName) ? overrideDefaultName : targetAttr.getName(), attrCtxUnder);
 
         if (addedSimpleRefTraits != null) {
             for (String trait : addedSimpleRefTraits) {

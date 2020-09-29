@@ -14,6 +14,9 @@ public class DynamicObjectExtensions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param obj Object
+   * @param propertyName String
+   * @return boolean
    */
   @Deprecated
   public static boolean hasProperty(final Object obj, final String propertyName) {

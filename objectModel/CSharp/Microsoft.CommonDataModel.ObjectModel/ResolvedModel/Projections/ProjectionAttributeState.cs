@@ -26,6 +26,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         /// Keep a list of original polymorphic source states
         /// </summary>
         internal List<ProjectionAttributeState> PreviousStateList { get; set; }
+        
+        /// <summary>
+        /// The attribute ordinal originated from the array expansion operation
+        /// </summary>
+        internal int? Ordinal { get; set; }
 
         /// <summary>
         /// Create a new empty state
@@ -35,6 +40,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.Ctx = Ctx;
             CurrentResolvedAttribute = null;
             PreviousStateList = null;
+        }
+
+        /// <summary>
+        /// Creates a copy of the state and sets its previous state to be itself
+        /// </summary>
+        internal ProjectionAttributeState Copy()
+        {
+            ProjectionAttributeState copy = new ProjectionAttributeState(this.Ctx)
+            {
+                CurrentResolvedAttribute = this.CurrentResolvedAttribute,
+                PreviousStateList = new List<ProjectionAttributeState> { this },
+                Ordinal = this.Ordinal
+            };
+
+            return copy;
         }
     }
 }

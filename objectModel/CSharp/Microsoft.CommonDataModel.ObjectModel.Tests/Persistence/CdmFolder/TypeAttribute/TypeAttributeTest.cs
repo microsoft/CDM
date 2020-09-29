@@ -65,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
 
             var resOpt = new ResolveOptions()
             {
-                StrictValidation = true
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
             };
             // Read from an unresolved entity schema.
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/TeamMembership.cdm.json/TeamMembership", null , resOpt);

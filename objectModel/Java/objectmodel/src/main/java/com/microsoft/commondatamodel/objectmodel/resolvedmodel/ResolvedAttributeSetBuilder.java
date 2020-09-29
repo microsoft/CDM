@@ -35,7 +35,7 @@ public class ResolvedAttributeSetBuilder {
 
   /**
    *
-   * @param rasNew
+   * @param rasNew ResolvedAttributeSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -62,7 +62,7 @@ public class ResolvedAttributeSetBuilder {
 
   /**
    *
-   * @param ra
+   * @param ra ResolvedAttribute
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -457,6 +457,7 @@ public class ResolvedAttributeSetBuilder {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return ResolvedAttributeSet
    */
   @Deprecated
   public ResolvedAttributeSet getResolvedAttributeSet() {
@@ -466,6 +467,7 @@ public class ResolvedAttributeSetBuilder {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resolvedAttributeSet ResolvedAttributeSet
    */
   @Deprecated
   public void setResolvedAttributeSet(final ResolvedAttributeSet resolvedAttributeSet) {

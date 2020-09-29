@@ -36,7 +36,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityStringReference = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityStringReference);
-            CdmEntityDefinition resolvedTestEntityStringReference = await TestUtils.GetResolvedEntity(corpus, entTestEntityStringReference, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityStringReference = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityStringReference, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityStringReference);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
         }
@@ -57,7 +57,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityEntityReference = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityEntityReference);
-            CdmEntityDefinition resolvedTestEntityEntityReference = await TestUtils.GetResolvedEntity(corpus, entTestEntityEntityReference, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityEntityReference = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityEntityReference, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityEntityReference);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityEntityReference);
         }
@@ -78,7 +78,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityProjection = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityProjection);
-            CdmEntityDefinition resolvedTestEntityProjection = await TestUtils.GetResolvedEntity(corpus, entTestEntityProjection, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityProjection = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityProjection, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityProjection);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityProjection);
         }
@@ -99,7 +99,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityNestedProjection = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityNestedProjection);
-            CdmEntityDefinition resolvedTestEntityNestedProjection = await TestUtils.GetResolvedEntity(corpus, entTestEntityNestedProjection, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityNestedProjection = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityNestedProjection, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityNestedProjection);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityNestedProjection);
         }
@@ -120,7 +120,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityAttributeStringReference = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityAttributeStringReference);
-            CdmEntityDefinition resolvedTestEntityAttributeStringReference = await TestUtils.GetResolvedEntity(corpus, entTestEntityAttributeStringReference, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityAttributeStringReference = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityAttributeStringReference, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityAttributeStringReference);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeStringReference);
         }
@@ -141,7 +141,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityAttributeEntityReference = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityAttributeEntityReference);
-            CdmEntityDefinition resolvedTestEntityAttributeEntityReference = await TestUtils.GetResolvedEntity(corpus, entTestEntityAttributeEntityReference, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityAttributeEntityReference = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityAttributeEntityReference, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityAttributeEntityReference);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeEntityReference);
         }
@@ -162,7 +162,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityAttributeProjection = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityAttributeProjection);
-            CdmEntityDefinition resolvedTestEntityAttributeProjection = await TestUtils.GetResolvedEntity(corpus, entTestEntityAttributeProjection, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityAttributeProjection = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityAttributeProjection, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityAttributeProjection);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeProjection);
         }
@@ -183,7 +183,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityAttributeNestedProjection = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityAttributeNestedProjection);
-            CdmEntityDefinition resolvedTestEntityAttributeNestedProjection = await TestUtils.GetResolvedEntity(corpus, entTestEntityAttributeNestedProjection, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityAttributeNestedProjection = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityAttributeNestedProjection, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityAttributeNestedProjection);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeNestedProjection);
         }
@@ -204,7 +204,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityTrait = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityTrait);
-            CdmEntityDefinition resolvedTestEntityTrait = await TestUtils.GetResolvedEntity(corpus, entTestEntityTrait, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityTrait = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityTrait, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityTrait);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityTrait);
             {
@@ -238,7 +238,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestEntityExtendsTrait = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestEntityExtendsTrait);
-            CdmEntityDefinition resolvedTestEntityExtendsTrait = await TestUtils.GetResolvedEntity(corpus, entTestEntityExtendsTrait, new List<string> { });
+            CdmEntityDefinition resolvedTestEntityExtendsTrait = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityExtendsTrait, new List<string> { });
             Assert.IsNotNull(resolvedTestEntityExtendsTrait);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityExtendsTrait);
             {
@@ -272,7 +272,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestProjectionTrait = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestProjectionTrait);
-            CdmEntityDefinition resolvedTestProjectionTrait = await TestUtils.GetResolvedEntity(corpus, entTestProjectionTrait, new List<string> { });
+            CdmEntityDefinition resolvedTestProjectionTrait = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestProjectionTrait, new List<string> { });
             Assert.IsNotNull(resolvedTestProjectionTrait);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionTrait);
             {
@@ -306,7 +306,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             CdmEntityDefinition entTestProjectionExtendsTrait = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entTestProjectionExtendsTrait);
-            CdmEntityDefinition resolvedTestProjectionExtendsTrait = await TestUtils.GetResolvedEntity(corpus, entTestProjectionExtendsTrait, new List<string> { });
+            CdmEntityDefinition resolvedTestProjectionExtendsTrait = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestProjectionExtendsTrait, new List<string> { });
             Assert.IsNotNull(resolvedTestProjectionExtendsTrait);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionExtendsTrait);
             {

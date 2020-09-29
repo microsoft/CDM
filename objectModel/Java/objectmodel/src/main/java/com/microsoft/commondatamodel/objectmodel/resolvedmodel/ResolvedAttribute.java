@@ -177,7 +177,7 @@ public class ResolvedAttribute {
 
   /**
    *
-   * @param resolvedName
+   * @param resolvedName String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -191,7 +191,7 @@ public class ResolvedAttribute {
 
   /**
    *
-   * @return
+   * @return ResolvedTraitSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -202,7 +202,7 @@ public class ResolvedAttribute {
 
   /**
    *
-   * @param resolvedTraits
+   * @param resolvedTraits ResolvedTraitSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -246,6 +246,7 @@ public class ResolvedAttribute {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return int attribute count
    */
   @Deprecated
   public int getResolvedAttributeCount() { return this.resolvedAttributeCount; }
@@ -253,6 +254,7 @@ public class ResolvedAttribute {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param resolvedAttributeCount attribute count
    */
   @Deprecated
   public void setResolvedAttributeCount(final int resolvedAttributeCount) { this.resolvedAttributeCount = resolvedAttributeCount; }

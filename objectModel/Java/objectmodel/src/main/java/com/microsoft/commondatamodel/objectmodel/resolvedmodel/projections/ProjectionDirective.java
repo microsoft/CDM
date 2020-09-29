@@ -93,6 +93,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return ResolveOptions
      */
     @Deprecated
     public ResolveOptions getResOpt() {
@@ -104,6 +105,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return CdmObjectDefinitionBase
      */
     @Deprecated
     public CdmObjectDefinitionBase getOwner() {
@@ -115,6 +117,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return CdmObjectReference
      */
     @Deprecated
     public CdmObjectReference getOwnerRef() {
@@ -126,6 +129,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return CdmObjectType
      */
     @Deprecated
     public CdmObjectType getOwnerType() {
@@ -138,6 +142,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return String
      */
     @Deprecated
     public String getOriginalSourceEntityAttributeName() {
@@ -150,6 +155,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return CardinalitySettings
      */
     @Deprecated
     public CardinalitySettings getCardinality() {
@@ -161,6 +167,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return boolean
      */
     @Deprecated
     public boolean getIsSourcePolymorphic() {
@@ -172,6 +179,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Integer
      */
     @Deprecated
     public Integer getCurrentDepth() {
@@ -181,6 +189,7 @@ public final class ProjectionDirective {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param currentDepth Integer 
      */
     @Deprecated
     public void setCurrentDepth(final Integer currentDepth) {
@@ -192,6 +201,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return boolean
      */
     @Deprecated
     public boolean getHasNoMaximumDepth() {
@@ -203,6 +213,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Integer
      */
     @Deprecated
     public Integer getMaximumDepth() {
@@ -214,6 +225,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Boolean
      */
     @Deprecated
     public Boolean getIsArray() {
@@ -225,6 +237,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Boolean
      */
     @Deprecated
     public boolean getIsReferenceOnly() {
@@ -236,6 +249,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Boolean
      */
     @Deprecated
     public boolean getIsNormalized() {
@@ -247,6 +261,7 @@ public final class ProjectionDirective {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Boolean
      */
     @Deprecated
     public boolean getIsStructured() {

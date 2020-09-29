@@ -4,7 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.TestUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
@@ -46,7 +46,7 @@ public class ForwardCompatibilityTest {
 
         CdmEntityDefinition entTestEntityStringReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
         Assert.assertNotNull(entTestEntityStringReference);
-        CdmEntityDefinition resolvedTestEntityStringReference = TestUtils.getResolvedEntity(corpus, entTestEntityStringReference, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
+        CdmEntityDefinition resolvedTestEntityStringReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
         Assert.assertNotNull(resolvedTestEntityStringReference);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
     }

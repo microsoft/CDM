@@ -1,9 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmDocumentDefinition } from '../../Cdm/CdmDocumentDefinition';
-import { CdmManifestDefinition } from '../../Cdm/CdmManifestDefinition';
-import { CdmCorpusDefinition, cdmStatusLevel, resolveOptions, StorageAdapter } from '../../internal';
+import { 
+    CdmCorpusDefinition,
+    CdmDocumentDefinition,
+    CdmManifestDefinition,
+    cdmStatusLevel,
+    resolveOptions,
+    importsLoadStrategy,
+    StorageAdapter
+} from '../../internal';
 import { LocalAdapter } from '../../Storage';
 import { testHelper } from '../testHelper';
 
@@ -21,7 +27,7 @@ describe('Cdm/ImportsTest', () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestEntityWithMissingImport');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
         const resOpt = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingImport.cdm.json', null, resOpt);
         expect(doc)
@@ -42,7 +48,7 @@ describe('Cdm/ImportsTest', () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestEntityWithMissingNestedImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
         const resOpt = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/missingNestedImport.cdm.json', null, resOpt);
         expect(doc)
@@ -67,7 +73,7 @@ describe('Cdm/ImportsTest', () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestEntityWithSameImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
         const resOpt = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
 
         const doc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('local:/multipleImports.cdm.json', null, resOpt);
@@ -114,7 +120,7 @@ describe('Cdm/ImportsTest', () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestLoadingSameImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
         const resOpt = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);
         expect(mainDoc)
@@ -146,7 +152,7 @@ describe('Cdm/ImportsTest', () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestLoadingSameMissingImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
         const resOpt = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);
         expect(mainDoc)
@@ -177,7 +183,7 @@ describe('Cdm/ImportsTest', () => {
         const localAdapter: LocalAdapter = createStorageAdapterForTest('TestLoadingAlreadyPresentImportsAsync');
         const cdmCorpus: CdmCorpusDefinition = createTestCorpus(localAdapter);
         const resOpt = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
 
         // load the first doc
         const mainDoc: CdmDocumentDefinition = await cdmCorpus.fetchObjectAsync<CdmDocumentDefinition>('mainEntity.cdm.json', null, resOpt);

@@ -10,6 +10,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
     using System;
+    using System.Collections.Generic;
 
     /// <summary>
     /// Operation RenameAttributes persistence
@@ -39,7 +40,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 renameAttributesOp.Explanation = (string)obj["explanation"];
             }
             renameAttributesOp.RenameFormat = obj["renameFormat"]?.ToString();
-            renameAttributesOp.ApplyTo = obj["applyTo"]?.ToObject<dynamic>();
+
+            if (obj["applyTo"] is JValue)
+            {
+                renameAttributesOp.ApplyTo = new List<string>
+                {
+                    (string)obj["applyTo"]
+                };
+            } 
+            else if (obj["applyTo"] is JArray applyToArray)
+            {
+                renameAttributesOp.ApplyTo = applyToArray.ToObject<List<string>>();
+            }
+            else if (obj["applyTo"] != null)
+            {
+                Logger.Error(nameof(OperationRenameAttributesPersistence), ctx, "Unsupported: applyTo property type should be string or List<string>.");
+                return null;
+            }
 
             return renameAttributesOp;
         }

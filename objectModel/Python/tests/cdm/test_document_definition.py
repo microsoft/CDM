@@ -2,6 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import unittest
+import os
 
 from cdm.objectmodel import CdmCorpusDefinition, CdmDocumentCollection, CdmDocumentDefinition, CdmFolderDefinition
 from cdm.utilities import ResolveOptions
@@ -11,6 +12,7 @@ from tests.common import async_test, TestHelper
 
 class DocumentDefinitionTests(unittest.TestCase):
     """Tests for the CdmDocumentDefinition class."""
+    tests_subpath = os.path.join('Cdm', 'Document')
 
     @async_test
     async def test_circular_import_with_moniker(self):
@@ -119,8 +121,22 @@ class DocumentDefinitionTests(unittest.TestCase):
         self.assertFalse(doc_b._import_priorities.has_circular_import)
         self.assertFalse(doc_c._import_priorities.has_circular_import)
 
+    @async_test
+    async def test_document_forcereload(self):
+        testName = 'testDocumentForceReload'
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, testName)  # type: CdmCorpusDefinition
+
+        # load the document and entity the first time
+        await corpus.fetch_object_async('doc.cdm.json/entity')
+        # reload the same doc and make sure it is reloaded correctly
+        reloadedEntity = await corpus.fetch_object_async('doc.cdm.json/entity', None, None, True)  # type: CdmEntityDefinition
+
+        # if the reloaded doc is not indexed correctly, the entity will not be able to be found
+        self.assertIsNotNone(reloadedEntity)
+
     def _mark_documents_to_index(self, documents: CdmDocumentCollection):
         """Sets the document's is_dirty flag to true and reset the import_priority."""
         for document in documents:
             document._needs_indexing = True
             document._import_priorities = None
+

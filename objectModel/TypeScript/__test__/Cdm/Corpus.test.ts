@@ -7,6 +7,7 @@ import {
     CdmDocumentDefinition,
     CdmEntityDefinition,
     cdmStatusLevel,
+    importsLoadStrategy,
     resolveOptions
 } from '../../internal';
 import { testHelper } from '../testHelper';
@@ -48,58 +49,58 @@ describe('Cdm/CdmCorpusDefinition', () => {
     });
 
     /**
-     * Tests the FetchObjectAsync function with the StrictValidation off.
+     * Tests the FetchObjectAsync function with the lazy imports load.
      */
-    it('testStrictValidationOff', async (done) => {
-        const corpus = testHelper.getLocalCorpus(testsSubpath, 'TestStrictValidation');
+    it('TestLazyLoadImports', async (done) => {
+        const corpus = testHelper.getLocalCorpus(testsSubpath, 'TestImportsLoadStrategy');
         corpus.setEventCallback((level, msg) => {
-            // when the strict validation is disabled, there should be no reference validation.
+            // when the imports are not loaded, there should be no reference validation.
             // no error should be logged.
             done.fail(new Error(msg));
         }, cdmStatusLevel.warning);
 
-        // load with strict validation disabled.
+        // load with deferred imports.
         const resOpt = new resolveOptions();
-        resOpt.strictValidation = false;
+        resOpt.importsLoadStrategy = importsLoadStrategy.lazyLoad;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
 
         done();
     });
     
     /**
-     * Tests the FetchObjectAsync function with the StrictValidation on.
+     * Tests the FetchObjectAsync function with the imports load strategy set to load.
      */
-    it('testStrictValidationOn', async (done) => {
+    it('TestLoadImports', async (done) => {
         let errorCount = 0;
-        let corpus = testHelper.getLocalCorpus(testsSubpath, 'TestStrictValidation');
+        let corpus = testHelper.getLocalCorpus(testsSubpath, 'TestImportsLoadStrategy');
         corpus.setEventCallback((level, msg) => {
-            if (msg.indexOf('Unable to resolve the reference') != -1) {
+            if (msg.indexOf('Unable to resolve the reference') !== -1) {
                 errorCount++;
             } else {
                 done.fail(new Error(msg));
             }
         }, cdmStatusLevel.error);
 
-        // load with strict validation.
+        // load imports.
         let resOpt = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
         expect(errorCount) 
             .toEqual(1);
 
         errorCount = 0;
-        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestStrictValidation');
+        corpus = testHelper.getLocalCorpus(testsSubpath, 'TestImportsLoadStrategy');
         corpus.setEventCallback((level, msg) => {
-            if (level == cdmStatusLevel.warning && msg.indexOf('Unable to resolve the reference') != -1) {
+            if (level === cdmStatusLevel.warning && msg.indexOf('Unable to resolve the reference') !== -1) {
                 errorCount++;
             } else {
                 done.fail(new Error(msg));
             }
         }, cdmStatusLevel.warning);
 
-        // load with strict validation and shallow validation.
+        // load imports with shallow validation.
         resOpt = new resolveOptions();
-        resOpt.strictValidation = true;
+        resOpt.importsLoadStrategy = importsLoadStrategy.load;
         resOpt.shallowValidation = true;
         await corpus.fetchObjectAsync<CdmDocumentDefinition>('local:/doc.cdm.json', null, resOpt);
         expect(errorCount) 

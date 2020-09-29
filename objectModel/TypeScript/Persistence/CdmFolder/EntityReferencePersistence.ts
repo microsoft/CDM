@@ -9,7 +9,9 @@ import {
     CdmEntityReference,
     cdmObjectType,
     CdmProjection,
-    CdmTraitReference
+    CdmTraitReference,
+    copyOptions,
+    resolveOptions
 } from '../../internal';
 import { cdmObjectRefPersistence } from './cdmObjectRefPersistence';
 import { ProjectionPersistence } from './Projections/ProjectionPersistence';
@@ -58,5 +60,14 @@ export class EntityReferencePersistence extends cdmObjectRefPersistence {
         }
 
         return entityReference;
+    }
+
+    public static toData(instance: CdmEntityReference, resOpt: resolveOptions, options: copyOptions): any {
+        if (instance.explicitReference !== undefined && instance.explicitReference instanceof CdmProjection) {
+            return ProjectionPersistence.toData(instance.explicitReference as CdmProjection, resOpt, options) as Projection;
+        }
+        else {
+            return cdmObjectRefPersistence.toData(instance, resOpt, options);
+        }
     }
 }

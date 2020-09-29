@@ -8,15 +8,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
     using System.Collections.Generic;
 
     /// <summary>
-    /// A collection of ProjectionAttributeState with a hash for a easy search
-    /// and links to collection of previous projection states
+    /// A collection of ProjectionAttributeState objects
     /// </summary>
     internal sealed class ProjectionAttributeStateSet
     {
         /// <summary>
-        /// A set with the resolved attribute name as a the key and the projection attribute state as value
+        /// A list containing all the ProjectionAttributeStates
         /// </summary>
-        private Dictionary<string, ProjectionAttributeState> Set = new Dictionary<string, ProjectionAttributeState>();
+        internal List<ProjectionAttributeState> States { get; }
 
         internal CdmCorpusContext Ctx { get; private set; }
 
@@ -26,12 +25,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         public ProjectionAttributeStateSet(CdmCorpusContext Ctx)
         {
             this.Ctx = Ctx;
+            this.States = new List<ProjectionAttributeState>();
         }
 
         /// <summary>
         /// Add to the collection
         /// </summary>
-        /// <param name="pas"></param>
         internal void Add(ProjectionAttributeState pas)
         {
             if (pas == null ||
@@ -42,19 +41,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             }
             else
             {
-                Set[pas.CurrentResolvedAttribute.ResolvedName] = pas;
+                States.Add(pas);
             }
         }
 
         /// <summary>
-        /// Remove from collection if key is found
+        /// Remove from collection
         /// </summary>
-        /// <param name="resolvedAttributeName"></param>
-        /// <returns></returns>
-        internal bool Remove(string resolvedAttributeName)
+        internal bool Remove(ProjectionAttributeState pas)
         {
-            if (Set.Remove(resolvedAttributeName))
+            if (pas != null && Contains(pas))
             {
+                States.Remove(pas);
                 return true;
             }
             else
@@ -65,56 +63,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         }
 
         /// <summary>
-        /// Remove from collection if key is found
-        /// </summary>
-        /// <param name="resolvedAttributeName"></param>
-        /// <returns></returns>
-        internal bool Remove(ProjectionAttributeState pas)
-        {
-            bool result = false;
-            if (Set.ContainsKey(pas.CurrentResolvedAttribute.ResolvedName) &&
-                Set[pas.CurrentResolvedAttribute.ResolvedName] == pas)
-            {
-                result = Remove(pas.CurrentResolvedAttribute.ResolvedName);
-            }
-            else
-            {
-                Logger.Warning(nameof(ProjectionAttributeStateSet), this.Ctx, $"Invalid ProjectionAttributeState provided for removal from the Set. Remove operation failed.", nameof(Remove));
-            }
-
-            return result;
-        }
-
-        /// <summary>
         /// Check if exists in collection
         /// </summary>
-        /// <param name="resolvedAttributeName"></param>
-        /// <returns></returns>
-        internal bool Contains(string resolvedAttributeName)
+        internal bool Contains(ProjectionAttributeState pas)
         {
-            return Set.ContainsKey(resolvedAttributeName);
-        }
-
-        /// <summary>
-        /// Find in collection
-        /// </summary>
-        /// <param name="resolvedAttributeName"></param>
-        /// <returns></returns>
-        internal ProjectionAttributeState GetValue(string resolvedAttributeName)
-        {
-            ProjectionAttributeState pas;
-            return (Set.TryGetValue(resolvedAttributeName, out pas)) ? pas : null;
-        }
-
-        /// <summary>
-        /// Get a list of values
-        /// </summary>
-        internal IEnumerable<ProjectionAttributeState> Values
-        {
-            get
-            {
-                return Set.Values;
-            }
+            return States.Contains(pas);
         }
     }
 }

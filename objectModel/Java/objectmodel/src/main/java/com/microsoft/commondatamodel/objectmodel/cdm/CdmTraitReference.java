@@ -34,10 +34,10 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   }
 
   /**
-   * @param pathFrom
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathFrom Path from
+   * @param preChildren Pre children
+   * @param postChildren Post children
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -64,6 +64,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
 
   /**
    * Gets the trait reference argument.
+   * @return CdmArgumentCollection
    */
   public CdmArgumentCollection getArguments() {
     return this.arguments;
@@ -71,6 +72,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
 
   /**
    * Gets or sets true if the trait was generated from a property and false it was directly loaded.
+   * @return boolean
    */
   public boolean isFromProperty() {
     return this.fromProperty;
@@ -328,9 +330,9 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   }
 
   /**
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved option
+   * @param options copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -345,6 +347,8 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
    * Returns a map from parameter names to the final argument values for a strait reference.
    * Values come (in this order) from base trait defaults then default overrides on inheritance
    * then values supplied on this reference
+   * @param resOpt Resolved option
+   * @return Map of string to object
    */
   public Map<String, Object> fetchFinalArgumentValues(ResolveOptions resOpt) {
     Map<String, Object> finalArgs = new LinkedHashMap<>();
@@ -355,7 +359,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
     }
     // there is only one resolved trait
     ResolvedTrait rt = rts.getFirst();
-    if (rt.getParameterValues() != null && rt.getParameterValues().length() > 0) {
+    if (rt != null && rt.getParameterValues() != null && rt.getParameterValues().length() > 0) {
       final int l = rt.getParameterValues().length();
       for (int i = 0; i < l; i++) {
         final CdmParameterDefinition p = rt.getParameterValues().fetchParameter(i);
@@ -400,6 +404,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return boolean
    */
   @Deprecated
   public boolean isResolvedArguments() {
@@ -409,6 +414,7 @@ public class CdmTraitReference extends CdmObjectReferenceBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resolvedArguments boolan
    */
   @Deprecated
   public void setResolvedArguments(boolean resolvedArguments) {

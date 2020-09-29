@@ -157,7 +157,7 @@ public class SearchStructureUnitTest {
     @Deprecated
     public String searchTreeTraversal(ProjectionContext pc, String val) {
         SearchResult result = new SearchResult();
-        for (ProjectionAttributeState top : pc.getCurrentAttributeStateSet().getValues()) {
+        for (ProjectionAttributeState top : pc.getCurrentAttributeStateSet().getStates()) {
             SearchStructure st = new SearchStructure();
             st = SearchStructure.buildStructure(top, top, val, st, false, 0);
             if (st != null) {

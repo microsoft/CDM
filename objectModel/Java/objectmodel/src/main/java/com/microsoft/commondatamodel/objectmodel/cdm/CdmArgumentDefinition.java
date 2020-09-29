@@ -64,6 +64,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return Cdm Parameter Definition
    */
   @Deprecated
   public CdmParameterDefinition getResolvedParameter() {
@@ -73,6 +74,7 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resolvedParameter resolved parameter
    */
   @Deprecated
   public void setResolvedParameter(final CdmParameterDefinition resolvedParameter) {
@@ -81,9 +83,9 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
 
   /**
    *
-   * @return
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return Cdm Parameter Definition
    */
   @Deprecated
   public CdmParameterDefinition getParameterDef() {
@@ -92,9 +94,9 @@ public class CdmArgumentDefinition extends CdmObjectSimple {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Data object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, Please refrain from using it.
    */

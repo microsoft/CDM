@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.IO;
@@ -57,17 +58,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
-        /// Tests the FetchObjectAsync function with the StrictValidation off.
+        /// Tests the FetchObjectAsync function with the lazy imports load.
         /// </summary>
         [TestMethod]
-        public async Task TestStrictValidationOff()
+        public async Task TestLazyLoadImports()
         {
-            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestStrictValidation");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestImportsLoadStrategy");
             corpus.SetEventCallback(new EventCallback
             {
                 Invoke = (level, message) =>
                 {
-                    // when the strict validation is disabled, there should be no reference validation.
+                    // when the imports are not loaded, there should be no reference validation.
                     // no error should be logged.
                     Assert.Fail(message);
                 }
@@ -76,19 +77,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             // load with deferred imports.
             var resOpt = new ResolveOptions()
             {
-                StrictValidation = false
+                ImportsLoadStrategy = ImportsLoadStrategy.LazyLoad
             };
             await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", null, resOpt);
         }
 
         /// <summary>
-        /// Tests the FetchObjectAsync function with the StrictValidation on.
+        /// Tests the FetchObjectAsync function with the imports load strategy set to load.
         /// </summary>
         [TestMethod]
-        public async Task TestStrictValidationOn()
+        public async Task TestLoadImports()
         {
             int errorCount = 0;
-            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestStrictValidation");
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestImportsLoadStrategy");
             corpus.SetEventCallback(new EventCallback
             {
                 Invoke = (level, message) =>
@@ -105,16 +106,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 }
             }, CdmStatusLevel.Error);
 
-            // load with strict validation.
+            // load imports.
             var resOpt = new ResolveOptions()
             {
-                StrictValidation = true
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
             };
             await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", null, resOpt);
             Assert.AreEqual(1, errorCount);
 
             errorCount = 0;
-            corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestStrictValidation");
+            corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestImportsLoadStrategy");
             corpus.SetEventCallback(new EventCallback
             {
                 Invoke = (level, message) =>
@@ -131,10 +132,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 }
             }, CdmStatusLevel.Warning);
 
-            // load with strict validation and shallow validation.
+            // load imports with shallow validation.
             resOpt = new ResolveOptions()
             {
-                StrictValidation = true,
+                ImportsLoadStrategy = ImportsLoadStrategy.Load,
                 ShallowValidation = true
             };
             await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", null, resOpt);

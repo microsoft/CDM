@@ -3,11 +3,12 @@
 
 from typing import Optional, TYPE_CHECKING, List
 
-from cdm.enums import CdmObjectType, CdmOperationType, CdmAttributeContextType
+from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmOperationType
 from cdm.objectmodel import CdmAttributeContext
+from cdm.resolvedmodel.projections.projection_attribute_context_tree_builder import ProjectionAttributeContextTreeBuilder
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
-from cdm.utilities import logger, Errors, AttributeContextParameters
+from cdm.utilities import AttributeContextParameters, Errors, logger
 
 from .cdm_operation_base import CdmOperationBase
 
@@ -31,8 +32,9 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
         self._TAG = CdmOperationExcludeAttributes.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationExcludeAttributes'] = None) -> 'CdmOperationExcludeAttributes':
-        logger.error(self._TAG, self.ctx, 'Projection operation not implemented yet.', 'copy')
-        return CdmOperationExcludeAttributes(self.ctx)
+        copy = CdmOperationExcludeAttributes(self.ctx)
+        copy.exclude_attributes = self.exclude_attributes[:]
+        return copy
 
     def get_name(self) -> str:
         return 'operationExcludeAttributes'
@@ -40,10 +42,6 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
     @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.OPERATION_EXCLUDE_ATTRIBUTES_DEF
-
-    def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
-        logger.error(self._TAG, self.ctx, 'Projection operation not implemented yet.', 'is_derived_from')
-        return False
 
     def validate(self) -> bool:
         missing_fields = []
@@ -85,39 +83,36 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
         # We use the top-level names because the exclude list may contain a previous name our current resolved attributes had
         top_level_exclude_attribute_names = ProjectionResolutionCommonUtil._get_top_list(proj_ctx, self.exclude_attributes)
 
+        # Initialize a projection attribute context tree builder with the created attribute context for the operation
+        attr_ctx_tree_builder = ProjectionAttributeContextTreeBuilder(attr_ctx_op_exclude_attrs)
+
         # Iterate through all the projection attribute states generated from the source's resolved attributes
         # Each projection attribute state contains a resolved attribute that it is corresponding to
-        for current_PAS in proj_ctx._current_attribute_state_set._values:
+        for current_PAS in proj_ctx._current_attribute_state_set._states:
             # Check if the current projection attribute state's resolved attribute is in the list of attributes to exclude
             # If this attribute is not in the exclude list, then we are including it in the output
             if current_PAS._current_resolved_attribute.resolved_name not in top_level_exclude_attribute_names:
-                # Create a new attribute context for the attribute that we are including
-                attr_ctx_added_attr_param = AttributeContextParameters()
-                attr_ctx_added_attr_param._under = attr_ctx
-                attr_ctx_added_attr_param._type = CdmAttributeContextType.ATTRIBUTE_DEFINITION
-                attr_ctx_added_attr_param._name = current_PAS._current_resolved_attribute.resolved_name
-                attr_ctx_added_attr = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_added_attr_param)
+                # Create the attribute context parameters and just store it in the builder for now
+                # We will create the attribute contexts at the end
+                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(None, current_PAS, current_PAS._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
 
-                # Create a projection attribute state for the included attribute
+                # Create a projection attribute state for the included attribute by creating a copy of the current state
+                # Copy() sets the current state as the previous state for the new one
                 # We only create projection attribute states for attributes that are not in the exclude list
-                # Add the current projection attribute state as the previous state of the new projection attribute state
-                new_PAS = ProjectionAttributeState(proj_output_set._ctx)
-                new_PAS._current_resolved_attribute = current_PAS._current_resolved_attribute
-                new_PAS._previous_state_list = [current_PAS]
+                new_PAS = current_PAS._copy()
 
                 proj_output_set._add(new_PAS)
             else:
                 # The current projection attribute state's resolved attribute is in the exclude list
 
                 # Get the attribute name the way it appears in the exclude list
-                # For our attribute context, we want to use the attribute name the attribute has in the exclude list rather than its current name
                 exclude_attribute_name = top_level_exclude_attribute_names[current_PAS._current_resolved_attribute.resolved_name]
 
-                # Create a new attribute context for the excluded attribute
-                attr_ctx_excluded_attr_param = AttributeContextParameters()
-                attr_ctx_excluded_attr_param._under = attr_ctx_op_exclude_attrs
-                attr_ctx_excluded_attr_param._type = CdmAttributeContextType.ATTRIBUTE_DEFINITION
-                attr_ctx_excluded_attr_param._name = exclude_attribute_name
-                attr_ctx_excluded_attr = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_excluded_attr_param)
+                # Create the attribute context parameters and just store it in the builder for now
+                # We will create the attribute contexts at the end
+                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(exclude_attribute_name, current_PAS, current_PAS._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+
+        # Create all the attribute contexts and construct the tree
+        attr_ctx_tree_builder._construct_attribute_context_tree(proj_ctx)
 
         return proj_output_set

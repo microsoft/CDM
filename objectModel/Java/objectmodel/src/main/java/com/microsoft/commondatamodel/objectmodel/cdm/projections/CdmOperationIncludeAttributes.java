@@ -7,15 +7,17 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeStateSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class to handle IncludeAttributes operations
@@ -28,12 +30,18 @@ public class CdmOperationIncludeAttributes extends CdmOperationBase {
         super(ctx);
         this.setObjectType(CdmObjectType.OperationIncludeAttributesDef);
         this.setType(CdmOperationType.IncludeAttributes);
+
+        this.includeAttributes = new ArrayList<>();
     }
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "copy");
-        return new CdmOperationIncludeAttributes(this.getCtx());
+        List<String> includeAttributes = new ArrayList<String>();
+        includeAttributes.addAll(this.includeAttributes);
+
+        CdmOperationIncludeAttributes copy = new CdmOperationIncludeAttributes(this.getCtx());
+        copy.includeAttributes = includeAttributes;
+        return copy;
     }
 
     public List<String> getIncludeAttributes() {
@@ -70,16 +78,10 @@ public class CdmOperationIncludeAttributes extends CdmOperationBase {
     }
 
     @Override
-    public boolean isDerivedFrom(String baseDef, ResolveOptions resOpt) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "isDerivedFrom");
-        return false;
-    }
-
-    @Override
     public boolean validate() {
         ArrayList<String> missingFields = new ArrayList<>();
 
-        if (this.includeAttributes == null || this.includeAttributes.size() == 0) {
+        if (this.includeAttributes == null) {
             missingFields.add("includeAttributes");
         }
         if (missingFields.size() > 0) {
@@ -118,7 +120,49 @@ public class CdmOperationIncludeAttributes extends CdmOperationBase {
     @Override
     @Deprecated
     public ProjectionAttributeStateSet appendProjectionAttributeState(ProjectionContext projCtx, ProjectionAttributeStateSet projAttrStateSet, CdmAttributeContext attrCtx) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "appendProjectionAttributeState");
-        return null;
+        // Create a new attribute context for the operation
+        AttributeContextParameters attrCtxOpIncludeAttrsParam = new AttributeContextParameters();
+        attrCtxOpIncludeAttrsParam.setUnder(attrCtx);
+        attrCtxOpIncludeAttrsParam.setType(CdmAttributeContextType.OperationIncludeAttributes);
+        attrCtxOpIncludeAttrsParam.setName("operation/index" + this.getIndex() + "/operationIncludeAttributes");
+        CdmAttributeContext attrCtxOpIncludeAttrs = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxOpIncludeAttrsParam);
+
+        // Get the top-level attribute names for each of the included attributes
+        // Since the include operation allows providing either current state resolved attribute names
+        //   or the previous state resolved attribute names, we search for the name in the PAS tree
+        //   and fetch the top level resolved attribute names.
+        Map<String, String> topLevelIncludeAttributeNames = ProjectionResolutionCommonUtil.getTopList(projCtx, this.includeAttributes);
+
+        // Initialize a projection attribute context tree builder with the created attribute context for the operation
+        ProjectionAttributeContextTreeBuilder attrCtxTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpIncludeAttrs);
+
+        // Iterate through all the PAS in the PASSet generated from the projection source's resolved attributes
+        for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
+            // Check if the current PAS's RA is in the list of attributes to include.
+            if (topLevelIncludeAttributeNames.containsKey(currentPAS.getCurrentResolvedAttribute().getResolvedName())) {
+                // Get the attribute name the way it appears in the include list
+                String includeAttributeName = topLevelIncludeAttributeNames.get(currentPAS.getCurrentResolvedAttribute().getResolvedName());
+
+                // Create the attribute context parameters and just store it in the builder for now
+                // We will create the attribute contexts at the end
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.getCurrentResolvedAttribute(), CdmAttributeContextType.AttributeDefinition);
+
+                // Create a projection attribute state for the included attribute by creating a copy of the current state
+                // Copy() sets the current state as the previous state for the new one
+                // We only create projection attribute states for attributes in the include list
+                ProjectionAttributeState newPAS = currentPAS.copy();
+
+                projAttrStateSet.add(newPAS);
+            } else {
+                // Create the attribute context parameters and just store it in the builder for now
+                // We will create the attribute contexts at the end
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(null, currentPAS, currentPAS.getCurrentResolvedAttribute(), CdmAttributeContextType.AttributeDefinition);
+            }
+        }
+
+        // Create all the attribute contexts and construct the tree
+        attrCtxTreeBuilder.constructAttributeContextTree(projCtx);
+
+        return projAttrStateSet;
     }
 }

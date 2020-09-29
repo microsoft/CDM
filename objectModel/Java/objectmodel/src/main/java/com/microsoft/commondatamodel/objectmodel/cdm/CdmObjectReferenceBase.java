@@ -85,6 +85,10 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @param refTo - Object
+   * @param simpleReference - if simple reference
+   * @return Cdm Object Reference Base
    */
   @Deprecated
   public abstract CdmObjectReferenceBase copyRefObject(ResolveOptions resOpt, Object refTo, boolean simpleReference);
@@ -92,15 +96,20 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @param refTo - Object
+   * @param simpleReference - if simple reference
+   * @param host - Object reference base
+   * @return Cdm Object Reference Base
    */
   @Deprecated
   public abstract CdmObjectReferenceBase copyRefObject(ResolveOptions resOpt, Object refTo, boolean simpleReference, CdmObjectReferenceBase host);
 
   /**
-   * @param pathFrom
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathFrom - path from
+   * @param preChildren - pre children
+   * @param postChildren - post children
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -110,6 +119,8 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @return Resolved Attribute Set Builder
    */
   @Override
   @Deprecated
@@ -120,6 +131,9 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @param under - CDM Attribute context
+   * @return Resolved Attribute SetBuilder
    */
   @Override
   @Deprecated
@@ -154,6 +168,8 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @return Resolved Trait Set
    */
   @Deprecated
   @Override
@@ -247,6 +263,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return Cdm Object
    */
   @Deprecated
   public CdmObject fetchResolvedReference() {
@@ -256,6 +273,8 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @return Cdm Object
    */
   @Deprecated
   public CdmObject fetchResolvedReference(ResolveOptions resOpt) {

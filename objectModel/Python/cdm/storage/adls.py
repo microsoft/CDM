@@ -38,7 +38,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         # --- internal ---
         self._adapter_paths = {}  # type: Dict[str, str]
-        self._file_system = None  # type: Optional[str]
+        self._root_blob_contrainer = None  # type: Optional[str]
         self._formatted_hostname = None  # type: Optional[str]
         self._http_authorization = 'Authorization'
         self._http_client = CdmHttpClient()  # type: CdmHttpClient
@@ -47,7 +47,8 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._resource = "https://storage.azure.com"  # type: Optional[str]
         self._type = 'adls'
         self._root = None
-        self._sub_path = None  # type: Optional[str]
+        self._unescaped_root_sub_path = None # type: Optional[str]
+        self._escaped_root_sub_path = None # type: Optional[str]
         self._file_modified_time_cache = {}  # type: Dict[str, datetime]
         self.timeout = self.ADLS_DEFAULT_TIMEOUT # type: int
 
@@ -78,8 +79,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
     @root.setter
     def root(self, value: str):
-        self._root = value
-        self._extract_filesystem_and_sub_path(self._root)
+        self._root = self._extract_root_blob_container_and_sub_path(value)
 
     @property
     def tenant(self) -> str:
@@ -128,7 +128,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if formatted_corpus_path in self._adapter_paths:
             return self._adapter_paths[formatted_corpus_path]
         else:
-            return 'https://' + self.hostname + self.root + formatted_corpus_path
+            return 'https://' + self.hostname + self._get_escaped_root() + self._escape_path(formatted_corpus_path)
 
     def create_corpus_path(self, adapter_path: str) -> Optional[str]:
         if adapter_path:
@@ -140,8 +140,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
             hostname = self._format_hostname(adapter_path[start_index:end_index])
 
-            if hostname == self._formatted_hostname and adapter_path[end_index:].startswith(self._root):
-                corpus_path = adapter_path[end_index + len(self._root):]
+            if hostname == self._formatted_hostname and adapter_path[end_index:].startswith(self._get_escaped_root()):
+                escaped_corpus_path = adapter_path[end_index + len(self._get_escaped_root()):]
+                corpus_path = urllib.parse.unquote(escaped_corpus_path)
 
                 if corpus_path not in self._adapter_paths:
                     self._adapter_paths[corpus_path] = adapter_path
@@ -155,8 +156,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if folder_corpus_path is None:
             return None
 
-        url = 'https://{}/{}'.format(self.hostname, self._file_system)
-        directory = self._sub_path + self._format_corpus_path(folder_corpus_path)
+        url = 'https://{}/{}'.format(self._formatted_hostname, self._root_blob_contrainer)
+        escaped_folder_corpus_path = self._escape_path(folder_corpus_path)
+        directory = self._escaped_root_sub_path + self._format_corpus_path(escaped_folder_corpus_path)
         if directory.startswith('/'):
             directory = directory[1:]
 
@@ -170,9 +172,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             for path in data['paths']:
                 if 'isDirectory' not in path or path['isDirectory'] != 'true':
                     name = path['name']  # type: str
-                    name_without_sub_path = name[len(self._sub_path) + 1:] if self._sub_path and name.startswith(self._sub_path) else name
+                    name_without_root_sub_path = name[len(self._unescaped_root_sub_path) + 1:] if self._unescaped_root_sub_path and name.startswith(self._unescaped_root_sub_path) else name
 
-                    filepath = self._format_corpus_path(name_without_sub_path)
+                    filepath = self._format_corpus_path(name_without_root_sub_path)
                     results.append(filepath)
 
                     lastTimeString = path.get('lastModified')
@@ -252,8 +254,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         await self._http_client._send_async(request, self.wait_time_callback)
 
-        request = self._build_request(url + '?action=append&position=0', 'PATCH', data)
-        request.content_type = 'application/json'
+        request = self._build_request(url + '?action=append&position=0', 'PATCH', data, 'application/json; charset=utf-8')
 
         await self._http_client._send_async(request, self.wait_time_callback)
 
@@ -263,7 +264,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
     def _apply_shared_key(self, shared_key: str, url: str, method: str, content: Optional[str] = None, content_type: Optional[str] = None):
         headers = OrderedDict()
-        headers[self._http_xms_date] = format_date_time(mktime(datetime.utcnow().timetuple()))
+        headers[self._http_xms_date] = format_date_time(mktime(datetime.now().timetuple()))
         headers[self._http_xms_version] = '2018-06-17'
 
         content_length = 0
@@ -277,9 +278,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         builder.append('\n')  # Verb.
         builder.append('\n')  # Content-Encoding.
         builder.append('\n')  # Content-Language.
-        builder.append(content_length + '\n' if content_length else '\n')  # Content length.
+        builder.append(str(content_length) + '\n' if content_length else '\n')  # Content length.
         builder.append('\n')  # Content-md5.
-        builder.append(content_type + '; charset=utf-8\n' if content_type else '\n')  # Content-type.
+        builder.append(content_type + '\n' if content_type else '\n')  # Content-type.
         builder.append('\n')  # Date.
         builder.append('\n')  # If-modified-since.
         builder.append('\n')  # If-match.
@@ -302,7 +303,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
             for parameter in query_parameters:
                 key_value_pair = parameter.split('=')
-                builder.append('\n{}:{}'.format(key_value_pair[0], key_value_pair[1]))
+                builder.append('\n{}:{}'.format(key_value_pair[0], urllib.parse.unquote(key_value_pair[1])))
 
         # Hash the payload.
         data_to_hash = ''.join(builder).rstrip()
@@ -336,26 +337,31 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         return request
 
-    def _extract_filesystem_and_sub_path(self, root: str) -> None:
+    def _escape_path(self, unescaped_path: str):
+        return urllib.parse.quote(unescaped_path).replace('%2F', '/')
+
+    def _extract_root_blob_container_and_sub_path(self, root: str) -> None:
         # No root value was set
         if not root:
-            self._file_system = ''
-            self._sub_path = ''
-            return
+            self._root_blob_contrainer = ''
+            self._update_root_sub_path('')
+            return ''
 
-        # Remove leading /
+        # Remove leading and trailing /
         prep_root = root[1:] if root[0] == '/' else root
+        prep_root = prep_root[0: len(prep_root) - 1] if prep_root[len(prep_root) - 1] == '/' else prep_root
 
         # Root contains only the file-system name, e.g. "fs-name"
         if prep_root.find('/') == -1:
-            self._file_system = prep_root
-            self._sub_path = ''
-            return
+            self._root_blob_contrainer = prep_root
+            self._update_root_sub_path('')
+            return '/{}'.format(self._root_blob_contrainer)
 
         # Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
         prep_root_array = prep_root.split('/')
-        self._file_system = prep_root_array[0]
-        self._sub_path = '/'.join(prep_root_array[1:])
+        self._root_blob_contrainer = prep_root_array[0]
+        self._update_root_sub_path('/'.join(prep_root_array[1:])) 
+        return '/{}/{}'.format(self._root_blob_contrainer, self._unescaped_root_sub_path)
 
     def _format_corpus_path(self, corpus_path: str) -> str:
         path_tuple = StorageUtils.split_namespace_path(corpus_path)
@@ -379,8 +385,15 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         # In-memory token cache is handled by adal by default.
         return self._auth_context.acquire_token_with_client_credentials(self._resource, self.client_id, self.secret)
 
+    def _get_escaped_root(self):
+        return '/' + self._root_blob_contrainer + '/' + self._escaped_root_sub_path if self._escaped_root_sub_path else '/' + self._root_blob_contrainer
+
     def _try_from_base64_string(self, content: str) -> bool:
         try:
             return base64.b64decode(content)
         except Exception:
             return None
+    
+    def _update_root_sub_path(self, value: str):
+        self._unescaped_root_sub_path = value
+        self._escaped_root_sub_path = self._escape_path(value)

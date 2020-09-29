@@ -21,8 +21,7 @@ export class ADLSAdapter extends NetworkAdapter {
     }
 
     public set root(val: string) {
-        this._root = val;
-        this.extractFilesystemAndSubPath(this._root);
+        this._root = this.extractRootBlobContainerAndSubPath(val);
     }
 
     public get tenant(): string {
@@ -59,9 +58,10 @@ export class ADLSAdapter extends NetworkAdapter {
     private _root: string;
     private _tenant: string;
     private context: adal.AuthenticationContext;
-    private fileSystem: string = '';
     private formattedHostname: string = '';
-    private subPath: string = '';
+    private rootBlobContainer: string = '';
+    private unescapedRootSubPath: string = '';
+    private escapedRootSubPath: string = '';
     private tokenResponse: adal.TokenResponse;
     private fileModifiedTimeCache: Map<string, Date> = new Map<string, Date>();
 
@@ -119,9 +119,7 @@ export class ADLSAdapter extends NetworkAdapter {
         let request: CdmHttpRequest = await this.buildRequest(`${url}?resource=file`, 'PUT');
         await super.executeRequest(request);
 
-        request = await this.buildRequest(`${url}?action=append&position=0`, 'PATCH');
-        request.content = data;
-        request.contentType = 'application/json; charset=utf-8';
+        request = await this.buildRequest(`${url}?action=append&position=0`, 'PATCH', data, "application/json; charset=utf-8");
 
         await super.executeRequest(request);
 
@@ -144,14 +142,14 @@ export class ADLSAdapter extends NetworkAdapter {
         if (this.adapterPaths.has(formattedCorpusPath)) {
             return this.adapterPaths.get(formattedCorpusPath);
         } else {
-            return `https://${this.hostname}${this.root}${formattedCorpusPath}`;
+            return `https://${this.hostname}${this.getEscapedRoot()}${this.escapePath(formattedCorpusPath)}`;
         }
     }
 
     public createCorpusPath(adapterPath: string): string {
         if (adapterPath) {
-            const startIndex: number = "https://".length;
-            const endIndex: number = adapterPath.indexOf("/", startIndex + 1);
+            const startIndex: number = 'https://'.length;
+            const endIndex: number = adapterPath.indexOf('/', startIndex + 1);
 
             if (endIndex < startIndex) {
                 throw new Error(`Unexpected adapter path: ${adapterPath}`);
@@ -161,10 +159,10 @@ export class ADLSAdapter extends NetworkAdapter {
 
             if (hostname === this.formattedHostname
                 && adapterPath.substring(endIndex)
-                .startsWith(this.root)) {
-                const corpusPath: string = adapterPath.substring(endIndex + this.root.length);
-                if (!this.adapterPaths.has(corpusPath))
-                {
+                .startsWith(this.getEscapedRoot())) {
+                const escapedCorpusPath: string = adapterPath.substring(endIndex + this.getEscapedRoot().length);
+                const corpusPath: string = decodeURIComponent(escapedCorpusPath);
+                if (!this.adapterPaths.has(corpusPath)) {
                     this.adapterPaths.set(corpusPath, adapterPath);
                 }
 
@@ -177,14 +175,14 @@ export class ADLSAdapter extends NetworkAdapter {
 
     public async computeLastModifiedTimeAsync(corpusPath: string): Promise<Date> {
         const cachedValue: Date = this.isCacheEnabled() ? this.fileModifiedTimeCache.get(corpusPath) : undefined;
-        if(cachedValue) {
+        if (cachedValue) {
             return cachedValue;
         }
-        else {        
+        else {
 
-            const adapterPath: string = this.createAdapterPath(corpusPath);
+            const url: string = this.createAdapterPath(corpusPath);
 
-            const request: CdmHttpRequest = await this.buildRequest(adapterPath, 'HEAD');
+            const request: CdmHttpRequest = await this.buildRequest(url, 'HEAD');
 
             try {
                 const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
@@ -195,7 +193,7 @@ export class ADLSAdapter extends NetworkAdapter {
                     const lastTimeString: string = cdmResponse.responseHeaders.get('last-modified');
                     if(lastTimeString)
                     {
-                        const lastTime:Date = new Date();
+                        const lastTime:Date = new Date(lastTimeString);
                         if(this.isCacheEnabled())
                         {
                             this.fileModifiedTimeCache.set(corpusPath, lastTime);
@@ -215,8 +213,13 @@ export class ADLSAdapter extends NetworkAdapter {
             return undefined;
         }
 
-        const url: string = `https://${this.hostname}/${this.fileSystem}`;
-        const directory: string = `${this.subPath}${folderCorpusPath}`;
+        const url: string = `https://${this.formattedHostname}/${this.rootBlobContainer}`;
+        const escapedFolderCorpusPath: string = this.escapePath(folderCorpusPath);
+        let directory: string = `${this.escapedRootSubPath}${this.formatCorpusPath(escapedFolderCorpusPath)}`;
+        if (directory.startsWith('/')) {
+            directory = directory.substring(1);
+        }
+
         const request: CdmHttpRequest = await this.buildRequest(`${url}?directory=${directory}&recursive=True&resource=filesystem`, 'GET');
         const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
 
@@ -229,10 +232,11 @@ export class ADLSAdapter extends NetworkAdapter {
 
             for (const jObject of jArray) {
                 const isDirectory: boolean = jObject.isDirectory;
-                if (isDirectory === undefined || typeof isDirectory !== 'boolean') {
+                if (isDirectory === undefined || !isDirectory) {
                     const name: string = jObject.name;
-                    const nameWithoutSubPath: string = this.subPath.length > 0 && name.startsWith(this.subPath) ?
-                        name.substring(this.subPath.length + 1) : name;
+                    const nameWithoutSubPath: string = this.unescapedRootSubPath.length > 0 && name.startsWith(this.unescapedRootSubPath) ?
+                        name.substring(this.unescapedRootSubPath.length + 1) : name;
+
                     const path: string = this.formatCorpusPath(nameWithoutSubPath);
                     result.push(path);
 
@@ -328,6 +332,67 @@ export class ADLSAdapter extends NetworkAdapter {
         }
     }
 
+    private applySharedKey(sharedKey: string, url: string, method: string, content?: string, contentType?: string): Map<string, string> {
+        const headers: Map<string, string> = new Map<string, string>();
+
+        // Add UTC now time and new version.
+        headers.set(this.httpXmsDate, new Date().toUTCString());
+        headers.set(this.httpXmsVersion, '2018-06-17');
+
+        let contentLength: number = 0;
+
+        const uri: URL = new URL(url);
+
+        if (content) {
+            contentLength = Buffer.from(content).length;
+        }
+
+        let builder: string = '';
+        builder += `${method}\n`; // verb;
+        builder += '\n'; // Content-Encoding
+        builder += ('\n'); // Content-Language.
+        builder += (contentLength !== 0) ? `${contentLength}\n` : '\n'; // Content length.
+        builder += '\n'; // Content-md5.
+        builder += contentType ? `${contentType}\n` : '\n'; // Content-type.
+        builder += '\n'; // Date.
+        builder += '\n'; // If-modified-since.
+        builder += '\n'; // If-match.
+        builder += '\n'; // If-none-match.
+        builder += '\n'; // If-unmodified-since.
+        builder += '\n'; // Range.
+
+        for (const header of headers) {
+            builder += `${header[0]}:${header[1]}\n`;
+        }
+
+        // Append canonicalized resource.
+        const accountName: string = uri.host.split('.')[0];
+        builder += '/';
+        builder += accountName;
+        builder += uri.pathname;
+
+        // Append canonicalized queries.
+        if (uri.search) {
+            const queryParameters: string[] = (uri.search.startsWith('?') ? uri.search.substr(1) : uri.search).split('&');
+
+            for (const parameter of queryParameters) {
+                const keyValuePair: string[] = parameter.split('=');
+                builder += `\n${keyValuePair[0]}:${decodeURIComponent(keyValuePair[1])}`;
+            }
+        }
+
+        // hash the payload
+        const dataToHash: string = builder.trimRight();
+        const bytes: Buffer = Buffer.from(sharedKey, 'base64');
+
+        const hmac: crypto.Hmac = crypto.createHmac('sha256', bytes);
+        const signedString: string = `SharedKey ${accountName}:${hmac.update(dataToHash)
+            .digest('base64')}`;
+        headers.set(this.httpAuthorization, signedString);
+
+        return headers;
+    }
+
     private async buildRequest(url: string, method: string, content?: string, contentType?: string): Promise<CdmHttpRequest> {
         let request: CdmHttpRequest;
 
@@ -359,92 +424,48 @@ export class ADLSAdapter extends NetworkAdapter {
         return request;
     }
 
-    private applySharedKey(sharedKey: string, url: string, method: string, content?: string, contentType?: string): Map<string, string> {
-        const headers: Map<string, string> = new Map<string, string>();
-
-        // Add UTC now time and new version.
-        headers.set(this.httpXmsDate, new Date().toUTCString());
-        headers.set(this.httpXmsVersion, '2018-06-17');
-
-        let contentLength: number = 0;
-
-        const uri: URL = new URL(url);
-
-        if (content) {
-            contentLength = Buffer.from(content).length;
+    private ensurePath(pathFor: string): boolean {
+        if (pathFor.lastIndexOf('/') === -1) {
+            return false;
         }
 
-        let builder: string = '';
-        builder += `${method}\n`; // verb;
-        builder += '\n'; // Content-Encoding
-        builder += ('\n'); // Content-Language.
-        builder += (contentLength !== 0) ? `${contentLength}\n` : '\n'; // Content length.
-        builder += '\n'; // Content-md5.
-        builder += contentType ? `${contentType}; charset=utf-8\n` : '\n'; // Content-type.
-        builder += '\n'; // Date.
-        builder += '\n'; // If-modified-since.
-        builder += '\n'; // If-match.
-        builder += '\n'; // If-none-match.
-        builder += '\n'; // If-unmodified-since.
-        builder += '\n'; // Range.
-
-        for (const header of headers) {
-            builder += `${header[0]}:${header[1]}\n`;
-        }
-
-        // Append canonicalized resource.
-        const accountName: string = uri.host.split('.')[0];
-        builder += '/';
-        builder += accountName;
-        builder += uri.pathname;
-
-        // Append canonicalized queries.
-        if (uri.search) {
-            const queryParameters: string[] = (uri.search.startsWith('?') ? uri.search.substr(1) : uri.search).split('&');
-
-            for (const parameter of queryParameters) {
-                const keyValuePair: string[] = parameter.split('=');
-                builder += `\n${keyValuePair[0]}:${keyValuePair[1]}`;
-            }
-        }
-
-        // hash the payload
-        const dataToHash: string = builder.trimRight();
-        const bytes: Buffer = Buffer.from(sharedKey, 'base64');
-
-        const hmac: crypto.Hmac = crypto.createHmac('sha256', bytes);
-        const signedString: string = `SharedKey ${accountName}:${hmac.update(dataToHash)
-            .digest('base64')}`;
-        headers.set(this.httpAuthorization, signedString);
-
-        return headers;
+        // Folders are only of virtual kind in Azure Storage
+        return true;
     }
 
-    private extractFilesystemAndSubPath(root: string): void {
+    private escapePath(unescapedPath: string): string {
+        return encodeURIComponent(unescapedPath)
+            .replace(/%2F/g, '/');
+    }
+
+    private extractRootBlobContainerAndSubPath(root: string): string {
         // No root value was set
         if (!root) {
-            this.fileSystem = '';
-            this.subPath = '';
+            this.rootBlobContainer = '';
+            this.updateRootSubPath('');
 
-            return;
+            return '';
         }
 
-        // Remove leading /
-        const prepRoot: string = this.root.startsWith('/') ? this.root.substring(1) : this.root;
+        // Remove leading and trailing /
+        let prepRoot: string = root.startsWith('/') ? root.substring(1) : root;
+        prepRoot = prepRoot.endsWith('/') ? prepRoot.substring(0, prepRoot.length - 1) : prepRoot;
 
         // Root contains only the file-system name, e.g. "fs-name"
         if (prepRoot.indexOf('/') === -1) {
-            this.fileSystem = prepRoot;
-            this.subPath = '';
+            this.rootBlobContainer = prepRoot;
+            this.updateRootSubPath('');
 
-            return;
+            return `/${this.rootBlobContainer}`;
         }
 
         // Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
         const prepRootArray: string[] = prepRoot.split('/');
-        this.fileSystem = prepRootArray[0];
-        this.subPath = prepRootArray.slice(1)
-            .join('/');
+        this.rootBlobContainer = prepRootArray[0];
+        this.updateRootSubPath(prepRootArray.slice(1)
+            .join('/'));
+
+        return `/${this.rootBlobContainer}/${this.unescapedRootSubPath}`;
     }
 
     private formatCorpusPath(corpusPath: string): string {
@@ -490,12 +511,14 @@ export class ADLSAdapter extends NetworkAdapter {
         });
     }
 
-    private ensurePath(pathFor: string): boolean {
-        if (pathFor.lastIndexOf('/') === -1) {
-            return false;
-        }
+    private getEscapedRoot(): string {
+        return this.escapedRootSubPath ?
+            `/${this.rootBlobContainer}/${this.escapedRootSubPath}`
+            : `/${this.rootBlobContainer}`;
+    }
 
-        // Folders are only of virtual kind in Azure Storage
-        return true;
+    private updateRootSubPath(value: string): void {
+        this.unescapedRootSubPath = value;
+        this.escapedRootSubPath = this.escapePath(this.unescapedRootSubPath);
     }
 }

@@ -141,7 +141,7 @@ class SearchStructureUnitTest(unittest.TestCase):
 
     def _search_tree_traversal(self, pc: 'ProjectionContext', val: str) -> str:
         result = SearchResult()
-        for top in pc._current_attribute_state_set._values:
+        for top in pc._current_attribute_state_set._states:
             st = SearchStructure()
             st = SearchStructure._build_structure(top, top, val, st, False, 0)
             if st:

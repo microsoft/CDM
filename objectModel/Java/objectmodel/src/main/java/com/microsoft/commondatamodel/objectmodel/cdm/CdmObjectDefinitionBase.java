@@ -76,8 +76,8 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
 
   /**
    *
-   * @param resOpt
-   * @param copy
+   * @param resOpt Resolve Options
+   * @param copy Copy object definition
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

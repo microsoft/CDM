@@ -40,5 +40,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         {
             return strA.Equals(strB, StringComparison.InvariantCulture);
         }
+
+        /// <summary>
+        /// Replaces in the pattern in the source with the value.
+        /// </summary>
+        /// <param name="source">The source string.</param>
+        /// <param name="pattern">A pattern in the format {p}. The code will try to find {p} and {P}.</param>
+        /// <param name="value">The value to be replaced instead of the pattern.</param>
+        /// <returns></returns>
+        public static string Replace(string source, char pattern, string value)
+        {
+            if (value == null)
+            {
+                value = "";
+            }
+
+            char lowerCasePattern = char.ToLower(pattern);
+            char upperCasePattern = char.ToUpper(pattern);
+            string upperCaseValue = "";
+            
+            if (!string.IsNullOrEmpty(value))
+            {
+                upperCaseValue = char.ToUpper(value[0]) + (value.Length > 1 ? value.Slice(1) : "");
+            }
+
+            string result = source.Replace($"{{{lowerCasePattern}}}", value);
+            return result.Replace($"{{{upperCasePattern}}}", upperCaseValue);
+        }
     }
 }

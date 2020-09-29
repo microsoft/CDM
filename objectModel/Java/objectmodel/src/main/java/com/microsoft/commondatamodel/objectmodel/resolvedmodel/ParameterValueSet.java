@@ -55,8 +55,8 @@ public class ParameterValueSet {
 
   /**
    *
-   * @param paramName
-   * @return
+   * @param paramName String
+   * @return ParameterValue
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

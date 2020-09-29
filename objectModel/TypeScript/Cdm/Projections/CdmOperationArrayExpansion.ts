@@ -2,7 +2,10 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    AttributeContextParameters,
+    CdmAttribute,
     CdmAttributeContext,
+    cdmAttributeContextType,
     CdmCorpusContext,
     CdmObject,
     cdmObjectType,
@@ -10,8 +13,10 @@ import {
     cdmOperationType,
     Errors,
     Logger,
+    ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
+    ResolvedAttribute,
     resolveOptions,
     VisitCallback
 } from '../../internal';
@@ -35,8 +40,11 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.');
-        return new CdmOperationArrayExpansion(this.ctx);
+        const copy: CdmOperationArrayExpansion = new CdmOperationArrayExpansion(this.ctx);
+        copy.startOrdinal = this.startOrdinal;
+        copy.endOrdinal = this.endOrdinal;
+
+        return copy;
     }
 
     /**
@@ -51,14 +59,6 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
      */
     public getObjectType(): cdmObjectType {
         return cdmObjectType.operationArrayExpansionDef;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.isDerivedFrom.name);
-        return false;
     }
 
     /**
@@ -117,8 +117,91 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
      * @inheritdoc
      * @internal
      */
-    public appendProjectionAttributeState(projCtx: ProjectionContext, projAttrStateSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.appendProjectionAttributeState.name);
-        return undefined;
+    public appendProjectionAttributeState(projCtx: ProjectionContext, projOutputSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
+        // Create a new attribute context for the operation
+        const attrCtxOpArrayExpansionParam: AttributeContextParameters = {
+            under: attrCtx,
+            type: cdmAttributeContextType.operationArrayExpansion,
+            name: `operation/index${this.index}/operationArrayExpansion`
+        };
+        const attrCtxOpArrayExpansion: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxOpArrayExpansionParam);
+
+        // Expansion steps start at round 0
+        let round: number = 0;
+        const projAttrStatesFromRounds: ProjectionAttributeState[] = [];
+
+        // Ordinal validation
+        if (this.startOrdinal > this.endOrdinal) {
+            Logger.warning(this.TAG, this.ctx, `startOrdinal ${this.startOrdinal} should not be greater than endOrdinal ${this.endOrdinal}`, this.appendProjectionAttributeState.name);
+        } else {
+            // Ordinals should start at startOrdinal or 0, whichever is larger.
+            const startingOrdinal: number = Math.max(0, this.startOrdinal);
+
+            // Ordinals should end at endOrdinal or the maximum ordinal allowed (set in resolve options), whichever is smaller.
+            if (this.endOrdinal > projCtx.projectionDirective.resOpt.maxOrdinalForArrayExpansion) {
+                Logger.warning(
+                    this.TAG,
+                    this.ctx,
+                    `endOrdinal ${this.endOrdinal} is greater than the maximum allowed ordinal of ${projCtx.projectionDirective.resOpt.maxOrdinalForArrayExpansion}. Using the maximum allowed ordinal instead.`,
+                    this.appendProjectionAttributeState.name
+                );
+            }
+            const endingOrdinal: number = Math.min(projCtx.projectionDirective.resOpt.maxOrdinalForArrayExpansion, this.endOrdinal);
+
+            // For each ordinal, create a copy of the input resolved attribute
+            for (let i: number = startingOrdinal; i <= endingOrdinal; i++) {
+                // Create a new attribute context for the round
+                const attrCtxRoundParam: AttributeContextParameters = {
+                    under: attrCtxOpArrayExpansion,
+                    type: cdmAttributeContextType.generatedRound,
+                    name: `_generatedAttributeRound${round}`
+                };
+                const attrCtxRound: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxRoundParam);
+
+                // Iterate through all the projection attribute states generated from the source's resolved attributes
+                // Each projection attribute state contains a resolved attribute that it is corresponding to
+                for (const currentPAS of projCtx.currentAttributeStateSet.states) {
+                    // Create a new attribute context for the expanded attribute with the current ordinal
+                    const attrCtxExpandedAttrParam: AttributeContextParameters = {
+                        under: attrCtxRound,
+                        type: cdmAttributeContextType.attributeDefinition,
+                        name: `${currentPAS.currentResolvedAttribute.resolvedName}@${i}`
+                    };
+                    const attrCtxExpandedAttr: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxExpandedAttrParam);
+
+                    // Create a new resolved attribute for the expanded attribute
+                    const newResAttr: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.currentResolvedAttribute.target as CdmAttribute, currentPAS.currentResolvedAttribute.resolvedName);
+
+                    // Create a projection attribute state for the expanded attribute
+                    const newPAS: ProjectionAttributeState = new ProjectionAttributeState(projOutputSet.ctx);
+                    newPAS.currentResolvedAttribute = newResAttr;
+                    newPAS.previousStateList = [ currentPAS ];
+                    newPAS.ordinal = i;
+
+                    projAttrStatesFromRounds.push(newPAS);
+                }
+
+                if (i === endingOrdinal) {
+                    break;
+                }
+
+                // Increment the round
+                round++;
+            }
+        }
+
+        if (projAttrStatesFromRounds.length === 0) {
+            // No rounds were produced from the array expansion - input passes through
+            for (const pas of projCtx.currentAttributeStateSet.states) {
+                projOutputSet.add(pas);
+            }
+        } else {
+            // Add all the projection attribute states containing the expanded attributes to the output
+            for (const pas of projAttrStatesFromRounds) {
+                projOutputSet.add(pas);
+            }
+        }
+
+        return projOutputSet;
     }
 }

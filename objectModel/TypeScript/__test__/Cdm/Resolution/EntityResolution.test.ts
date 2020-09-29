@@ -2,27 +2,29 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as fs from 'fs';
-import { CdmAttributeContext } from '../../../Cdm/CdmAttributeContext';
-import { CdmAttributeGroupDefinition } from '../../../Cdm/CdmAttributeGroupDefinition';
-import { CdmAttributeGroupReference } from '../../../Cdm/CdmAttributeGroupReference';
-import { CdmAttributeItem } from '../../../Cdm/CdmAttributeItem';
-import { CdmAttributeReference } from '../../../Cdm/CdmAttributeReference';
-import { CdmObject } from '../../../Cdm/CdmObject';
-import { stringSpewCatcher } from '../../../Cdm/stringSpewCatcher';
+
 import {
+    CdmAttributeContext,
+    CdmAttributeGroupDefinition,
+    CdmAttributeGroupReference,
+    CdmAttributeItem,
+    CdmAttributeReference,
     CdmCorpusDefinition,
     CdmEntityDeclarationDefinition,
     CdmEntityDefinition,
     CdmManifestDefinition,
+    CdmObject,
     CdmReferencedEntityDeclarationDefinition,
-    cdmStatusLevel
+    cdmStatusLevel,
+    importsLoadStrategy,
+    resolveOptions,
+    stringSpewCatcher
 } from '../../../internal';
 import { ResolvedAttributeSet } from '../../../ResolvedModel/ResolvedAttributeSet';
 import { ResolvedEntity } from '../../../ResolvedModel/ResolvedEntity';
 import { LocalAdapter } from '../../../Storage';
 import { AttributeResolutionDirectiveSet } from '../../../Utilities/AttributeResolutionDirectiveSet';
 import { isReferencedEntityDeclarationDefinition } from '../../../Utilities/cdmObjectTypeGuards';
-import { resolveOptions } from '../../../Utilities/resolveOptions';
 import { testHelper } from '../../testHelper';
 
 /**
@@ -338,7 +340,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
                     }
                     corpusPath = cdmCorpus.storage.createAbsoluteCorpusPath(ent.entityPath, currentFile);
                     const resOpt: resolveOptions = new resolveOptions();
-                    resOpt.strictValidation = true;
+                    resOpt.importsLoadStrategy = importsLoadStrategy.load;
                     const newEnt: CdmEntityDefinition = await cdmCorpus.fetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
                     resOpt.wrtDoc = newEnt.inDocument;
                     resOpt.directives = directives;

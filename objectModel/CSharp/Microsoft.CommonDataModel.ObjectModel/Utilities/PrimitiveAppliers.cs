@@ -299,7 +299,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                         return replaced;
                     };
                     string result;
-                    string srcName = appCtx.ResAttSource.previousResolvedName;
+                    string srcName = appCtx.ResAttSource.PreviousResolvedName;
                     if (iN < 0 && iO < 0)
                     {
                         result = format;
@@ -519,7 +519,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                         ResolvedAttribute template = state.Array_template as ResolvedAttribute;
                         appCtx.ResAttNew.Target = template.Target;
                         // copy the template
-                        appCtx.ResAttNew.ResolvedName = state.Array_template.previousResolvedName;
+                        appCtx.ResAttNew.ResolvedName = state.Array_template.PreviousResolvedName;
                         appCtx.ResAttNew.ResolvedTraits = template.ResolvedTraits.DeepCopy();
                         appCtx.ResGuideNew = appCtx.ResGuide; // just take the source, because this is not a new attribute that may have different settings
                         appCtx.Continue = state.Flex_currentOrdinal < state.Array_finalOrdinal;

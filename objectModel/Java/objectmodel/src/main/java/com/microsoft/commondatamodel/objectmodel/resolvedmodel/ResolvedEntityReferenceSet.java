@@ -62,11 +62,11 @@ public class ResolvedEntityReferenceSet {
 
   /**
    *
-   * @param resOpt
-   * @param to
-   * @param indent
-   * @param nameSort
-   * @throws IOException
+   * @param resOpt Resolved options
+   * @param to StringSpewCatcher
+   * @param indent String
+   * @param nameSort boolean
+   * @throws IOException Throws IO exception
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
    */

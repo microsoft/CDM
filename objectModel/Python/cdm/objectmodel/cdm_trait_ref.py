@@ -178,7 +178,7 @@ class CdmTraitReference(CdmObjectReference):
 
         # there is only one resolved trait
         rt = rts.first  # type: ResolvedTrait
-        if rt.parameter_values:
+        if rt and rt.parameter_values:
             l = rt.parameter_values.length
             for i in range(l):
                 parameter = rt.parameter_values.fetch_parameter_at_index(i)

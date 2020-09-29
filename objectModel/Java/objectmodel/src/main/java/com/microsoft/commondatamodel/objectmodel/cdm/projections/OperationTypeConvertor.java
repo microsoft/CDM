@@ -14,6 +14,8 @@ public class OperationTypeConvertor {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @param opType CdmOperationType
+     * @return String
      */
     @Deprecated
     public static String operationTypeToString(CdmOperationType opType) {

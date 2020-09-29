@@ -267,6 +267,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 copy.Ctx = this.Ctx;
                 copy.Name = this.Name;
                 copy.Definitions.Clear();
+                copy.DeclarationsIndexed = false;
                 copy.InternalDeclarations = new ConcurrentDictionary<string, CdmObjectBase>();
                 copy.NeedsIndexing = true;
                 copy.Imports.Clear();
@@ -452,7 +453,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return await this.IndexIfNeeded(resOpt, true);
         }
 
-        internal async Task<bool> IndexIfNeeded(ResolveOptions resOpt, bool strictValidation = false)
+        internal async Task<bool> IndexIfNeeded(ResolveOptions resOpt, bool loadImports = false)
         {
             if (this.NeedsIndexing && !this.CurrentlyIndexing)
             {
@@ -463,14 +464,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
 
                 var corpus = this.Folder.Corpus;
-
-                // if the strictValidation is specified by the user in the ResolveOptions that value has precedence.
-                if (resOpt.StrictValidation != null)
+                
+                // If the imports load strategy is "LazyLoad", loadImports value will be the one sent by the called function.
+                if (resOpt.ImportsLoadStrategy == ImportsLoadStrategy.DoNotLoad)
                 {
-                    strictValidation = (bool)resOpt.StrictValidation;
+                    loadImports = false;
+                }
+                else if (resOpt.ImportsLoadStrategy == ImportsLoadStrategy.Load)
+                {
+                    loadImports = true;
                 }
 
-                if (strictValidation)
+                if (loadImports)
                 {
                     await corpus.ResolveImportsAsync(this, resOpt);
                 }
@@ -478,7 +483,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // make the corpus internal machinery pay attention to this document for this call.
                 corpus.documentLibrary.MarkDocumentForIndexing(this);
 
-                return corpus.IndexDocuments(resOpt, strictValidation);
+                return corpus.IndexDocuments(resOpt, loadImports);
             }
 
             return true;

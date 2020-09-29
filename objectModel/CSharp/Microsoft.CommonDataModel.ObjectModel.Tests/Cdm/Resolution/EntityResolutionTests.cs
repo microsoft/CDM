@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using System.IO;
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
@@ -333,7 +334,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                         corpusPath = cdmCorpus.Storage.CreateAbsoluteCorpusPath(((CdmLocalEntityDeclarationDefinition)ent).EntityPath, currentFile);
                         ResolveOptions resOpt = new ResolveOptions()
                         {
-                            StrictValidation = true
+                            ImportsLoadStrategy = ImportsLoadStrategy.Load
                         };
                         CdmEntityDefinition newEnt = await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(corpusPath, null, resOpt);
                         resOpt.WrtDoc = newEnt.InDocument;

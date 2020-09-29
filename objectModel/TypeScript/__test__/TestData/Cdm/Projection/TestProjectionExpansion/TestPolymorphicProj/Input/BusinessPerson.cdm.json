@@ -1,0 +1,58 @@
+{
+  "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+  "jsonSchemaSemanticVersion": "1.1.0",
+  "imports": [
+    {
+      "corpusPath": "_allImports.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BusinessPerson",
+      "hasAttributes": [
+        {
+          "name": "contactAt",
+          "isPolymorphicSource": true,
+          "entity": {
+            "operations": [
+              {
+                "$type": "renameAttributes",
+                "renameFormat": "{m}{o}"
+              }
+            ],
+            "source": {
+              "operations": [
+                {
+                  "$type": "arrayExpansion",
+                  "startOrdinal": 1,
+                  "endOrdinal": 2
+                }
+              ],
+              "source": {
+                "entityReference": {
+                  "entityName": "ContactKinds",
+                  "hasAttributes": [
+                    {
+                      "name": "emailKind",
+                      "entity": "Email",
+                      "resolutionGuidance": {
+                        "renameFormat": "{m}"
+                      }
+                    },
+                    {
+                      "name": "phoneKind",
+                      "entity": "Phone",
+                      "resolutionGuidance": {
+                        "renameFormat": "{m}"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -3,6 +3,8 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import java.io.File;
+
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
@@ -13,6 +15,8 @@ import org.testng.Assert;
  * Tests for the CdmDocumentDefinition class.
  */
 public class DocumentDefinitionTest {
+    private static final String TESTS_SUBPATH = new File("cdm", "document").toString();
+
     /**
      * Test when A -> M/B -> C -> B. In this case, although A imports B with a
      * moniker, B should be in the priorityImports because it is imported by C.
@@ -127,6 +131,23 @@ public class DocumentDefinitionTest {
         Assert.assertFalse(docA.getImportPriorities().getHasCircularImport());
         Assert.assertFalse(docB.getImportPriorities().getHasCircularImport());
         Assert.assertFalse(docC.getImportPriorities().getHasCircularImport());
+    }
+
+    /**
+     * Setting the forceReload flag to true correctly reloads the document
+     */
+    @Test
+    public void TestDocumentForceReload() throws InterruptedException {
+        final String testName = "TestDocumentForceReload";
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+
+        // load the document and entity the first time
+        corpus.<CdmEntityDefinition>fetchObjectAsync("doc.cdm.json/entity").join();
+        // reload the same doc and make sure it is reloaded correctly
+        CdmEntityDefinition reloadedEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("doc.cdm.json/entity", null, null, true).join();
+
+        // if the reloaded doc is not indexed correctly, the entity will not be able to be found
+        Assert.assertNotNull(reloadedEntity);
     }
 
     /**

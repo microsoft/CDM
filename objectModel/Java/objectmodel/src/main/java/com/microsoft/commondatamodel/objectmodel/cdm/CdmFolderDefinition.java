@@ -40,7 +40,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
   /**
    *
-   * @return
+   * @return CdmCorpusDefinition
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -51,7 +51,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
   /**
    *
-   * @param corpus
+   * @param corpus CdmCorpusDefinition
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -72,6 +72,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return String
    */
   @Deprecated
   public String getFolderPath() {
@@ -81,6 +82,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param folderPath String
    */
   @Deprecated
   public void setFolderPath(final String folderPath) {
@@ -97,7 +99,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
   /**
    *
-   * @return
+   * @return String
    * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -108,7 +110,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
   /**
    *
-   * @param namespace
+   * @param namespace String
    * @deprecated Only for internal use. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -133,6 +135,7 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @return Map of String and CDM Definition
    */
   @Deprecated
   public Map<String, CdmDocumentDefinition> getDocumentLookup() {
@@ -178,6 +181,8 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @return ResolvedTraitSet
    */
   @Override
   @Deprecated
@@ -192,6 +197,9 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param path path
+   * @param makeFolder Make folder
+   * @return CompletableFuture of CdmFolderDefinition
    */
   @Deprecated
   public CompletableFuture<CdmFolderDefinition> fetchChildFolderFromPathAsync(
@@ -297,9 +305,9 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.

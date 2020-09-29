@@ -4,10 +4,11 @@
 
   <parent>
     <groupId>com.microsoft.commondatamodel</groupId>
-    <artifactId>pom-master</artifactId>
+    <artifactId>cdm-parent</artifactId>
     <version>${revision}</version>
   </parent>
 
+  <groupId>com.microsoft.commondatamodel</groupId>
   <artifactId>objectmodel</artifactId>
 
   <properties>
@@ -27,6 +28,30 @@
     <slf4j.version>1.7.25</slf4j.version>
     <testng.testng.version>6.14.3</testng.testng.version>
   </properties>
+
+  <name>com.microsoft.commondatamodel:objectmodel</name>
+  <description>CDM SDK to work with semantic metadata of the Data</description>
+  <url>https://github.com/Microsoft/CDM</url>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>CDM Team</name>
+      <organization>Microsoft</organization>
+      <organizationUrl>https://docs.microsoft.com/en-us/common-data-model/</organizationUrl>
+    </developer>
+  </developers>
+	
+  <scm>
+    <connection>scm:git:git://github.com/Microsoft/CDM.git</connection>
+    <developerConnection>scm:git:ssh://github.com/Microsoft/CDM.git</developerConnection>
+    <url>http://github.com/Microsoft/CDM</url>
+  </scm>
 
   <profiles>
     <profile>
@@ -199,7 +224,7 @@
         <version>${apache.surefire.version}</version>
         <configuration>
           <excludes>
-            <exclude>**/AdlsAdapterTest.java</exclude>
+            <exclude>${adlsTestExclude}</exclude>
           </excludes>
         </configuration>
       </plugin>

@@ -471,12 +471,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 DateTimeOffset? modifiedTime = await this.Ctx.Corpus.GetLastModifiedTimeAsyncFromObject(this);
 
-                foreach (var entity in this.Entities)
-                    await entity.FileStatusCheckAsync();
-
-                foreach (var subManifest in this.SubManifests)
-                    await subManifest.FileStatusCheckAsync();
-
                 this.LastFileStatusCheckTime = DateTimeOffset.UtcNow;
                 if (this.LastFileModifiedTime == null)
                     this.LastFileModifiedTime = this._fileSystemModifiedTime;
@@ -488,6 +482,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     this.LastFileModifiedTime = TimeUtils.MaxTime(modifiedTime, this.LastFileModifiedTime);
                     this._fileSystemModifiedTime = this.LastFileModifiedTime;
                 }
+
+                foreach (var entity in this.Entities)
+                    await entity.FileStatusCheckAsync();
+
+                foreach (var subManifest in this.SubManifests)
+                    await subManifest.FileStatusCheckAsync();
             }
         }
 

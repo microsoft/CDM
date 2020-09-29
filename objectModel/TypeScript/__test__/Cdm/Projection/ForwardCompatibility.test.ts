@@ -3,10 +3,11 @@
 
 import {
     CdmCorpusDefinition,
-    CdmEntityDefinition
+    CdmEntityDefinition,
+    cdmStatusLevel
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
-import { testUtils } from '../../testUtils';
+import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 import { AttributeContextUtil } from './AttributeContextUtil';
 
 /**
@@ -26,12 +27,19 @@ describe('Cdm/Projection/ForwardCompatibility', () => {
         const entityName: string = testName;
 
         const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
+
+        corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
+            if (message.indexOf('Projection operation not implemented yet.') === -1) {
+                fail(`Some unexpected failure - ${message}!`);
+            }
+        }, cdmStatusLevel.error);
+
         const expectedOutputPath: string = testHelper.getExpectedOutputFolderPath(testsSubpath, testName);
 
         const entTestEntityStringReference: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
         expect(entTestEntityStringReference)
             .toBeTruthy();
-        const resolvedTestEntityStringReference: CdmEntityDefinition = await testUtils.getResolvedEntity(corpus, entTestEntityStringReference, [ 'referenceOnly' ]);
+        const resolvedTestEntityStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, [ 'referenceOnly' ]);
         expect(resolvedTestEntityStringReference)
             .toBeTruthy();
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);

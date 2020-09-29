@@ -52,8 +52,14 @@ public class Utils {
     }
   }
 
+
+
   /**
    * Create a copy of the reference object.
+   * @param objRef CdmObjectReference
+   * @param resOpt ResolveOptions
+   * @param options CopyOptions
+   * @return Object
    */
   public static Object copyIdentifierRef(final CdmObjectReference objRef, final ResolveOptions resOpt,
                                          final CopyOptions options) {
@@ -82,6 +88,10 @@ public class Utils {
 
   /**
    * Creates a JSON object in the correct shape given an instance of a CDM object.
+   * @param instance Object
+   * @param resOpt ResolveOptions
+   * @param options CopyOptions
+   * @return JsonNode
    */
   public static JsonNode jsonForm(final Object instance, final ResolveOptions resOpt, final CopyOptions options) {
     if (instance == null) {
@@ -103,6 +113,9 @@ public class Utils {
 
   /**
    * Converts a JSON object to an CdmAttribute object.
+   * @param ctx CdmCorpusContext
+   * @param obj Object
+   * @return CdmAttributeItem
    */
   public static CdmAttributeItem createAttribute(final CdmCorpusContext ctx, final Object obj) {
     return createAttribute(ctx, obj, null);
@@ -110,6 +123,10 @@ public class Utils {
 
   /**
    * Converts a JSON object to an CdmAttribute object.
+   * @param ctx CdmCorpusContext
+   * @param obj Object
+   * @param entityName String
+   * @return CdmAttributeItem
    */
   public static CdmAttributeItem createAttribute(final CdmCorpusContext ctx, final Object obj, final String entityName) {
     if (obj == null) {
@@ -135,6 +152,9 @@ public class Utils {
 
   /**
    * Creates a CDM object from a JSON object.
+   * @param ctx CdmCorpusContext
+   * @param obj Object
+   * @return Object
    */
   public static Object createConstant(final CdmCorpusContext ctx, final Object obj) {
     if (obj == null) {
@@ -172,7 +192,10 @@ public class Utils {
 
   /**
    * Converts a JSON object to a CdmCollection of attributes.
-   */
+   * @param  ctx CdmCorpusContext
+   * @param obj JsonNode
+   * @return  ArrayList of CdmAttributeItem
+   */ 
   public static ArrayList<CdmAttributeItem> createAttributeList(final CdmCorpusContext ctx,
                                                                 final JsonNode obj) {
     return createAttributeList(ctx, obj, null);
@@ -180,6 +203,10 @@ public class Utils {
 
   /**
    * Converts a JSON object to a CdmCollection of attributes.
+   * @param  ctx CdmCorpusContext
+   * @param obj JsonNode
+   * @param entityName String
+   * @return  ArrayList of CdmAttributeItem
    */
   public static ArrayList<CdmAttributeItem> createAttributeList(final CdmCorpusContext ctx,
                                                                 final JsonNode obj,
@@ -198,6 +225,9 @@ public class Utils {
 
   /**
    * Converts a JSON object to a CdmCollection of TraitReferences.
+   * @param  ctx CdmCorpusContext
+   * @param obj Object
+   * @return  ArrayList of CdmAttributeItem
    */
   public static ArrayList<CdmTraitReference> createTraitReferenceList(final CdmCorpusContext ctx, final Object obj) {
 
@@ -228,6 +258,9 @@ public class Utils {
 
   /**
    * Adds all elements of a list to a CdmCollection.
+   * @param cdmCollection CdmCollection of type T 
+   * @param list List of T
+   * @param <T> Type
    */
   public static <T extends CdmObject> void addListToCdmCollection(final CdmCollection<T> cdmCollection,
                                                                   final List<T> list) {
@@ -240,6 +273,12 @@ public class Utils {
 
   /**
    * Creates a list object that is a copy of the input Iterable object.
+   * @param source Iterable of U
+   * @param resOpt ResolveOptions
+   * @param options CopyOptions 
+   * @param <T> Type
+   * @param <U> Type
+   * @return Arraylist of CdmObject 
    */
   public static <T, U extends CdmObject> ArrayList<T> listCopyDataAsCdmObject(
       final Iterable<U> source,
@@ -262,8 +301,14 @@ public class Utils {
     return casted;
   }
 
-  /**
-   * Creates a list of JSON objects that is a copy of the input Iterable object.
+
+  
+  /** 
+   * @param source Iterable
+   * @param resOpt Resolve Options
+   * @param options Copy options
+   * @param <T> Type
+   * @return ArrayNode
    */
   public static <T> ArrayNode listCopyDataAsArrayNode(
       final Iterable<T> source,

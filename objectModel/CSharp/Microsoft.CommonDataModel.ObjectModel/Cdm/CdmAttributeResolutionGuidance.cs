@@ -325,7 +325,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.renameFormat == null)
             {
                 if (attName == null)
-                { // a type attribute, so no nesting
+                {
+                    // a type attribute, so no nesting
                     if (this.cardinality == "many")
                         this.renameFormat = "{a}{o}";
                 }

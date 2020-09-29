@@ -5,7 +5,8 @@ import os
 import unittest
 
 from tests.cdm.projection.attribute_context_util import AttributeContextUtil
-from tests.common import async_test, TestHelper, TestUtils
+from tests.common import async_test, TestHelper
+from tests.utilities.projection_test_utils import ProjectionTestUtils
 
 
 class ProjectionAttributeContextTest(unittest.TestCase):
@@ -27,7 +28,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_string_reference = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_string_reference)
-        resolved_test_entity_string_reference = await TestUtils._get_resolved_entity(corpus, ent_test_entity_string_reference, [])
+        resolved_test_entity_string_reference = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_string_reference, [])
         self.assertIsNotNone(resolved_test_entity_string_reference)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_string_reference)
 
@@ -43,7 +44,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_entity_reference = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_entity_reference)
-        resolved_test_entity_entity_reference = await TestUtils._get_resolved_entity(corpus, ent_test_entity_entity_reference, [])
+        resolved_test_entity_entity_reference = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_entity_reference, [])
         self.assertIsNotNone(resolved_test_entity_entity_reference)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_entity_reference)
 
@@ -59,7 +60,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_projection = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_projection)
-        resolved_test_entity_projection = await TestUtils._get_resolved_entity(corpus, ent_test_entity_projection, [])
+        resolved_test_entity_projection = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_projection, [])
         self.assertIsNotNone(resolved_test_entity_projection)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_projection)
 
@@ -75,7 +76,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_nested_projection = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_nested_projection)
-        resolved_test_entity_nested_projection = await TestUtils._get_resolved_entity(corpus, ent_test_entity_nested_projection, [])
+        resolved_test_entity_nested_projection = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_nested_projection, [])
         self.assertIsNotNone(resolved_test_entity_nested_projection)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_nested_projection)
 
@@ -91,7 +92,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_attribute_string_reference = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_attribute_string_reference)
-        resolved_test_entity_attribute_string_reference = await TestUtils._get_resolved_entity(corpus, ent_test_entity_attribute_string_reference, [])
+        resolved_test_entity_attribute_string_reference = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_attribute_string_reference, [])
         self.assertIsNotNone(resolved_test_entity_attribute_string_reference)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_attribute_string_reference)
 
@@ -107,7 +108,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_attribute_entity_reference = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_attribute_entity_reference)
-        resolved_test_entity_attribute_entity_reference = await TestUtils._get_resolved_entity(corpus, ent_test_entity_attribute_entity_reference, [])
+        resolved_test_entity_attribute_entity_reference = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_attribute_entity_reference, [])
         self.assertIsNotNone(resolved_test_entity_attribute_entity_reference)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_attribute_entity_reference)
 
@@ -123,7 +124,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_attribute_projection = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_attribute_projection)
-        resolved_test_entity_attribute_projection = await TestUtils._get_resolved_entity(corpus, ent_test_entity_attribute_projection, [])
+        resolved_test_entity_attribute_projection = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_attribute_projection, [])
         self.assertIsNotNone(resolved_test_entity_attribute_projection)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_attribute_projection)
 
@@ -139,7 +140,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_attribute_nested_projection = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_attribute_nested_projection)
-        resolved_test_entity_attribute_nested_projection = await TestUtils._get_resolved_entity(corpus, ent_test_entity_attribute_nested_projection, [])
+        resolved_test_entity_attribute_nested_projection = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_attribute_nested_projection, [])
         self.assertIsNotNone(resolved_test_entity_attribute_nested_projection)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_attribute_nested_projection)
 
@@ -155,7 +156,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_trait = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_trait)
-        resolved_test_entity_trait = await TestUtils._get_resolved_entity(corpus, ent_test_entity_trait, [])
+        resolved_test_entity_trait = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_trait, [])
         self.assertIsNotNone(resolved_test_entity_trait)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_trait)
 
@@ -182,7 +183,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_entity_extends_trait = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_entity_extends_trait)
-        resolved_test_entity_extends_trait = await TestUtils._get_resolved_entity(corpus, ent_test_entity_extends_trait, [])
+        resolved_test_entity_extends_trait = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_extends_trait, [])
         self.assertIsNotNone(resolved_test_entity_extends_trait)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_extends_trait)
 
@@ -209,7 +210,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_projection_trait = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_projection_trait)
-        resolved_test_projection_trait = await TestUtils._get_resolved_entity(corpus, ent_test_projection_trait, [])
+        resolved_test_projection_trait = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_projection_trait, [])
         self.assertIsNotNone(resolved_test_projection_trait)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_projection_trait)
 
@@ -236,7 +237,7 @@ class ProjectionAttributeContextTest(unittest.TestCase):
 
         ent_test_projection_extends_trait = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
         self.assertIsNotNone(ent_test_projection_extends_trait)
-        resolved_test_projection_extends_trait = await TestUtils._get_resolved_entity(corpus, ent_test_projection_extends_trait, [])
+        resolved_test_projection_extends_trait = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_projection_extends_trait, [])
         self.assertIsNotNone(resolved_test_projection_extends_trait)
         AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_projection_extends_trait)
 

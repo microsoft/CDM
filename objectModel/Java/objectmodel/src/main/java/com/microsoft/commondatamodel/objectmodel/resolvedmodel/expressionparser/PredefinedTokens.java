@@ -53,6 +53,7 @@ public class PredefinedTokens {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Map of String and PredefinedType
      */
     @Deprecated
     public static Map<String, PredefinedType> initializeTextToTypeHash() {
@@ -70,6 +71,7 @@ public class PredefinedTokens {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Map of String and PredefinedTokenEnum
      */
     @Deprecated
     public static Map<String, PredefinedTokenEnum> initializeTextToTokenHash() {
@@ -88,6 +90,7 @@ public class PredefinedTokens {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return List of String
      */
     @Deprecated
     public static List<String> getPredefinedTokens() {
@@ -112,6 +115,7 @@ public class PredefinedTokens {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return List of String
      */
     @Deprecated
     public static List<String> getSupportedOperators() {
@@ -137,6 +141,7 @@ public class PredefinedTokens {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return List of String
      */
     @Deprecated
     public static List<String> getSupportedParenthesis() {
@@ -161,6 +166,7 @@ public class PredefinedTokens {
      *
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return List of String
      */
     @Deprecated
     public static List<String> getPredefinedConstants() {

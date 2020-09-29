@@ -5,7 +5,7 @@ import os
 import unittest
 from typing import Set
 
-from cdm.enums import CdmObjectType, CdmStatusLevel, CdmDataFormat
+from cdm.enums import CdmObjectType, CdmStatusLevel, CdmDataFormat, ImportsLoadStrategy
 from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmTypeAttributeDefinition
 from cdm.persistence import PersistenceLayer
 from cdm.persistence.cdmfolder.entity_persistence import EntityPersistence
@@ -46,7 +46,7 @@ class TypeAttributeTest(unittest.TestCase):
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'test_reading_is_primary_key')
 
         res_opt = ResolveOptions()
-        res_opt.strict_validation = True
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LOAD
 
         # read from an unresolved entity schema
         entity = await corpus.fetch_object_async('local:/TeamMembership.cdm.json/TeamMembership', res_opt=res_opt)

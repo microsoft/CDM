@@ -1,6 +1,6 @@
 {
   "name": "cdm.objectmodel",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "description": "The typescript object model for CDM.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -8,6 +8,7 @@
     "build": "tsc",
     "postbuild": "@powershell -NoProfile -ExecutionPolicy Unrestricted -Command ./copy-resources.ps1",
     "test": "jest",
+    "test-adls": "jest __test__/Cdm/Storage/adlsAdapter.test.ts",
     "test-verbose": "jest --ci --verbose",
     "test-ci": "jest --ci --verbose --reporters=default --reporters=jest-junit --coverage --coverageReporters=cobertura"
   },
@@ -44,7 +45,7 @@
       "<rootDir>/**/*.{ts}",
       "!**/node_modules/**"
     ]
-  },
+  },  
   "dependencies": {
     "adal-node": "^0.1.28",
     "guid-typescript": "^1.0.9"

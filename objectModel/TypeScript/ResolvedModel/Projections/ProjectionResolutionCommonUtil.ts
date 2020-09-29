@@ -102,7 +102,7 @@ export class ProjectionResolutionCommonUtil {
     public static getLeafList(projCtx: ProjectionContext, attrName: string): ProjectionAttributeState[] {
         let result: SearchResult;
 
-        for (const top of projCtx.currentAttributeStateSet.values) {
+        for (const top of projCtx.currentAttributeStateSet.states) {
             let st: SearchStructure = new SearchStructure();
             st = SearchStructure.buildStructure(top, top, attrName, st, false, 0);
             if (st?.result.foundFlag === true && st.result.leaf.length > 0) {
@@ -126,7 +126,7 @@ export class ProjectionResolutionCommonUtil {
         for (const attrName of attrNames) {
             // Iterate through each projection attribute state in the current set and check if its
             // current resolved attribute's name is the top-level name of the current attrName
-            for (const top of projCtx.currentAttributeStateSet.values) {
+            for (const top of projCtx.currentAttributeStateSet.states) {
                 let st: SearchStructure = new SearchStructure();
                 st = SearchStructure.buildStructure(top, top, attrName, st, false, 0);
                 // Found the top-level name

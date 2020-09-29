@@ -158,7 +158,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             var copy = new CdmCollection<T>(this.Ctx, this.Owner, this.DefaultType);
             foreach (var element in this.AllItems)
+            {
                 copy.Add((T)element.Copy(resOpt));
+            }
             return copy;
         }
 

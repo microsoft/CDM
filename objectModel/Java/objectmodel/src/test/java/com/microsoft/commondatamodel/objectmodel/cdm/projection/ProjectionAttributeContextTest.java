@@ -4,23 +4,17 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.TestUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmArgumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * A test class to verify the attribute context tree and traits generated for various resolution scenarios
@@ -51,7 +45,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityStringReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityStringReference);
-        CdmEntityDefinition resolvedTestEntityStringReference = TestUtils.getResolvedEntity(corpus, entTestEntityStringReference, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityStringReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityStringReference);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
     }
@@ -70,7 +64,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityEntityReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityEntityReference);
-        CdmEntityDefinition resolvedTestEntityEntityReference = TestUtils.getResolvedEntity(corpus, entTestEntityEntityReference, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityEntityReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityEntityReference, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityEntityReference);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityEntityReference);
     }
@@ -89,7 +83,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityProjection);
-        CdmEntityDefinition resolvedTestEntityProjection = TestUtils.getResolvedEntity(corpus, entTestEntityProjection, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityProjection = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityProjection, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityProjection);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityProjection);
     }
@@ -108,7 +102,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityNestedProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityNestedProjection);
-        CdmEntityDefinition resolvedTestEntityNestedProjection = TestUtils.getResolvedEntity(corpus, entTestEntityNestedProjection, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityNestedProjection = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityNestedProjection, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityNestedProjection);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityNestedProjection);
     }
@@ -127,7 +121,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityAttributeStringReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityAttributeStringReference);
-        CdmEntityDefinition resolvedTestEntityAttributeStringReference = TestUtils.getResolvedEntity(corpus, entTestEntityAttributeStringReference, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityAttributeStringReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeStringReference, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityAttributeStringReference);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeStringReference);
     }
@@ -146,7 +140,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityAttributeEntityReference = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityAttributeEntityReference);
-        CdmEntityDefinition resolvedTestEntityAttributeEntityReference = TestUtils.getResolvedEntity(corpus, entTestEntityAttributeEntityReference, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityAttributeEntityReference = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeEntityReference, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityAttributeEntityReference);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeEntityReference);
     }
@@ -165,7 +159,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityAttributeProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityAttributeProjection);
-        CdmEntityDefinition resolvedTestEntityAttributeProjection = TestUtils.getResolvedEntity(corpus, entTestEntityAttributeProjection, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityAttributeProjection = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeProjection, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityAttributeProjection);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeProjection);
     }
@@ -184,7 +178,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityAttributeNestedProjection = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityAttributeNestedProjection);
-        CdmEntityDefinition resolvedTestEntityAttributeNestedProjection = TestUtils.getResolvedEntity(corpus, entTestEntityAttributeNestedProjection, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityAttributeNestedProjection = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeNestedProjection, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityAttributeNestedProjection);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeNestedProjection);
     }
@@ -203,7 +197,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityTrait = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityTrait);
-        CdmEntityDefinition resolvedTestEntityTrait = TestUtils.getResolvedEntity(corpus, entTestEntityTrait, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityTrait = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityTrait, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityTrait);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityTrait);
 
@@ -233,7 +227,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestEntityExtendsTrait = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestEntityExtendsTrait);
-        CdmEntityDefinition resolvedTestEntityExtendsTrait = TestUtils.getResolvedEntity(corpus, entTestEntityExtendsTrait, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestEntityExtendsTrait = ProjectionTestUtils.getResolvedEntity(corpus, entTestEntityExtendsTrait, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestEntityExtendsTrait);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityExtendsTrait);
 
@@ -263,7 +257,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestProjectionTrait = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestProjectionTrait);
-        CdmEntityDefinition resolvedTestProjectionTrait = TestUtils.getResolvedEntity(corpus, entTestProjectionTrait, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestProjectionTrait = ProjectionTestUtils.getResolvedEntity(corpus, entTestProjectionTrait, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestProjectionTrait);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionTrait);
 
@@ -293,7 +287,7 @@ public class ProjectionAttributeContextTest {
 
         CdmEntityDefinition entTestProjectionExtendsTrait = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
         Assert.assertNotNull(entTestProjectionExtendsTrait);
-        CdmEntityDefinition resolvedTestProjectionExtendsTrait = TestUtils.getResolvedEntity(corpus, entTestProjectionExtendsTrait, new ArrayList<String>()).join();
+        CdmEntityDefinition resolvedTestProjectionExtendsTrait = ProjectionTestUtils.getResolvedEntity(corpus, entTestProjectionExtendsTrait, new ArrayList<String>()).join();
         Assert.assertNotNull(resolvedTestProjectionExtendsTrait);
         AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionExtendsTrait);
 

@@ -1,10 +1,9 @@
 ﻿# Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import Union, Optional
-
+from typing import Union, Optional, cast
 from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmCorpusContext, CdmEntityReference
+from cdm.objectmodel import CdmCorpusContext, CdmEntityReference, CdmProjection
 
 from . import utils
 from .cdm_object_ref_persistence import CdmObjectRefPersistence
@@ -45,3 +44,13 @@ class EntityReferencePersistence(CdmObjectRefPersistence):
                 entity_reference.applied_traits.extend(applied_traits)
 
         return entity_reference
+
+    @staticmethod
+    def to_data(instance: 'CdmEntityReference', res_opt: 'ResolveOptions', options: 'CopyOptions') -> 'EntityReference':
+        if not instance:
+            return None
+
+        if instance.explicit_reference and isinstance(instance.explicit_reference, CdmProjection):
+            return ProjectionPersistence.to_data(cast('CdmProjection', instance.explicit_reference), res_opt, options)
+        else:
+            return CdmObjectRefPersistence.to_data(instance, res_opt, options)

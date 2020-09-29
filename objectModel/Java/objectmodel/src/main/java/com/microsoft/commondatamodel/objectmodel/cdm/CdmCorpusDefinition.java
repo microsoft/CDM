@@ -5,11 +5,8 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.*;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
+import com.microsoft.commondatamodel.objectmodel.enums.*;
 import com.microsoft.commondatamodel.objectmodel.persistence.CdmConstants;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmValidationStep;
 import com.microsoft.commondatamodel.objectmodel.persistence.PersistenceLayer;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ParameterCollection;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolveContext;
@@ -99,6 +96,7 @@ public class CdmCorpusDefinition {
     this.defaultResolutionDirectives = new AttributeResolutionDirectiveSet(directives);
   }
 
+  
   static CdmDocumentDefinition fetchPriorityDocument(final List<CdmDocumentDefinition> docs,
                                                             final Map<CdmDocumentDefinition, Integer> importPriority) {
     CdmDocumentDefinition docBest = null;
@@ -119,7 +117,7 @@ public class CdmCorpusDefinition {
     }
     return docBest;
   }
-
+  
   static String createCacheKeyFromObject(final CdmObject definition, final String kind) {
     return definition.getId() + "-" + kind;
   }
@@ -215,10 +213,11 @@ public class CdmCorpusDefinition {
     }
   }
 
+  
   static int getNextId() {
     return nextId.incrementAndGet();
   }
-
+  
   public boolean validate() {
     return false;
   }
@@ -241,6 +240,7 @@ public class CdmCorpusDefinition {
 
   /**
    * @deprecated Only for internal use.
+   * @return boolean
    */
   @Deprecated
   public boolean getBlockDeclaredPathChanges() {
@@ -725,8 +725,17 @@ public class CdmCorpusDefinition {
     return result;
   }
 
-  /**
-   * @deprecated
+
+  
+  /** 
+   * @param resOpt Resolve Option
+   * @param fromDoc From doc
+   * @param symbolDef Symbol definition
+   * @param expectedType expected type
+   * @param retry boolean
+   * @return CdmObjectBase
+   * 
+   * @deprecated deprecated
    */
   @Deprecated
   public CdmObjectBase resolveSymbolReference(
@@ -749,6 +758,13 @@ public class CdmCorpusDefinition {
     CdmDocumentDefinition wrtDoc = resOpt.getWrtDoc();
     if (!wrtDoc.indexIfNeededAsync(resOpt, true).join()) {
       Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, "Couldn't index source document.", "resolveSymbolReference");
+      return null;
+    }
+
+    if (wrtDoc.getNeedsIndexing() && resOpt.getImportsLoadStrategy() == ImportsLoadStrategy.DoNotLoad) {
+      Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx,
+              "Cannot find symbol definition '" + symbolDef + "' because the ImportsLoadStrategy is set to DoNotLoad",
+              "resolveSymbolReference");
       return null;
     }
 
@@ -952,7 +968,7 @@ public class CdmCorpusDefinition {
     return loadFolderOrDocumentAsync(objectPath, false);
   }
 
-  boolean indexDocuments(final ResolveOptions resOpt, final boolean strictValidation) {
+  boolean indexDocuments(final ResolveOptions resOpt, final boolean loadImports) {
     List<CdmDocumentDefinition> docsNotIndexed = this.documentLibrary.listDocsNotIndexed();
 
     if (docsNotIndexed.size() == 0) {
@@ -980,7 +996,7 @@ public class CdmCorpusDefinition {
       }
     }
 
-    if (strictValidation) {
+    if (loadImports) {
       // Index any imports.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
         doc.getImportPriorities();
@@ -1008,7 +1024,7 @@ public class CdmCorpusDefinition {
     // Finish up.
     for (final CdmDocumentDefinition doc : docsNotIndexed) {
       Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("index finish: {0}", doc.getAtCorpusPath()), "indexDocuments");
-      this.finishDocumentResolve(doc, strictValidation);
+      this.finishDocumentResolve(doc, loadImports);
     }
 
     return true;
@@ -1254,7 +1270,6 @@ public class CdmCorpusDefinition {
     });
   }
 
-
   private CompletableFuture<Void> generateWarningsForSingleDoc(
       final Pair<CdmFolderDefinition, CdmDocumentDefinition> fd,
       final ResolveOptions resOpt) {
@@ -1290,6 +1305,7 @@ public class CdmCorpusDefinition {
    * Returns a list of relationships where the input entity is the incoming entity.
    *
    * @param entity The input entity.
+   * @return ArrayList of CdmE2ERelationship
    */
   public ArrayList<CdmE2ERelationship> fetchIncomingRelationships(final CdmEntityDefinition entity) {
     if (this.incomingRelationships != null && this.incomingRelationships.containsKey(entity)) {
@@ -1302,6 +1318,7 @@ public class CdmCorpusDefinition {
    * Returns a list of relationships where the input entity is the outgoing entity.
    *
    * @param entity The input entity.
+   * @return ArrayList of CdmE2ERelationship
    */
   public ArrayList<CdmE2ERelationship> fetchOutgoingRelationships(final CdmEntityDefinition entity) {
     if (this.outgoingRelationships != null && this.outgoingRelationships.containsKey(entity)) {
@@ -1316,7 +1333,7 @@ public class CdmCorpusDefinition {
    *
    * @param currManifest The manifest (and any sub-manifests it contains) that we want to calculate
    *                     relationships for.
-   * @return A {@link CompletableFuture<Void>} for the completion of entity graph calculation.
+   * @return A link of CompletableFuture for the completion of entity graph calculation.
    */
   public CompletableFuture<Void> calculateEntityGraphAsync(final CdmManifestDefinition currManifest) {
     return CompletableFuture.runAsync(() -> {
@@ -1533,12 +1550,19 @@ public class CdmCorpusDefinition {
     return outRels;
   }
 
-  /**
+
+  
+  /** 
    * Find the outgoing relationships for Projections.
    * Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
    *
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param outRels Out relations
+   * @param child Child
+   * @param resOpt Resolved options
+   * @param resEntity Resolved entity
+   * @return List of CdmE2ERelationship
    */
   @Deprecated
   public List<CdmE2ERelationship> findOutgoingRelationshipsForProjection(
@@ -1549,12 +1573,20 @@ public class CdmCorpusDefinition {
     return findOutgoingRelationshipsForProjection(outRels, child, resOpt, resEntity, null);
   }
 
-  /**
+
+  
+  /** 
    * Find the outgoing relationships for Projections.
    * Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
    *
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param outRels Out relations
+   * @param child Child
+   * @param resOpt Resolved options
+   * @param resEntity Resolved entity
+   * @param fromAtts From attributes
+   * @return ArrayList of CdmE2ERelationship
    */
   @Deprecated
   public ArrayList<CdmE2ERelationship> findOutgoingRelationshipsForProjection(
@@ -1593,11 +1625,22 @@ public class CdmCorpusDefinition {
     return (ArrayList<CdmE2ERelationship>) outRels;
   }
 
-  /**
+
+  
+  /** 
    * Find the outgoing relationships for Non-Projections EntityRef
    *
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param toEntity To entity
+   * @param toAtt To attribute
+   * @param outRels Out relations
+   * @param newGenSet New Gen set
+   * @param child Child
+   * @param resOpt Resolved options
+   * @param resEntity Resolved entity
+   * @param isResolvedEntity if resolved entity
+   * @return List of CdmE2ERelationship
    */
   @Deprecated
   public List<CdmE2ERelationship> findOutgoingRelationshipsForEntityRef(
@@ -1617,6 +1660,16 @@ public class CdmCorpusDefinition {
    *
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param toEntity To entity
+   * @param toAtt To attribute
+   * @param outRels Out relations
+   * @param newGenSet New Gen set
+   * @param child Child
+   * @param resOpt Resolved options
+   * @param resEntity Resolved entity
+   * @param isResolvedEntity if resolved entity
+   * @param wasProjectionPolymorphic - is polymorphic projection
+   * @return List of CdmE2ERelationship
    */
   @Deprecated
   public List<CdmE2ERelationship> findOutgoingRelationshipsForEntityRef(
@@ -1637,6 +1690,17 @@ public class CdmCorpusDefinition {
    *
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param toEntity To entity
+   * @param toAtt To attribute
+   * @param outRels Out relations
+   * @param newGenSet New Gen set
+   * @param child Child
+   * @param resOpt Resolved options
+   * @param resEntity Resolved entity
+   * @param isResolvedEntity if resolved entity
+   * @param wasProjectionPolymorphic - is polymorphic projection
+   * @param wasEntityRef was entity reference
+   * @return List of CdmE2ERelationship   
    */
   @Deprecated
   public ArrayList<CdmE2ERelationship> findOutgoingRelationshipsForEntityRef(
@@ -1735,9 +1799,12 @@ public class CdmCorpusDefinition {
     return "";
   }
 
-  /**
+
+  
+  /** 
    * Resolves references according to the provided stages and validates.
-   *
+   * @param stage Stage
+   * @param stageThrough Stage thru
    * @return The validation step that follows the completed step.
    */
   @Deprecated
@@ -1750,9 +1817,13 @@ public class CdmCorpusDefinition {
         null);
   }
 
-  /**
+
+  
+  /** 
    * Resolves references according to the provided stages and validates.
-   *
+   * @param stage Stage
+   * @param stageThrough Stage thru
+   * @param resOpt Resolved options
    * @return The validation step that follows the completed step.
    */
   private CompletableFuture<CdmValidationStep> resolveReferencesAndValidateAsync(
@@ -2208,13 +2279,13 @@ public class CdmCorpusDefinition {
     resOpt.setIndexingDoc(null);
   }
 
-  private void finishDocumentResolve(final CdmDocumentDefinition doc, final boolean strictValidation) {
+  private void finishDocumentResolve(final CdmDocumentDefinition doc, final boolean importsLoaded) {
     boolean wasIndexedPreviously = doc.declarationsIndexed;
 
     doc.setCurrentlyIndexing(false);
     doc.declarationsIndexed = true;
-    doc.setImportsIndexed(doc.isImportsIndexed() || strictValidation);
-    doc.setNeedsIndexing(!strictValidation);
+    doc.setImportsIndexed(doc.isImportsIndexed() || importsLoaded);
+    doc.setNeedsIndexing(!importsLoaded);
     this.documentLibrary.markDocumentAsIndexed(doc);
 
     // if the document declarations were indexed previously, do not log again.
@@ -2357,7 +2428,7 @@ public class CdmCorpusDefinition {
           final ResolvedTrait rt = rts.getSet().get(i);
           int found = 0;
           int resolved = 0;
-          if (rt.getParameterValues() != null) {
+          if (rt != null && rt.getParameterValues() != null) {
             for (int iParam = 0; iParam < rt.getParameterValues().length(); iParam++) {
               if (rt.getParameterValues().fetchParameter(iParam).isRequired()) {
                 found++;
@@ -2546,6 +2617,7 @@ public class CdmCorpusDefinition {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return DocumentLibrary
    */
   @Deprecated
   public DocumentLibrary getDocumentLibrary() {
@@ -2630,7 +2702,7 @@ public class CdmCorpusDefinition {
   /**
    * Gets the last modified time of the object found at the input corpus path.
    * @param corpusPath The path to the object that you want to get the last modified time for
-   * @return
+   * @return The last modified time
    */
   CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(final String corpusPath) {
     return this.computeLastModifiedTimeAsync(corpusPath, null);
@@ -2639,8 +2711,8 @@ public class CdmCorpusDefinition {
   /**
    * Gets the last modified time of the object found at the input corpus path.
    * @param corpusPath The path to the object that you want to get the last modified time for
-   * @param obj
-   * @return
+   * @param obj CDM Object
+   * @return The last modified time
    */
   CompletableFuture<OffsetDateTime> computeLastModifiedTimeAsync(
       final String corpusPath,

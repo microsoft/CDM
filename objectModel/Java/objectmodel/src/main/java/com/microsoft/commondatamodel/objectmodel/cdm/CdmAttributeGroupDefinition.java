@@ -37,16 +37,33 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
         CdmObjectType.TypeAttributeDef);
   }
 
+  
+  /** 
+   * @return String
+   */
   @Override
   public String getName() {
     return this.attributeGroupName;
   }
 
+  
+  /** 
+   * @param baseDef base def string
+   * @param resOpt Resolved options
+   * @return boolean
+   */
   @Override
   public boolean isDerivedFrom(final String baseDef, ResolveOptions resOpt) {
     return false;
   }
 
+  
+  /** 
+   * @param pathFrom Path from
+   * @param preChildren Pre children
+   * @param postChildren post children
+   * @return boolean
+   */
   @Override
   public boolean visit(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
     String path = "";
@@ -86,33 +103,49 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
 
   /**
    * Gets or sets the attribute group context.
+   * @return Cdm Attribute Context Reference
    */
   public CdmAttributeContextReference getAttributeContext() {
     return this.attributeContext;
   }
 
+  
+  /** 
+   * @param value CdmAttributeContextReference
+   */
   public void setAttributeContext(final CdmAttributeContextReference value) {
     this.attributeContext = value;
   }
 
   /**
    * Gets or sets the attribute group name.
+   * @return String
    */
   public String getAttributeGroupName() {
     return this.attributeGroupName;
   }
 
+  
+  /** 
+   * @param value string value
+   */
   public void setAttributeGroupName(final String value) {
     this.attributeGroupName = value;
   }
 
   /**
    * Gets the attribute group members.
+   * @return CdmCollection
    */
   public CdmCollection<CdmAttributeItem> getMembers() {
     return this.members;
   }
 
+  
+  /** 
+   * @param resOpt Resolved options
+   * @return ResolvedEntityReferenceSet
+   */
   @Override
   public ResolvedEntityReferenceSet fetchResolvedEntityReferences(ResolveOptions resOpt) {
     if (resOpt == null) {
@@ -128,6 +161,10 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     return rers;
   }
 
+  
+  /** 
+   * @return boolean
+   */
   @Override
   public boolean validate() {
     if (StringUtils.isNullOrTrimEmpty(this.attributeGroupName)) {
@@ -139,9 +176,9 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -151,6 +188,12 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     return CdmObjectBase.copyData(this, resOpt, options, CdmAttributeGroupDefinition.class);
   }
 
+  
+  /** 
+   * @param resOpt Resolved options
+   * @param host Host object
+   * @return CdmObject
+   */
   @Override
   public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
     if (resOpt == null) {
@@ -181,6 +224,8 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -191,6 +236,9 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param under attribute context
+   * @return ResolvedAttributeSetBuilder
    */
   @Override
   @Deprecated
@@ -229,6 +277,11 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     return rasb;
   }
 
+  
+  /** 
+   * @param rtsb Resolved set builder
+   * @param resOpt - Resolved options
+   */
   @Override
   void constructResolvedTraits(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
     // get only the elevated traits from attribute first, then add in all traits from this definition
@@ -246,6 +299,11 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     this.constructResolvedTraitsDef(null, rtsb, resOpt);
   }
 
+  
+  /** 
+   * @param attributeDef Attribute definition
+   * @return CdmAttributeItem
+   */
   CdmAttributeItem addAttributeDef(CdmAttributeItem attributeDef) {
       this.getMembers().add(attributeDef);
       return attributeDef;

@@ -7,7 +7,7 @@ public interface CdmContainerDefinition extends CdmObject {
 
   /**
    * The namespace where this object can be found.
-   * @return
+   * @return String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -16,7 +16,7 @@ public interface CdmContainerDefinition extends CdmObject {
 
   /**
    * The namespace where this object can be found.
-   * @param value
+   * @param value String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -25,7 +25,7 @@ public interface CdmContainerDefinition extends CdmObject {
 
   /**
    * The folder where this object exists.
-   * @return
+   * @return string
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -34,7 +34,7 @@ public interface CdmContainerDefinition extends CdmObject {
 
   /**
    * The folder where this object exists.
-   * @param value
+   * @param value String
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

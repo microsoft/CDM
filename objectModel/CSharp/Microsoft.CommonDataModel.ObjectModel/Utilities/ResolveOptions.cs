@@ -4,6 +4,8 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Utilities
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
+    using System;
     using System.Collections.Generic;
 
     public class ResolveOptions
@@ -11,14 +13,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public CdmDocumentDefinition WrtDoc { get; set; } // the document to use as a point of reference when resolving relative paths and symbol names.
         public AttributeResolutionDirectiveSet Directives { get; set; } // a set of string flags that direct how attribute resolving traits behave
         public bool ShallowValidation { get; set; } // when enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead
-        public bool StrictValidation { get; set; } = true; // when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
+        public ImportsLoadStrategy ImportsLoadStrategy { get; set; } = ImportsLoadStrategy.LazyLoad; // defines at which point the Object Model will try to load the imported documents.
         public int? ResolvedAttributeLimit { get; set; } = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
+        public int MaxOrdinalForArrayExpansion { get; set; } = 20; // the maximum value for the end ordinal in an ArrayExpansion operation
         internal int? RelationshipDepth { get; set; } // tracks the number of entity attributes that have been travered when collecting resolved traits or attributes. prevents run away loops
         internal bool SaveResolutionsOnCopy { get; set; } // when references get copied, use previous resolution results if available (for use with copy method)
         internal SymbolSet SymbolRefSet { get; set; } // set of set of symbol that the current chain of resolution depends upon. used with importPriority to find what docs and versions of symbols to use
         internal CdmDocumentDefinition LocalizeReferencesFor { get; set; } // forces symbolic references to be re-written to be the precisely located reference based on the wrtDoc
         internal CdmDocumentDefinition IndexingDoc { get; set; } // document currently being indexed
-        internal string FromMoniker { get; set; } // moniker that was found on the ref         
+        internal string FromMoniker { get; set; } // moniker that was found on the ref
+
+        [Obsolete("Please use ImportsLoadStrategy instead.")]
+        // when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
+        public bool? StrictValidation
+        {
+            get
+            {
+                if (this.ImportsLoadStrategy == ImportsLoadStrategy.LazyLoad)
+                {
+                    return null;
+                }
+                return this.ImportsLoadStrategy == ImportsLoadStrategy.Load;
+            }
+            set
+            {
+                if (value == null)
+                {
+                    this.ImportsLoadStrategy = ImportsLoadStrategy.LazyLoad;
+                }
+                else if (value == true)
+                {
+                    this.ImportsLoadStrategy = ImportsLoadStrategy.Load;
+                }
+                else
+                {
+                    this.ImportsLoadStrategy = ImportsLoadStrategy.DoNotLoad;
+                }
+            }
+        }
 
         /// <summary>
         /// Creates a new instance of Resolve Options using most common parameters.

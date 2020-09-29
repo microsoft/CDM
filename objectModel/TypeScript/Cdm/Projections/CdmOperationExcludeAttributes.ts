@@ -12,6 +12,7 @@ import {
     cdmOperationType,
     Errors,
     Logger,
+    ProjectionAttributeContextTreeBuilder,
     ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
@@ -38,8 +39,11 @@ export class CdmOperationExcludeAttributes extends CdmOperationBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.copy.name);
-        return new CdmOperationExcludeAttributes(this.ctx);
+        const copy = new CdmOperationExcludeAttributes(this.ctx);
+        for (const excludeAttribute in this.excludeAttributes) {
+            copy.excludeAttributes.push(excludeAttribute);
+        }
+        return copy;
     }
 
     /**
@@ -54,14 +58,6 @@ export class CdmOperationExcludeAttributes extends CdmOperationBase {
      */
     public getObjectType(): cdmObjectType {
         return cdmObjectType.operationExcludeAttributesDef;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public isDerivedFrom(base: string, resOpt?: resolveOptions): boolean {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.isDerivedFrom.name);
-        return false;
     }
 
     /**
@@ -129,44 +125,39 @@ export class CdmOperationExcludeAttributes extends CdmOperationBase {
         // We use the top-level names because the exclude list may contain a previous name our current resolved attributes had
         const topLevelExcludeAttributeNames: Map<string, string> = ProjectionResolutionCommonUtil.getTopList(projCtx, this.excludeAttributes);
 
+        // Initialize a projection attribute context tree builder with the created attribute context for the operation
+        const attrCtxTreeBuilder: ProjectionAttributeContextTreeBuilder = new ProjectionAttributeContextTreeBuilder(attrCtxOpExcludeAttrs);
+
         // Iterate through all the projection attribute states generated from the source's resolved attributes
         // Each projection attribute state contains a resolved attribute that it is corresponding to
-        for (const currentPAS of projCtx.currentAttributeStateSet.values) {
+        for (const currentPAS of projCtx.currentAttributeStateSet.states) {
             // Check if the current projection attribute state's resolved attribute is in the list of attributes to exclude
             // If this attribute is not in the exclude list, then we are including it in the output
             if (!topLevelExcludeAttributeNames.has(currentPAS.currentResolvedAttribute.resolvedName)) {
-                // Create a new attribute context for the attribute that we are including
-                const attrCtxAddedAttrParam: AttributeContextParameters = {
-                    under: attrCtx,
-                    type: cdmAttributeContextType.attributeDefinition,
-                    name: currentPAS.currentResolvedAttribute.resolvedName
-                };
-                const attrCtxAddedAttr: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxAddedAttrParam);
+                // Create the attribute context parameters and just store it in the builder for now
+                // We will create the attribute contexts at the end
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(undefined, currentPAS, currentPAS.currentResolvedAttribute, cdmAttributeContextType.attributeDefinition);
 
-                // Create a projection attribute state for the included attribute
+                // Create a projection attribute state for the included attribute by creating a copy of the current state
+                // Copy() sets the current state as the previous state for the new one
                 // We only create projection attribute states for attributes that are not in the exclude list
-                // Add the current projection attribute state as the previous state of the new projection attribute state
-                const newPAS: ProjectionAttributeState = new ProjectionAttributeState(projOutputSet.ctx)
-                newPAS.currentResolvedAttribute = currentPAS.currentResolvedAttribute;
-                newPAS.previousStateList = [ currentPAS ];
+                const newPAS: ProjectionAttributeState = currentPAS.copy();
 
                 projOutputSet.add(newPAS);
             } else {
                 // The current projection attribute state's resolved attribute is in the exclude list
 
                 // Get the attribute name the way it appears in the exclude list
-                // For our attribute context, we want to use the attribute name the attribute has in the exclude list rather than its current name
                 const excludeAttributeName: string = topLevelExcludeAttributeNames.get(currentPAS.currentResolvedAttribute.resolvedName);
 
-                // Create a new attribute context for the excluded attribute
-                const attrCtxExcludedAttrParam: AttributeContextParameters = {
-                    under: attrCtxOpExcludeAttrs,
-                    type: cdmAttributeContextType.attributeDefinition,
-                    name: excludeAttributeName
-                };
-                const attrCtxExcludedAttr: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxExcludedAttrParam);
+                // Create the attribute context parameters and just store it in the builder for now
+                // We will create the attribute contexts at the end
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.currentResolvedAttribute, cdmAttributeContextType.attributeDefinition);
             }
         }
+
+        // Create all the attribute contexts and construct the tree
+        attrCtxTreeBuilder.constructAttributeContextTree(projCtx);
 
         return projOutputSet;
     }

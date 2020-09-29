@@ -16,6 +16,8 @@ public class StorageUtils {
 
     /**
      * Splits the object path into the namespace and path.
+     * @param objectPath String 
+     * @return ImmutablePair of String and String
      */
     public static ImmutablePair<String, String> splitNamespacePath(String objectPath) {
         if (objectPath == null) {

@@ -289,7 +289,7 @@ class ResolvedAttributeSetBuilder:
             app_ctx.res_att_source = res_att_source
             app_ctx.res_guide = arc.res_guide
 
-            if res_att_source and isinstance(res_att_source.target, ResolvedAttributeSet) and cast('ResolvedAttributeSet', res_att_source)._set:
+            if res_att_source and isinstance(res_att_source.target, ResolvedAttributeSet) and cast('ResolvedAttributeSet', res_att_source.target)._set:
                 return app_ctx  # Makes no sense for a group.
 
             # Will something add?

@@ -3,7 +3,8 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 {
-    using Microsoft.CommonDataModel.ObjectModel.Cdm;    
+    using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.Tools.Processor;
@@ -40,7 +41,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             var resOpt = new ResolveOptions()
             {
-                StrictValidation = true
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
             };
             var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/missingNestedImport.cdm.json", null, resOpt);
             Assert.IsNotNull(doc);
@@ -60,7 +61,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             var resOpt = new ResolveOptions()
             {
-                StrictValidation = true
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
             };
             var doc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("local:/multipleImports.cdm.json", null, resOpt);
             Assert.IsNotNull(doc);
@@ -104,7 +105,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             var resOpt = new ResolveOptions()
             {
-                StrictValidation = true
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
             };
 
             CdmDocumentDefinition mainDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("mainEntity.cdm.json", null, resOpt);
@@ -134,7 +135,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             var resOpt = new ResolveOptions()
             {
-                StrictValidation = true
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
             };
 
             CdmDocumentDefinition mainDoc = await cdmCorpus.FetchObjectAsync<CdmDocumentDefinition>("mainEntity.cdm.json", null, resOpt);
@@ -163,7 +164,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
             var resOpt = new ResolveOptions()
             {
-                StrictValidation = true
+                ImportsLoadStrategy = ImportsLoadStrategy.Load
             };
 
             // load the first doc

@@ -44,10 +44,6 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF
 
-    def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
-        logger.error(self._TAG, self.ctx, 'Projection operation not implemented yet.', 'is_derived_from')
-        return False
-
     def validate(self) -> bool:
         missing_fields = []
 

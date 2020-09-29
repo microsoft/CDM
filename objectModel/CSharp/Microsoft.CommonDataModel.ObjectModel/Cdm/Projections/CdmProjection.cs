@@ -291,22 +291,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     };
                     CdmAttributeContext acGenAttrSet = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpGenAttrSet);
 
-                    AttributeContextParameters acpGenAttrRound0 = new AttributeContextParameters
-                    {
-                        under = acGenAttrSet,
-                        type = CdmAttributeContextType.GeneratedRound,
-                        Name = "_generatedAttributeRound0"
-                    };
-                    CdmAttributeContext acGenAttrRound0 = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpGenAttrRound0);
-
                     // Start with an empty list for each projection
                     ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.CurrentAttributeStateSet.Ctx);
                     foreach (CdmOperationBase operation in this.Operations)
                     {
                         // Evaluate projections and apply to empty state
-                        ProjectionAttributeStateSet newPasOperations = operation.AppendProjectionAttributeState(projContext, pasOperations, acGenAttrRound0);
+                        ProjectionAttributeStateSet newPasOperations = operation.AppendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
 
-                        // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
+                        // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
                         if (newPasOperations != null)
                         {
                             pasOperations = newPasOperations;
@@ -332,10 +324,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <returns></returns>
         internal ResolvedAttributeSet ExtractResolvedAttributes(ProjectionContext projCtx)
         {
-            ResolvedAttributeSet resolvedAttributeSet = new ResolvedAttributeSet();
-            resolvedAttributeSet.AttributeContext = projCtx.CurrentAttributeContext;
+            ResolvedAttributeSet resolvedAttributeSet = new ResolvedAttributeSet
+            {
+                AttributeContext = projCtx.CurrentAttributeContext
+            };
 
-            foreach (var pas in projCtx.CurrentAttributeStateSet.Values)
+            foreach (var pas in projCtx.CurrentAttributeStateSet.States)
             {
                 resolvedAttributeSet.Merge(pas.CurrentResolvedAttribute, pas.CurrentResolvedAttribute.AttCtx);
             }

@@ -19,6 +19,10 @@ public class CdmDataTypeReference extends CdmObjectReferenceBase implements CdmO
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolve options
+   * @param refTo ref object
+   * @param simpleReference simple reference
+   * @return CdmObjectReferenceBase
    */
   @Override
   @Deprecated
@@ -30,10 +34,16 @@ public class CdmDataTypeReference extends CdmObjectReferenceBase implements CdmO
   }
 
 
-  /**
-   * @return
+
+  
+  /** 
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolve options
+   * @param refTo ref object
+   * @param simpleReference simple reference
+   * @param host host
+   * @return CdmObjectReferenceBase
    */
   @Override
   @Deprecated
@@ -50,9 +60,9 @@ public class CdmDataTypeReference extends CdmObjectReferenceBase implements CdmO
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolve options
+   * @param options Copy options
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.
@@ -65,10 +75,10 @@ public class CdmDataTypeReference extends CdmObjectReferenceBase implements CdmO
 
   /**
    *
-   * @param pathRoot
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathRoot Path root
+   * @param preChildren Pre children
+   * @param postChildren Post children
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

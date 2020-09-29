@@ -140,7 +140,9 @@ class ResolvedTraitSet:
     def set_trait_parameter_value(self, res_opt: 'ResolveOptions', to_trait: 'CdmTraitDefinition',  # pylint: disable=unused-argument
                                   param_name: str, value: 'CdmArgumentValue') -> 'ResolvedTraitSet':
         altered = self.shallow_copy_with_exception(to_trait)
-        altered.get(to_trait).parameter_values.update_parameter_value(self.res_opt, param_name, value)
+        curr_trait = altered.get(to_trait)
+        if curr_trait:
+            curr_trait.parameter_values.update_parameter_value(self.res_opt, param_name, value)
         return altered
 
     def replace_trait_parameter_value(self, res_opt: 'ResolveOptions', to_trait: str,  # pylint: disable=unused-argument

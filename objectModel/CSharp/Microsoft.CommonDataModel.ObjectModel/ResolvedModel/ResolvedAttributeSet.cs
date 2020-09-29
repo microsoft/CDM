@@ -114,8 +114,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     existing.Target = toMerge.Target; // replace with newest version
                     existing.Arc = toMerge.Arc;
 
-                    // remove old context mappings with mappings to new attribute
+                    // Replace old context mappings with mappings to new attribute
                     rasResult.RemoveCachedAttributeContext(existing.AttCtx);
+                    rasResult.CacheAttributeContext(attCtx, existing);
 
                     ResolvedTraitSet rtsMerge = existing.ResolvedTraits.MergeSet(toMerge.ResolvedTraits); // newest one may replace
                     if (rtsMerge != existing.ResolvedTraits)
@@ -408,7 +409,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 else
                 {
                     // this is a good time to make the resolved names final
-                    resAtt.previousResolvedName = resAtt.ResolvedName;
+                    resAtt.PreviousResolvedName = resAtt.ResolvedName;
                     if (resAtt.Arc != null && resAtt.Arc.ApplierCaps != null && resAtt.Arc.ApplierCaps.CanRemove)
                     {
                         foreach (AttributeResolutionApplier apl in resAtt.Arc.ActionsRemove)
@@ -613,21 +614,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         HashSet<ResolvedAttribute> filteredSubSet = new HashSet<ResolvedAttribute>();
                         foreach (var ra in subSet)
                         {
-                            ParameterValueSet pvals = ra.ResolvedTraits.Find(resOpt, q.TraitBaseName).ParameterValues;
-                            // compare to all query params
-                            int lParams = q.Parameters.Count;
-                            int iParam = 0;
-                            for (iParam = 0; iParam < lParams; iParam++)
+                            ParameterValueSet pvals = ra.ResolvedTraits.Find(resOpt, q.TraitBaseName)?.ParameterValues;
+                            if (pvals != null)
                             {
-                                var param = q.Parameters.ElementAt(iParam);
-                                var pv = pvals.FetchParameterValueByName(param.Key);
-                                if (pv == null || pv.FetchValueString(resOpt) != param.Value)
-                                    break;
-                            }
+                                // compare to all query params
+                                int lParams = q.Parameters.Count;
+                                int iParam = 0;
+                                for (iParam = 0; iParam < lParams; iParam++)
+                                {
+                                    var param = q.Parameters.ElementAt(iParam);
+                                    var pv = pvals.FetchParameterValueByName(param.Key);
+                                    if (pv == null || pv.FetchValueString(resOpt) != param.Value)
+                                        break;
+                                }
 
-                            // stop early means no match
-                            if (iParam == lParams)
-                                filteredSubSet.Add(ra);
+                                // stop early means no match
+                                if (iParam == lParams)
+                                    filteredSubSet.Add(ra);
+                            }
                         }
 
                         subSet = filteredSubSet;

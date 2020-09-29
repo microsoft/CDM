@@ -16,8 +16,11 @@ import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpReques
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
@@ -52,22 +55,34 @@ public class AdlsAdapter extends NetworkAdapter {
   private  Map<String, String> adapterPaths = new LinkedHashMap<String, String>();
 
   /**
-   * The file-system name.
+   * The formatted hostname for validation in CreateCorpusPath.
    */
-  private String fileSystem = "";
+  private String formattedHostname = "";
 
   /**
-   * The formated hostname for validation in CreateCorpusPath.
+   * The blob container name of root path.
+   * Leading and trailing slashes should be removed.
+   * e.g. "blob-container-name"
    */
-  private String formatedHostname = "";
+  private String rootBlobContainer = "";
 
   /**
-   * The sub-path.
+   * The unescaped sub-path of root path.
+   * Leading and trailing slashes should be removed.
+   * e.g. "folder1/folder 2"
    */
-  private String subPath = "";
+  private String unescapedRootSubPath = "";
+
+  /**
+   * The escaped sub-path of root path.
+   * Leading and trailing slashes should be removed.
+   * e.g. "folder1/folder%202"
+   */
+  private String escapedRootSubPath = "";
+
   private Map<String, OffsetDateTime> fileModifiedTimeCache = new LinkedHashMap<String, OffsetDateTime>();
-  private AdlsAdapterAuthenticator adlsAdapterAuthenticator;
 
+  private AdlsAdapterAuthenticator adlsAdapterAuthenticator;
 
   public AdlsAdapter(final String hostname, final String root, final String tenant, final String clientId, final String secret) {
     this();
@@ -158,7 +173,14 @@ public class AdlsAdapter extends NetworkAdapter {
     if (adapterPaths.containsKey(formattedCorpusPath)) {
       return adapterPaths.get(formattedCorpusPath);
     }
-    return "https://" + hostname + root + this.formatCorpusPath(corpusPath);
+
+    try {
+      return "https://" + hostname + this.getEscapedRoot() + this.escapePath(formattedCorpusPath);
+    }
+    catch (UnsupportedEncodingException e) {
+      LOGGER.error("Could not encode corpusPath: " + corpusPath + ".", e);
+      return null;
+    }
   }
 
   @Override
@@ -175,9 +197,16 @@ public class AdlsAdapter extends NetworkAdapter {
         throw new StorageAdapterException("Unexpected adapter path: " + adapterPath);
       }
 
-      if (hostname.equals(this.formatedHostname) && adapterPath.substring(endIndex).startsWith(this.root))
-      {
-        String corpusPath = adapterPath.substring(endIndex + this.root.length());
+      if (hostname.equals(this.formattedHostname) && adapterPath.substring(endIndex).startsWith(this.getEscapedRoot())) {
+        String escapedCorpusPath = adapterPath.substring(endIndex + this.getEscapedRoot().length());
+        String corpusPath = "";
+        try {
+          corpusPath = URLDecoder.decode(escapedCorpusPath, "UTF8");
+        } catch (UnsupportedEncodingException e) {
+          LOGGER.error("Could not decode corpus path: " + escapedCorpusPath + ".", e);
+          return null;
+        }
+
         adapterPaths.putIfAbsent(corpusPath, adapterPath);
 
         return corpusPath;
@@ -234,11 +263,20 @@ public class AdlsAdapter extends NetworkAdapter {
         return null;
       }
 
-      final String url = "https://" + this.hostname + "/" + this.fileSystem;
-      String directory = this.subPath + this.formatCorpusPath(folderCorpusPath);
-      if (directory.startsWith("/")) {
-        directory = directory.substring(1);
+      final String url = "https://" + this.formattedHostname + "/" + this.rootBlobContainer;
+      String escapedFolderCorpusPath = null;
+      try {
+        escapedFolderCorpusPath = this.escapePath(folderCorpusPath);
+      } catch (UnsupportedEncodingException e) {
+        LOGGER.error("Could not encode corpus path: " + folderCorpusPath + ".", e);
+        return null;
       }
+
+      String directory = this.escapedRootSubPath + this.formatCorpusPath(escapedFolderCorpusPath);
+      if (directory.startsWith("/")) {
+          directory = directory.substring(1);
+      }
+      
       final CdmHttpRequest request =
           this.buildRequest(
               url + "?directory=" + directory + "&recursive=True&resource=filesystem",
@@ -259,8 +297,8 @@ public class AdlsAdapter extends NetworkAdapter {
             if (isDirectory == null || !isDirectory.asBoolean()) {
               if (path.has("name")) {
                 String name = path.get("name").asText();
-                String nameWithoutSubPath = this.subPath.length() > 0 && name.startsWith(this.subPath)
-                    ? name.substring(this.subPath.length() + 1)
+                String nameWithoutSubPath = this.unescapedRootSubPath.length() > 0 && name.startsWith(this.unescapedRootSubPath)
+                    ? name.substring(this.unescapedRootSubPath.length() + 1)
                     : name;
                 String filepath = this.formatCorpusPath(nameWithoutSubPath);
                 result.add(filepath);
@@ -288,33 +326,36 @@ public class AdlsAdapter extends NetworkAdapter {
 
   /**
    * Extracts the filesystem and sub-path from the given root value.
-   * @param root The root
-   * @return A {@link Pair} of extracted filesystem name (left), the extracted sub-path (right)
+   * @param root The root.
+   * @return the root path with leading slash.
    */
-  private void extractFilesystemAndSubPath(String root) {
+  private String extractRootBlobContainerAndSubPath(String root) {
     // No root value was set)
     if (Strings.isNullOrEmpty(root)) {
-      this.fileSystem = "";
-      this.subPath = "";
-      return;
+      this.rootBlobContainer = "";
+      this.updateRootSubPath("");
+      return "";
     }
 
-    // Remove leading /
+    // Remove leading and trailing /
     String prepRoot = root.charAt(0) == '/' ? root.substring(1) : root;
+    prepRoot = prepRoot.charAt(prepRoot.length() - 1) == '/' ? prepRoot.substring(0, prepRoot.length() - 1) : prepRoot;
 
     // Root contains only the file-system name, e.g. "fs-name"
     if (prepRoot.indexOf('/') == -1) {
-      this.fileSystem = prepRoot;
-      this.subPath = "";
-      return;
+      this.rootBlobContainer = prepRoot;
+      this.updateRootSubPath("");
+      return "/" + this.rootBlobContainer;
     }
 
     // Root contains file-system name and folder, e.g. "fs-name/folder/folder..."
     String[] prepRootArray = prepRoot.split("/");
-    this.fileSystem = prepRootArray[0];
-    this.subPath = Arrays.stream(prepRootArray)
+    this.rootBlobContainer = prepRootArray[0];
+    this.updateRootSubPath(Arrays.stream(prepRootArray)
         .skip(1)
-        .collect(Collectors.joining("/"));
+        .collect(Collectors.joining("/")));
+
+    return "/" + this.rootBlobContainer + "/" + this.unescapedRootSubPath;
   }
 
   /**
@@ -369,7 +410,7 @@ public class AdlsAdapter extends NetworkAdapter {
     try {
       Map<String, String> authenticationHeader = adlsAdapterAuthenticator.buildAuthenticationHeader(url, method, content, contentType);
       request = this.setUpCdmRequest(url, authenticationHeader, method);
-    } catch (NoSuchAlgorithmException | InvalidKeyException | URISyntaxException e) {
+    } catch (NoSuchAlgorithmException | InvalidKeyException | URISyntaxException | UnsupportedEncodingException e) {
       throw new StorageAdapterException("Failed to build request", e);
     }
     if (content != null) {
@@ -409,6 +450,16 @@ public class AdlsAdapter extends NetworkAdapter {
   private boolean ensurePath(final String pathFor) {
     // Folders don't explicitly exist in an Azure Storage FS
     return pathFor.lastIndexOf("/") != -1;
+  }
+
+  /**
+   * Escape the path, including uri reserved characters.
+   * e.g. "/folder 1/folder=2" -> "/folder%201/folder%3D2"
+   * @param unescapedPath The unescaped original path.
+   * @return The escaped path.
+   */
+  private String escapePath(String unescapedPath) throws UnsupportedEncodingException {
+    return URLEncoder.encode(unescapedPath, "UTF8").replace("%2F", "/").replace("+", "%20");
   }
 
   @Override
@@ -471,9 +522,24 @@ public class AdlsAdapter extends NetworkAdapter {
     this.setLocationHint(configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null);
   }
 
+  private String getEscapedRoot() {
+    return StringUtils.isNullOrEmpty(this.escapedRootSubPath) ?
+            "/" + this.rootBlobContainer
+            : "/" + this.rootBlobContainer + "/" + this.escapedRootSubPath;
+  }
+
   private void updateRoot(String value) {
-    this.root = value;
-    this.extractFilesystemAndSubPath(this.root);
+    this.root = this.extractRootBlobContainerAndSubPath(value);
+  }
+
+  private void updateRootSubPath(String value) {
+    this.unescapedRootSubPath =  value;
+    try {
+      this.escapedRootSubPath = this.escapePath(this.unescapedRootSubPath);
+    } catch (UnsupportedEncodingException e) {
+      LOGGER.error("Exception thrown when encoding path: " + this.unescapedRootSubPath + ".", e);
+      this.escapedRootSubPath = this.unescapedRootSubPath;
+    } 
   }
 
   public String getRoot() {
@@ -482,7 +548,7 @@ public class AdlsAdapter extends NetworkAdapter {
 
   private void updateHostname(String value) {
     this.hostname = value;
-    this.formatedHostname = this.formatHostname(this.hostname);
+    this.formattedHostname = this.formatHostname(this.hostname);
   }
 
   public String getHostname() {

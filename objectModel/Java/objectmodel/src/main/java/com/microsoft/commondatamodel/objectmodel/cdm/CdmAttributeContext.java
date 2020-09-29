@@ -54,9 +54,9 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
   /**
    *
-   * @param resOpt
-   * @param acp
-   * @return
+   * @param resOpt Resolved options
+   * @param acp Attribute context parameters
+   * @return Cdm Attribute Context
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

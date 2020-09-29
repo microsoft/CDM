@@ -44,7 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
 
             CdmEntityDefinition entTestEntityStringReference = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
             Assert.IsNotNull(entTestEntityStringReference);
-            CdmEntityDefinition resolvedTestEntityStringReference = await TestUtils.GetResolvedEntity(corpus, entTestEntityStringReference, new List<string> { "referenceOnly" });
+            CdmEntityDefinition resolvedTestEntityStringReference = await ProjectionTestUtils.GetResolvedEntity(corpus, entTestEntityStringReference, new List<string> { "referenceOnly" });
             Assert.IsNotNull(resolvedTestEntityStringReference);
             AttributeContextUtil.ValidateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
         }

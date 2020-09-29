@@ -5,6 +5,8 @@ package com.microsoft.commondatamodel.objectmodel.utilities;
 
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
+
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -23,13 +25,21 @@ public class ResolveOptions {
    */
   private boolean shallowValidation;
   /**
+   * Defines at which point the Object Model will try to load the imported documents.
+   */
+  private ImportsLoadStrategy importsLoadStrategy = ImportsLoadStrategy.LazyLoad;
+  /**
    * When enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
    */
   private Boolean strictValidation = true;
   /**
-   * the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
+   * The limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
    */
   private Integer resolvedAttributeLimit = 4000;
+  /**
+   * The maximum value for the end ordinal in an ArrayExpansion operation
+   */
+  private int maxOrdinalForArrayExpansion = 20;
   /**
    * Tracks the number of entity attributes that have been travered when collecting resolved traits
    * or attributes. prevents run away loops.
@@ -109,6 +119,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param symbolRefSet SymbolSet 
    */
   @Deprecated
   public void setSymbolRefSet(final SymbolSet symbolRefSet) {
@@ -123,17 +134,43 @@ public class ResolveOptions {
     this.shallowValidation = shallowValidation;
   }
 
-  public Boolean getStrictValidation() {
-    return strictValidation;
+  public ImportsLoadStrategy getImportsLoadStrategy() {
+    return importsLoadStrategy;
   }
 
+  public void setImportsLoadStrategy(ImportsLoadStrategy importsLoadStrategy) {
+    this.importsLoadStrategy = importsLoadStrategy;
+  }
+
+  /**
+   * @deprecated please use importsLoadStrategy instead.
+   */
+  @Deprecated
+  public Boolean getStrictValidation() {
+    if (this.importsLoadStrategy == ImportsLoadStrategy.LazyLoad) {
+      return null;
+    }
+    return this.importsLoadStrategy == ImportsLoadStrategy.Load;
+  }
+
+  /**
+   * @deprecated please use importsLoadStrategy instead.
+   */
+  @Deprecated
   public void setStrictValidation(final Boolean strictValidation) {
-    this.strictValidation = strictValidation;
+    if (strictValidation == null) {
+      this.importsLoadStrategy = ImportsLoadStrategy.LazyLoad;
+    } else if (strictValidation) {
+      this.importsLoadStrategy = ImportsLoadStrategy.Load;
+    } else {
+      this.importsLoadStrategy = ImportsLoadStrategy.DoNotLoad;
+    }
   }
 
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param saveResolutionsOnCopy boolean 
    */
   @Deprecated
   public void setSaveResolutionsOnCopy(final boolean saveResolutionsOnCopy) {
@@ -156,9 +193,18 @@ public class ResolveOptions {
 
   public void setResolvedAttributeLimit(final Integer resolvedAttributeLimit) { this.resolvedAttributeLimit = resolvedAttributeLimit; }
 
+  public int getMaxOrdinalForArrayExpansion() {
+    return this.maxOrdinalForArrayExpansion;
+  }
+
+  public void setMaxOrdinalForArrayExpansion(final int maxOrdinalForArrayExpansion) {
+    this.maxOrdinalForArrayExpansion = maxOrdinalForArrayExpansion;
+  }
+
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return CdmDocumentDefinition
    */
   @Deprecated
   public CdmDocumentDefinition getIndexingDoc() {
@@ -168,6 +214,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param relationshipDepth Integer 
    */
   @Deprecated
   public void setRelationshipDepth(final Integer relationshipDepth) {
@@ -177,6 +224,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return boolean
    */
   @Deprecated
   public boolean isSaveResolutionsOnCopy() {
@@ -186,6 +234,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return SymbolSet
    */
   @Deprecated
   public SymbolSet getSymbolRefSet() {
@@ -199,6 +248,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param indexingDoc CdmDocumentDefinition 
    */
   @Deprecated
   public void setIndexingDoc(final CdmDocumentDefinition indexingDoc) {
@@ -208,6 +258,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return Integer
    */
   @Deprecated
   public Integer getRelationshipDepth() {
@@ -217,6 +268,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return CdmDocumentDefinition
    */
   @Deprecated
   public CdmDocumentDefinition getLocalizeReferencesFor() {
@@ -226,6 +278,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param localizeReferencesFor CdmDocumentDefinition 
    */
   @Deprecated
   public void setLocalizeReferencesFor(final CdmDocumentDefinition localizeReferencesFor) {
@@ -252,6 +305,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return String
    */
   @Deprecated
   public String getFromMoniker() {
@@ -261,6 +315,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param fromMoniker String 
    */
   @Deprecated
   public void setFromMoniker(final String fromMoniker) {
@@ -284,6 +339,8 @@ public class ResolveOptions {
    * Checks if the limit for the number of attributes an entity can have has been reached
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param amount int
+   * @return boolean
    */
   @Deprecated
   public boolean checkAttributeCount(int amount)

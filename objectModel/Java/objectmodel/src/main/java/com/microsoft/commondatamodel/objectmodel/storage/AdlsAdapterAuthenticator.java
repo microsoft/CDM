@@ -8,9 +8,11 @@ import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -90,7 +92,7 @@ class AdlsAdapterAuthenticator {
       final String method,
       final String content,
       final String contentType)
-      throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException {
+      throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, UnsupportedEncodingException {
     if (sharedKey != null) {
       return buildAuthenticationHeaderWithSharedKey(url, method, content, contentType);
     } else if (this.tokenProvider != null) {
@@ -104,7 +106,7 @@ class AdlsAdapterAuthenticator {
 
   /**
    * Returns the authentication headers with the applied shared key.
-   * @param url The URL.
+   * @param url The URL with query parameters sorted lexicographically.
    * @param method The HTTP method.
    * @param content The string content.
    * @param contentType The content type.
@@ -115,7 +117,7 @@ class AdlsAdapterAuthenticator {
       final String method,
       final String content,
       final String contentType)
-      throws URISyntaxException, NoSuchAlgorithmException, InvalidKeyException {
+      throws URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
     final Map<String, String> headers = new LinkedHashMap<>();
 
     // Add UTC now time and new version.
@@ -152,7 +154,8 @@ class AdlsAdapterAuthenticator {
       final String[] queryParts = queryParameters.split("&");
       for(final String item : queryParts) {
         final String[] keyValuePair = item.split("=");
-        builder.append("\n").append(keyValuePair[0]).append(":").append(keyValuePair[1]);
+        String decodedValue = URLDecoder.decode(keyValuePair[1], "UTF-8");
+        builder.append("\n").append(keyValuePair[0]).append(":").append(decodedValue);
       }
     }
 

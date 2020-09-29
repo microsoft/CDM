@@ -101,10 +101,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            dynamic source = EntityReferencePersistence.ToData(instance.Source, resOpt, options);
+            dynamic source = null;
+            if (instance.Source != null && instance.Source.GetType() == typeof(string))
+            {
+                source = instance.Source;
+            }
+            else if (instance.Source != null && !string.IsNullOrWhiteSpace(instance.Source.NamedReference) && instance.Source.ExplicitReference == null)
+            {
+                source = instance.Source.NamedReference;
+            }
+            else if (instance.Source != null && instance.Source.GetType() == typeof(CdmEntityReference))
+            {
+                source = EntityReferencePersistence.ToData(instance.Source, resOpt, options);
+            }
 
             List<OperationBase> operations = null;
-            if (instance.Operations != null)
+            if (instance.Operations != null && instance.Operations.Count > 0)
             {
                 operations = new List<OperationBase>();
                 foreach (CdmOperationBase operation in instance.Operations)

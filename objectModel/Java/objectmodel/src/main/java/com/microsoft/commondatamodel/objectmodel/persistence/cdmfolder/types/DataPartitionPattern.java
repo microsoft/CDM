@@ -21,7 +21,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Gets the name for the pattern.
-     * @return
+     * @return String
      */
     public String getName() {
         return this.name;
@@ -29,7 +29,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Sets the name for the pattern.
-     * @param name
+     * @param name String
      */
     public void setName(final String name) {
         this.name = name;
@@ -37,7 +37,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Gets the explanation for the pattern.
-     * @return
+     * @return String
      */
     public String getExplanation() {
         return this.explanation;
@@ -45,7 +45,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Sets the explanation for the pattern.
-     * @param explanation
+     * @param explanation String
      */
     public void setExplanation(final String explanation) {
         this.explanation = explanation;
@@ -53,7 +53,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Gets the starting location corpus path for searching for inferred data partitions.
-     * @return
+     * @return String
      */
     public String getRootLocation() {
         return this.rootLocation;
@@ -61,7 +61,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Sets the starting location corpus path for searching for inferred data partitions.
-     * @param rootLocation
+     * @param rootLocation String
      */
     public void setRootLocation(final String rootLocation) {
         this.rootLocation = rootLocation;
@@ -69,6 +69,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Gets the glob pattern used for searching partitions.
+     * @return String
      */
     public String getGlobPattern() {
         return this.globPattern;
@@ -76,6 +77,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Sets the glob pattern used for searching partitions.
+     * @param globPattern String
      */
     public void setGlobPattern(final String globPattern) {
         this.globPattern = globPattern;
@@ -83,7 +85,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Gets the regular expression string to use for searching partitions.
-     * @return
+     * @return String
      */
     public String getRegularExpression() {
         return this.regularExpression;
@@ -91,7 +93,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Sets the regular expression string to use for searching partitions.
-     * @param regularExpression
+     * @param regularExpression String
      */
     public void setRegularExpression(final String regularExpression) {
         this.regularExpression = regularExpression;
@@ -99,7 +101,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Gets the names for replacement values from regular expression.
-     * @return
+     * @return List of String
      */
     public List<String> getParameters() {
         return this.parameters;
@@ -107,7 +109,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Sets the names for replacement values from regular expression.
-     * @param parameters
+     * @param parameters List of string
      */
     public void setParameters(final List<String> parameters) {
         this.parameters = parameters;
@@ -115,7 +117,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Gets the corpus path for specialized schema to use for matched pattern partitions.
-     * @return
+     * @return String
      */
     public String getSpecializedSchema() {
         return this.specializedSchema;
@@ -123,7 +125,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Sets the corpus path for specialized schema to use for matched pattern partitions.
-     * @param specializedSchema
+     * @param specializedSchema String
      */
     public void setSpecializedSchema(final String specializedSchema) {
         this.specializedSchema = specializedSchema;
@@ -131,7 +133,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Gets the exhibited traits.
-     * @return
+     * @return ArrayNode
      */
     public ArrayNode getExhibitsTraits() {
         return this.exhibitsTraits;
@@ -139,7 +141,7 @@ public class DataPartitionPattern extends FileStatus {
 
     /**
      * Sets the exhibited traits.
-     * @param exhibitsTraits
+     * @param exhibitsTraits ArrayNode
      */
     public void setExhibitsTraits(final ArrayNode exhibitsTraits) {
         this.exhibitsTraits = exhibitsTraits;

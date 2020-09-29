@@ -46,6 +46,7 @@ public class RefCounted {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @return int ref count
      */
     @Deprecated
     public int getRefCnt() {
@@ -55,6 +56,7 @@ public class RefCounted {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
      * to be called externally at all. Please refrain from using it.
+     * @param refCnt ref count
      */
     @Deprecated
     public void setRefCnt(final int refCnt) {

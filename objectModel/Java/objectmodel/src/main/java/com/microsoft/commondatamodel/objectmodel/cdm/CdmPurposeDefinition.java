@@ -77,6 +77,7 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the reference to the purpose extended by this.
+   * @return CdmPurposeReference
    */
   public CdmPurposeReference getExtendsPurpose() {
     return this.extendsPurpose;
@@ -88,6 +89,7 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
 
   /**
    * Gets or sets the purpose name.
+   * @return string
    */
   public String getPurposeName() {
     return this.purposeName;
@@ -113,9 +115,9 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved option
+   * @param options Copy option 
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
    * extremely likely to be removed in the public interface, and not meant to be called externally
    * at all. Please refrain from using it.

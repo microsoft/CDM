@@ -76,6 +76,7 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @return int Attribute count
    */
   public int getAttributeCount() {
     return attributeCount;
@@ -84,6 +85,7 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
+   * @param attributeCount Attribute count
    */
   public void setAttributeCount(final int attributeCount) { this.attributeCount = attributeCount; }
 

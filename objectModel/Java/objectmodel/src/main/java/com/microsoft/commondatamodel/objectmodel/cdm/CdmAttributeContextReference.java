@@ -15,9 +15,14 @@ public class CdmAttributeContextReference extends CdmObjectReferenceBase {
     this.setObjectType(CdmObjectType.AttributeContextRef);
   }
 
+
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param refTo Object
+   * @param simpleReference boolean
+   * @return CdmObjectReferenceBase
    */
   @Override
   @Deprecated
@@ -31,6 +36,11 @@ public class CdmAttributeContextReference extends CdmObjectReferenceBase {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt Resolved options
+   * @param refTo Object
+   * @param simpleReference boolean
+   * @param host host
+   * @return CdmObjectReferenceBase
    */
   @Override
   @Deprecated
@@ -48,9 +58,9 @@ public class CdmAttributeContextReference extends CdmObjectReferenceBase {
 
   /**
    *
-   * @param resOpt
-   * @param options
-   * @return
+   * @param resOpt Resolved options
+   * @param options Copy Option
+   * @return Object
    * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -62,10 +72,10 @@ public class CdmAttributeContextReference extends CdmObjectReferenceBase {
 
   /**
    *
-   * @param pathRoot
-   * @param preChildren
-   * @param postChildren
-   * @return
+   * @param pathRoot path root
+   * @param preChildren Pre Children
+   * @param postChildren post children
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
