@@ -69,6 +69,6 @@ setuptools.setup(
         "Operating System :: OS Independent"
     ],
     cmdclass={
-        'copy_resources': CopyResourcesCommand
+        'copy_resources': CopyResourcesCommand()
     }
 )
