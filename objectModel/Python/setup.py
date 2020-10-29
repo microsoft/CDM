@@ -65,8 +65,6 @@ setuptools.setup(
     url="https://github.com/pypa/commondatamodel-objectmodel",
     packages=setuptools.find_packages(),
     install_requires=[req for req in requirements if req[:2] != "# "],
-    tests_require=[req for req in test_requirements if req[:2] != "# "],
-    test_suite = 'tests',
     data_files=[
         ('resources', list_files_in_folder(['resources'])),
         ('resources/extensions', list_files_in_folder(['resources', 'extensions'])),
