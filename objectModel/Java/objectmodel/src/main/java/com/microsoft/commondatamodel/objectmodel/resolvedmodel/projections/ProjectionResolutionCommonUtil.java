@@ -238,17 +238,21 @@ public final class ProjectionResolutionCommonUtil {
 
             if (resAttr != null && resAttr.getTarget() != null && ((CdmObject) resAttr.getTarget()).getOwner() != null &&
                 (((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.TypeAttributeDef || ((CdmObject) resAttr.getTarget()).getObjectType() == CdmObjectType.EntityAttributeDef)) {
+                // find the linked entity
                 CdmObject owner = ((CdmObject) resAttr.getTarget()).getOwner();
 
                 while (owner != null && owner.getObjectType() != CdmObjectType.EntityDef) {
                     owner = owner.getOwner();
                 }
 
-                if (owner != null && owner.getObjectType() == CdmObjectType.EntityDef) {
+                // find where the projection is defined
+                CdmDocumentDefinition projectionDoc = projDir.getOwner() != null ? projDir.getOwner().getInDocument() : null;
+
+                if (owner != null && owner.getObjectType() == CdmObjectType.EntityDef && projectionDoc != null) {
                     CdmEntityDefinition entDef = owner.fetchObjectDefinition(projDir.getResOpt());
                     if (entDef != null) {
                         // should contain relative path without the namespace
-                        String relativeEntPath = entDef.getCtx().getCorpus().getStorage().createRelativeCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument());
+                        String relativeEntPath = entDef.getCtx().getCorpus().getStorage().createRelativeCorpusPath(entDef.getAtCorpusPath(), projectionDoc);
                         entRefAndAttrNameList.add(new ArrayList<>(Arrays.asList(relativeEntPath, resAttr.getResolvedName())));
                     }
                 }

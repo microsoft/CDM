@@ -2,11 +2,11 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 from datetime import datetime
-from typing import Dict, Optional, Set, Tuple, TYPE_CHECKING
+from typing import Dict, List, Optional, Set, Tuple, TYPE_CHECKING
 import warnings
 
 from cdm.enums import CdmObjectType, ImportsLoadStrategy
-from cdm.utilities import CopyOptions, logger, ResolveOptions, Errors
+from cdm.utilities import CopyOptions, ImportInfo, logger, Errors, ResolveOptions
 
 from .cdm_container_def import CdmContainerDefinition
 from .cdm_definition_collection import CdmDefinitionCollection
@@ -14,14 +14,14 @@ from .cdm_import_collection import CdmImportCollection
 from .cdm_object_simple import CdmObjectSimple
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDataTypeDefinition, CdmFolderDefinition, CdmObject, \
+    from cdm.objectmodel import CdmCorpusContext, CdmDataTypeDefinition, CdmImport, CdmFolderDefinition, CdmObject, \
         CdmObjectDefinition, CdmTraitDefinition
     from cdm.utilities import FriendlyFormatNode, VisitCallback
 
 
 class ImportPriorities:
     def __init__(self):
-        self.import_priority = {}  # type: Dict[CdmDocumentDefinition, int]
+        self.import_priority = {}  # type: Dict[CdmDocumentDefinition, ImportInfo]
         self.moniker_priority_map = {}  # type: Dict[str, CdmDocumentDefinition]
 
         # True if one of the document's imports import this document back.
@@ -53,6 +53,9 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
 
         # the document json schema semantic version.
         self.json_schema_semantic_version = '1.0.0'  # type: str
+        
+        # the document version.
+        self.document_version = None  # type: Optional[str]
 
         # the document folder.
         self.folder = None  # type: Optional[CdmFolderDefinition]
@@ -131,6 +134,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         copy.folder_path = self.folder_path
         copy.schema = self.schema
         copy.json_schema_semantic_version = self.json_schema_semantic_version
+        copy.document_version = self.document_version
 
         for definition in self.definitions:
             copy.definitions.append(definition)
@@ -167,7 +171,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
     def _get_import_priorities(self) -> 'ImportPriorities':
         if not self._import_priorities:
             import_priorities = ImportPriorities()
-            import_priorities.import_priority[self] = 0
+            import_priorities.import_priority[self] = ImportInfo(0, False)
             self._prioritize_imports(set(), import_priorities, 1, False)
             self._import_priorities = import_priorities
 
@@ -341,7 +345,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
         # maps document to priority.
-        priority_map = import_priorities.import_priority  # type: Dict[CdmDocumentDefinition, int]
+        priority_map = import_priorities.import_priority  # type: Dict[CdmDocumentDefinition, ImportInfo]
 
         # maps moniker to document.
         moniker_map = import_priorities.moniker_priority_map  # type: Dict[str, CdmDocumentDefinition]
@@ -349,8 +353,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         # if already in list, don't do this again
         if self in processed_set:
             # if the first document in the priority map is this then the document was the starting point of the recursion.
-            # and if this document is present in the processedSet we know that there is a cicular list of imports.
-            if self in priority_map and priority_map[self] == 0:
+            # and if this document is present in the processedSet we know that there is a circular list of imports.
+            if self in priority_map and priority_map[self].priority == 0:
                 import_priorities.has_circular_import = True
             return sequence
 
@@ -359,19 +363,32 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         if self.imports:
             # reverse order.
             # first add the imports done at this level only.
-            reversed_imports = self.imports[::-1]  # reverse the list
+            # reverse the list
+            reversed_imports = self.imports[::-1]  # type: List[CdmImport]
+            moniker_imports = []  # type: List[CdmDocumentDefinition]
+
             for imp in reversed_imports:
                 imp_doc = imp._document  # type: CdmDocumentDefinition
-                # don't add the moniker imports to the priority list
-                if imp._document and not imp.moniker and imp_doc not in priority_map:
-                    # add doc
-                    priority_map[imp_doc] = sequence
-                    sequence += 1
+
+                if imp_doc:
+                    # moniker imports will be added to the end of the priority list later.
+                    if not imp.moniker and imp_doc not in priority_map:
+                        # add doc
+                        priority_map[imp_doc] = ImportInfo(sequence, False)
+                        sequence += 1
+                    else:
+                        moniker_imports.append(imp_doc)
+                else:
+                    logger.warning(self._TAG, self.ctx, 'Import document {} not loaded. This might cause an unexpected output.'.format(imp.corpus_path))
 
             # now add the imports of the imports.
             for imp in reversed_imports:
                 imp_doc = imp._document  # type: CdmDocumentDefinition
                 is_moniker = bool(imp.moniker)
+
+                if not imp_doc:
+                    logger.warning(self._TAG, self.ctx, 'Import document {} not loaded. This might cause an unexpected output.'.format(imp.corpus_path))
+
                 # if the document has circular imports its order on the impDoc.ImportPriorities list is not correct
                 # since the document itself will always be the first one on the list.
                 if imp_doc and imp_doc._import_priorities and not imp_doc._import_priorities.has_circular_import:
@@ -379,11 +396,13 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                     imp_pri_sub = imp_doc._get_import_priorities()
                     imp_pri_sub.import_priority.pop(imp_doc)  # because already added above
                     imports = list(imp_pri_sub.import_priority.keys())
-                    imports.sort(key=lambda i: imp_pri_sub.import_priority[i])
+                    imports.sort(key=lambda doc: imp_pri_sub.import_priority[doc].priority)
                     for key in imports:
-                        if key not in priority_map:
+                        # if the document is imported with moniker in another document do not include it in the priority list of this one.
+                        # moniker imports are only added to the priority list of the document that directly imports them.
+                        if key not in priority_map and not imp_pri_sub.import_priority[key].is_moniker:
                             # add doc
-                            priority_map[key] = sequence
+                            priority_map[key] = ImportInfo(sequence, False)
                             sequence += 1
 
                     # if the import is not monikered then merge its monikerMap to this one.
@@ -400,6 +419,14 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                 for imp in self.imports:
                     if imp._document and imp.moniker:
                         moniker_map[imp.moniker] = imp._document
+
+                # if the document index is zero, the document being processed is the root of the imports chain.
+                # in this case add the monikered imports to the end of the priorityMap.
+                if self in priority_map and priority_map[self].priority == 0:
+                    for doc in moniker_imports:
+                        if doc not in priority_map:
+                            priority_map[doc] = ImportInfo(sequence, True)
+                            sequence += 1
 
         return sequence
 

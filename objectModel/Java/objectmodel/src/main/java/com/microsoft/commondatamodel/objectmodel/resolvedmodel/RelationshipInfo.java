@@ -9,6 +9,7 @@ public class RelationshipInfo {
   private boolean isArray;
   private boolean selectsOne;
   private Integer nextDepth;
+  private Integer maxDepth;
   private boolean maxDepthExceeded;
 
   public void setSelectsOne(final boolean selectsOne) {
@@ -57,5 +58,13 @@ public class RelationshipInfo {
 
   public void setNextDepth(final Integer nextDepth) {
     this.nextDepth = nextDepth;
+  }
+
+  public Integer getMaxDepth() {
+    return maxDepth;
+  }
+
+  public void setMaxDepth(final Integer nextDepth) {
+    this.maxDepth = nextDepth;
   }
 }

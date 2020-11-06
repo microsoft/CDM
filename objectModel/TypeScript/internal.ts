@@ -5,6 +5,7 @@
 // add your classes after the classes you're using are loaded.
 
 export * from './Persistence/CdmConstants';
+export * from './Utilities/ImportInfo';
 export * from './Utilities/identifierRef';
 export * from './Enums/cdmObjectType';
 export * from './Enums/cdmDataFormat';
@@ -13,6 +14,7 @@ export * from './Enums/cdmAttributeContextType';
 export * from './Enums/cdmRelationshipDiscoveryStyle';
 export * from './Enums/importsLoadStrategy';
 export * from './Utilities/copyOptions';
+export * from './Utilities/depthInfo';
 export * from './Utilities/resolveOptions';
 export * from './Cdm/CdmCorpusContext';
 export * from './ResolvedModel/TraitParamSpec';

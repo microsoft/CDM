@@ -23,6 +23,7 @@ class DocumentContent(JObject):
         self.jsonSchemaSemanticVersion = None  # type: str
         self.imports = None  # type: List[Import]
         self.definitions = None  # type: Union[Trait, DataType, Purpose, AttributeGroup, Entity, ConstantEntity]
+        self.documentVersion = None  # type: str
 
         self.schemaVersion = None  # type: str
         """DEPRECATED"""

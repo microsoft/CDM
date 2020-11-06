@@ -83,6 +83,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// Tests if a document that was fetched with lazy load and imported by another document is property indexed when needed.
+        /// </summary>
+        [TestMethod]
+        public async Task TestLazyLoadCreateResolvedEntity()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestLazyLoadCreateResolvedEntity");
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (level, message) =>
+                {
+                    // no error should be logged.
+                    Assert.Fail(message);
+                }
+            }, CdmStatusLevel.Warning);
+
+            // load with deferred imports.
+            var resOpt = new ResolveOptions()
+            {
+                ImportsLoadStrategy = ImportsLoadStrategy.LazyLoad
+            };
+
+            // load entB which is imported by entA document.
+            var docB = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/entB.cdm.json", null, resOpt);
+            var entA = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/entA.cdm.json/entA", null, resOpt);
+
+            Assert.IsNull(entA.InDocument.ImportPriorities);
+            Assert.IsNull(docB.ImportPriorities);
+
+            // CreateResolvedEntityAsync will force the entA document to be indexed.
+            var resEntA = await entA.CreateResolvedEntityAsync("resolved-EntA");
+
+            // in CreateResolvedEntityAsync the documents should be indexed.
+            Assert.IsNotNull(entA.InDocument.ImportPriorities);
+            Assert.IsNotNull(docB.ImportPriorities);
+            Assert.IsNotNull(resEntA.InDocument.ImportPriorities);
+        }
+
+        /// <summary>
         /// Tests the FetchObjectAsync function with the imports load strategy set to load.
         /// </summary>
         [TestMethod]

@@ -205,6 +205,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // Using the references present in the resolved entities, get an entity
             // create an imports doc with all the necessary resolved entity references and then resolve it
+            // sometimes they might send the docname, that makes sense a bit, don't include the suffix in the name
+            if (newManifestName.ToLowerInvariant().EndsWith(".manifest.cdm.json"))
+                newManifestName = newManifestName.Substring(0, newManifestName.Length - ".manifest.cdm.json".Length);
             var resolvedManifest = new CdmManifestDefinition(this.Ctx, newManifestName);
 
             // bring over any imports in this document or other bobbles

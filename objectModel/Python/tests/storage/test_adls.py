@@ -8,16 +8,21 @@ import json
 import unittest
 import unittest.mock as mock
 import os
-import datetime
 import dateutil.tz
 
 from tests.common import async_test, TestHelper
+from tests.adls_test_helper import AdlsTestHelper
 from cdm.storage.adls import ADLSAdapter
+from cdm.utilities.network.token_provider import TokenProvider
 from cdm.utilities.string_utils import StringUtils
 from cdm.objectmodel import CdmCorpusDefinition
 
-def IsADLSEnvironmentSetUp():
-    return (os.environ.get("ADLS_RUNTESTS") == True)
+def IfRunTestsFlagNotSet():
+    return (os.environ.get("ADLS_RUNTESTS") is None)
+
+class FakeTokenProvider(TokenProvider):
+    def get_token(self) -> str:
+        return 'TOKEN'
 
 class AdlsStorageAdapterTestCase(unittest.TestCase):
     test_subpath = 'Storage'
@@ -28,55 +33,16 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         adapter.number_of_retries = 0
         return adapter
 
-    def create_adapter_with_shared_key(self, root_relative_path: str = None):
-        hostname = os.environ.get("ADLS_HOSTNAME")
-        root_path = os.environ.get("ADLS_ROOTPATH")
-        shared_key = os.environ.get("ADLS_SHAREDKEY")
-
-        self.assertFalse(StringUtils.is_null_or_white_space(hostname), "ADLS_HOSTNAME environment variable not set up")
-        self.assertFalse(StringUtils.is_null_or_white_space(root_path), "ADLS_ROOTPATH environment variable not set up")
-        self.assertFalse(StringUtils.is_null_or_white_space(shared_key), "ADLS_SHAREDKEY environment variable not set up")
-
-        adapter = ADLSAdapter(hostname=hostname, root=self.combine_path(root_path, root_relative_path), shared_key=shared_key)
-
-        return adapter
-
-    def create_adapter_with_client_id(self, root_relative_path: str = None):
-        hostname = os.environ.get("ADLS_HOSTNAME")
-        root_path = os.environ.get("ADLS_ROOTPATH")
-        tenant = os.environ.get("ADLS_TENANT")
-        client_id = os.environ.get("ADLS_CLIENTID")
-        client_secret = os.environ.get("ADLS_CLIENTSECRET")
-
-        self.assertFalse(StringUtils.is_null_or_white_space(hostname), "ADLS_HOSTNAME environment variable not set up")
-        self.assertFalse(StringUtils.is_null_or_white_space(root_path), "ADLS_ROOTPATH environment variable not set up")
-        self.assertFalse(StringUtils.is_null_or_white_space(tenant), "ADLS_TENANT environment variable not set up")
-        self.assertFalse(StringUtils.is_null_or_white_space(client_id), "ADLS_CLIENTID environment variable not set up")
-        self.assertFalse(StringUtils.is_null_or_white_space(client_secret), "ADLS_CLIENTSECRET environment variable not set up")
-
-        adapter = ADLSAdapter(hostname=hostname, root=self.combine_path(root_path, root_relative_path), tenant=tenant, client_id=client_id, secret=client_secret)
-
-        return adapter
-
-    def combine_path(self, first: str, second: str) -> str:
-        if second is None or second == '':
-            return first
-        if first.endswith('/'):
-            first = first[0:len(first) - 1]
-        if second.startswith('/'):
-            second = second[1:]
-        return first + '/' + second
-
     async def run_write_read_test(self, adapter):
-        filename = "WriteReadTest/" + os.environ.get("USERNAME") + "_" + os.environ.get("COMPUTERNAME") + "_Python.txt"
-        write_contents = str(datetime.datetime.now()) + "\n" + filename
+        filename = 'WriteReadTest/' + os.environ.get('USERNAME') + '_' + os.environ.get('COMPUTERNAME') + '_Python.txt'
+        write_contents = str(datetime.datetime.now()) + '\n' + filename
         await adapter.write_async(filename, write_contents)
         read_contents = await adapter.read_async(filename)
         self.assertEqual(write_contents, read_contents)
     
     async def run_check_filetime_test(self, adapter):    
-        offset1 = await adapter.compute_last_modified_time_async("/FileTimeTest/CheckFileTime.txt")
-        offset2 = await adapter.compute_last_modified_time_async("FileTimeTest/CheckFileTime.txt")
+        offset1 = await adapter.compute_last_modified_time_async('/FileTimeTest/CheckFileTime.txt')
+        offset2 = await adapter.compute_last_modified_time_async('FileTimeTest/CheckFileTime.txt')
 
         self.assertTrue(offset1)
         self.assertTrue(offset2)
@@ -88,10 +54,10 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
     async def run_file_enum_test(self, adapter):
         context = adapter.create_file_query_cache_context()
         try:
-            files1 = await adapter.fetch_all_files_async("/FileEnumTest/")
-            files2 = await adapter.fetch_all_files_async("/FileEnumTest")
-            files3 = await adapter.fetch_all_files_async("FileEnumTest/")
-            files4 = await adapter.fetch_all_files_async("FileEnumTest")
+            files1 = await adapter.fetch_all_files_async('/FileEnumTest/')
+            files2 = await adapter.fetch_all_files_async('/FileEnumTest')
+            files3 = await adapter.fetch_all_files_async('FileEnumTest/')
+            files4 = await adapter.fetch_all_files_async('FileEnumTest')
 
             # expect 100 files to be enumerated
             self.assertTrue(len(files1) == 100 and len(files2)== 100 and len(files3) == 100 and len(files4) == 100)
@@ -103,7 +69,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
                 await adapter.compute_last_modified_time_async(files1[i]);    
             stop = time.time()
 
-            self.assertLess(stop - start, .1, "Checking cached file modified times took too long")
+            self.assertLess(stop - start, .1, 'Checking cached file modified times took too long')
         finally:
             context.dispose()
     
@@ -121,39 +87,39 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         self.assertEqual(manifest.entities[0].data_partitions[1].location, 'TestEntity-With=Special Characters/year=2020/TestEntity-partition-With=Special Characters-1.csv')
 
     @async_test
-    @unittest.skipIf(IsADLSEnvironmentSetUp(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
     async def test_adls_write_read_shared_key(self):
-        await self.run_write_read_test(self.create_adapter_with_shared_key())
+        await self.run_write_read_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IsADLSEnvironmentSetUp(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
     async def test_adls_write_read__client_id(self):
-        await self.run_write_read_test(self.create_adapter_with_client_id())
+        await self.run_write_read_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IsADLSEnvironmentSetUp(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
     async def test_adls_check_filetime_shared_key(self):
-        await self.run_check_filetime_test(self.create_adapter_with_shared_key())
+        await self.run_check_filetime_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IsADLSEnvironmentSetUp(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
     async def test_adls_check_filetime_client_id(self):
-        await self.run_check_filetime_test(self.create_adapter_with_client_id())
+        await self.run_check_filetime_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IsADLSEnvironmentSetUp(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
     async def test_adls_file_enum_shared_key(self):
-        await self.run_file_enum_test(self.create_adapter_with_shared_key())
+        await self.run_file_enum_test(AdlsTestHelper.create_adapter_with_shared_key())
 
     @async_test
-    @unittest.skipIf(IsADLSEnvironmentSetUp(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
     async def test_adls_file_enum_client_id(self):
-        await self.run_file_enum_test(self.create_adapter_with_client_id())
+        await self.run_file_enum_test(AdlsTestHelper.create_adapter_with_client_id())
 
     @async_test
-    @unittest.skipIf(IsADLSEnvironmentSetUp(), "ADLS environment variables not set up")
+    @unittest.skipIf(IfRunTestsFlagNotSet(), "ADLS environment variables not set up")
     async def test_adls_special_characters(self):
-        await self.run_special_characters_test(self.create_adapter_with_client_id('PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:'))
+        await self.run_special_characters_test(AdlsTestHelper.create_adapter_with_client_id('PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:'))
 
     def test_create_corpus_and_adapter_path(self):
         host_1 = 'storageaccount.dfs.core.windows.net'
@@ -332,18 +298,30 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         The secret property is not saved to the config.json file for security reasons.
         When constructing and ADLS adapter from config, the user should be able to set the secret after the adapter is constructed.
         """
-        adls_adapter = ADLSAdapter()
+        config = {
+            'root': 'root',
+            'hostname': 'hostname',
+            'tenant': 'tenant',
+            'clientId': 'clientId',
+        }
 
         try:
-            config = {
-                'root': 'root',
-                'hostname': 'hostname',
-                'tenant': 'tenant',
-                'clientId': 'clientId',
-            }
-            adls_adapter.update_config(json.dumps(config))
-            adls_adapter.secret = 'secret'
-            adls_adapter.shared_key = 'sharedKey'
+            adls_adapter1 = ADLSAdapter()
+            adls_adapter1.update_config(json.dumps(config))
+            adls_adapter1.client_id = 'clientId'
+            adls_adapter1.secret = 'secret'
+            adls_adapter1.shared_key = 'sharedKey'
+            adls_adapter1.token_provider = FakeTokenProvider()
+        except Exception:
+            self.fail('adls_adapter initialized without secret shouldn\'t throw exception when updating config.')
+
+        try:
+            adls_adapter2 = ADLSAdapter()
+            adls_adapter2.client_id = 'clientId'
+            adls_adapter2.secret = 'secret'
+            adls_adapter2.shared_key = 'sharedKey'
+            adls_adapter2.token_provider = FakeTokenProvider()
+            adls_adapter2.update_config(json.dumps(config))
         except Exception:
             self.fail('adls_adapter initialized without secret shouldn\'t throw exception when updating config.')
 
@@ -388,11 +366,11 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
         config = TestHelper.get_input_file_content(self.test_subpath, 'test_initialize_hostname_and_root', 'config.json')
         corpus = CdmCorpusDefinition()
         corpus.storage.mount_from_config(config)
-        self.assertEqual(corpus.storage.fetch_adapter("adlsadapter1").root, '/root-without-slash')
-        self.assertEqual(corpus.storage.fetch_adapter("adlsadapter2").root, '/root-without-slash/folder1/folder2')
-        self.assertEqual(corpus.storage.fetch_adapter("adlsadapter3").root, '/root-starts-with-slash/folder1/folder2')
-        self.assertEqual(corpus.storage.fetch_adapter("adlsadapter4").root, '/root-ends-with-slash/folder1/folder2')
-        self.assertEqual(corpus.storage.fetch_adapter("adlsadapter5").root, '/root-with-slashes/folder1/folder2')
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter1').root, '/root-without-slash')
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter2').root, '/root-without-slash/folder1/folder2')
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter3').root, '/root-starts-with-slash/folder1/folder2')
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter4').root, '/root-ends-with-slash/folder1/folder2')
+        self.assertEqual(corpus.storage.fetch_adapter('adlsadapter5').root, '/root-with-slashes/folder1/folder2')
 
 
 

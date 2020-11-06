@@ -6,7 +6,10 @@ import {
     CdmFolderDefinition
 } from '../internal';
 
+import { ConcurrentSemaphore } from '../Utilities/Concurrent/concurrentSemaphore';
+
 /**
+ * @internal
  * Synchronizes all dictionaries relating to the documents (and their statuses) in the corpus.
  */
 export class DocumentLibrary {
@@ -34,6 +37,10 @@ export class DocumentLibrary {
      * @internal
      */
     public pathLookup: Map<string, [CdmFolderDefinition, CdmDocumentDefinition]>;
+    /**
+     * @internal
+     */
+    public concurrentReadLock: ConcurrentSemaphore;
 
     constructor() {
         this.allDocuments = [];
@@ -42,6 +49,7 @@ export class DocumentLibrary {
         this.docsCurrentlyLoading = new Set<string>();
         this.docsNotFound = new Set<string>();
         this.docsNotIndexed = new Set<CdmDocumentDefinition>();
+        this.concurrentReadLock = new ConcurrentSemaphore();
     }
 
     /**
@@ -121,7 +129,8 @@ export class DocumentLibrary {
     public addToDocsNotLoaded(path: string) {
         if (!this.docsNotFound.has(path)) {
             const lookup: [CdmFolderDefinition, CdmDocumentDefinition] = this.pathLookup.get(path.toLowerCase());
-            if (!lookup) {
+            // If the imports were not indexed yet there might be documents imported that weren't loaded.
+            if (!lookup || (!lookup[1].importsIndexed && !lookup[1].currentlyIndexing)) {
                 this.docsNotLoaded.add(path);
             }
         }
@@ -129,20 +138,14 @@ export class DocumentLibrary {
 
     /**
      * @internal
-     *
-     * Fetches a document from the path lookup and adds it to the list of documents that are not indexed.
+     * Fetches a document from the path lookup.
      * @param path The document path.
      */
-    public fetchDocumentAndMarkForIndexing(path: string): CdmDocumentDefinition {
+    public fetchDocument(path: string): CdmDocumentDefinition {
         if (!this.docsNotFound.has(path)) {
             const lookup: [CdmFolderDefinition, CdmDocumentDefinition] = this.pathLookup.get(path.toLowerCase());
             if (lookup) {
                 const currentDoc: CdmDocumentDefinition = lookup['1'];
-                if (!currentDoc.importsIndexed && !currentDoc.currentlyIndexing) {
-                    // Mark for indexing.
-                    currentDoc.currentlyIndexing = true;
-                    this.docsNotIndexed.add(currentDoc);
-                }
                 return currentDoc;
             }
         }
@@ -155,14 +158,30 @@ export class DocumentLibrary {
      * Sets a document's status to loading if the document needs to be loaded.
      * @param docName The document name.
      */
-    public needToLoadDocument(docName: string): boolean {
+    public needToLoadDocument(docName: string, docsNowLoaded: Set<CdmDocumentDefinition>): boolean {
+        let needToLoad: boolean = false;
+        let doc: CdmDocumentDefinition;
+
         if (this.docsNotLoaded.has(docName) && !this.docsNotFound.has(docName) && !this.docsCurrentlyLoading.has(docName)) {
             // Set status to loading.
             this.docsNotLoaded.delete(docName);
-            this.docsCurrentlyLoading.add(docName);
-            return true;
+
+            // The document was loaded already, skip it.
+            if (this.pathLookup.has(docName.toLowerCase())) {
+                const lookup: [CdmFolderDefinition, CdmDocumentDefinition] =
+                    this.pathLookup.get(docName.toLowerCase());
+                doc = lookup['1'];
+            } else {
+                this.docsCurrentlyLoading.add(docName);
+                needToLoad = true;
+            }
         }
-        return false;
+
+        if (doc) {
+            this.markDocumentAsLoadedOrFailed(doc, docName, docsNowLoaded);
+        }
+
+        return needToLoad;
     }
 
     /**

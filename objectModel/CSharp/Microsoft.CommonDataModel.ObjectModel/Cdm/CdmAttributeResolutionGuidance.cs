@@ -261,7 +261,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
-        internal void UpdateAttributeDefaults(string attName)
+        internal void UpdateAttributeDefaults(string attName, CdmObject owner)
         {
             // handle the cardinality and expansion group.
             // default is one, but if there is some hint of an array, make it work
@@ -282,8 +282,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     this.expansion.maximumExpansion = 5;
                 if (this.expansion.countAttribute == null)
                 {
-                    this.expansion.countAttribute = this.Ctx.Corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "count");
-                    this.expansion.countAttribute.SetDataTypeRef(this.Ctx.Corpus.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "integer", true));
+                    this.expansion.countAttribute = this.Ctx.Corpus.FetchArtifactAttribute("count");
+                    this.expansion.countAttribute.Owner = owner;
+                    this.expansion.countAttribute.InDocument = owner.InDocument;
                 }
             }
             // entity by ref. anything mentioned?
@@ -300,8 +301,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     if (this.entityByReference.foreignKeyAttribute == null)
                     {
                         // make up a fk
-                        this.entityByReference.foreignKeyAttribute = this.Ctx.Corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "id");
-                        this.entityByReference.foreignKeyAttribute.SetDataTypeRef(this.Ctx.Corpus.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "entityId", true));
+                        this.entityByReference.foreignKeyAttribute = this.Ctx.Corpus.FetchArtifactAttribute("id");
+                        this.entityByReference.foreignKeyAttribute.Owner = owner;
+                        this.entityByReference.foreignKeyAttribute.InDocument = owner.InDocument;
                     }
                 }
             }
@@ -314,9 +316,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (this.selectsSubAttribute.selectedTypeAttribute == null)
                     {
-                        // make up a fk
-                        this.selectsSubAttribute.selectedTypeAttribute = this.Ctx.Corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "type");
-                        this.selectsSubAttribute.selectedTypeAttribute.SetDataTypeRef(this.Ctx.Corpus.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "entityName", true));
+                        // make up a type indicator
+                        this.selectsSubAttribute.selectedTypeAttribute = this.Ctx.Corpus.FetchArtifactAttribute("type");
+                        this.selectsSubAttribute.selectedTypeAttribute.Owner = owner;
+                        this.selectsSubAttribute.selectedTypeAttribute.InDocument = owner.InDocument;
                     }
                 }
             }

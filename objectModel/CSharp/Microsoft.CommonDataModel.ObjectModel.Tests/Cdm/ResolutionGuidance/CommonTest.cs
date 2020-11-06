@@ -63,14 +63,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             try
             {
                 string testInputPath = TestHelper.GetInputFolderPath(TestsSubpath, testName);
+                string testActualPath = TestHelper.GetActualOutputFolderPath(TestsSubpath, testName);
+                string testExpectedPath = TestHelper.GetExpectedOutputFolderPath(TestsSubpath, testName);
+                string corpusPath = testInputPath.Substring(0, testInputPath.Length - "/Input".Length);
+                testActualPath = Path.GetFullPath(testActualPath);
 
                 CdmCorpusDefinition corpus = new CdmCorpusDefinition();
                 corpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-                corpus.Storage.Mount("localInput", new LocalAdapter(testInputPath));
+                corpus.Storage.Mount("local", new LocalAdapter(corpusPath));
                 corpus.Storage.Mount("cdm", new LocalAdapter(SchemaDocsPath));
-                corpus.Storage.DefaultNamespace = "localInput";
+                corpus.Storage.DefaultNamespace = "local";
 
-                CdmEntityDefinition srcEntityDef = await corpus.FetchObjectAsync<CdmEntityDefinition>($"localInput:/{sourceEntityName}.cdm.json/{sourceEntityName}") as CdmEntityDefinition;
+                string outFolderPath = corpus.Storage.AdapterPathToCorpusPath(testActualPath) + "/"; // interesting 'bug'
+                CdmFolderDefinition outFolder = await corpus.FetchObjectAsync<CdmFolderDefinition>(outFolderPath) as CdmFolderDefinition;
+                
+                CdmEntityDefinition srcEntityDef = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/Input/{sourceEntityName}.cdm.json/{sourceEntityName}") as CdmEntityDefinition;
                 Assert.IsTrue(srcEntityDef != null);
 
                 var resOpt = new ResolveOptions
@@ -84,84 +91,85 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 string outputEntityFileName = string.Empty;
                 string entityFileName = string.Empty;
 
+
                 if (expectedContext_default != null && expected_default != null)
                 {
-                    entityFileName = "default";
+                    entityFileName = "d";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { });
-                    outputEntityName = $"{sourceEntityName}_Resolved_{entityFileName}";
+                    outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
-                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt);
-                    ValidateOutputWithValues(expectedContext_default, expected_default, resolvedEntityDef);
+                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
                 }
 
                 if (expectedContext_normalized != null && expected_normalized != null)
                 {
-                    entityFileName = "normalized";
+                    entityFileName = "n";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized" });
-                    outputEntityName = $"{sourceEntityName}_Resolved_{entityFileName}";
+                    outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
-                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt);
-                    ValidateOutputWithValues(expectedContext_normalized, expected_normalized, resolvedEntityDef);
+                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
                 }
 
                 if (expectedContext_referenceOnly != null && expected_referenceOnly != null)
                 {
-                    entityFileName = "referenceOnly";
+                    entityFileName = "ro";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly" });
-                    outputEntityName = $"{sourceEntityName}_Resolved_{entityFileName}";
+                    outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
-                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt);
-                    ValidateOutputWithValues(expectedContext_referenceOnly, expected_referenceOnly, resolvedEntityDef);
+                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
                 }
 
                 if (expectedContext_structured != null && expected_structured != null)
                 {
-                    entityFileName = "structured";
+                    entityFileName = "s";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "structured" });
-                    outputEntityName = $"{sourceEntityName}_Resolved_{entityFileName}";
+                    outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
-                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt);
-                    ValidateOutputWithValues(expectedContext_structured, expected_structured, resolvedEntityDef);
+                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
                 }
 
                 if (expectedContext_normalized_structured != null && expected_normalized_structured != null)
                 {
-                    entityFileName = "normalized_structured";
+                    entityFileName = "n_s";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "structured" });
-                    outputEntityName = $"{sourceEntityName}_Resolved_{entityFileName}";
+                    outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
-                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt);
-                    ValidateOutputWithValues(expectedContext_normalized_structured, expected_normalized_structured, resolvedEntityDef);
+                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
                 }
 
                 if (expectedContext_referenceOnly_normalized != null && expected_referenceOnly_normalized != null)
                 {
-                    entityFileName = "referenceOnly_normalized";
+                    entityFileName = "ro_n";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "normalized" });
-                    outputEntityName = $"{sourceEntityName}_Resolved_{entityFileName}";
+                    outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
-                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt);
-                    ValidateOutputWithValues(expectedContext_referenceOnly_normalized, expected_referenceOnly_normalized, resolvedEntityDef);
+                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
                 }
 
                 if (expectedContext_referenceOnly_structured != null && expected_referenceOnly_structured != null)
                 {
-                    entityFileName = "referenceOnly_structured";
+                    entityFileName = "ro_s";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "structured" });
-                    outputEntityName = $"{sourceEntityName}_Resolved_{entityFileName}";
+                    outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
-                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt);
-                    ValidateOutputWithValues(expectedContext_referenceOnly_structured, expected_referenceOnly_structured, resolvedEntityDef);
+                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
                 }
 
                 if (expectedContext_referenceOnly_normalized_structured != null && expected_referenceOnly_normalized_structured != null)
                 {
-                    entityFileName = "referenceOnly_normalized_structured";
+                    entityFileName = "ro_n_s";
                     resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly", "normalized", "structured" });
-                    outputEntityName = $"{sourceEntityName}_Resolved_{entityFileName}";
+                    outputEntityName = $"{sourceEntityName}_R_{entityFileName}";
                     outputEntityFileName = $"{outputEntityName}.cdm.json";
-                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt);
-                    ValidateOutputWithValues(expectedContext_referenceOnly_normalized_structured, expected_referenceOnly_normalized_structured, resolvedEntityDef);
+                    resolvedEntityDef = await srcEntityDef.CreateResolvedEntityAsync(outputEntityName, resOpt, outFolder);
+                    await SaveActualEntityAndValidateWithExpected(Path.Combine(testExpectedPath, outputEntityFileName), resolvedEntityDef);
                 }
             }
             catch (Exception e)
@@ -173,13 +181,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// <summary>
         /// Runs validation to test actual output vs expected output for attributes collection vs attribute context
         /// </summary>
-        /// <param name="expectedContext"></param>
-        /// <param name="expectedAttributes"></param>
-        /// <param name="actualResolvedEntityDef"></param>
-        protected static void ValidateOutputWithValues(AttributeContextExpectedValue expectedContext, List<AttributeExpectedValue> expectedAttributes, CdmEntityDefinition actualResolvedEntityDef)
+        protected static async Task SaveActualEntityAndValidateWithExpected(string expectedPath, CdmEntityDefinition actualResolvedEntityDef)
         {
-            ObjectValidator.ValidateAttributesCollection(expectedAttributes, actualResolvedEntityDef.Attributes);
-            ObjectValidator.ValidateAttributeContext(expectedContext, actualResolvedEntityDef.AttributeContext);
+            await actualResolvedEntityDef.InDocument.SaveAsAsync(actualResolvedEntityDef.InDocument.Name);
+            string actualPath = actualResolvedEntityDef.Ctx.Corpus.Storage.CorpusPathToAdapterPath(actualResolvedEntityDef.InDocument.AtCorpusPath);
+
+            Assert.AreEqual( File.ReadAllText(expectedPath),
+                            File.ReadAllText(actualPath));
         }
     }
 }

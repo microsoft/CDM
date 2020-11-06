@@ -1,0 +1,103 @@
+{
+  "manifestName": "default",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "CustomPerson",
+      "entityPath": "resolved/CustomPerson.cdm.json/CustomPerson",
+      "dataPartitions": [
+        {
+          "name": "CustomPerson-data-description",
+          "location": "local:/CustomPerson/partition-data.csv",
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.format.CSV",
+              "arguments": [
+                {
+                  "name": "columnHeaders",
+                  "value": "true"
+                },
+                {
+                  "name": "delimiter",
+                  "value": ","
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "CustomAccount",
+      "entityPath": "resolved/CustomAccount.cdm.json/CustomAccount",
+      "dataPartitions": [
+        {
+          "name": "CustomAccount-data-description",
+          "location": "local:/CustomAccount/partition-data.csv",
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.format.CSV",
+              "arguments": [
+                {
+                  "name": "columnHeaders",
+                  "value": "true"
+                },
+                {
+                  "name": "delimiter",
+                  "value": ","
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "ExtendedStandardAccount",
+      "entityPath": "resolved/ExtendedStandardAccount.cdm.json/ExtendedStandardAccount",
+      "dataPartitions": [
+        {
+          "name": "ExtendedStandardAccount-data-description",
+          "location": "local:/ExtendedStandardAccount/partition-data.csv",
+          "exhibitsTraits": [
+            {
+              "traitReference": "is.partition.format.CSV",
+              "arguments": [
+                {
+                  "name": "columnHeaders",
+                  "value": "true"
+                },
+                {
+                  "name": "delimiter",
+                  "value": ","
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "resolved/CustomAccount.cdm.json/CustomAccount",
+      "fromEntityAttribute": "accountOwnerId",
+      "toEntity": "resolved/CustomPerson.cdm.json/CustomPerson",
+      "toEntityAttribute": "CustomPersonId"
+    },
+    {
+      "fromEntity": "resolved/ExtendedStandardAccount.cdm.json/ExtendedStandardAccount",
+      "fromEntityAttribute": "SimpleCustomAccountId",
+      "toEntity": "resolved/CustomAccount.cdm.json/CustomAccount",
+      "toEntityAttribute": "CustomAccountId"
+    }
+  ],
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.cdm.json"
+    }
+  ]
+}

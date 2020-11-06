@@ -149,12 +149,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             if (resolvedEntity.AttributeContext != null)
             {
                 AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
-                string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity, resolvedEntity.AttributeContext);
+
+                // Expected
                 string expectedStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, $"AttrCtx_{entityName}.txt"));
                 string expectedText = File.ReadAllText(expectedStringFilePath);
+
+                // Actual
                 string actualStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputPath, "..", "ActualOutput", $"AttrCtx_{entityName}.txt"));
+
+                // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+                string actualText = attrCtxUtil.GetAttributeContextStrings(resolvedEntity, resolvedEntity.AttributeContext);
                 File.WriteAllText(actualStringFilePath, actualText);
-                Assert.AreEqual(expectedText, actualText);
+                resolvedEntity.InDocument.SaveAsAsync($"Resolved_{entityName}.cdm.json", saveReferenced: false).GetAwaiter().GetResult();
+
+                // Test if Actual is Equal to Expected
+                Assert.AreEqual(expectedText.Replace("\r\n", "\n"), actualText.Replace("\r\n", "\n"));
             }
         }
     }

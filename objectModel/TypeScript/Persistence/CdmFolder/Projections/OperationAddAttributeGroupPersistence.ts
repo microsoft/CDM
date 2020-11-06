@@ -30,11 +30,8 @@ export class OperationAddAttributeGroupPersistence {
             addAttributeGroupOp.type = cdmOperationType.addAttributeGroup;
         }
 
-        if (object.explanation) {
-            addAttributeGroupOp.explanation = object.explanation;
-        }
-
-        // TODO (sukanyas): Property to be defined
+        addAttributeGroupOp.attributeGroupName = object.attributeGroupName;
+        addAttributeGroupOp.explanation = object.explanation;
 
         return addAttributeGroupOp;
     }
@@ -46,8 +43,8 @@ export class OperationAddAttributeGroupPersistence {
 
         return {
             $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.addAttributeGroup),
+            attributeGroupName: instance.attributeGroupName,
             explanation: instance.explanation
-            // TODO (sukanyas): Property to be defined
         };
     }
 }

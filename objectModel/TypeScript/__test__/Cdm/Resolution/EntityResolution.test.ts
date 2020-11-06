@@ -41,7 +41,7 @@ describe('Cdm/Resolution/EntityResolution', () => {
      */
     it('TestResolveTestCorpus', async () => {
         // this test takes more time than jest expects tests to take
-        jest.setTimeout(100000);
+        jest.setTimeout(500000);
 
         // tslint:disable-next-line: non-literal-fs-path
         expect(fs.existsSync(schemaDocsRoot))
@@ -258,15 +258,17 @@ describe('Cdm/Resolution/EntityResolution', () => {
         let resOpt: resolveOptions = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly'])));
         let resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync('resolved', resOpt);
 
-        expect(resolvedEntity.attributes.allItems[1].appliedTraits.allItems[7].namedReference)
-            .toBe('is.linkedEntity.name');
+        expect(resolvedEntity.attributes.allItems[1].appliedTraits.item('is.linkedEntity.name'))
+            .not
+            .toBeUndefined();
 
         // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
         resOpt = new resolveOptions(entity.inDocument, new AttributeResolutionDirectiveSet(new Set<string>(['referenceOnly'])));
         resolvedEntity = await entity.createResolvedEntityAsync('resolved2', resOpt);
 
-        expect(resolvedEntity.attributes.allItems[0].appliedTraits.allItems[7].namedReference)
-            .toBe('is.linkedEntity.identifier');
+        expect(resolvedEntity.attributes.allItems[0].appliedTraits.item('is.linkedEntity.identifier'))
+            .not
+            .toBeUndefined();
 
         done();
     });

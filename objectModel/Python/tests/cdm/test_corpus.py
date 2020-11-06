@@ -52,6 +52,33 @@ class CorpusTests(unittest.TestCase):
         await corpus.fetch_object_async('local:/doc.cdm.json', res_opt=res_opt)
 
     @async_test
+    async def test_lazy_load_create_resolved_entity(self):
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestLazyLoadCreateResolvedEntity')
+        def callback(status_level: CdmStatusLevel, message: str):
+            # no error should be logged.
+            self.fail(message)
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
+
+        # load with deferred imports.
+        res_opt = ResolveOptions()
+        res_opt.imports_load_strategy = ImportsLoadStrategy.LAZY_LOAD
+
+        # load entB which is imported by entA document.
+        doc_b = await corpus.fetch_object_async('local:/entB.cdm.json', None, res_opt)  # type: CdmDocumentDefinition
+        ent_a = await corpus.fetch_object_async('local:/entA.cdm.json/entA', None, res_opt)  # type: CdmEntityDefinition
+
+        self.assertIsNone(ent_a.in_document._import_priorities)
+        self.assertIsNone(doc_b._import_priorities)
+
+        # create_resolved_entity_async will force the entA document to be indexed.
+        res_ent_a = await ent_a.create_resolved_entity_async('resolved-EntA')
+
+        # in create_resolved_entity_async the documents should be indexed.
+        self.assertIsNotNone(ent_a.in_document._import_priorities)
+        self.assertIsNotNone(doc_b._import_priorities)
+        self.assertIsNotNone(res_ent_a.in_document._import_priorities)
+
+    @async_test
     async def test_load_imports(self):
         """Tests the fetch_object_async function with the imports load strategy set to load."""
         error_count = 0

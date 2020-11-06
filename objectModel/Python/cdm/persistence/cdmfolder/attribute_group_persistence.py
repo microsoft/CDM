@@ -35,5 +35,6 @@ class AttributeGroupPersistence:
         result.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, instance.exhibits_traits, options)
         result.attributeContext = AttributeContextReferencePersistence.to_data(
             instance.attribute_context, res_opt, options) if instance.attribute_context else None
-        result.members = copy_data_utils._array_copy_data(res_opt, instance.members, options)
+        members = copy_data_utils._array_copy_data(res_opt, instance.members, options)
+        result.members = members if members else []
         return result

@@ -13,5 +13,5 @@ class OperationCombineAttributes(OperationBase):
     def __init__(self):
         super().__init__()
 
-        self.take = None  # type: List[str]
+        self.select = None  # type: List[str]
         self.mergeInto = None  # type: TypeAttribute

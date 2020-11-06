@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    AttributeContextParameters,
     CdmAttributeContext,
+    cdmAttributeContextType,
     CdmCorpusContext,
     CdmObject,
     cdmObjectType,
@@ -11,8 +13,10 @@ import {
     CdmTypeAttributeDefinition,
     Errors,
     Logger,
+    ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
+    ResolvedAttribute,
     resolveOptions,
     VisitCallback
 } from '../../internal';
@@ -35,8 +39,10 @@ export class CdmOperationAddCountAttribute extends CdmOperationBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.copy.name);
-        return new CdmOperationAddCountAttribute(this.ctx);
+        const copy: CdmOperationAddCountAttribute = new CdmOperationAddCountAttribute(this.ctx);
+        copy.countAttribute = this.countAttribute.copy(resOpt, host) as CdmTypeAttributeDefinition;
+
+        return copy;
     }
 
     /**
@@ -105,8 +111,39 @@ export class CdmOperationAddCountAttribute extends CdmOperationBase {
      * @inheritdoc
      * @internal
      */
-    public appendProjectionAttributeState(projCtx: ProjectionContext, projAttrStateSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.appendProjectionAttributeState.name);
-        return undefined;
+    public appendProjectionAttributeState(projCtx: ProjectionContext, projOutputSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
+        // Pass through all the input projection attribute states if there are any
+        for (const currentPAS of projCtx.currentAttributeStateSet.states) {
+            projOutputSet.add(currentPAS);
+        }
+
+        // Create a new attribute context for the operation
+        const attrCtxOpAddCountParam: AttributeContextParameters = {
+            under: attrCtx,
+            type: cdmAttributeContextType.operationAddCountAttribute,
+            name: `operation/index${this.index}/operationAddCountAttribute`
+        };
+        const attrCtxOpAddCount: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxOpAddCountParam);
+
+        // Create a new attribute context for the Count attribute we will create
+        const attrCtxCountAttrParam: AttributeContextParameters = {
+            under: attrCtxOpAddCount,
+            type: cdmAttributeContextType.addedAttributeExpansionTotal,
+            name: this.countAttribute.name
+        };
+        const attrCtxCountAttr: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxCountAttrParam);
+
+        // Create the Count attribute with the specified CountAttribute as its target and apply the trait "is.linkedEntity.array.count" to it
+        const addTrait: string[] = ['is.linkedEntity.array.count'];
+        const newResAttr: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxCountAttr, this.countAttribute, undefined, addTrait);
+
+        // Create a new projection attribute state for the new Count attribute and add it to the output set
+        // There is no previous state for the newly created Count attribute
+        const newPAS: ProjectionAttributeState = new ProjectionAttributeState(projOutputSet.ctx);
+        newPAS.currentResolvedAttribute = newResAttr;
+
+        projOutputSet.add(newPAS);
+
+        return projOutputSet;
     }
 }

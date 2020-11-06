@@ -12,7 +12,7 @@ from .cdm_object import CdmObject
 from .cdm_trait_collection import CdmTraitCollection
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmObjectDefinition, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityDefinition, CdmObjectDefinition, CdmTraitReference
     from cdm.resolvedmodel import ResolvedTraitSet
     from cdm.utilities import FriendlyFormatNode, ResolveOptions
 
@@ -68,6 +68,7 @@ class CdmObjectReference(CdmObject):
         # find and cache the complete set of attributes
         from cdm.resolvedmodel import ResolvedAttributeSetBuilder
         from cdm.utilities import AttributeContextParameters
+        from cdm.objectmodel import CdmEntityDefinition
 
         rasb = ResolvedAttributeSetBuilder()
         rasb.ras.attribute_context = under
@@ -158,12 +159,14 @@ class CdmObjectReference(CdmObject):
         if res_opt._save_resolutions_on_copy:
             copy.explicit_reference = self.explicit_reference
 
-        copy.in_document = self.in_document
 
         copy.applied_traits.clear()
         if self.applied_traits:
             for trait in self.applied_traits:
                 copy.applied_traits.append(trait)
+
+        # Don't do anything else after this, as it may cause InDocument to become dirty
+        copy.in_document = self.in_document
 
         return copy
 

@@ -41,6 +41,14 @@ class CalculateRelationshipTest(unittest.TestCase):
         await self._test_run(test_name, entity_name)
 
     @async_test
+    async def test_diff_ref_loation(self):
+        """Projection scenario with the referenced entity in a different folder"""
+        test_name = 'test_diff_ref_location'
+        entity_name = 'Sales'
+
+        await self._test_run(test_name, entity_name)
+
+    @async_test
     async def test_composite_proj(self):
         """Projection with composite keys"""
         test_name = 'test_composite_proj'

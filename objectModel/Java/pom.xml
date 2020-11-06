@@ -5,8 +5,7 @@
 
     <properties>
         <!-- Increment version for each official release of the SDK -->
-        <revision>1.0.12</revision>
-        <adlsTestExclude>**/AdlsAdapterTest.java</adlsTestExclude>
+        <revision>1.0.13</revision>
     </properties>
 
     <groupId>com.microsoft.commondatamodel</groupId>
@@ -71,7 +70,7 @@
           </repository>
         </distributionManagement>
       </profile>
-	  <profile>
+      <profile>
         <id>deploy-jar-external-official</id>
         <activation>
           <activeByDefault>false</activeByDefault>
@@ -185,21 +184,6 @@
         </plugin>
 	  </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>runADLSTests</id>
-            <activation>
-                <!-- If ADLS environement variables are setup, do not skip the ADLS adapter tests -->
-                <property>
-                <name>env.ADLS_RUNTESTS</name>
-                </property>
-            </activation>
-            <properties>
-                <adlsTestExclude>__none__</adlsTestExclude>
-            </properties>
-        </profile>
-    </profiles>
 
     <modules>
         <module>objectmodel</module>

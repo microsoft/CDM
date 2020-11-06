@@ -96,6 +96,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             ManifestContent manifestObject = CdmObjectBase.CopyData(cdmManifest, null, null);
             Assert.AreEqual(manifestObject.Schema, "CdmManifestDefinition.cdm.json");
             Assert.AreEqual(manifestObject.JsonSchemaSemanticVersion, "1.0.0");
+            Assert.AreEqual(manifestObject.DocumentVersion, "2.0.0");
             Assert.AreEqual(manifestObject.ManifestName, "cdmTest");
             Assert.AreEqual(manifestObject.Explanation, "test cdm folder for cdm version 1.0+");
             Assert.AreEqual(manifestObject.Imports.Count, 1);

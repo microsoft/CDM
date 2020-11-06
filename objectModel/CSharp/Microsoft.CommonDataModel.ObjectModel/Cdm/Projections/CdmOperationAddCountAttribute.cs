@@ -28,8 +28,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationAddCountAttribute(this.Ctx);
+            CdmOperationAddCountAttribute copy = new CdmOperationAddCountAttribute(this.Ctx)
+            {
+                CountAttribute = this.CountAttribute.Copy(resOpt, host) as CdmTypeAttributeDefinition
+            };
+            return copy;
         }
 
         /// <inheritdoc />
@@ -97,8 +100,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ProjectionAttributeStateSet projOutputSet,
             CdmAttributeContext attrCtx)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(AppendProjectionAttributeState));
-            return null;
+            // Pass through all the input projection attribute states if there are any
+            foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
+            {
+                projOutputSet.Add(currentPAS);
+            }
+
+            // Create a new attribute context for the operation
+            AttributeContextParameters attrCtxOpAddCountParam = new AttributeContextParameters
+            {
+                under = attrCtx,
+                type = CdmAttributeContextType.OperationAddCountAttribute,
+                Name = $"operation/index{Index}/operationAddCountAttribute"
+            };
+            CdmAttributeContext attrCtxOpAddCount = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxOpAddCountParam);
+
+            // Create a new attribute context for the Count attribute we will create
+            AttributeContextParameters attrCtxCountAttrParam = new AttributeContextParameters
+            {
+                under = attrCtxOpAddCount,
+                type = CdmAttributeContextType.AddedAttributeExpansionTotal,
+                Name = this.CountAttribute.Name
+            };
+            CdmAttributeContext attrCtxCountAttr = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxCountAttrParam);
+
+            // Create the Count attribute with the specified CountAttribute as its target and apply the trait "is.linkedEntity.array.count" to it
+            List<string> addTrait = new List<string>() { "is.linkedEntity.array.count" };
+            ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxCountAttr, this.CountAttribute, addedSimpleRefTraits: addTrait);
+
+            // Create a new projection attribute state for the new Count attribute and add it to the output set
+            // There is no previous state for the newly created Count attribute
+            ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.Ctx)
+            {
+                CurrentResolvedAttribute = newResAttr
+            };
+
+            projOutputSet.Add(newPAS);
+
+            return projOutputSet;
         }
     }
 }

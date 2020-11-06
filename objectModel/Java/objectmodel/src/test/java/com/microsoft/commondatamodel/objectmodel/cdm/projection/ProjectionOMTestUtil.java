@@ -4,6 +4,7 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationCombineAttributes;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
 import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationIncludeAttributes;
@@ -267,7 +268,7 @@ public class ProjectionOMTestUtil {
     /**
      * Create an Input Attribute Operation
      */
-    public CdmOperationIncludeAttributes createOperationInputAttribute(CdmProjection projection, List<String> includeAttributes) {
+    public CdmOperationIncludeAttributes createOperationInputAttributes(CdmProjection projection, List<String> includeAttributes) {
         // IncludeAttributes Operation
         CdmOperationIncludeAttributes includeAttributesOp = new CdmOperationIncludeAttributes(getCorpus().getCtx());
         includeAttributesOp.setIncludeAttributes(new ArrayList<String>());
@@ -279,6 +280,35 @@ public class ProjectionOMTestUtil {
         projection.getOperations().add(includeAttributesOp);
 
         return includeAttributesOp;
+    }
+
+    /**
+     * Create a Combine Attribute Operation
+     */
+    public CdmOperationCombineAttributes createOperationCombineAttributes(CdmProjection projection, List<String> selectedAttributes, CdmTypeAttributeDefinition mergeIntoAttribute) {
+        // CombineAttributes Operation
+        CdmOperationCombineAttributes combineAttributesOp = new CdmOperationCombineAttributes(getCorpus().getCtx());
+        combineAttributesOp.setSelect(selectedAttributes);
+        combineAttributesOp.setMergeInto(mergeIntoAttribute);
+
+        projection.getOperations().add(combineAttributesOp);
+
+        return combineAttributesOp;
+    }
+
+    /**
+     * Create a Type Attribute
+     */
+    public CdmTypeAttributeDefinition createTypeAttribute(String attributeName, String dataType, String purpose) {
+        CdmDataTypeReference dataTypeRef = (CdmDataTypeReference) getCorpus().makeRef(CdmObjectType.DataTypeRef, dataType, false);
+
+        CdmPurposeReference purposeRef = (CdmPurposeReference) getCorpus().makeRef(CdmObjectType.PurposeRef, purpose, false);
+
+        CdmTypeAttributeDefinition attribute = (CdmTypeAttributeDefinition) getCorpus().makeObject(CdmObjectType.TypeAttributeDef, attributeName, false);
+        attribute.setDataType(dataTypeRef);
+        attribute.setPurpose(purposeRef);
+
+        return attribute;
     }
 
     /**

@@ -16,6 +16,8 @@ import {
     CdmParameterDefinition,
     CdmTraitReference,
     copyOptions,
+    DepthInfo,
+    isEntityAttributeDefinition,
     resolveContext,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -54,7 +56,8 @@ export abstract class CdmObjectBase implements CdmObject {
      */
     public declaredPath: string;
     public owner: CdmObject;
-    protected resolvingAttributes: boolean = false;
+    public resolvingAttributes: boolean = false;
+    protected circularReference: boolean;
     private resolvingTraits: boolean = false;
     constructor(ctx: CdmCorpusContext) {
         this.ID = CdmCorpusDefinition.nextID();
@@ -145,24 +148,6 @@ export abstract class CdmObjectBase implements CdmObject {
         }
 
         return traitRef;
-    }
-
-    /**
-     * @internal
-     */
-    public static copyResolveOptions(resOpt: resolveOptions): resolveOptions {
-        const resOptCopy: resolveOptions = new resolveOptions();
-        resOptCopy.wrtDoc = resOpt.wrtDoc;
-        resOptCopy.relationshipDepth = resOpt.relationshipDepth;
-        if (resOpt.directives) {
-            resOptCopy.directives = resOpt.directives.copy();
-        }
-        resOptCopy.localizeReferencesFor = resOpt.localizeReferencesFor;
-        resOptCopy.indexingDoc = resOpt.indexingDoc;
-        resOptCopy.shallowValidation = resOpt.shallowValidation;
-        resOptCopy.resolvedAttributeLimit = resOpt.resolvedAttributeLimit;
-
-        return resOptCopy;
     }
 
     public abstract isDerivedFrom(baseDef: string, resOpt?: resolveOptions): boolean;
@@ -274,6 +259,17 @@ export abstract class CdmObjectBase implements CdmObject {
     /**
      * @internal
      */
+    public fetchObjectFromCache(resOpt: resolveOptions, acpInContext?: AttributeContextParameters): ResolvedAttributeSetBuilder {
+        const kind: string = 'rasb';
+        const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
+        const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
+
+        return cacheTag ? ctx.cache.get(cacheTag) : undefined;
+    }
+
+    /**
+     * @internal
+     */
     public fetchResolvedAttributes(resOpt?: resolveOptions, acpInContext?: AttributeContextParameters): ResolvedAttributeSet {
         // let bodyCode = () =>
         {
@@ -285,8 +281,7 @@ export abstract class CdmObjectBase implements CdmObject {
 
             const kind: string = 'rasb';
             const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
-            let cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
-            let rasbCache: ResolvedAttributeSetBuilder = cacheTag ? ctx.cache.get(cacheTag) : undefined;
+            let rasbCache: ResolvedAttributeSetBuilder = this.fetchObjectFromCache(resOpt, acpInContext);
             let underCtx: CdmAttributeContext;
 
             // store the previous symbol set, we will need to add it with
@@ -299,12 +294,17 @@ export abstract class CdmObjectBase implements CdmObject {
             const fromMoniker: string = resOpt.fromMoniker;
             resOpt.fromMoniker = undefined;
 
+            // if using the cache passes the maxDepth, we cannot use it
+            if (rasbCache && resOpt.depthInfo && resOpt.depthInfo.currentDepth + rasbCache.ras.depthTraveled > resOpt.depthInfo.maxDepth) {
+                rasbCache = undefined;
+            }
+
             if (!rasbCache) {
                 if (this.resolvingAttributes) {
                     // re-entered this attribute through some kind of self or looping reference.
                     this.ctx.corpus.isCurrentlyResolving = wasPreviouslyResolving;
-
-                    return new ResolvedAttributeSet();
+                    resOpt.inCircularReference = true;
+                    this.circularReference = true;
                 }
                 this.resolvingAttributes = true;
 
@@ -325,7 +325,7 @@ export abstract class CdmObjectBase implements CdmObject {
                         ctx.corpus.registerDefinitionReferenceSymbols(odef, kind, resOpt.symbolRefSet);
 
                         // get the new cache tag now that we have the list of symbols
-                        cacheTag = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
+                        const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
                         // save this as the cached version
                         if (cacheTag) {
                             ctx.cache.set(cacheTag, rasbCache);
@@ -355,6 +355,10 @@ export abstract class CdmObjectBase implements CdmObject {
                         }
                     }
                 }
+
+                if (this.circularReference) {
+                    resOpt.inCircularReference = false;
+                }
             } else {
                 // cache found. if we are building a context, then fix what we got instead of making a new one
                 if (acpInContext) {
@@ -362,6 +366,16 @@ export abstract class CdmObjectBase implements CdmObject {
                     underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
 
                     (rasbCache.ras.attributeContext).copyAttributeContextTree(resOpt, underCtx, rasbCache.ras, undefined, fromMoniker);
+                }
+            }
+
+            const currDepthInfo: DepthInfo = resOpt.depthInfo;
+            if (isEntityAttributeDefinition(this) && currDepthInfo) {
+                // if we hit the maxDepth, we are now going back up
+                currDepthInfo.currentDepth--;
+                // now at the top of the chain where max depth does not influence the cache
+                if (currDepthInfo.currentDepth <= 0) {
+                    resOpt.depthInfo = undefined;
                 }
             }
 

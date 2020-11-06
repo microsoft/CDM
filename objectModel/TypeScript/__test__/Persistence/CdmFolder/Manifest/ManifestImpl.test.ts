@@ -125,6 +125,8 @@ describe('Persistence.CdmFolder.Manifest', () => {
             .toBe('CdmManifestDefinition.cdm.json');
         expect(manifestObject.jsonSchemaSemanticVersion)
             .toBe('1.0.0');
+        expect(manifestObject.documentVersion)
+            .toBe('2.0.0');
         expect(manifestObject.manifestName)
             .toBe('cdmTest');
         expect(manifestObject.explanation)

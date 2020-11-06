@@ -37,7 +37,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, []);
         expect(resolvedTestEntityStringReference)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
     });
 
     /**
@@ -57,7 +57,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityEntityReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityEntityReference, []);
         expect(resolvedTestEntityEntityReference)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityEntityReference);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityEntityReference);
     });
 
     /**
@@ -77,7 +77,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityProjection, []);
         expect(resolvedTestEntityProjection)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityProjection);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityProjection);
     });
 
     /**
@@ -97,7 +97,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityNestedProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityNestedProjection, []);
         expect(resolvedTestEntityNestedProjection)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityNestedProjection);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityNestedProjection);
     });
 
     /**
@@ -117,7 +117,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityAttributeStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeStringReference, []);
         expect(resolvedTestEntityAttributeStringReference)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeStringReference);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeStringReference);
     });
 
     /**
@@ -137,7 +137,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityAttributeEntityReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeEntityReference, []);
         expect(resolvedTestEntityAttributeEntityReference)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeEntityReference);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeEntityReference);
     });
 
     /**
@@ -157,7 +157,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityAttributeProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeProjection, []);
         expect(resolvedTestEntityAttributeProjection)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeProjection);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeProjection);
     });
 
     /**
@@ -177,7 +177,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityAttributeNestedProjection: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityAttributeNestedProjection, []);
         expect(resolvedTestEntityAttributeNestedProjection)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeNestedProjection);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityAttributeNestedProjection);
     });
 
     /**
@@ -197,7 +197,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityTrait, []);
         expect(resolvedTestEntityTrait)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityTrait);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityTrait);
 
         // Attribute Name
         expect((resolvedTestEntityTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -233,7 +233,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestEntityExtendsTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityExtendsTrait, []);
         expect(resolvedTestEntityExtendsTrait)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityExtendsTrait);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityExtendsTrait);
 
         // Attribute Name
         expect((resolvedTestEntityExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -269,7 +269,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestProjectionTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestProjectionTrait, []);
         expect(resolvedTestProjectionTrait)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionTrait);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionTrait);
 
         // Attribute Name
         expect((resolvedTestProjectionTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
@@ -305,7 +305,7 @@ describe('Cdm/Projection/ProjectionAttributeContext', () => {
         const resolvedTestProjectionExtendsTrait: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestProjectionExtendsTrait, []);
         expect(resolvedTestProjectionExtendsTrait)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionExtendsTrait);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestProjectionExtendsTrait);
 
         // Attribute Name
         expect((resolvedTestProjectionExtendsTrait.attributes.allItems[0] as CdmTypeAttributeDefinition).name)

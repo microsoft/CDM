@@ -16,7 +16,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     public class CdmOperationAddAttributeGroup : CdmOperationBase
     {
         private static readonly string TAG = nameof(CdmOperationAddAttributeGroup);
-        // TODO (sukanyas): Property to be defined
+
+        /// <summary>
+        /// Name given to the attribute group that will be created
+        /// </summary>
+        public string AttributeGroupName { get; set; }
 
         public CdmOperationAddAttributeGroup(CdmCorpusContext ctx) : base(ctx)
         {
@@ -27,8 +31,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationAddAttributeGroup(this.Ctx);
+            var copy = new CdmOperationAddAttributeGroup(this.Ctx)
+            {
+                AttributeGroupName = this.AttributeGroupName
+            };
+            return copy;
         }
 
         /// <inheritdoc />
@@ -55,7 +62,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             List<string> missingFields = new List<string>();
 
-            // TODO (sukanyas): required Property to be defined
+            if (string.IsNullOrWhiteSpace(this.AttributeGroupName))
+            {
+                missingFields.Add(nameof(this.AttributeGroupName));
+            }
+
+            if (missingFields.Count > 0)
+            {
+                Logger.Error(TAG, this.Ctx, Errors.ValidateErrorString(this.AtCorpusPath, missingFields), nameof(Validate));
+                return false;
+            }
 
             return true;
         }
@@ -69,7 +85,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 path = this.DeclaredPath;
                 if (string.IsNullOrEmpty(path))
                 {
-                    path = pathFrom + "operationAddAttributeGroup";
+                    path = pathFrom + this.GetName();
                     this.DeclaredPath = path;
                 }
             }
@@ -88,9 +104,60 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ProjectionContext projCtx,
             ProjectionAttributeStateSet projOutputSet,
             CdmAttributeContext attrCtx)
-        {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(AppendProjectionAttributeState));
-            return null;
+        { 
+            // Create a new attribute context for the operation
+            AttributeContextParameters attrCtxOpAddAttrGroupParam = new AttributeContextParameters
+            {
+                under = attrCtx,
+                type = CdmAttributeContextType.OperationAddAttributeGroup,
+                Name = $"operation/index{Index}/{this.GetName()}"
+            };
+            CdmAttributeContext attrCtxOpAddAttrGroup = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxOpAddAttrGroupParam);
+
+            // Create a new attribute context for the attribute group we will create
+            AttributeContextParameters attrCtxAttrGroupParam = new AttributeContextParameters
+            {
+                under = attrCtxOpAddAttrGroup,
+                type = CdmAttributeContextType.AttributeDefinition,
+                Name = this.AttributeGroupName
+            };
+            CdmAttributeContext attrCtxAttrGroup = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxAttrGroupParam);
+
+            // Create a new resolve attribute set builder that will be used to combine all the attributes into one set
+            ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
+
+            // Iterate through all the projection attribute states generated from the source's resolved attributes
+            // Each projection attribute state contains a resolved attribute that it is corresponding to
+            foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
+            {
+                // Create a copy of the resolved attribute
+                ResolvedAttribute resolvedAttribute = currentPAS.CurrentResolvedAttribute.Copy();
+
+                // Add the attribute to the resolved attribute set
+                rasb.ResolvedAttributeSet.Merge(resolvedAttribute);
+
+                // Add each attribute's attribute context to the resolved attribute set attribute context
+                AttributeContextParameters AttrParam = new AttributeContextParameters
+                {
+                    under = attrCtxAttrGroup,
+                    type = CdmAttributeContextType.AttributeDefinition,
+                    Name = resolvedAttribute.ResolvedName
+                };
+                resolvedAttribute.AttCtx = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, AttrParam);
+                resolvedAttribute.AttCtx.AddLineage(currentPAS.CurrentResolvedAttribute.AttCtx);
+            }
+
+            // Create a new resolved attribute that will hold the attribute set containing all the attributes
+            ResolvedAttribute resAttrNew = new ResolvedAttribute(projCtx.ProjectionDirective.ResOpt, rasb.ResolvedAttributeSet, this.AttributeGroupName, attrCtxAttrGroup);
+
+            // Create a new projection attribute state pointing to the resolved attribute set that represents the attribute group
+            ProjectionAttributeState newPAS = new ProjectionAttributeState(this.Ctx)
+            {
+                CurrentResolvedAttribute = resAttrNew
+            };
+            projOutputSet.Add(newPAS);
+
+            return projOutputSet;
         }
     }
 }

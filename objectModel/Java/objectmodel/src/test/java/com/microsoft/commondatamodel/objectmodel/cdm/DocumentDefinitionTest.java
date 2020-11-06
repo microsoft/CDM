@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import java.io.File;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.utilities.ImportInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
 import org.testng.annotations.Test;
@@ -81,6 +82,10 @@ public class DocumentDefinitionTest {
         docA.indexIfNeededAsync(new ResolveOptions(), true).join();
         
         Assert.assertEquals(4, docA.getImportPriorities().getImportPriority().size());
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docA), 0, false);
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docB), 1, false);
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docD), 2, false);
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docC), 3, false);
 
         // reset the importsPriorities.
         markDocumentsToIndex(folder.getDocuments());
@@ -101,12 +106,52 @@ public class DocumentDefinitionTest {
         Assert.assertTrue(docD.getImportPriorities().getHasCircularImport());
     }
 
+    /**
+     * Test when A -> B -> C/M -> D.
+     * Index docB first then docA. Make sure that C does not appear in docA priority list.
+     */
+    @Test
+    public void testReadingCachedImportPriority() throws InterruptedException {
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus("", "", null);
+        final CdmFolderDefinition folder = corpus.getStorage().fetchRootFolder("local");
+
+        final CdmDocumentDefinition docA = new CdmDocumentDefinition(corpus.getCtx(), "A.cdm.json");
+        folder.getDocuments().add(docA);
+        docA.getImports().add("B.cdm.json");
+
+        final CdmDocumentDefinition docB = new CdmDocumentDefinition(corpus.getCtx(), "B.cdm.json");
+        folder.getDocuments().add(docB);
+        docB.getImports().add("C.cdm.json", "moniker");
+
+        final CdmDocumentDefinition docC = new CdmDocumentDefinition(corpus.getCtx(), "C.cdm.json");
+        folder.getDocuments().add(docC);
+        docC.getImports().add("D.cdm.json");
+
+        final CdmDocumentDefinition docD = new CdmDocumentDefinition(corpus.getCtx(), "D.cdm.json");
+        folder.getDocuments().add(docD);
+
+        // index docB first and check its import priorities.
+        docB.indexIfNeededAsync(new ResolveOptions(), true).join();
+
+        Assert.assertEquals(3, docB.getImportPriorities().getImportPriority().size());
+        assertImportInfo(docB.getImportPriorities().getImportPriority().get(docB), 0, false);
+        assertImportInfo(docB.getImportPriorities().getImportPriority().get(docD), 1, false);
+        assertImportInfo(docB.getImportPriorities().getImportPriority().get(docC), 2, true);
+
+        // now index docA, which should read docB's priority list from the cache.
+        docA.indexIfNeededAsync(new ResolveOptions(), true).join();
+        Assert.assertEquals(3, docA.getImportPriorities().getImportPriority().size());
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docA), 0, false);
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docB), 1, false);
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docD), 2, false);
+    }
+
     /// <summary>
-    /// Test if monikered imports are not being added to the priorityList.
+    /// Test if monikered imports are added to the end of the priority list.
     /// A -> B/M -> C
     /// </summary>
     @Test
-    public void TestMonikeredImportIsNotAdded() throws InterruptedException {
+    public void TestMonikeredImportIsAddedToEnd() throws InterruptedException {
         final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus("", "", null);
         final CdmFolderDefinition folder = corpus.getStorage().fetchRootFolder("local");
 
@@ -126,8 +171,13 @@ public class DocumentDefinitionTest {
         docA.indexIfNeededAsync(new ResolveOptions(docA), true).join();
 
         // should only contain docA and docC, docB should be excluded.
-        Assert.assertEquals(2, docA.getImportPriorities().getImportPriority().size());
+        Assert.assertEquals(3, docA.getImportPriorities().getImportPriority().size());
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docA), 0, false);
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docC), 1, false);
+        // docB is monikered so it should appear at the end of the list.
+        assertImportInfo(docA.getImportPriorities().getImportPriority().get(docB), 2, true);
 
+        // make sure that the has circular import is set to false.
         Assert.assertFalse(docA.getImportPriorities().getHasCircularImport());
         Assert.assertFalse(docB.getImportPriorities().getHasCircularImport());
         Assert.assertFalse(docC.getImportPriorities().getHasCircularImport());
@@ -159,5 +209,13 @@ public class DocumentDefinitionTest {
             document.setNeedsIndexing(true);
             document.setImportPriorities(null);
         });
+    }
+
+    /**
+     * Helper function to assert the ImportInfo class.
+     */
+    private static void assertImportInfo(ImportInfo importInfo, int expectedPriority, boolean expectedIsMoniker) {
+        Assert.assertEquals(expectedPriority, importInfo.getPriority());
+        Assert.assertEquals(expectedIsMoniker, importInfo.isMoniker());
     }
 }

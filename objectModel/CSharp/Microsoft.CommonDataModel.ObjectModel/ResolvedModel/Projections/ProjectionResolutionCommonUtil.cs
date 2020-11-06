@@ -67,6 +67,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             ProjectionDirective projDir,
             CdmCorpusContext ctx,
             CdmEntityReference source,
+            ResolvedAttributeSet rasSource,
             AttributeContextParameters attrCtxParam)
         {
             Dictionary<string, List<ProjectionAttributeState>> polySources = new Dictionary<string, List<ProjectionAttributeState>>();
@@ -81,6 +82,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition)attr).FetchResolvedAttributes(projDir.ResOpt, null);
                     foreach (ResolvedAttribute resAttr in raSet.Set)
                     {
+                        // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
+                        // so steal them based on name
+                        var resAttSrc = rasSource.Get(resAttr.ResolvedName);
+                        if (resAttSrc != null)
+                        {
+                            resAttr.AttCtx = resAttSrc.AttCtx;
+                        }
+
                         ProjectionAttributeState projAttrState = new ProjectionAttributeState(ctx)
                         {
                             CurrentResolvedAttribute = resAttr,
@@ -202,6 +211,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 if (resAttr?.Target?.Owner != null &&
                     (resAttr.Target.ObjectType == CdmObjectType.TypeAttributeDef || resAttr.Target.ObjectType == CdmObjectType.EntityAttributeDef))
                 {
+                    // find the linked entity
                     var owner = resAttr.Target.Owner;
 
                     while (owner != null && owner.ObjectType != CdmObjectType.EntityDef)
@@ -209,13 +219,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         owner = owner.Owner;
                     }
 
-                    if (owner != null && owner.ObjectType == CdmObjectType.EntityDef)
+                    // find where the projection is defined
+                    var projectionDoc = projDir.Owner?.InDocument;
+
+                    if (owner?.ObjectType == CdmObjectType.EntityDef && projectionDoc != null)
                     {
                         CdmEntityDefinition entDef = owner.FetchObjectDefinition<CdmEntityDefinition>(projDir.ResOpt);
                         if (entDef != null)
                         {
                             // should contain relative path without the namespace
-                            string relativeEntPath = entDef.Ctx.Corpus.Storage.CreateRelativeCorpusPath(entDef.AtCorpusPath, entDef.InDocument);
+                            string relativeEntPath = entDef.Ctx.Corpus.Storage.CreateRelativeCorpusPath(entDef.AtCorpusPath, projectionDoc);
                             entRefAndAttrNameList.Add(new Tuple<string, string>(relativeEntPath, resAttr.ResolvedName));
                         }
                     }

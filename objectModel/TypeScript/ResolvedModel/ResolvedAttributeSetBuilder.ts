@@ -8,15 +8,12 @@ import {
     AttributeContextParameters,
     AttributeResolutionApplier,
     AttributeResolutionApplierCapabilities,
-    CdmAttribute,
     CdmAttributeContext,
     cdmAttributeContextType,
     CdmAttributeResolutionGuidance,
-    CdmObjectBase,
     PrimitiveAppliers,
     ResolvedAttribute,
     ResolvedAttributeSet,
-    ResolvedTrait,
     ResolvedTraitSet,
     resolveOptions
 } from '../internal';
@@ -51,7 +48,7 @@ export class AttributeResolutionContext {
         this.actionsRemove = [];
         this.applierCaps = undefined;
 
-        this.resOpt = CdmObjectBase.copyResolveOptions(resOpt);
+        this.resOpt = resOpt.copy();
 
         if (resGuide) {
             if (!this.applierCaps) {
@@ -161,6 +158,9 @@ export class ResolvedAttributeSetBuilder {
         {
             if (rasNew) {
                 this.takeReference(this.ras.mergeSet(rasNew));
+                if (rasNew.depthTraveled > this.ras.depthTraveled) {
+                    this.ras.depthTraveled = rasNew.depthTraveled;
+                }
             }
         }
         // return p.measure(bodyCode);
@@ -477,8 +477,8 @@ export class ResolvedAttributeSetBuilder {
 
                         // combine resolution guidence for this set with anything new from the new attribute
                         // tslint:disable-next-line: max-line-length
-                        appCtx.resGuideNew = (appCtx.resGuide as CdmAttributeResolutionGuidance).combineResolutionGuidance(appCtx.resGuideNew as CdmAttributeResolutionGuidance);
-                        appCtx.resAttNew.arc = new AttributeResolutionContext(arc.resOpt, appCtx.resGuideNew as CdmAttributeResolutionGuidance, appCtx.resAttNew.resolvedTraits);
+                        appCtx.resGuideNew = (appCtx.resGuide).combineResolutionGuidance(appCtx.resGuideNew);
+                        appCtx.resAttNew.arc = new AttributeResolutionContext(arc.resOpt, appCtx.resGuideNew, appCtx.resAttNew.resolvedTraits);
 
                         if (applyModifiers) {
                             // add the sets traits back in to this newly added one
@@ -573,8 +573,7 @@ export class ResolvedAttributeSetBuilder {
                     resAttsLastRound = resAttThisRound;
                     round++;
                     if (attCtxContainerGroup) {
-                        const acp: AttributeContextParameters =
-                        {
+                        const acp: AttributeContextParameters = {
                             under: attCtxContainerGroup,
                             type: cdmAttributeContextType.generatedRound,
                             name: `_generatedAttributeRound${round}`

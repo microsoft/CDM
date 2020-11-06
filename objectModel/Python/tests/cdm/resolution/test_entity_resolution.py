@@ -170,14 +170,14 @@ class EntityResolution(unittest.TestCase):
         res_opt = ResolveOptions(wrt_doc=entity.in_document)
         resolved_entity = await entity.create_resolved_entity_async('resolved', res_opt)
 
-        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[1].applied_traits[7].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[1].applied_traits.item('is.linkedEntity.name'))
 
         # Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
         res_opt = ResolveOptions(wrt_doc=entity.in_document)
         res_opt.directives = AttributeResolutionDirectiveSet({'referenceOnly'})
         resolved_entity = await entity.create_resolved_entity_async('resolved2', res_opt)
 
-        self.assertEqual('is.linkedEntity.identifier', resolved_entity.attributes[0].applied_traits[7].named_reference)
+        self.assertIsNotNone(resolved_entity.attributes[0].applied_traits.item('is.linkedEntity.identifier'))
 
     async def resolve_environment(self, test_name: str, environment: str) -> str:
         test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, test_name)

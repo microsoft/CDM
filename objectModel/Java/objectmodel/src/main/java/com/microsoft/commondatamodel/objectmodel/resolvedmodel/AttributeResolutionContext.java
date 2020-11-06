@@ -170,7 +170,12 @@ public class AttributeResolutionContext {
     this.actionsRemove = actionsRemove;
   }
 
-  ResolvedTraitSet getTraitsToApply() {
+  /**
+   * @deprecated Only for internal use.
+   * @return ResolvedTraitSet
+   */
+  @Deprecated
+  public ResolvedTraitSet getTraitsToApply() {
     return traitsToApply;
   }
 

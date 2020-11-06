@@ -22,18 +22,18 @@ import java.util.*;
  *     Found:
  *         The name of the attribute that was found out of the search for name. Because this is the current name of the attribute,
  *         the search for name and the found name can be different. The search for name can return multiple found names.
- *         Ex. Given Rename(A->a) and then Include(A), searchFor = "A" and found = "a"
+ *         Ex. Given Rename(A-to-a) and then Include(A), searchFor = "A" and found = "a"
  *
  *     Action:
  *         The name of the attribute resulting out of the action (operation).
- *         Ex. Given Rename(A->a), the action/operation is to rename "A" to "a" so action (the resulting attribute) = "a"
+ *         Ex. Given Rename(A-to-a), the action/operation is to rename "A" to "a" so action (the resulting attribute) = "a"
  *
  * Put together, the resulting attribute context will look like "../operation/index{n}/[name of operation]/[searchFor]/[found]/[action]"
  *     Ex. ../operation/index1/operationRenameAttributes/A/a/aa, given searchFor = "A", found = "a", action = "aa"
  *
  * If searchFor and found or found and action have the same name, then we just collapse the nodes
- *     Ex. ../operation/index1/operationRenameAttributes/A/a/a -> ../operation/index1/operationRenameAttributes/A/a/
- *     Ex. ../operation/index1/operationIncludeAttributes/B/B -> ../operation/index1/operationIncludeAttributes/B
+ *     Ex. ../operation/index1/operationRenameAttributes/A/a/a -to- ../operation/index1/operationRenameAttributes/A/a/
+ *     Ex. ../operation/index1/operationIncludeAttributes/B/B -to- ../operation/index1/operationIncludeAttributes/B
  *
  * @deprecated This class is extremely likely to be removed in the public interface, and not
  * meant to be called externally at all. Please refrain from using it.

@@ -23,7 +23,7 @@ import { projectionTestUtils } from '../../Utilities/projectionTestUtils';
 /**
  *  Class to handle RenameAttributes operations
  */
-describe('Cdm/Projection/ProjectionObjectModel', () => {
+describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
     /**
      * The path between TestDataPath and TestName.
      */

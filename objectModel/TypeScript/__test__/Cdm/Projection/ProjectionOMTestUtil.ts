@@ -11,6 +11,7 @@ import {
     CdmFolderDefinition,
     CdmManifestDefinition,
     cdmObjectType,
+    CdmOperationCombineAttributes,
     CdmOperationIncludeAttributes,
     CdmProjection,
     CdmPurposeReference,
@@ -284,6 +285,35 @@ export class ProjectionOMTestUtil {
     }
 
     /**
+     * Create a Combine Attribute Operation
+     */
+    public createOperationCombineAttributes(projection: CdmProjection, selectedAttributes: string[], mergeIntoAttribute: CdmTypeAttributeDefinition): CdmOperationCombineAttributes {
+        // CombineAttributes Operation
+        const combineAttributesOp: CdmOperationCombineAttributes = new CdmOperationCombineAttributes(this.corpus.ctx);
+        combineAttributesOp.select = selectedAttributes;
+        combineAttributesOp.mergeInto = mergeIntoAttribute;
+
+        projection.operations.push(combineAttributesOp);
+
+        return combineAttributesOp;
+    }
+
+    /**
+     * Create a Type Attribute
+     */
+    public createTypeAttribute(attributeName: string, dataType: string, purpose: string): CdmTypeAttributeDefinition {
+        const dataTypeRef: CdmDataTypeReference = this.corpus.MakeRef<CdmDataTypeReference>(cdmObjectType.dataTypeRef, dataType, false);
+
+        const purposeRef: CdmPurposeReference = this.corpus.MakeRef<CdmPurposeReference>(cdmObjectType.purposeRef, purpose, false);
+
+        const attribute: CdmTypeAttributeDefinition = this.corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef, attributeName, false);
+        attribute.dataType = dataTypeRef;
+        attribute.purpose = purposeRef;
+
+        return attribute;
+    }
+
+    /**
      * Create an entity attribute
      */
     public createEntityAttribute(entityAttributeName: string, projectionSourceEntityRef: CdmEntityReference): CdmEntityAttributeDefinition {
@@ -293,9 +323,9 @@ export class ProjectionOMTestUtil {
         return entityAttribute;
     }
 
-    public getAndValidateResolvedEntity(entity: CdmEntityDefinition, resOpts: string[]): Promise<CdmEntityDefinition> {
-        const resolvedEntity = projectionTestUtils.getResolvedEntity(this.corpus, entity, resOpts);
-        // Assert.IsNotNull(resolvedEntity, $'GetAndValidateResolvedEntity: ${entity.EntityName} resolution with options '${ string.Join(', ', resOpts) }' failed!');
+    public async getAndValidateResolvedEntity(entity: CdmEntityDefinition, resOpts: string[]): Promise<CdmEntityDefinition> {
+        const resolvedEntity = await projectionTestUtils.getResolvedEntity(this.corpus, entity, resOpts);
+
         expect(resolvedEntity)
             .toBeDefined();
 

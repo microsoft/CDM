@@ -75,7 +75,7 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
             }
 
             // this flag makes sure we hold on to any resolved object refs when things get copied
-            const resOptCopy: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+            const resOptCopy: resolveOptions = resOpt.copy();
             resOptCopy.saveResolutionsOnCopy = true;
 
             let definition: CdmObjectReference;
@@ -167,9 +167,8 @@ export class CdmAttributeContext extends CdmObjectDefinitionBase {
 
         // now copy the children
         for (const child of this.contents.allItems) {
-            let newChild: CdmAttributeContext;
             if (child instanceof CdmAttributeContext) {
-                newChild = child.copyNode(resOpt) as CdmAttributeContext;
+                const newChild: CdmAttributeContext = child.copyNode(resOpt) as CdmAttributeContext;
 
                 if (newNode) {
                     newChild.setParent(resOpt, newNode);

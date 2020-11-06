@@ -16,12 +16,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public ImportsLoadStrategy ImportsLoadStrategy { get; set; } = ImportsLoadStrategy.LazyLoad; // defines at which point the Object Model will try to load the imported documents.
         public int? ResolvedAttributeLimit { get; set; } = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
         public int MaxOrdinalForArrayExpansion { get; set; } = 20; // the maximum value for the end ordinal in an ArrayExpansion operation
-        internal int? RelationshipDepth { get; set; } // tracks the number of entity attributes that have been travered when collecting resolved traits or attributes. prevents run away loops
         internal bool SaveResolutionsOnCopy { get; set; } // when references get copied, use previous resolution results if available (for use with copy method)
         internal SymbolSet SymbolRefSet { get; set; } // set of set of symbol that the current chain of resolution depends upon. used with importPriority to find what docs and versions of symbols to use
         internal CdmDocumentDefinition LocalizeReferencesFor { get; set; } // forces symbolic references to be re-written to be the precisely located reference based on the wrtDoc
         internal CdmDocumentDefinition IndexingDoc { get; set; } // document currently being indexed
         internal string FromMoniker { get; set; } // moniker that was found on the ref
+        internal Dictionary<CdmAttributeContext, CdmAttributeContext> MapOldCtxToNewCtx;
+        // Contains information about the depth that we are resolving at
+        internal DepthInfo DepthInfo { get; set; }
+        // Indicates whether we are resolving inside of a circular reference, resolution is different in that case
+        internal bool InCircularReference { get; set; }
 
         [Obsolete("Please use ImportsLoadStrategy instead.")]
         // when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
@@ -58,11 +62,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// <param name="cdmDocument">Document to use as point of reference when resolving relative paths and symbol names.</param>
         /// <param name="Directives">Directives to use when resolving attributes</param>
         public ResolveOptions(CdmDocumentDefinition cdmDocument, AttributeResolutionDirectiveSet Directives = null)
+            : this()
         {
             WrtDoc = cdmDocument;
             // provided or default to 'avoid one to many relationship nesting and to use foreign keys for many to one refs'. this is for back compat with behavior before the corpus has a default directive property
             this.Directives = Directives != null ? Directives.Copy() : new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" });
-            SymbolRefSet = new SymbolSet();
         }
 
         /// <summary>
@@ -71,11 +75,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// <param name="cdmObject">a CdmObject from which to take the With Regards To Document</param>
         /// <param name="Directives">Directives to use when resolving attributes</param>
         public ResolveOptions(CdmObject cdmObject, AttributeResolutionDirectiveSet Directives = null)
+            : this()
         {
             WrtDoc = FetchDocument(cdmObject);
             // provided or default to 'avoid one to many relationship nesting and to use foreign keys for many to one refs'. this is for back compat with behavior before the corpus has a default directive property
             this.Directives = Directives != null ? Directives.Copy() : new AttributeResolutionDirectiveSet(new HashSet<string>() { "normalized", "referenceOnly" });
-            SymbolRefSet = new SymbolSet();
         }
 
         /// <summary>
@@ -83,6 +87,43 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// </summary>
         public ResolveOptions()
         {
+            SymbolRefSet = new SymbolSet();
+            this.DepthInfo = new DepthInfo
+            {
+                MaxDepth = null,
+                CurrentDepth = 0,
+                MaxDepthExceeded = false
+            };
+            this.InCircularReference = false;
+        }
+
+        /// <summary>
+        /// Creates a copy of the resolve options object
+        /// </summary>
+        internal ResolveOptions Copy()
+        {
+            ResolveOptions resOptCopy = new ResolveOptions();
+            resOptCopy.WrtDoc = this.WrtDoc;
+            if (this.DepthInfo != null)
+            {
+                resOptCopy.DepthInfo = new DepthInfo
+                {
+                    MaxDepth = this.DepthInfo.MaxDepth,
+                    CurrentDepth = this.DepthInfo.CurrentDepth,
+                    MaxDepthExceeded = this.DepthInfo.MaxDepthExceeded
+                };
+            }
+            if (this.Directives != null)
+                resOptCopy.Directives = this.Directives.Copy();
+            resOptCopy.LocalizeReferencesFor = this.LocalizeReferencesFor;
+            resOptCopy.IndexingDoc = this.IndexingDoc;
+            resOptCopy.ShallowValidation = this.ShallowValidation;
+            resOptCopy.ResolvedAttributeLimit = this.ResolvedAttributeLimit;
+            resOptCopy.MapOldCtxToNewCtx = this.MapOldCtxToNewCtx; // ok to share this map
+            resOptCopy.ImportsLoadStrategy = this.ImportsLoadStrategy;
+            resOptCopy.SaveResolutionsOnCopy = this.SaveResolutionsOnCopy;
+
+            return resOptCopy;
         }
 
         /// <summary>

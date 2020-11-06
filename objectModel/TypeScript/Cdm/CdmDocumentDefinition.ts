@@ -24,6 +24,7 @@ import {
     cdmObjectType,
     copyOptions,
     Errors,
+    ImportInfo,
     importsLoadStrategy,
     Logger,
     ResolvedAttributeSetBuilder,
@@ -36,12 +37,12 @@ import {
  * @internal
  */
 class ImportPriorities {
-    public importPriority: Map<CdmDocumentDefinition, number>;
+    public importPriority: Map<CdmDocumentDefinition, ImportInfo>;
     public monikerPriorityMap: Map<string, CdmDocumentDefinition>;
     public hasCircularImport: boolean;
 
     constructor() {
-        this.importPriority = new Map<CdmDocumentDefinition, number>();
+        this.importPriority = new Map<CdmDocumentDefinition, ImportInfo>();
         this.monikerPriorityMap = new Map<string, CdmDocumentDefinition>();
         this.hasCircularImport = false;
     }
@@ -49,12 +50,13 @@ class ImportPriorities {
     public copy(): ImportPriorities {
         const copy: ImportPriorities = new ImportPriorities();
         if (this.importPriority) {
-            this.importPriority.forEach((v: number, k: CdmDocumentDefinition) => { copy.importPriority.set(k, v); });
+            this.importPriority.forEach((v: ImportInfo, k: CdmDocumentDefinition) => { copy.importPriority.set(k, v); });
         }
         if (this.monikerPriorityMap) {
             this.monikerPriorityMap.forEach((v: CdmDocumentDefinition, k: string) => { copy.monikerPriorityMap.set(k, v); });
         }
         copy.hasCircularImport = this.hasCircularImport;
+
         return copy;
     }
 }
@@ -79,6 +81,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     public namespace: string;
     public schema: string;
     public jsonSchemaSemanticVersion: string;
+    public documentVersion: string;
     public readonly imports: CdmImportCollection;
     public definitions: CdmDefinitionCollection;
     public importSetKey: string;
@@ -131,6 +134,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.objectType = cdmObjectType.documentDef;
             this.name = name;
             this.jsonSchemaSemanticVersion = '1.0.0';
+            this.documentVersion = undefined;
             this.needsIndexing = true;
             this.importsIndexed = false;
             this.declarationsIndexed = false;
@@ -317,6 +321,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             copy.folderPath = this.folderPath;
             copy.schema = this.schema;
             copy.jsonSchemaSemanticVersion = this.jsonSchemaSemanticVersion;
+            copy.documentVersion = this.documentVersion;
 
             for (const def of this.definitions) {
                 copy.definitions.push(def);
@@ -511,9 +516,9 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 const corpus: CdmCorpusDefinition = this.folder.corpus;
 
                 // if the imports load strategy is "lazyLoad", loadImports value will be the one sent by the called function.
-                if (resOpt.importsLoadStrategy == importsLoadStrategy.doNotLoad) {
+                if (resOpt.importsLoadStrategy === importsLoadStrategy.doNotLoad) {
                     loadImports = false;
-                } else if (resOpt.importsLoadStrategy == importsLoadStrategy.load) {
+                } else if (resOpt.importsLoadStrategy === importsLoadStrategy.load) {
                     loadImports = true;
                 }
 
@@ -538,8 +543,8 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
     public getImportPriorities(): ImportPriorities {
 
         if (this.importPriorities === undefined) {
-            const importPriorities = new ImportPriorities();
-            importPriorities.importPriority.set(this, 0);
+            const importPriorities: ImportPriorities = new ImportPriorities();
+            importPriorities.importPriority.set(this, new ImportInfo(0, false));
             this.prioritizeImports(
                 new Set<CdmDocumentDefinition>(), importPriorities, 1, false);
             this.importPriorities = importPriorities;
@@ -684,7 +689,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         // for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
         // maps document to priority.
-        const priorityMap: Map<CdmDocumentDefinition, number> = importPriorities.importPriority;
+        const priorityMap: Map<CdmDocumentDefinition, ImportInfo> = importPriorities.importPriority;
 
         // maps moniker to document.
         const monikerMap: Map<string, CdmDocumentDefinition> = importPriorities.monikerPriorityMap;
@@ -692,8 +697,8 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         // if already in list, don't do this again
         if (processedSet.has(this)) {
             // if the first document in the priority map is this then the document was the starting point of the recursion.
-            // and if this document is present in the processedSet we know that there is a cicular list of imports.
-            if (priorityMap.has(this) && priorityMap.get(this) === 0) {
+            // and if this document is present in the processedSet we know that there is a circular list of imports.
+            if (priorityMap.has(this) && priorityMap.get(this).priority === 0) {
                 importPriorities.hasCircularImport = true;
             }
 
@@ -704,14 +709,22 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
         if (this.imports) {
             const revImp: CdmImport[] = this.imports.allItems.slice()
                 .reverse();
+            const monikerImports: CdmDocumentDefinition[] = [];
             // first add the imports done at this level only in reverse order.
             for (const imp of revImp) {
                 const impDoc: CdmDocumentDefinition = imp.document;
-                // don't add the moniker imports to the priority list.
-                if (imp.document && !imp.moniker && !priorityMap.has(impDoc)) {
-                    // add doc.
-                    priorityMap.set(impDoc, sequence);
-                    sequence++;
+
+                if (impDoc) {
+                    // moniker imports will be added to the end of the priority list later.
+                    if (imp.document && !imp.moniker && !priorityMap.has(impDoc)) {
+                        // add doc.
+                        priorityMap.set(impDoc, new ImportInfo(sequence, false));
+                        sequence++;
+                    } else {
+                        monikerImports.push(impDoc);
+                    }
+                } else {
+                    Logger.warning(CdmDocumentDefinition.name, this.ctx, `Import document ${imp.corpusPath} not loaded. This might cause an unexpected output.`);
                 }
             }
 
@@ -720,16 +733,22 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                 const impDoc: CdmDocumentDefinition = imp.document;
                 const isMoniker: boolean = !!imp.moniker;
 
+                if (!impDoc) {
+                    Logger.warning(CdmDocumentDefinition.name, this.ctx, `Import document ${imp.corpusPath} not loaded. This might cause an unexpected output.`);
+                }
+
                 // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
                 // since the document itself will always be the first one on the list.
                 if (impDoc !== undefined && impDoc.importPriorities !== undefined && !impDoc.importPriorities.hasCircularImport) {
                     // lucky, already done so avoid recursion and copy.
                     const impPriSub: ImportPriorities = impDoc.getImportPriorities();
                     impPriSub.importPriority.delete(impDoc); // because already added above.
-                    impPriSub.importPriority.forEach((v: number, k: CdmDocumentDefinition) => {
-                        if (priorityMap.has(k) === false) {
+                    impPriSub.importPriority.forEach((v: ImportInfo, k: CdmDocumentDefinition) => {
+                        // if the document is imported with moniker in another document do not include it in the priority list of this one.
+                        // moniker imports are only added to the priority list of the document that directly imports them.
+                        if (!priorityMap.has(k) && !v.isMoniker) {
                             // add doc.
-                            priorityMap.set(k, sequence);
+                            priorityMap.set(k, new ImportInfo(sequence, false));
                             sequence++;
                         }
                     });
@@ -741,17 +760,30 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
                         });
                     }
                 } else if (impDoc !== undefined) {
-                    // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies.
+                    // skip the monikered imports from here if this is a monikered import itself 
+                    // and we are only collecting the dependencies.
                     sequence = impDoc.prioritizeImports(processedSet, importPriorities, sequence, isMoniker);
                 }
             }
 
             // skip the monikered imports from here if this is a monikered import itself and we are only collecting the dependencies.
             if (!skipMonikered) {
-                // moniker imports are prioritized by the 'closest' use of the moniker to the starting doc. so last one found in this recursion.
+                // moniker imports are prioritized by the 'closest' use of the moniker to the starting doc.
+                // so last one found in this recursion.
                 for (const imp of this.imports) {
                     if (imp.document && imp.moniker) {
                         monikerMap.set(imp.moniker, imp.document);
+                    }
+                }
+
+                // if the document index is zero, the document being processed is the root of the imports chain.
+                // in this case add the monikered imports to the end of the priorityMap.
+                if (priorityMap.has(this) && priorityMap.get(this).priority === 0) {
+                    for (const imp of monikerImports) {
+                        if (!priorityMap.has(imp)) {
+                            priorityMap.set(imp, new ImportInfo(sequence, true));
+                            sequence++;
+                        }
                     }
                 }
             }

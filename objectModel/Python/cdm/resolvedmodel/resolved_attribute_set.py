@@ -28,6 +28,9 @@ class ResolvedAttributeSet(RefCounted):
         # we need this instead of checking the size of the set because there may be attributes
         # nested in an attribute group and we need each of those attributes counted here as well
         self._resolved_attribute_count = 0  # type: int
+        # indicates the depth level that this set was resolved at.
+        # resulting set can vary depending on the maxDepth value
+        self._depth_traveled = 0 # type: int
         self._set = []  # type: List[ResolvedAttribute]
 
     @property
@@ -476,6 +479,7 @@ class ResolvedAttributeSet(RefCounted):
         # Reset mappings to the correct one.
         copy.rattr_to_attctxset = new_rattr_to_attctxset
         copy.attctx_to_rattr = new_attctx_to_rattr
+        copy._depth_traveled = self._depth_traveled
 
         return copy
 

@@ -71,6 +71,16 @@ public class CalculateRelationshipTest {
     }
 
     /**
+     * Projection scenario with the referenced entity in a different folder
+     */
+    @Test
+    public void testDiffRefLocation() throws IOException, InterruptedException {
+        String testName = "testDiffRefLocation";
+        String entityName = "Sales";
+
+        testRun(testName, entityName);
+    }
+    /**
      * Projection with composite keys
      */
     @Test

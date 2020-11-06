@@ -148,6 +148,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return this.CopyRefObject(resOpt, newDeclaredPath, true);
         }
 
+        /// Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+        /// into some final document. 
+        internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
+        {
+            CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true) as CdmObjectReferenceBase;
+            cdmObjectRef.ExplicitReference = this.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
+            if (cdmObjectRef.ExplicitReference == null || (cdmObjectRef.InDocument == null && this.InDocument == null))
+                return null; // not allowed
+            if (cdmObjectRef.InDocument == null)
+            {
+                cdmObjectRef.InDocument = this.InDocument; // if the object has no document, take from the reference
+            }
+            return cdmObjectRef;
+        }
+
+        /// Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+        /// into some final document. 
+        internal void LocalizePortableReference(ResolveOptions resOpt, string importPath)
+        {
+            string newDeclaredPath = (this.ExplicitReference as CdmObjectBase).DeclaredPath;
+            newDeclaredPath =  newDeclaredPath?.EndsWith("/(ref)") == true ? newDeclaredPath.Substring(0, newDeclaredPath.Length - 6) : newDeclaredPath;
+            this.NamedReference = $"{importPath}{newDeclaredPath}";
+        }
+
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
@@ -170,7 +194,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 copy.ExplicitReference = this.ExplicitReference;
             }
-            copy.InDocument = this.InDocument;
 
             copy.AppliedTraits.Clear();
             if (this.AppliedTraits != null)
@@ -178,6 +201,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 foreach (var trait in this.AppliedTraits)
                     copy.AppliedTraits.Add(trait);
             }
+
+            // Don't do anything else after this, as it may cause InDocument to become dirty
+            copy.InDocument = this.InDocument;
+
             return copy;
         }
 
@@ -300,8 +327,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren != null && preChildren.Invoke(this, refPath))
                 return false;
             if (this.ExplicitReference != null && string.IsNullOrEmpty(this.NamedReference))
+            {
+                this.ExplicitReference.Owner = this.Owner; // obj is not in collection, so set owner here.
                 if (this.ExplicitReference.Visit(path, preChildren, postChildren))
                     return true;
+            }
             if (this.VisitRef(path, preChildren, postChildren))
                 return true;
 
@@ -321,7 +351,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // find and cache the complete set of attributes
             ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
             rasb.ResolvedAttributeSet.AttributeContext = under;
-            var def = this.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
+            var def = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
             if (def != null)
             {
                 AttributeContextParameters acpRef = null;
@@ -334,10 +364,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         type = CdmAttributeContextType.PassThrough
                     };
                 }
-                ResolvedAttributeSet resAtts = (def as CdmObjectDefinitionBase).FetchResolvedAttributes(resOpt, acpRef);
+                ResolvedAttributeSet resAtts = def.FetchResolvedAttributes(resOpt, acpRef);
                 if (resAtts?.Set?.Count > 0)
                 {
-                    resAtts = resAtts.Copy();
+                    //resAtts = resAtts.Copy(); should not neeed this copy now that we copy from the cache. lets try!
                     rasb.MergeAttributes(resAtts);
                     rasb.RemoveRequestedAtts();
                 }

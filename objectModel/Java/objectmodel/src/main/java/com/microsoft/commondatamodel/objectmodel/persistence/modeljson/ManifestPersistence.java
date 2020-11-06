@@ -84,6 +84,7 @@ public class ManifestPersistence {
     manifest.setLastFileModifiedTime(obj.getModifiedTime());
     manifest.setLastChildFileModifiedTime(obj.getLastChildFileModifiedTime());
     manifest.setLastFileStatusCheckTime(obj.getLastFileStatusCheckTime());
+    manifest.setDocumentVersion(obj.getDocumentVersion());
 
     if (obj.getApplication() != null) {
       final CdmTraitReference applicationTrait = ctx.getCorpus()
@@ -286,6 +287,7 @@ public class ManifestPersistence {
       result.setModifiedTime(instance.getLastFileModifiedTime());
       result.setLastChildFileModifiedTime(instance.getLastChildFileModifiedTime());
       result.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());
+      result.setDocumentVersion(instance.getDocumentVersion());
 
       final TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);
 

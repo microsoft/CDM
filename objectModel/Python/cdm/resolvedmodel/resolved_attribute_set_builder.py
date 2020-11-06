@@ -35,7 +35,7 @@ class AttributeResolutionContext:
         self.applier_caps = None  # type: Optional[AttributeResolutionApplierCapabilities]
 
         from cdm.objectmodel import CdmObject
-        self.res_opt = CdmObject._copy_resolve_options(res_opt)
+        self.res_opt = res_opt.copy()
 
         if not res_guide:
             return
@@ -108,6 +108,8 @@ class ResolvedAttributeSetBuilder:
     def merge_attributes(self, ras_new: 'ResolvedAttributeSet') -> None:
         if ras_new:
             self.take_reference(self.ras.merge_set(ras_new))
+        if ras_new._depth_traveled > self.ras._depth_traveled:
+            self.ras._depth_traveled = ras_new._depth_traveled
 
     def take_reference(self, ras_new: 'ResolvedAttributeSet') -> None:
         if self.ras != ras_new:

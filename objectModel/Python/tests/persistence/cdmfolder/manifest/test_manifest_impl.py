@@ -82,6 +82,7 @@ class ManifestImplTest(unittest.TestCase):
         manifest_object = ManifestPersistence.to_data(cdm_manifest, None, None)
         self.assertEqual(manifest_object.schema, 'CdmManifestDefinition.cdm.json')
         self.assertEqual(manifest_object.jsonSchemaSemanticVersion, '1.0.0')
+        self.assertEqual(manifest_object.documentVersion, '2.0.0')
         self.assertEqual(manifest_object.manifestName, 'cdmTest')
         self.assertEqual(manifest_object.explanation, 'test cdm folder for cdm version 1.0+')
         self.assertEqual(1, len(manifest_object.imports))

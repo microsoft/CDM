@@ -46,6 +46,12 @@ export class ResolvedAttributeSet extends refCounted {
      * @internal
      */
     public resolvedAttributeCount: number;
+    /**
+     * @internal
+     * indicates the depth level that this set was resolved at.
+     * resulting set can vary depending on the maxDepth value
+     */
+    public depthTraveled: number;
     private _set: ResolvedAttribute[];
 
     constructor() {
@@ -57,6 +63,7 @@ export class ResolvedAttributeSet extends refCounted {
             this.attCtx2ra = new Map<CdmAttributeContext, ResolvedAttribute>();
             this.set = [];
             this.resolvedAttributeCount = 0;
+            this.depthTraveled = 0;
         }
         // return p.measure(bodyCode);
     }
@@ -658,6 +665,7 @@ export class ResolvedAttributeSet extends refCounted {
             // reset mappings to the correct one
             copy.ra2attCtxSet = newRa2attCtxSet;
             copy.attCtx2ra = newAttCtx2ra;
+            copy.depthTraveled = this.depthTraveled;
 
             return copy;
         }

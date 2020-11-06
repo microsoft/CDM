@@ -21,6 +21,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
                 return true;
             }
         };
+        internal static AttributeResolutionApplier isRemovedInternal = new AttributeResolutionApplier
+        {
+            MatchName = "is.removed.internal",
+            Priority = 10,
+            OverridesBase = false,
+            WillRemove = (ApplierContext appCtx) =>
+            {
+                return appCtx.ResAttSource.ApplierState?.Flex_remove == true;
+            }
+        };
 
         internal static AttributeResolutionApplier doesReferenceEntity = new AttributeResolutionApplier
         {

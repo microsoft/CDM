@@ -103,7 +103,7 @@ export class AttributeContextUtil {
         }
 
         if (typeof args.value === 'string') {
-            const argsValue: string  = args.value;
+            const argsValue: string = args.value;
 
             if (argsValue) {
                 this.bldr += `  [Argument Value: ${argsValue}]`;
@@ -132,13 +132,25 @@ export class AttributeContextUtil {
      * A function to validate if the attribute context tree & traits generated for a resolved entity is the same as the expected and
      * saved attribute context tree & traits for a test case
      */
-    public static validateAttributeContext(corpus: CdmCorpusDefinition, expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition): void {
+    public static async validateAttributeContext(corpus: CdmCorpusDefinition, expectedOutputPath: string, entityName: string, resolvedEntity: CdmEntityDefinition): Promise<void> {
         if (resolvedEntity.attributeContext) {
             const attrCtxUtil: AttributeContextUtil = new AttributeContextUtil();
+
+            // Expected
+            const expectedStringFilePath: string = `${expectedOutputPath}/AttrCtx_${entityName}.txt`;
+            const expectedText: string = fs.readFileSync(expectedStringFilePath).toString();
+
+            // Actual
+            const actualStringFilePath: string = `${expectedOutputPath.replace('ExpectedOutput', 'ActualOutput')}/AttrCtx_${entityName}.txt`;
             const actualText: string = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.attributeContext);
-            const expectedText: string = fs.readFileSync(`${expectedOutputPath}/AttrCtx_${entityName}.txt`).toString();
+
+            // Test if Actual is Equal to Expected
             expect(actualText)
                 .toEqual(expectedText);
+
+            // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+            fs.writeFileSync(actualStringFilePath, actualText);
+            await resolvedEntity.inDocument.saveAsAsync(`Resolved_${entityName}.cdm.json`, false);
         }
     }
 }

@@ -54,7 +54,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="commondatamodel-objectmodel",
-    version="1.0.12",
+    version="1.0.13",
     author="Microsoft",
     description="Common Data Model Object Model library for Python",
     url="https://github.com/pypa/commondatamodel-objectmodel",

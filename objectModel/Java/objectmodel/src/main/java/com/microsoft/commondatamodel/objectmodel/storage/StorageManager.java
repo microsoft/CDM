@@ -46,7 +46,7 @@ public class StorageManager {
     this.systemDefinedNamespaces = new HashSet<>();
 
     // Set up default adapters.
-    this.mount("local", new LocalAdapter(System.getProperty("user.dir")));
+    this.mount("local", new LocalAdapter(System.getProperty("user.dir") + "\\objectmodel"));
     this.mount("cdm", new CdmStandardsAdapter());
 
     systemDefinedNamespaces.add("local");
@@ -450,6 +450,20 @@ public class StorageManager {
       }
     }
     return newPath;
+  }
+
+  /**
+   * Maximum number of documents read concurrently when loading imports.
+   */
+  public Integer getMaxConcurrentReads() {
+    return this.corpus.getDocumentLibrary().concurrentReadLock.getPermits();
+  }
+
+  /**
+   * Maximum number of documents read concurrently when loading imports.
+   */
+  public void setMaxConcurrentReads(Integer maxConcurrentReads) {
+    this.corpus.getDocumentLibrary().concurrentReadLock.setPermits(maxConcurrentReads);
   }
 
   private boolean containsUnsupportedPathFormat(final String path) {

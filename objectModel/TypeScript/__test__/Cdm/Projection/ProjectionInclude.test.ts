@@ -137,7 +137,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
         entity_Color.attributes.push(entityAttribute_RGBColor);
 
         for (const resOpts of resOptsCombinations) {
-            const resolvedEntity_Color = util.getAndValidateResolvedEntity(entity_Color, resOpts);
+            await util.getAndValidateResolvedEntity(entity_Color, resOpts);
         }
 
         util.defaultManifest.saveAsAsync(util.manifestDocName, true);
@@ -355,7 +355,7 @@ describe('Cdm/Projection/ProjectionIncludeTest', () => {
 
         await validateResolvedAttributes(corpus, resolvedEntity, entityName, fileNameSuffix);
 
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, `${entityName}${fileNameSuffix}`, resolvedEntity);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, `${entityName}${fileNameSuffix}`, resolvedEntity);
     }
 
 

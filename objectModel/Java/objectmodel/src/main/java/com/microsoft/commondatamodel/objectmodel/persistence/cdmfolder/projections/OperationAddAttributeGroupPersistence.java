@@ -32,7 +32,13 @@ public class OperationAddAttributeGroupPersistence {
             addAttributeGroupOp.setType(CdmOperationType.AddAttributeGroup);
         }
 
-        // TODO (sukanyas): Property to be defined
+        if (obj.get("attributeGroupName") != null) {
+            addAttributeGroupOp.setAttributeGroupName(obj.get("attributeGroupName").asText());
+        }
+
+        if (obj.get("explanation") != null) {
+            addAttributeGroupOp.setExplanation(obj.get("explanation").asText());
+        }
 
         return addAttributeGroupOp;
     }
@@ -44,8 +50,8 @@ public class OperationAddAttributeGroupPersistence {
 
         OperationAddAttributeGroup obj = new OperationAddAttributeGroup();
         obj.setType(OperationTypeConvertor.operationTypeToString(CdmOperationType.AddAttributeGroup));
+        obj.setAttributeGroupName(instance.getAttributeGroupName());
         obj.setExplanation(instance.getExplanation());
-        // TODO (sukanyas): Property to be defined
 
         return obj;
     }

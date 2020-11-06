@@ -1,8 +1,6 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-//-----------------------------------------------------------------------using System;
-
 namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
@@ -60,19 +58,35 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.ResolvedName = defaultName;
             this.PreviousResolvedName = defaultName;
             this.AttCtx = attCtx;
+            // if the target is a resolved attribute set, then we are wrapping it. update the lineage of this new ra to point at all members of the set
+            if (target is ResolvedAttributeSet && attCtx != null)
+            {
+                var rasSub = target as ResolvedAttributeSet;
+                if (rasSub.Set != null && rasSub.Set.Count > 0)
+                {
+                    foreach (var raSub in rasSub.Set)
+                    {
+                        if (raSub.AttCtx != null)
+                        {
+                            AttCtx.AddLineage(raSub.AttCtx);
+                        }
+                    }
+                }
+            }
         }
 
         public ResolvedAttribute Copy()
         {
             ResolveOptions resOpt = this.ResolvedTraits.ResOpt; // use the options from the traits
-            ResolvedAttribute copy = new ResolvedAttribute(resOpt, this.Target, this._resolvedName, this.AttCtx)
+            ResolvedAttribute copy = new ResolvedAttribute(resOpt, this.Target, this._resolvedName, null)
             {
                 PreviousResolvedName = this.PreviousResolvedName,
                 ResolvedName = this.ResolvedName,
                 ResolvedAttributeCount = this.ResolvedAttributeCount,
                 ResolvedTraits = this.ResolvedTraits.ShallowCopy(),
                 InsertOrder = this.InsertOrder,
-                Arc = this.Arc
+                Arc = this.Arc,
+                AttCtx = this.AttCtx // set here instead of constructor to avoid setting lineage for this copy
             };
 
             if (copy.Target is ResolvedAttributeSet)
@@ -96,12 +110,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 
         public void CompleteContext(ResolveOptions resOpt)
         {
-            if (this.AttCtx != null && this.AttCtx.Name == null)
+            if (this.AttCtx != null)
             {
-                this.AttCtx.Name = this._resolvedName;
-                if (this.Target is CdmAttribute)
-                    this.AttCtx.Definition = (this.Target as CdmAttribute).CreateSimpleReference(resOpt);
-                this.AttCtx.AtCorpusPath = this.AttCtx.Parent.FetchObjectDefinition<CdmAttributeContext>(resOpt).AtCorpusPath + "/" + this._resolvedName;
+                if (this.AttCtx.Name == null)
+                {
+                    this.AttCtx.Name = this._resolvedName;
+                    this.AttCtx.AtCorpusPath = this.AttCtx.Parent.FetchObjectDefinition<CdmAttributeContext>(resOpt).AtCorpusPath + "/" + this._resolvedName;
+                }
+
+                if (this.AttCtx.Definition == null && this.Target is CdmAttribute)
+                    this.AttCtx.Definition = (this.Target as CdmAttribute).CreatePortableReference(resOpt);
             }
         }
 

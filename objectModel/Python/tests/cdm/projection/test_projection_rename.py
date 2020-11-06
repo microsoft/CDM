@@ -6,7 +6,6 @@ import unittest
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmCorpusDefinition, CdmFolderDefinition, CdmEntityDefinition
-from cdm.storage import LocalAdapter
 from cdm.utilities import ResolveOptions, AttributeResolutionDirectiveSet
 from tests.common import async_test, TestHelper
 from tests.utilities.projection_test_utils import ProjectionTestUtils
@@ -34,7 +33,6 @@ class ProjectionRenameTest(unittest.TestCase):
     async def test_entity_attribute_proj_using_object_model(self):
         """Test for creating a projection with an RenameAttributes operation on an entity attribute using the object model  """
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestEntityAttributeProjUsingObjectModel')  # type: CdmCorpusDefinition
-        corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'TestEntityAttributeProjUsingObjectModel')))
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity
@@ -73,7 +71,6 @@ class ProjectionRenameTest(unittest.TestCase):
     async def test_entity_proj_using_object_model(self):
         """Test for creating a projection with an RenameAttributes operation on an entity definition using the object model.  """
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestEntityProjUsingObjectModel')  # type: CdmCorpusDefinition
-        corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'TestEntityProjUsingObjectModel')))
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity
@@ -110,7 +107,6 @@ class ProjectionRenameTest(unittest.TestCase):
     async def test_nested_proj_using_object_model(self):
         """Test for creating nested projections with RenameAttributes operations using the object model"""
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestNestedProjUsingObjectModel')  # type: CdmCorpusDefinition
-        corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'TestNestedProjUsingObjectModel')))
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity
@@ -163,7 +159,6 @@ class ProjectionRenameTest(unittest.TestCase):
     async def test_repeated_pattern_proj(self):
         """Test correctness when renameFormat has repeated pattern"""
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestEntityAttributeProjUsingObjectModel')  # type: CdmCorpusDefinition
-        corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'TestEntityAttributeProjUsingObjectModel')))
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity
@@ -202,7 +197,6 @@ class ProjectionRenameTest(unittest.TestCase):
     async def test_conditional_proj_using_object_model(self):
         """Test for creating a projection with an RenameAttributes operation and a condition using the object model"""
         corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestConditionalProjUsingObjectModel')  # type: CdmCorpusDefinition
-        corpus.storage.mount('local', LocalAdapter(TestHelper.get_actual_output_folder_path(self.tests_subpath, 'TestConditionalProjUsingObjectModel')))
         local_root = corpus.storage.fetch_root_folder('local')  # type: CdmFolderDefinition
 
         # Create an entity.
@@ -243,7 +237,7 @@ class ProjectionRenameTest(unittest.TestCase):
         self.assertEqual('TestEntityAttribute..Date', resolved_entity_with_reference_only.attributes[3].name)
 
         # Now resolve the entity with the 'structured' directive
-        res_opt.directives = AttributeResolutionDirectiveSet({ 'structured' })
+        res_opt.directives = AttributeResolutionDirectiveSet({'structured'})
         resolved_entity_with_structured = await entity.create_resolved_entity_async('Resolved_{}.cdm.json'.format(entity.entity_name), res_opt, local_root)  # type: CdmEntityDefinition
 
         # Verify correctness of the resolved attributes after running the RenameAttributes operation

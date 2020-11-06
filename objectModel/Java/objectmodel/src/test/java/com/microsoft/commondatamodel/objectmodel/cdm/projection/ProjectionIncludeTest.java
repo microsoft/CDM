@@ -110,7 +110,7 @@ public class ProjectionIncludeTest {
      */
     @Test
     public void testEAProjOM() throws InterruptedException {
-        String className = "ProjectionIncludeTest";
+        String className = "testProjectionInclude";
         String testName = "testEAProjOM";
         String entityName_RGB = "RGB";
 
@@ -139,7 +139,7 @@ public class ProjectionIncludeTest {
         util.validateBasicEntity(entity_Color, entityName_Color, attributeParams_Color);
 
         CdmProjection projection_RGBColor = util.createProjection(entity_RGB.getEntityName());
-        CdmOperationIncludeAttributes operation_IncludeAttributes = util.createOperationInputAttribute(projection_RGBColor, includeAttributeNames);
+        CdmOperationIncludeAttributes operation_IncludeAttributes = util.createOperationInputAttributes(projection_RGBColor, includeAttributeNames);
         CdmEntityReference projectionEntityRef_RGBColor = util.createProjectionInlineEntityReference(projection_RGBColor);
 
         CdmEntityAttributeDefinition entityAttribute_RGBColor = util.createEntityAttribute("RGBColor", projectionEntityRef_RGBColor);

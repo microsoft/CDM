@@ -168,7 +168,7 @@ class ProjectionFKTest(unittest.TestCase):
         self.assertIsNotNone(ent_sales_foreign_key_projection)
         resolved_sales_foreign_key_projection = await self._save_resolved(corpus, manifest, test_name, ent_sales_foreign_key_projection, res_opts)
         self.assertIsNotNone(resolved_sales_foreign_key_projection)
-        AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, '{}{}'.format(entity_name, file_name_suffix), resolved_sales_foreign_key_projection)
+        await AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, '{}{}'.format(entity_name, file_name_suffix), resolved_sales_foreign_key_projection)
 
     async def _save_resolved(
         self,

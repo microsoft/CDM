@@ -314,6 +314,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     this.rasb.getResolvedAttributeSet().setAttributeContext(under);
 
     if (this.getAttributes() != null) {
+      int furthestChildDepth = 0;
       final int l = this.getAttributes().getCount();
       for (int i = 0; i < l; i++) {
         final CdmAttributeItem att = this.attributes.getAllItems().get(i);
@@ -327,7 +328,19 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           acpAtt.setIncludeTraits(false);
         }
 
-        this.rasb.mergeAttributes(att.fetchResolvedAttributes(resOpt, acpAtt));
+        // skip entity attributes when we are in a circular reference loop
+        if (resOpt.inCircularReference == true && att instanceof CdmEntityAttributeDefinition) {
+          continue;
+        }
+
+        ResolvedAttributeSet attRas = att.fetchResolvedAttributes(resOpt, acpAtt);
+        
+        // we can now set depth now that children nodes have been resolved
+        if (att instanceof CdmEntityAttributeDefinition) {
+          furthestChildDepth = attRas.getDepthTraveled() > furthestChildDepth ? attRas.getDepthTraveled() : furthestChildDepth;
+        }
+
+        this.rasb.mergeAttributes(attRas);
 
         if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
           Logger.error(
@@ -338,6 +351,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           return null;
         }
       }
+      this.rasb.getResolvedAttributeSet().setDepthTraveled(furthestChildDepth);
     }
     this.rasb.markOrder();
     this.rasb.getResolvedAttributeSet().setAttributeContext(under);
@@ -440,7 +454,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       acpEnt.setRegarding(ctx.getCorpus().makeObject(CdmObjectType.EntityRef, this.getName(), true));
 
       // use this whenever we need to keep references pointing at things that were already found. used when 'fixing' references by localizing to a new document
-      final ResolveOptions resOptCopy = CdmObjectBase.copyResolveOptions(finalResOpt);
+      final ResolveOptions resOptCopy = finalResOpt.copy();
       resOptCopy.setSaveResolutionsOnCopy(true);
 
       // resolve attributes with this context. the end result is that each resolved attribute
@@ -535,7 +549,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       // the fix needs to happen in the middle of the refresh
       // trigger the document to refresh current content into the resolved OM
       attCtx.setParent(null); // remove the fake parent that made the paths work
-      final ResolveOptions resOptNew = CdmObjectBase.copyResolveOptions(finalResOpt);
+      final ResolveOptions resOptNew = finalResOpt.copy();
       resOptNew.setLocalizeReferencesFor(docRes);
       resOptNew.setWrtDoc(docRes);
       docRes.refreshAsync(resOptNew).join();
@@ -573,7 +587,6 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
       for (final CdmAttributeContext raCtx : raCtxInEnt) {
         if (raCtx != null) {
-          final CdmCollection<CdmObject> refs = raCtx.getContents();
           // there might be more than one explanation for where and attribute came from when things get merges as they do
           // this won't work when I add the structured attributes to avoid name collisions
           String attRefPath = path + ra.getResolvedName();
@@ -585,7 +598,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
             if (!attPath2Order.containsKey(attRefPath)) {
               final CdmObjectReference attRef = this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeRef, attRefPath, true);
               attPath2Order.put(attRef.getNamedReference(), ra.getInsertOrder());
-              refs.add(attRef);
+              raCtx.getContents().add(attRef);
             }
           } else {
             attRefPath += "/members/";
@@ -982,7 +995,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     LinkedHashSet.add("normalized");
     LinkedHashSet.add("referenceOnly");
 
-    resOpt = CdmObjectBase.copyResolveOptions(resOpt);
+    resOpt = resOpt.copy();
     resOpt.setDirectives(new AttributeResolutionDirectiveSet(LinkedHashSet));
 
     final ResolveContext ctx = (ResolveContext) this.getCtx(); // what it actually is

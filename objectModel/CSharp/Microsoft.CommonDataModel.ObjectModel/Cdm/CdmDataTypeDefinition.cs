@@ -116,6 +116,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
+            if (this.ExtendsDataType != null) this.ExtendsDataType.Owner = this;
             if (this.ExtendsDataType?.Visit(path + "/extendsDataType/", preChildren, postChildren) == true)
                 return true;
             if (this.VisitDef(path, preChildren, postChildren))

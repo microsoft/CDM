@@ -43,6 +43,7 @@
     },
     {
       "traitName": "is.dataFormat.big",
+      "explanation": "indicates an atomic but multi-unit version of a fundamental type such as a multi byte encoded character, a double precision float, a long integer.",
       "extendsTrait": "is.dataFormat"
     },
     {
@@ -55,6 +56,7 @@
     },
     {
       "traitName": "is.dataFormat.array",
+      "explanation": "indicates a contiguous sequence of fundamental units that shoud be taken as a whole and considered one value. Array of Character is a String, Array of Byte is a Binary Object",
       "extendsTrait": "is.dataFormat"
     },
     {
@@ -88,6 +90,11 @@
     {
       "traitName": "is.dataFormat.timeOffset",
       "extendsTrait": "is.dataFormat"
+    },
+    {
+      "traitName": "is.dataFormat.JSInteger",
+      "extendsTrait": "is.dataFormat",
+      "explanation": "represents the 54 bit integer numbers compatible with javascript"
     },
     {
       "dataTypeName": "integer",
@@ -146,6 +153,13 @@
       ]
     },
     {
+      "dataTypeName": "sChar",
+      "extendsDataType": "any",
+      "exhibitsTraits": [
+        "is.dataFormat.character"
+      ]
+    },
+    {
       "dataTypeName": "string",
       "extendsDataType": "char",
       "exhibitsTraits": [
@@ -195,6 +209,74 @@
       ]
     },
     {
+      "dataTypeName": "fixedDecimal",
+      "explanation": "the 64 bit fixed (4) scale numbers used by PBI",
+      "extendsDataType": {
+        "dataTypeReference": "decimal",
+        "appliedTraits": [
+          {
+            "traitReference": "is.dataFormat.numeric.shaped",
+            "arguments": [
+              {
+                "name": "precision",
+                "value": "19"
+              },
+              {
+                "name": "scale",
+                "value": "4"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "dataTypeName": "variableDecimal",
+      "explanation": "15 digit precision numbers with no fixed scale",
+      "extendsDataType": {
+        "dataTypeReference": "decimal",
+        "appliedTraits": [
+          {
+            "traitReference": "is.dataFormat.numeric.shaped",
+            "arguments": [
+              {
+                "name": "precision",
+                "value": "15"
+              },
+              {
+                "name": "scale",
+                "value": "-1"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "dataTypeName": "JSInteger",
+      "extendsDataType": {
+        "dataTypeReference": "decimal",
+        "appliedTraits": [
+          {
+            "traitReference": "is.dataFormat.numeric.shaped",
+            "arguments": [
+              {
+                "name": "precision",
+                "value": "16"
+              },
+              {
+                "name": "scale",
+                "value": "0"
+              }
+            ]
+          }
+        ]
+      },
+      "exhibitsTraits": [
+        "is.dataFormat.JSInteger"
+      ]
+    },
+    {
       "traitName": "means.identity",
       "extendsTrait": "means"
     },
@@ -205,9 +287,21 @@
     {
       "dataTypeName": "entityId",
       "extendsDataType": "guid",
-      "explanation": "a unique identier for entity instances",
+      "explanation": "a unique identifier for entity instances",
       "exhibitsTraits": [
         "means.identity.entityId"
+      ]
+    },
+    {
+      "traitName": "means.fileName",
+      "extendsTrait": "means"
+    },
+    {
+      "dataTypeName": "fileName",
+      "extendsDataType": "string",
+      "explanation": "a string value representing the name of a file.",
+      "exhibitsTraits": [
+        "means.fileName"
       ]
     },
     {
@@ -249,7 +343,8 @@
           "traitReference": {
             "traitName": "means.entityName",
             "extendsTrait": "means",
-            "explanation": "[deprecated] use the standalone 'means.entityName' trait instead."
+            "explanation": "[deprecated] use the standalone 'means.entityName' trait instead.",
+            "ugly": true
           }
         },
         "means.entityName"
@@ -367,7 +462,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.1"
+              "value": "2.0"
             }
           ]
         }
@@ -477,34 +572,6 @@
       "explanation": "base for traits that are used to decorate the attributes and artifacts created by the traits on the hasFlexibleRelationshipWithEntity relationship."
     },
     {
-      "entityName": "entitySet",
-      "explanation": "holds a list of entity references",
-      "extendsEntity": "reference",
-      "hasAttributes": [
-        {
-          "name": "entityReference",
-          "dataType": "entityName",
-          "purpose": "hasA"
-        },
-        {
-          "name": "attributeReference",
-          "dataType": "attributeName",
-          "purpose": "hasA"
-        }
-      ],
-      "exhibitsTraits": [
-        {
-          "traitReference": "is.CDM.entityVersion",
-          "arguments": [
-            {
-              "name": "versionNumber",
-              "value": "1.1"
-            }
-          ]
-        }
-      ]
-    },
-    {
       "traitName": "is.linkedEntity.identifier",
       "extendsTrait": "is.linkedEntity",
       "explanation": "Marks the attribute(s) that hold foreign key references to a linked (used as an attribute) entity. This attribute is added to the resolved entity to enumerate the referenced entities.",
@@ -538,6 +605,45 @@
     {
       "traitName": "is.linkedEntity.array.count",
       "explanation": "Marks an attribute that contains the count of items in the array of linked (used as an attribute) entities"
+    },
+    {
+      "entityName": "defaultArtifacts",
+      "explanation": "default definitions for attributes that are generated and added during resolution",
+      "extendsEntity": "reference",
+      "hasAttributes": [
+        {
+          "name": "id",
+          "dataType": "entityId",
+          "appliedTraits": [
+            "is.linkedEntity.identifier"
+          ]
+        },
+        {
+          "name": "count",
+          "dataType": "integer",
+          "appliedTraits": [
+            "is.linkedEntity.array.count"
+          ]
+        },
+        {
+          "name": "type",
+          "dataType": "entityName",
+          "appliedTraits": [
+            "is.linkedEntity.name"
+          ]
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "2.0"
+            }
+          ]
+        }
+      ]
     }
   ]
 }

@@ -3,6 +3,8 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.utilities.ImportInfo;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,7 +14,7 @@ import java.util.Map;
  */
 @Deprecated
 public class ImportPriorities {
-  private final Map<CdmDocumentDefinition, Integer> importPriority;
+  private final Map<CdmDocumentDefinition, ImportInfo> importPriority;
   private final Map<String, CdmDocumentDefinition> monikerPriorityMap;
   private boolean hasCircularImport;
 
@@ -40,7 +42,7 @@ public class ImportPriorities {
     return monikerPriorityMap;
   }
 
-  Map<CdmDocumentDefinition, Integer> getImportPriority() {
+  Map<CdmDocumentDefinition, ImportInfo> getImportPriority() {
     return importPriority;
   }
 

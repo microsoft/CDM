@@ -73,7 +73,7 @@ async function runSample() {
     const newEntity: cdm.types.CdmEntityDefinition = newEntityDoc.definitions.push(cdm.types.cdmObjectType.entityDef, 'NewEntity') as cdm.types.CdmEntityDefinition;
 
     // Define new string attribute and add it to the entity definition
-    const newAttribute: cdm.types.CdmTypeAttributeDefinition = cdmCorpus.MakeObject(cdm.types.cdmObjectType.typeAttributeDef, "NewAttribute", false);
+    const newAttribute: cdm.types.CdmTypeAttributeDefinition = cdmCorpus.MakeObject(cdm.types.cdmObjectType.typeAttributeDef, 'NewAttribute', false);
     newAttribute.dataFormat = cdm.types.cdmDataFormat.string;
     newEntity.attributes.push(newAttribute);
 

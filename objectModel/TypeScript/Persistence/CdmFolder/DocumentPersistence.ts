@@ -51,6 +51,10 @@ export class DocumentPersistence {
                 // TODO: validate that this is a version we can understand with the OM
             }
 
+            if (object.documentVersion) {
+                document.documentVersion = object.documentVersion;
+            }
+
             if (object.imports) {
                 for (const importObj of object.imports) {
                     document.imports.push(CdmFolder.ImportPersistence.fromData(ctx, importObj));
@@ -90,7 +94,8 @@ export class DocumentPersistence {
             jsonSchemaSemanticVersion: instance.jsonSchemaSemanticVersion,
             imports: copyDataUtils.arrayCopyData<Import>(resOpt, instance.imports, options),
             definitions: copyDataUtils.arrayCopyData<Trait | DataType | Purpose | AttributeGroup | Entity | ConstantEntity>(
-                resOpt, instance.definitions, options)
+                resOpt, instance.definitions, options),
+            documentVersion: instance.documentVersion
         };
     }
 }

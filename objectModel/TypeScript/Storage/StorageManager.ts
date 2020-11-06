@@ -31,6 +31,20 @@ export class StorageManager {
     public namespaceFolders: Map<string, CdmFolderDefinition>;
     public defaultNamespace: string;
 
+    /**
+     * Maximum number of documents read concurrently when loading imports.
+     */
+    public get maxConcurrentReads(): number | undefined {
+        return this.corpus.documentLibrary.concurrentReadLock.permits;
+    }
+
+    /**
+     * Maximum number of documents read concurrently when loading imports.
+     */
+    public set maxConcurrentReads(value: number | undefined) {
+        this.corpus.documentLibrary.concurrentReadLock.permits = value;
+    }
+
     private readonly systemDefinedNamespaces: Set<string>;
 
     private readonly registeredAdapterTypes: Map<string, any>;

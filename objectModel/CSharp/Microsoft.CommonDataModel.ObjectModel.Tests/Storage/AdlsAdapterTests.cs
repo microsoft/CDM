@@ -10,7 +10,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     using System.Threading.Tasks;
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Network;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
     using Assert = AssertExtension;
@@ -18,69 +20,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
     [TestClass]
     public class AdlsAdapterTests
     {
+        private class FakeTokenProvider : TokenProvider
+        {
+            public string GetToken()
+            {
+                return "TOKEN";
+            }
+        }
+        
         private readonly string testSubpath = "Storage";
-
-        private static void CheckADLSEnvironment()
-        {
-            if (String.IsNullOrEmpty(Environment.GetEnvironmentVariable("ADLS_RUNTESTS")))
-            {
-                // this will cause tests to appear as "Skipped" in the final result
-                Assert.Inconclusive("ADLS environment not set up");
-            }
-        }
-
-        private static ADLSAdapter CreateAdapterWithSharedKey(string rootRelativePath = null)
-        {
-            string hostname = Environment.GetEnvironmentVariable("ADLS_HOSTNAME");
-            string rootPath = Environment.GetEnvironmentVariable("ADLS_ROOTPATH");
-            string sharedKey = Environment.GetEnvironmentVariable("ADLS_SHAREDKEY");
-
-            Assert.IsFalse(String.IsNullOrEmpty(hostname), "ADLS_ENDPOINT not set");
-            Assert.IsFalse(String.IsNullOrEmpty(rootPath), "ADLS_ROOTPATH not set");
-            Assert.IsFalse(String.IsNullOrEmpty(sharedKey), "ADLS_SHAREDKEY not set");
-
-            ADLSAdapter adapter = new ADLSAdapter(hostname, CombinePath(rootPath, rootRelativePath), sharedKey);
-
-            return adapter;
-        }
-        private static ADLSAdapter CreateAdapterWithClientId(string rootRelativePath = null)
-        {
-            string hostname = Environment.GetEnvironmentVariable("ADLS_HOSTNAME");
-            string rootPath = Environment.GetEnvironmentVariable("ADLS_ROOTPATH");
-            string tenant = Environment.GetEnvironmentVariable("ADLS_TENANT");
-            string clientId = Environment.GetEnvironmentVariable("ADLS_CLIENTID");
-            string clientSecret = Environment.GetEnvironmentVariable("ADLS_CLIENTSECRET");
-
-            Assert.IsFalse(String.IsNullOrEmpty(hostname), "ADLS_ENDPOINT not set");
-            Assert.IsFalse(String.IsNullOrEmpty(rootPath), "ADLS_ROOTPATH not set");
-            Assert.IsFalse(String.IsNullOrEmpty(tenant), "ADLS_TENANT not set");
-            Assert.IsFalse(String.IsNullOrEmpty(clientId), "ADLS_CLIENTID not set");
-            Assert.IsFalse(String.IsNullOrEmpty(clientSecret), "ADLS_CLIENTSECRET not set");
-
-            ADLSAdapter adapter = new ADLSAdapter(hostname, CombinePath(rootPath, rootRelativePath), tenant, clientId, clientSecret);
-
-            return adapter;
-        }
-
-        private static string CombinePath(string first, string second)
-        {
-            if (second == null)
-            {
-                return first;
-            }
-
-            if (first.EndsWith("/"))
-            {
-                first = first.Substring(0, first.Length - 1);
-            }
-
-            if (second.StartsWith("/"))
-            {
-                second = second.Substring(1);
-            }
-
-            return $"{first}/{second}";
-        }
 
         private static async Task RunWriteReadTest(ADLSAdapter adapter)
         {
@@ -156,50 +104,50 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         [TestMethod]
         public async Task ADLSWriteReadSharedKey()
         {
-            CheckADLSEnvironment();
-            await RunWriteReadTest(CreateAdapterWithSharedKey());
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunWriteReadTest(AdlsTestHelper.CreateAdapterWithSharedKey());
         }
 
         [TestMethod]
         public async Task ADLSWriteReadClientId()
         {
-            CheckADLSEnvironment();
-            await RunWriteReadTest(CreateAdapterWithClientId());
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunWriteReadTest(AdlsTestHelper.CreateAdapterWithClientId());
         }
 
         [TestMethod]
         public async Task ADLSCheckFileTimeSharedKey()
         {
-            CheckADLSEnvironment();
-            await RunCheckFileTimeTest(CreateAdapterWithSharedKey());
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunCheckFileTimeTest(AdlsTestHelper.CreateAdapterWithSharedKey());
         }
 
         [TestMethod]
         public async Task ADLSCheckFileTimeClientId()
         {
-            CheckADLSEnvironment();
-            await RunCheckFileTimeTest(CreateAdapterWithClientId());
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunCheckFileTimeTest(AdlsTestHelper.CreateAdapterWithClientId());
         }
 
         [TestMethod]
         public async Task ADLSFileEnumSharedKey()
         {
-            CheckADLSEnvironment();
-            await RunFileEnumTest(CreateAdapterWithSharedKey());
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunFileEnumTest(AdlsTestHelper.CreateAdapterWithSharedKey());
         }
 
         [TestMethod]
         public async Task ADLSFileEnumClientId()
         {
-            CheckADLSEnvironment();
-            await RunFileEnumTest(CreateAdapterWithClientId());
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunFileEnumTest(AdlsTestHelper.CreateAdapterWithClientId());
         }
 
         [TestMethod]
         public async Task ADLSSpecialCharactersTest()
         {
-            CheckADLSEnvironment();
-            await RunSpecialCharactersTest(CreateAdapterWithClientId("PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:"));
+            AdlsTestHelper.CheckADLSEnvironment();
+            await RunSpecialCharactersTest(AdlsTestHelper.CreateAdapterWithClientId("PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:"));
         }
 
         /// <summary>
@@ -323,20 +271,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         [TestMethod]
         public void TestConfigAndUpdateConfigWithoutAuthenticationDetails()
         {
-            var adlsAdapter = new ADLSAdapter();
-
-            try
-            {
-                var config = new JObject
+            var config = new JObject
                 {
                     { "root", "root" },
                     { "hostname", "hostname" },
                     { "tenant", "tenant" },
                     { "clientId", "clientId" }
                 };
-                adlsAdapter.UpdateConfig(config.ToString());
-                adlsAdapter.Secret = "secret";
-                adlsAdapter.SharedKey = "sharedKey";
+
+            try
+            {
+                var adlsAdapter1 = new ADLSAdapter();
+                adlsAdapter1.UpdateConfig(config.ToString());
+                adlsAdapter1.ClientId = "clientId";
+                adlsAdapter1.Secret = "secret";
+                adlsAdapter1.SharedKey = "sharedKey";
+                adlsAdapter1.TokenProvider = new FakeTokenProvider();
+            }
+            catch
+            {
+                Assert.Fail("AdlsAdapter initialized without secret shouldn't throw exception when updating config.");
+            }
+
+            try
+            {
+                var adlsAdapter2 = new ADLSAdapter();
+                adlsAdapter2.ClientId = "clientId";
+                adlsAdapter2.Secret = "secret";
+                adlsAdapter2.SharedKey = "sharedKey";
+                adlsAdapter2.TokenProvider = new FakeTokenProvider();
+                adlsAdapter2.UpdateConfig(config.ToString());
             }
             catch
             {

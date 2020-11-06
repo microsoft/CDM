@@ -142,6 +142,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
+            if (this.AttributeContext != null) this.AttributeContext.Owner = this;
             if (this.AttributeContext?.Visit(path + "/attributeContext/", preChildren, postChildren) == true)
                 return true;
             if (this.Members != null)
@@ -164,6 +165,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)
         {
             ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
+            CdmAttributeContext allUnder = under;
             if (under != null)
             {
                 AttributeContextParameters acpAttGrp = new AttributeContextParameters
@@ -182,7 +184,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 for (int i = 0; i < this.Members.Count; i++)
                 {
                     dynamic att = this.Members.AllItems[i];
-                    CdmAttributeContext attUnder = under;
                     AttributeContextParameters acpAtt = null;
                     if (under != null)
                     {
@@ -195,10 +196,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             IncludeTraits = false
                         };
                     }
-                    rasb.MergeAttributes(att.FetchResolvedAttributes(resOpt, acpAtt));
+                    ResolvedAttributeSet rasFromAtt = att.FetchResolvedAttributes(resOpt, acpAtt);
+                    // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+                    // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+                    // that didn't just pop out of that same named attribute now need to go away.
+                    // mark any attributes formerly from this named attribute that don't show again as orphans
+                    rasb.ResolvedAttributeSet.MarkOrphansForRemoval((att as CdmAttributeItem).FetchObjectDefinitionName(), rasFromAtt);
+                    // now merge
+                    rasb.MergeAttributes(rasFromAtt);
+
                 }
             }
-            rasb.ResolvedAttributeSet.AttributeContext = under;
+            rasb.ResolvedAttributeSet.AttributeContext = allUnder; // context must be the one expected from the caller's pov.
 
             // things that need to go away
             rasb.RemoveRequestedAtts();

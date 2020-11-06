@@ -37,10 +37,10 @@ class CdmAttributeContext(CdmObjectDefinition):
         # the attribute context type.
         self.type = None  # type: Optional[CdmAttributeContextType]
 
+
+        # --- internal ---
         # This will get overwritten when parent set.
         self._at_corpus_path = name  # type: str
-
-        # Internal
 
         self._lowest_order = None  # type: Optional[int]
 
@@ -91,7 +91,7 @@ class CdmAttributeContext(CdmObjectDefinition):
         if ra:
             ras._cache_attribute_context(new_node, ra)
 
-        # Add context to set.
+        # add context to set.
         if att_ctx_set is not None:
             att_ctx_set.append(new_node)
 
@@ -99,17 +99,18 @@ class CdmAttributeContext(CdmObjectDefinition):
         if moniker and new_node.definition and new_node.definition.named_reference:
             new_node.definition.named_reference = moniker + '/' + new_node.definition.named_reference
 
-        # Now copy the children.
+        # now copy the children.
         if self.contents:
             for child in self.contents:
-                new_child = cast('CdmAttributeContext', cast('CdmAttributeContext', child).copy_node(res_opt))
-                if new_node:
-                    new_child._update_parent(res_opt, new_node)
+                if isinstance(child, CdmAttributeContext):
+                    new_child = cast('CdmAttributeContext', cast('CdmAttributeContext', child).copy_node(res_opt))
+                    if new_node:
+                        new_child._update_parent(res_opt, new_node)
 
-                current_ras = ras
-                if ra and isinstance(ra.target, ResolvedAttributeSet):
-                    current_ras = ra.target
-                cast('CdmAttributeContext', child)._copy_attribute_context_tree(res_opt, new_child, current_ras, att_ctx_set, moniker)
+                    current_ras = ras
+                    if ra and isinstance(ra.target, ResolvedAttributeSet):
+                        current_ras = ra.target
+                    cast('CdmAttributeContext', child)._copy_attribute_context_tree(res_opt, new_child, current_ras, att_ctx_set, moniker)
 
         return new_node
 
@@ -139,7 +140,7 @@ class CdmAttributeContext(CdmObjectDefinition):
             return acp._under
 
         # This flag makes sure we hold on to any resolved object refs when things get copied.
-        res_opt_copy = CdmObject._copy_resolve_options(res_opt)
+        res_opt_copy = res_opt.copy()
         res_opt_copy._save_resolutions_on_copy = True
 
         definition = None  # type: CdmObjectReference

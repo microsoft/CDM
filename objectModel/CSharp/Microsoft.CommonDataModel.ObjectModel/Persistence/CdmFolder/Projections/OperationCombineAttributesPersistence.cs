@@ -38,7 +38,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 combineAttributesOp.Explanation = (string)obj["explanation"];
             }
-            combineAttributesOp.Take = obj["take"]?.ToObject<List<string>>();
+            combineAttributesOp.Select = obj["select"]?.ToObject<List<string>>();
             combineAttributesOp.MergeInto = Utils.CreateAttribute(ctx, obj["mergeInto"]) as CdmTypeAttributeDefinition;
 
             return combineAttributesOp;
@@ -55,7 +55,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.CombineAttributes),
                 Explanation = instance.Explanation,
-                Take = instance.Take,
+                Select = instance.Select,
                 MergeInto = Utils.JsonForm(instance.MergeInto, resOpt, options)
             };
         }

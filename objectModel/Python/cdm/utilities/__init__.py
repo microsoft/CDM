@@ -12,11 +12,13 @@ from .attribute_context_parameters import AttributeContextParameters
 from .attribute_resolution_applier import AttributeResolutionApplier
 from .attribute_resolution_directive_set import AttributeResolutionDirectiveSet
 from .copy_options import CopyOptions
+from .depth_info import DepthInfo
 from .docs_result import DocsResult
 from .event_callback import EventCallback
 from .exceptions import CdmError
 from .friendly_format_node import FriendlyFormatNode
 from .identifier_ref import IdentifierRef
+from .import_info import ImportInfo
 from .jobject import JObject
 from .ref_counted import RefCounted
 from .resolve_context_scope import ResolveContextScope
@@ -38,11 +40,13 @@ __all__ = [
     'copy_data_utils',
     'CdmError',
     'CopyOptions',
+    'DepthInfo',
     'DocsResult',
     'EventCallback',
     'Errors',
     'FriendlyFormatNode',
     'IdentifierRef',
+    'ImportInfo',
     'JObject',
     'lang_utils',
     'logger',

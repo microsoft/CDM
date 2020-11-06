@@ -124,6 +124,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         # the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
         # the relationsip of the attribute, the attribute definition itself and included attribute groups,
         #  any traits applied to the attribute.
+        from cdm.objectmodel import CdmEntityAttributeDefinition
         from cdm.resolvedmodel import ResolvedAttributeSetBuilder
         from cdm.utilities import AttributeContextParameters
 
@@ -204,6 +205,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         self._rasb.ras.attribute_context = under
 
         if self.attributes:
+            furthest_child_depth = 0
             for att in self.attributes:
                 acp_att = None
                 if under:
@@ -213,11 +215,22 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         name=att.fetch_object_definition_name(),
                         regarding=att,
                         include_traits=False)
-                self._rasb.merge_attributes(att._fetch_resolved_attributes(res_opt, acp_att))
+                # skip entity attributes when we are in a circular reference loop
+                if res_opt.in_circular_reference and isinstance(att, CdmEntityAttributeDefinition):
+                    continue
+
+                att_ras = att._fetch_resolved_attributes(res_opt, acp_att)
+
+                # we can now set depth now that children nodes have been resolved
+                if isinstance(att, CdmEntityAttributeDefinition):
+                    furthest_child_depth = att_ras._depth_traveled if att_ras._depth_traveled > furthest_child_depth else furthest_child_depth
+
+                self._rasb.merge_attributes(att_ras)
 
                 if not res_opt._check_attribute_count(self._rasb.ras._resolved_attribute_count):
                     logger.error(self._TAG, self.ctx, 'Maximum number of resolved attributes reached for the entity: {}.'.format(self.entity_name))
                     return None
+            self._rasb.ras._depth_traveled = furthest_child_depth
 
         self._rasb.mark_order()
         self._rasb.ras.attribute_context = under
@@ -325,7 +338,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
 
         # Use this whenever we need to keep references pointing at things that were already found.
         # Used when 'fixing' references by localizing to a new document.
-        res_opt_copy = CdmObject._copy_resolve_options(res_opt)
+        res_opt_copy = res_opt.copy()
         res_opt_copy._save_resolutions_on_copy = True
 
         # Resolve attributes with this context. the end result is that each resolved attribute points to the level of
@@ -333,7 +346,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         ras = self._fetch_resolved_attributes(res_opt_copy, acp_ent)
 
         if ras is None:
-            self._resolving_attributes = False
+            self.resolving_attributes = False
             return None
 
         # Create a new copy of the attribute context for this entity.
@@ -389,8 +402,6 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                         if curr_att_ctx in all_att_ctx:
                             ra_ctx_in_ent.append(curr_att_ctx)
                 for ra_ctx in ra_ctx_in_ent:
-                    refs = ra_ctx.contents
-
                     #  there might be more than one explanation for where and attribute came from when things get merges as they do
                     # This won't work when I add the structured attributes to avoid name collisions.
                     att_ref_path = path + ra.resolved_name
@@ -399,7 +410,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
                             att_ref = self.ctx.corpus.make_object(CdmObjectType.ATTRIBUTE_REF, att_ref_path, True)  # type: CdmObjectReference
                             # only need one explanation for this path to the insert order
                             att_path_to_order[att_ref.named_reference] = ra.insert_order
-                            refs.append(att_ref)
+                            ra_ctx.contents.append(att_ref)
                     else:
                         att_ref_path += '/members/'
                         point_context_at_resolved_atts(cast('ResolvedAttributeSet', ra.target), att_ref_path)
@@ -609,7 +620,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         # before it can be used to make these fixes. The fix needs to happen in the middle of the refresh trigger the
         # document to refresh current content into the resolved OM.
         cast('CdmAttributeContext', att_ctx).parent = None  # Remove the fake parent that made the paths work.
-        res_opt_new = CdmObject._copy_resolve_options(res_opt)
+        res_opt_new = res_opt.copy()
         res_opt_new.wrt_doc = doc_res
         res_opt_new._localize_references_for = doc_res
         if not await doc_res.refresh_async(res_opt_new):
@@ -657,7 +668,7 @@ class CdmEntityDefinition(CdmObjectDefinition, CdmReferencesEntities):
         if not res_opt:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
 
-        res_opt = CdmObject._copy_resolve_options(res_opt)
+        res_opt = res_opt.copy()
         res_opt.directives = AttributeResolutionDirectiveSet(set(['normalized', 'referenceOnly']))
 
         ctx = self.ctx

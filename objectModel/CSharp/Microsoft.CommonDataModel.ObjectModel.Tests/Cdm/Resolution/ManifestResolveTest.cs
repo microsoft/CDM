@@ -10,11 +10,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
+    using System.IO;
     using System.Threading.Tasks;
 
     [TestClass]
     public class ManifestResolveTest
     {
+        private string testsSubpath = Path.Combine("Cdm", "Resolution", "ManifestResolution");
+
         /// <summary>
         /// Test if a manifest resolves correctly a referenced entity declaration 
         /// </summary>
@@ -77,6 +80,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Resolution
             {
                 Assert.Fail("Exception should not be thrown when resolving a manifest that is not in a folder.");
             }
+        }
+
+        /// <summary>
+        /// Test that saving a resolved manifest will not cause original logical entity doc to be marked dirty.
+        /// </summary>
+        [TestMethod]
+        public async Task TestLinkedResolvedDocSavingNotDirtyingLogicalEntities()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestLinkedResolvedDocSavingNotDirtyingLogicalEntities");
+
+            var manifestAbstract = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "default");
+            
+            manifestAbstract.Imports.Add("cdm:/foundations.cdm.json");
+            manifestAbstract.Entities.Add("B", "local:/B.cdm.json/B");
+            corpus.Storage.FetchRootFolder("output").Documents.Add(manifestAbstract);
+
+            var manifestResolved = await manifestAbstract.CreateResolvedManifestAsync("default-resolved", "{n}/{n}.cdm.json");
+
+            Assert.IsTrue(!corpus.Storage.NamespaceFolders["local"].Documents[0].IsDirty
+                            && !corpus.Storage.NamespaceFolders["local"].Documents[1].IsDirty,
+                            "Referenced logical document should not become dirty when manifest is resolved");
         }
     }
 }

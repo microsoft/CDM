@@ -3,6 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
+import com.microsoft.commondatamodel.objectmodel.utilities.concurrent.ConcurrentSemaphore;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -28,6 +29,7 @@ public class DocumentLibrary {
     Map<CdmDocumentDefinition, Short> docsNotIndexed;
     Map<String, Short> docsNotFound;
     Lock documentLibraryLock;
+    public ConcurrentSemaphore concurrentReadLock;
 
     DocumentLibrary() {
         this.allDocuments = new ArrayList<>();
@@ -37,6 +39,7 @@ public class DocumentLibrary {
         this.docsNotFound = new LinkedHashMap<>();
         this.docsNotIndexed = new LinkedHashMap<>();
         this.documentLibraryLock = new ReentrantLock();
+        this.concurrentReadLock = new ConcurrentSemaphore();
     }
 
     /**
@@ -138,7 +141,8 @@ public class DocumentLibrary {
 
         if (!this.docsNotFound.containsKey(path)) {
             Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path.toLowerCase());
-            if (lookup == null) {
+            // If the imports were not indexed yet there might be documents imported that weren't loaded.
+            if (lookup == null || (!lookup.getRight().isImportsIndexed() && !lookup.getRight().isCurrentlyIndexing())) {
                 this.docsNotLoaded.put(path, (short) 1);
             }
         }
@@ -147,11 +151,11 @@ public class DocumentLibrary {
     }
 
     /**
-     * Fetches a document from the path lookup and adds it to the list of documents that are not indexed.
+     * Fetches a document from the path lookup.
      * @param path The document path.
      * @return The document with the given path.
      */
-    CdmDocumentDefinition fetchDocumentAndMarkForIndexing(String path) {
+    CdmDocumentDefinition fetchDocument(String path) {
         this.documentLibraryLock.lock();
 
         CdmDocumentDefinition doc = null;
@@ -159,11 +163,6 @@ public class DocumentLibrary {
             final Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(path.toLowerCase());
 
             if (lookup != null) {
-                if (!lookup.getRight().isImportsIndexed() && !lookup.getRight().isCurrentlyIndexing()) {
-                    // Mark for indexing.
-                    lookup.getRight().setCurrentlyIndexing(true);
-                    this.docsNotIndexed.put(lookup.getRight(), (short) 1);
-                }
                 doc = lookup.getRight();
             }
         }
@@ -177,18 +176,31 @@ public class DocumentLibrary {
      * @param docName The document name.
      * @return Whether a document needs to be loaded.
      */
-    boolean needToLoadDocument(String docName) {
+    boolean needToLoadDocument(String docName, Map<CdmDocumentDefinition, Short> docsNowLoaded) {
         this.documentLibraryLock.lock();
 
         boolean needToLoad = false;
+        CdmDocumentDefinition doc = null;
         if (this.docsNotLoaded.containsKey(docName) && !this.docsNotFound.containsKey(docName) && !this.docsCurrentlyLoading.containsKey(docName)) {
             // Set status to loading.
             this.docsNotLoaded.remove(docName);
-            this.docsCurrentlyLoading.put(docName, (short) 1);
-            needToLoad = true;
+
+            // The document was loaded already, skip it.
+            if (this.pathLookup.containsKey(docName.toLowerCase())) {
+                Pair<CdmFolderDefinition, CdmDocumentDefinition> lookup = this.pathLookup.get(docName.toLowerCase());
+                doc = lookup.getRight();
+            } else {
+                this.docsCurrentlyLoading.put(docName, (short) 1);
+                needToLoad = true;
+            }
+        }
+        this.documentLibraryLock.unlock();
+
+        if (doc != null) {
+            // markDocumentAsLoadedOrFailed needs to because it also requires the lock.
+            this.markDocumentAsLoadedOrFailed(doc, docName, docsNowLoaded);
         }
 
-        this.documentLibraryLock.unlock();
         return needToLoad;
     }
 

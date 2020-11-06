@@ -98,16 +98,16 @@ public class CdmCorpusDefinition {
 
   
   static CdmDocumentDefinition fetchPriorityDocument(final List<CdmDocumentDefinition> docs,
-                                                            final Map<CdmDocumentDefinition, Integer> importPriority) {
+                                                            final Map<CdmDocumentDefinition, ImportInfo> importPriority) {
     CdmDocumentDefinition docBest = null;
     int indexBest = Integer.MAX_VALUE;
     for (final CdmDocumentDefinition docDefined : docs) {
       // is this one of the imported docs?
       final boolean worked = importPriority.containsKey(docDefined);
-      final int indexFound = importPriority.getOrDefault(docDefined, Integer.MAX_VALUE);
+      final ImportInfo importInfo = importPriority.getOrDefault(docDefined, null);
 
-      if (worked && indexFound < indexBest) {
-        indexBest = indexFound;
+      if (worked && importInfo.getPriority() < indexBest) {
+        indexBest = importInfo.getPriority();
         docBest = docDefined;
         // hard to be better than the best
         if (indexBest == 0) {
@@ -135,7 +135,7 @@ public class CdmCorpusDefinition {
 
     // If the to Doc is imported directly here...
     final Integer pri = docFrom.getImportPriorities().getImportPriority()
-        .get(docResultTo.getDocBest());
+        .get(docResultTo.getDocBest()).getPriority();
     if (pri != null) {
       // If the imported version is the highest priority, we are good.
       if (docResultTo.getDocList() == null || docResultTo.getDocList().size() == 1) {
@@ -145,11 +145,11 @@ public class CdmCorpusDefinition {
       // More than 1 symbol, see if highest pri.
       Integer maxPri = 0;
       for (final CdmDocumentDefinition docImpl : docResultTo.getDocList()) {
-        final Optional<Entry<CdmDocumentDefinition, Integer>> maxEntry = docImpl.getImportPriorities()
+        final Optional<Entry<CdmDocumentDefinition, ImportInfo>> maxEntry = docImpl.getImportPriorities()
             .getImportPriority().entrySet().parallelStream()
-            .max(Comparator.comparing(Entry::getValue));
+            .max(Comparator.comparing(entry -> entry.getValue().getPriority()));
 
-        maxPri = Math.max(maxPri, maxEntry.get().getValue());
+        maxPri = Math.max(maxPri, maxEntry.get().getValue().getPriority());
       }
 
       if (maxPri != null && maxPri.equals(pri)) {
@@ -316,6 +316,13 @@ public class CdmCorpusDefinition {
     tagSuffix.append(String.format("-%s-%s", kind, thisId));
     tagSuffix.append(String
         .format("-(%s)", resOpt.getDirectives() != null ? resOpt.getDirectives().getTag() : ""));
+    if (resOpt.depthInfo != null && resOpt.depthInfo.getMaxDepthExceeded()) {
+      DepthInfo currDepthInfo = resOpt.depthInfo;
+      tagSuffix.append(String.format("-%s", currDepthInfo.getMaxDepth() - currDepthInfo.getCurrentDepth()));
+    }
+    if (resOpt.inCircularReference) {
+      tagSuffix.append("-pk");
+    }
     if (!Strings.isNullOrEmpty(extraTags)) {
       tagSuffix.append(String.format("-%s", extraTags));
     }
@@ -575,7 +582,7 @@ public class CdmCorpusDefinition {
           final String path =
                   this.getStorage().createAbsoluteCorpusPath(anImport.getCorpusPath(), doc);
 
-          final CdmDocumentDefinition impDoc = this.documentLibrary.fetchDocumentAndMarkForIndexing(path);
+          final CdmDocumentDefinition impDoc = this.documentLibrary.fetchDocument(path);
 
           if (impDoc != null) {
             anImport.setDocument(impDoc);
@@ -592,49 +599,51 @@ public class CdmCorpusDefinition {
     Map<CdmDocumentDefinition, Short> docsNowLoaded = new ConcurrentHashMap<>();
     List<String> docsNotLoaded = this.documentLibrary.listDocsNotLoaded();
 
-    if (docsNotLoaded.size() > 0) {
-      Function<String, CompletableFuture<Void>> loadDocs = (missing) ->
-              CompletableFuture.runAsync(() -> {
-                if (this.documentLibrary.needToLoadDocument(missing)) {
-                  // Load it.
-                  final CdmDocumentDefinition newDoc =
-                          (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(missing, false, resOpt).join();
-
-                  if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
-                    Logger.info(
-                        CdmCorpusDefinition.class.getSimpleName(),
-                        this.ctx,
-                        Logger.format("Resolved import for '{0}' {1}.", newDoc.getName(), doc.getAtCorpusPath()),
-                        doc.getAtCorpusPath()
-                    );
-                  } else {
-                    Logger.warning(
-                        CdmCorpusDefinition.class.getSimpleName(),
-                        this.ctx,
-                        Logger.format("Unable to resolve import for '{0}' {1}.", missing, doc.getAtCorpusPath()),
-                        doc.getAtCorpusPath()
-                    );
-                  }
-                }
-              });
-
-      List<CompletableFuture> taskList = new ArrayList<>();
-      docsNotLoaded.forEach((key) -> taskList.add(loadDocs.apply(key)));
-
-      // Wait for all of the missing docs to finish loading.
-      CompletableFuture.allOf(taskList.toArray(new CompletableFuture[0])).join();
-
-      // Now that we've loaded new docs, find imports from them that need loading.
-      docsNowLoaded.forEach((key, value) -> this.findMissingImportsFromDocument(key));
-
-      // Repeat this process for the imports of the imports.
-      List<CompletableFuture> importTaskList = new ArrayList<>();
-      docsNowLoaded.forEach((key, value) -> importTaskList.add(this.loadImportsAsync(key, resOpt)));
-
-      // Wait for all of the missing docs to finish loading.
-      return CompletableFuture.allOf(importTaskList.toArray(new CompletableFuture[0]));
+    if (docsNotLoaded.size() == 0) {
+      return CompletableFuture.completedFuture(null);
     }
-    return CompletableFuture.completedFuture(null);
+
+    Function<String, CompletableFuture<Void>> loadDocs = (missing) ->
+      this.documentLibrary.concurrentReadLock.acquire().thenRun(() -> {
+        if (this.documentLibrary.needToLoadDocument(missing, docsNowLoaded)) {
+          // Load it.
+          final CdmDocumentDefinition newDoc =
+                  (CdmDocumentDefinition) this.loadFolderOrDocumentAsync(missing, false, resOpt).join();
+
+          if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
+            Logger.info(
+                CdmCorpusDefinition.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Resolved import for '{0}' {1}.", newDoc.getName(), doc.getAtCorpusPath()),
+                doc.getAtCorpusPath()
+            );
+          } else {
+            Logger.warning(
+                CdmCorpusDefinition.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Unable to resolve import for '{0}' {1}.", missing, doc.getAtCorpusPath()),
+                doc.getAtCorpusPath()
+            );
+          }
+          this.documentLibrary.concurrentReadLock.release();
+        }
+      });
+
+    List<CompletableFuture<Void>> taskList = new ArrayList<>();
+    docsNotLoaded.forEach((key) -> taskList.add(loadDocs.apply(key)));
+
+    // Wait for all of the missing docs to finish loading.
+    CompletableFuture.allOf(taskList.toArray(new CompletableFuture[0])).join();
+
+    // Now that we've loaded new docs, find imports from them that need loading.
+    docsNowLoaded.forEach((key, value) -> this.findMissingImportsFromDocument(key));
+
+    // Repeat this process for the imports of the imports.
+    List<CompletableFuture<Void>> importTaskList = new ArrayList<>();
+    docsNowLoaded.forEach((key, value) -> importTaskList.add(this.loadImportsAsync(key, resOpt)));
+
+    // Wait for all of the missing docs to finish loading.
+    return CompletableFuture.allOf(importTaskList.toArray(new CompletableFuture[0]));
   }
 
   CompletableFuture<Void> resolveImportsAsync(final CdmDocumentDefinition doc, ResolveOptions resOpt) {
@@ -789,7 +798,7 @@ public class CdmCorpusDefinition {
         return null;
       }
 
-      final Map<CdmDocumentDefinition, Integer> importPriority =
+      final Map<CdmDocumentDefinition, ImportInfo> importPriority =
           wrtDoc.getImportPriorities().getImportPriority();
 
       if (importPriority.size() == 0) {
@@ -964,7 +973,7 @@ public class CdmCorpusDefinition {
     }
   }
 
-  private CompletableFuture<CdmContainerDefinition> loadFolderOrDocumentAsync(final String objectPath) {
+  private CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(final String objectPath) {
     return loadFolderOrDocumentAsync(objectPath, false);
   }
 
@@ -1005,7 +1014,7 @@ public class CdmCorpusDefinition {
       // Make sure we can find everything that is named by reference.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.isValid) {
-          final ResolveOptions resOptLocal = CdmObjectBase.copyResolveOptions(resOpt);
+          final ResolveOptions resOptLocal = resOpt.copy();
           resOptLocal.setWrtDoc(doc);
           this.resolveObjectDefinitions(doc, resOptLocal);
         }
@@ -1014,7 +1023,7 @@ public class CdmCorpusDefinition {
       // Now resolve any trait arguments that are type object.
       for (final CdmDocumentDefinition doc : docsNotIndexed) {
         if (doc.isValid) {
-          final ResolveOptions resOptLocal = CdmObjectBase.copyResolveOptions(resOpt);
+          final ResolveOptions resOptLocal = resOpt.copy();
           resOptLocal.setWrtDoc(doc);
           this.resolveTraitArguments(resOptLocal, doc);
         }
@@ -1030,12 +1039,12 @@ public class CdmCorpusDefinition {
     return true;
   }
 
-  private CompletableFuture<CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
+  private CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
                                                                               final boolean forceReload) {
     return loadFolderOrDocumentAsync(objectPath, forceReload, null);
   }
 
-  private CompletableFuture<CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
+  private CompletableFuture<? extends CdmContainerDefinition> loadFolderOrDocumentAsync(String objectPath,
                                                                               final boolean forceReload,
                                                                               final ResolveOptions resOpt) {
     if (!StringUtils.isNullOrTrimEmpty(objectPath)) {
@@ -1043,7 +1052,7 @@ public class CdmCorpusDefinition {
       final Map.Entry<String, String> pathTuple = StorageUtils.splitNamespacePath(objectPath);
       if (pathTuple == null) {
         Logger.error(CdmCorpusDefinition.class.getSimpleName(), this.ctx, "The object path cannot be null or empty.", "loadFolderOrDocumentAsync");
-        return null;
+        return CompletableFuture.completedFuture(null);
       }
       final String nameSpace = !StringUtils.isNullOrTrimEmpty(pathTuple.getKey()) ? pathTuple.getKey()
           : this.getStorage().getDefaultNamespace();
@@ -1064,7 +1073,7 @@ public class CdmCorpusDefinition {
         }
 
         final CdmFolderDefinition lastFolder = namespaceFolder
-            .fetchChildFolderFromPathAsync(objectPath, false).join();
+            .fetchChildFolderFromPath(objectPath, false);
 
         // don't create new folders, just go as far as possible
         if (lastFolder != null) {
@@ -1077,9 +1086,7 @@ public class CdmCorpusDefinition {
           // remove path to folder and then look in the folder
           final String newObjectPath = StringUtils.slice(objectPath, lastPath.length());
 
-          return CompletableFuture.completedFuture(
-              lastFolder.fetchDocumentFromFolderPathAsync(newObjectPath, namespaceAdapter, forceReload, resOpt)
-                  .join());
+          return lastFolder.fetchDocumentFromFolderPathAsync(newObjectPath, namespaceAdapter, forceReload, resOpt);
         }
       }
     }
@@ -1596,7 +1603,7 @@ public class CdmCorpusDefinition {
       CdmEntityDefinition resEntity,
       List<CdmAttributeReference> fromAtts) {
     if (fromAtts != null) {
-      ResolveOptions resOptCopy = CdmObjectBase.copyResolveOptions(resOpt);
+      ResolveOptions resOptCopy = resOpt.copy();
       resOptCopy.setWrtDoc(resEntity.getInDocument());
 
       // Extract the from entity from resEntity
@@ -1612,9 +1619,9 @@ public class CdmCorpusDefinition {
         // For each of the to attributes, create a relationship
         for (List<String> tuple : tupleList) {
           CdmE2ERelationship newE2ERel = new CdmE2ERelationship(this.ctx, tuple.get(2));
-          newE2ERel.setFromEntity(fromEntity);
+          newE2ERel.setFromEntity(this.getStorage().createAbsoluteCorpusPath(fromEntity, unResolvedEntity));
           newE2ERel.setFromEntityAttribute(fromAtts.get(i).fetchObjectDefinitionName());
-          newE2ERel.setToEntity(tuple.get(0));
+          newE2ERel.setToEntity(this.getStorage().createAbsoluteCorpusPath(tuple.get(0), unResolvedEntity));
           newE2ERel.setToEntityAttribute(tuple.get(1));
 
           outRels.add(newE2ERel);
@@ -1842,7 +1849,6 @@ public class CdmCorpusDefinition {
       final ResolveOptions finalResolveOptions = new ResolveOptions();
       finalResolveOptions.setWrtDoc(null);
       finalResolveOptions.setDirectives(directives);
-      finalResolveOptions.setRelationshipDepth(0);
 
       for (final CdmDocumentDefinition doc : this.documentLibrary.listAllDocuments()) {
         doc.indexIfNeededAsync(resOpt, false).join();

@@ -58,11 +58,11 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             self.client_id = kwargs.get('client_id', None)  # type: Optional[str]
             self.secret = kwargs.get('secret', None)  # type: Optional[str]
             self.shared_key = kwargs.get('shared_key', None)  # type: Optional[str]
+            self.token_provider = kwargs.get('token_provider', None) # type: Optional[TokenProvider]
 
             # --- internal ---
             self._tenant = kwargs.get('tenant', None)  # type: Optional[str]
             self._auth_context = adal.AuthenticationContext('https://login.windows.net/' + self.tenant) if self.tenant else None
-            self._token_provider = kwargs.get('token_provider', None) # type: Optional[TokenProvider]
 
     @property
     def hostname(self) -> str:
@@ -325,8 +325,8 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             token = self._generate_bearer_token()
             headers = {'Authorization': token['tokenType'] + ' ' + token['accessToken']}
             request = self._set_up_cdm_request(url, headers, method)
-        elif self._token_provider is not None:
-            headers = {'Authorization': self._token_provider.get_token()}
+        elif self.token_provider is not None:
+            headers = {'Authorization': self.token_provider.get_token()}
             request = self._set_up_cdm_request(url, headers, method)
         else:
             raise Exception('Adls adapter is not configured with any auth method')

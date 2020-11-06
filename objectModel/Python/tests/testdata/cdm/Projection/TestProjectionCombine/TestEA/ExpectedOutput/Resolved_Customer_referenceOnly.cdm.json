@@ -1,0 +1,179 @@
+{
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "local:/Customer.cdm.json",
+      "moniker": "resolvedFrom"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "Resolved_Customer_referenceOnly",
+      "attributeContext": {
+        "type": "entity",
+        "name": "Resolved_Customer_referenceOnly",
+        "definition": "resolvedFrom/Customer",
+        "contents": [
+          {
+            "type": "attributeDefinition",
+            "name": "CustomerName",
+            "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly",
+            "definition": "resolvedFrom/Customer/hasAttributes/CustomerName",
+            "contents": [
+              "Resolved_Customer_referenceOnly/hasAttributes/CustomerName"
+            ]
+          },
+          {
+            "type": "attributeDefinition",
+            "name": "ContactAt",
+            "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly",
+            "definition": "resolvedFrom/Customer/hasAttributes/ContactAt",
+            "contents": [
+              {
+                "type": "entity",
+                "name": "ContactInfo",
+                "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt",
+                "definition": "resolvedFrom/ContactInfo",
+                "contents": [
+                  {
+                    "type": "attributeDefinition",
+                    "name": "EmailInfo",
+                    "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/ContactInfo",
+                    "definition": "resolvedFrom/ContactInfo/hasAttributes/EmailInfo",
+                    "contents": [
+                      {
+                        "type": "entity",
+                        "name": "Email",
+                        "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/ContactInfo/EmailInfo",
+                        "definition": "resolvedFrom/Email"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "attributeDefinition",
+                    "name": "PhoneInfo",
+                    "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/ContactInfo",
+                    "definition": "resolvedFrom/ContactInfo/hasAttributes/PhoneInfo",
+                    "contents": [
+                      {
+                        "type": "entity",
+                        "name": "Phone",
+                        "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/ContactInfo/PhoneInfo",
+                        "definition": "resolvedFrom/Phone"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "attributeDefinition",
+                    "name": "SocialInfo",
+                    "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/ContactInfo",
+                    "definition": "resolvedFrom/ContactInfo/hasAttributes/SocialInfo",
+                    "contents": [
+                      {
+                        "type": "entity",
+                        "name": "Social",
+                        "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/ContactInfo/SocialInfo",
+                        "definition": "resolvedFrom/Social"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "generatedSet",
+                "name": "_generatedAttributeSet",
+                "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt",
+                "contents": [
+                  {
+                    "type": "generatedRound",
+                    "name": "_generatedAttributeRound0",
+                    "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/_generatedAttributeSet",
+                    "contents": [
+                      {
+                        "type": "addedAttributeIdentity",
+                        "name": "_foreignKey",
+                        "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/_generatedAttributeSet/_generatedAttributeRound0",
+                        "contents": [
+                          "Resolved_Customer_referenceOnly/hasAttributes/ContactID"
+                        ]
+                      },
+                      {
+                        "type": "addedAttributeSelectedType",
+                        "name": "_selectedEntityName",
+                        "parent": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/_generatedAttributeSet/_generatedAttributeRound0",
+                        "contents": [
+                          "Resolved_Customer_referenceOnly/hasAttributes/ContactType"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "hasAttributes": [
+        {
+          "name": "CustomerName",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array"
+          ],
+          "attributeContext": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/CustomerName",
+          "dataFormat": "String"
+        },
+        {
+          "name": "ContactID",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "is.dataFormat.guid",
+            "means.identity.entityId",
+            {
+              "traitReference": "is.linkedEntity.identifier",
+              "arguments": [
+                {
+                  "entityReference": {
+                    "entityShape": "entityGroupSet",
+                    "constantValues": [
+                      [
+                        "/Email.cdm.json/Email",
+                        "EmailID"
+                      ],
+                      [
+                        "/Phone.cdm.json/Phone",
+                        "PhoneID"
+                      ],
+                      [
+                        "/Social.cdm.json/Social",
+                        "SocialID"
+                      ]
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "attributeContext": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/_generatedAttributeSet/_generatedAttributeRound0/_foreignKey",
+          "dataFormat": "Guid"
+        },
+        {
+          "name": "ContactType",
+          "appliedTraits": [
+            "is.dataFormat.character",
+            "is.dataFormat.big",
+            "is.dataFormat.array",
+            "entityName/exhibitsTraits/means.entityName",
+            "means.entityName",
+            "is.linkedEntity.name"
+          ],
+          "attributeContext": "Resolved_Customer_referenceOnly/attributeContext/Resolved_Customer_referenceOnly/ContactAt/_generatedAttributeSet/_generatedAttributeRound0/_selectedEntityName",
+          "dataFormat": "String"
+        }
+      ]
+    }
+  ]
+}

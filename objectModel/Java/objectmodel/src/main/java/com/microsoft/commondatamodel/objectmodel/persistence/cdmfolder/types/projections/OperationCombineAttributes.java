@@ -11,15 +11,15 @@ import java.util.List;
  * OperationCombineAttributes class
  */
 public class OperationCombineAttributes extends OperationBase {
-    private List<String> take;
+    private List<String> select;
     private JsonNode mergeInto;
 
-    public List<String> getTake() {
-        return take;
+    public List<String> getSelect() {
+        return select;
     }
 
-    public void setTake(final List<String> take) {
-        this.take = take;
+    public void setSelect(final List<String> select) {
+        this.select = select;
     }
 
     public JsonNode getMergeInto() {

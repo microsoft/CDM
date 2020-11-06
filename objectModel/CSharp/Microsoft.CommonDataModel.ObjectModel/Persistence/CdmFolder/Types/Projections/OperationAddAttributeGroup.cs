@@ -10,6 +10,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     /// </summary>
     public class OperationAddAttributeGroup : OperationBase
     {
-        // TODO (sukanyas): Property to be defined
+        public string AttributeGroupName { get; set; }
     }
 }

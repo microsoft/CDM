@@ -79,8 +79,10 @@ public final class ProjectionDirective {
             this.isArray = (resOpt.getDirectives().has("isArray") == true);
         }
 
-        this.currentDepth = (resOpt != null && resOpt.getRelationshipDepth() == null) ? 1 : resOpt.getRelationshipDepth() + 1;
-        resOpt.setRelationshipDepth(this.currentDepth);
+        if (resOpt.depthInfo != null) {
+            this.currentDepth = (resOpt != null && resOpt.depthInfo != null) ? 1 : resOpt.depthInfo.getCurrentDepth() + 1;
+            resOpt.depthInfo.setCurrentDepth((int)this.currentDepth);
+        }
 
         // if noMaxDepth directive the max depth is 32 else defaults to 2
         // these depths were arbitrary and were set for the resolution guidance

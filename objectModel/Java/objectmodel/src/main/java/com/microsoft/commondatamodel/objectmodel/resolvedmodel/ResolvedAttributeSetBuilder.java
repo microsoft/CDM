@@ -44,6 +44,9 @@ public class ResolvedAttributeSetBuilder {
     if (rasNew != null) {
       takeReference(resolvedAttributeSet.mergeSet(rasNew));
     }
+    if (rasNew.getDepthTraveled() > this.getResolvedAttributeSet().getDepthTraveled()) {
+      this.getResolvedAttributeSet().setDepthTraveled(rasNew.getDepthTraveled());
+    }
   }
 
   private void takeReference(final ResolvedAttributeSet rasNew) {

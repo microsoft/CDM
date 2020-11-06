@@ -368,7 +368,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 CdmAttributeReference replacement = new CdmAttributeReference(this.Ctx, this.Name, true)
                 {
                     Ctx = this.Ctx,
-                    ExplicitReference = this
+                    ExplicitReference = this,
+                    InDocument = this.InDocument,
+                    Owner = this,
                 };
                 rtsb.ReplaceTraitParameterValue(resOpt, "does.elevateAttribute", "attribute", "this.attribute", replacement);
             }
@@ -401,7 +403,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // renameFormat is not currently supported for type attributes
             resGuideWithDefault.renameFormat = null;
 
-            resGuideWithDefault.UpdateAttributeDefaults(null);
+            resGuideWithDefault.UpdateAttributeDefaults(null, this);
             AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
             // from the traits of the datatype, purpose and applied here, see if new attributes get generated

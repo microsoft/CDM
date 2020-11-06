@@ -82,7 +82,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "2.0"
             }
           ]
         }
@@ -105,7 +105,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "2.0"
             }
           ]
         }
@@ -114,14 +114,42 @@
     {
       "entityName": "entityGroupSet",
       "explanation": "The 'old' name for this entity before it was fixed to make it type specific",
-      "extendsEntity": "entitySet",
+      "extendsEntity": "reference",
+      "hasAttributes": [
+        {
+          "name": "entityReference",
+          "dataType": "entityName",
+          "purpose": "hasA"
+        },
+        {
+          "name": "attributeReference",
+          "dataType": "attributeName",
+          "purpose": "hasA"
+        }
+      ],
       "exhibitsTraits": [
         {
           "traitReference": "is.CDM.entityVersion",
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "2.0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entityName": "entitySet",
+      "explanation": "holds a list of entity references",
+      "extendsEntity": "entityGroupSet",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "2.0"
             }
           ]
         }
@@ -135,7 +163,6 @@
         {
           "name": "languageTag",
           "dataType": "languageTag",
-          "purpose": "identifiedBy",
           "explanation": "A BCP 47 language tag describing the associated display text"
         },
         {
@@ -150,7 +177,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "2.0"
             }
           ]
         }
@@ -202,7 +229,6 @@
         {
           "name": "attributeValue",
           "dataType": "integer",
-          "purpose": "identifiedBy",
           "explanation": "One of the enumerated values for this attribute"
         },
         {
@@ -218,7 +244,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "2.0"
             }
           ]
         }
@@ -232,7 +258,6 @@
         {
           "name": "correlatedValue",
           "dataType": "integer",
-          "purpose": "identifiedBy",
           "explanation": "value for the correlated attribute that corresponds to the associated attributeValue"
         }
       ],
@@ -242,7 +267,7 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "2.0"
             }
           ]
         }
@@ -250,13 +275,12 @@
     },
     {
       "entityName": "listLookupStringValues",
-      "explanation": "a localized list of descriptions for possible values in a listLookup type attribute",
+      "explanation": "a localized list of descriptions for possible values in a listLookupString type attribute",
       "extendsEntity": "localizedTable",
       "hasAttributes": [
         {
           "name": "attributeValue",
           "dataType": "string",
-          "purpose": "identifiedBy",
           "explanation": "One of the enumerated values for this attribute"
         },
         {
@@ -272,7 +296,36 @@
           "arguments": [
             {
               "name": "versionNumber",
-              "value": "1.2"
+              "value": "2.0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "entityName": "listLookupWellKnownValues",
+      "explanation": "a localized list of descriptions for possible values in a listLookupWellKnown type attribute",
+      "extendsEntity": "listLookupStringValues",
+      "hasAttributes": [
+        {
+          "name": "description",
+          "dataType": "string",
+          "explanation": "A description of the meaning of the look up value."
+        },
+        {
+          "purpose": "identifiedBy",
+          "name": "uniqueIdentifier",
+          "dataType": "string",
+          "explanation": "A domain specific unique identifier such as a URI or GUID for the well known value."
+        }
+      ],
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "2.0"
             }
           ]
         }
@@ -419,6 +472,27 @@
       ]
     },
     {
+      "traitName": "is.constrainedList.wellKnown",
+      "extendsTrait": "is",
+      "explanation": "The values of an attribute are taken from or looked up from a fixed list of possibilities which are defined in an identified public location.",
+      "hasParameters": [
+        {
+          "name": "uniqueIdentifier",
+          "explanation": "The identified public location for the complete set of possible values",
+          "dataType": "string"
+        },
+        {
+          "name": "defaultList",
+          "dataType": {
+            "dataTypeReference": "entity"
+          }
+        }
+      ],
+      "associatedProperties": [
+        "valueConstrainedToList"
+      ]
+    },
+    {
       "traitName": "means.entityState",
       "extendsTrait": "does.elevateAttribute",
       "explanation": "the attribute represents the current state of the entity."
@@ -485,6 +559,14 @@
       "explanation": "One string value from a defined list of possibilities",
       "exhibitsTraits": [
         "is.constrainedList.string"
+      ]
+    },
+    {
+      "dataTypeName": "listLookupWellKnown",
+      "extendsDataType": "string",
+      "explanation": "One string value from a defined list of possibilities which are defined in an identified public location.",
+      "exhibitsTraits": [
+        "is.constrainedList.wellKnown"
       ]
     },
     {
@@ -566,6 +648,23 @@
       "explanation": "The value is the file format settings of a partition parquet file."
     },
     {
+      "traitName": "is.partition.format.deltaLake",
+      "extendsTrait": "is.partition.format",
+      "explanation": "The partition path points to one complete folder of Spark Delta Lake data. Options allow for time travel access to the data.",
+      "hasParameters": [
+        {
+          "name": "versionAsOf",
+          "dataType": "integer",
+          "explanation": "the optional time travel version of data to read. If both versionAsOf and timestampAsOf are set, then version takes precedence"
+        },
+        {
+          "name": "timespampAsOf",
+          "dataType": "dateTime",
+          "explanation": "the optional time travel timestamp of data to read. If both versionAsOf and timestampAsOf are set, then version takes precedence"
+        }
+      ]
+    },
+    {
       "traitName": "is.partition.culture",
       "extendsTrait": "is.partition",
       "explanation": "The value denotes culture in the partition files.",
@@ -624,6 +723,19 @@
           "name": "application",
           "dataType": "string",
           "explanation": "The name of the managing entity or service."
+        }
+      ]
+    },
+    {
+      "traitName": "has.entitySchemaAbstractionLevel",
+      "extendsTrait": "has",
+      "explanation": "A level of abstraction assigned to an Entity schema. Logical schema descriptions use complex dataTypes, inheritance, and entities as attributes. Resolved descriptions contain none of those things, only final trait and attribute sets are shown. A composition schema manipulates, guides or re-states parts of logical schemas to produce one resolved schema.",
+      "hasParameters": [
+        {
+          "name": "level",
+          "dataType": "string",
+          "defaultValue": "logical",
+          "explanation": "Possible values: logical, composition, resolved"
         }
       ]
     }

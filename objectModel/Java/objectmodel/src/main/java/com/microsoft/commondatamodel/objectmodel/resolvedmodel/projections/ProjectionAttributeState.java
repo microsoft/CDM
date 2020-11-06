@@ -84,6 +84,7 @@ public final class ProjectionAttributeState {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return Integer
      */
     @Deprecated
     public Integer getOrdinal() {
@@ -93,6 +94,7 @@ public final class ProjectionAttributeState {
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @param ordinal int
      */
     @Deprecated
     public void setOrdinal(final int ordinal) {
@@ -104,6 +106,7 @@ public final class ProjectionAttributeState {
      * 
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
+     * @return ProjectionAttributeState
      */
     @Deprecated
     public ProjectionAttributeState copy() {

@@ -44,7 +44,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestEntityAttributeProjUsingObjectModel()
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestEntityAttributeProjUsingObjectModel");
-            corpus.Storage.Mount("local", new LocalAdapter(TestHelper.GetActualOutputFolderPath(testsSubpath, "TestEntityAttributeProjUsingObjectModel")));
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity
@@ -87,7 +86,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestEntityProjUsingObjectModel()
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestEntityProjUsingObjectModel");
-            corpus.Storage.Mount("local", new LocalAdapter(TestHelper.GetActualOutputFolderPath(testsSubpath, "TestEntityProjUsingObjectModel")));
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity
@@ -128,7 +126,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         public async Task TestNestedProjUsingObjectModel()
         {
             CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestNestedProjUsingObjectModel");
-            corpus.Storage.Mount("local", new LocalAdapter(TestHelper.GetActualOutputFolderPath(testsSubpath, "TestNestedProjUsingObjectModel")));
             CdmFolderDefinition localRoot = corpus.Storage.FetchRootFolder("local");
 
             // Create an entity

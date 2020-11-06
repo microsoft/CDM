@@ -9,7 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
-    using System;
 
     /// <summary>
     /// Operation AddAttributeGroup persistence
@@ -33,7 +32,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             {
                 addAttributeGroupOp.Type = CdmOperationType.AddAttributeGroup;
             }
-            // TODO (sukanyas): Property to be defined
+
+            addAttributeGroupOp.AttributeGroupName = obj["attributeGroupName"]?.ToString();
+            addAttributeGroupOp.Explanation = obj["explanation"]?.ToString();
 
             return addAttributeGroupOp;
         }
@@ -48,8 +49,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             return new OperationAddAttributeGroup
             {
                 Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.AddAttributeGroup),
-                Explanation = instance.Explanation,
-                // TODO (sukanyas): Property to be defined
+                AttributeGroupName = instance.AttributeGroupName,
+                Explanation = instance.Explanation
             };
         }
     }
