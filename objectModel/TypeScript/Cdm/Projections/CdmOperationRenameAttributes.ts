@@ -155,7 +155,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
                 if ((currentPAS.currentResolvedAttribute.target as CdmAttribute).getObjectType) {
                     // The current attribute should be renamed
 
-                    const newAttributeName: string = this.renameAttribute(currentPAS, sourceAttributeName);
+                    const newAttributeName: string = this.getNewAttributeName(currentPAS, sourceAttributeName);
 
                     // Create new resolved attribute with the new name, set the new attribute as target
                     const resAttrNew: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, undefined, currentPAS.currentResolvedAttribute.target as CdmAttribute, newAttributeName);
@@ -201,7 +201,7 @@ export class CdmOperationRenameAttributes extends CdmOperationBase {
      * @param attributeState The attribute state
      * @params ourceAttributeNameThe parent attribute name (if any)
      */
-    renameAttribute(attributeState: ProjectionAttributeState, sourceAttributeName: string): string {
+    getNewAttributeName(attributeState: ProjectionAttributeState, sourceAttributeName: string): string {
         const currentAttributeName: string = attributeState.currentResolvedAttribute.resolvedName;
         const ordinal: string = attributeState.ordinal !== undefined ? attributeState.ordinal.toString() : '';
         const format: string = this.renameFormat;

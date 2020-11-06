@@ -32,28 +32,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         private const string SchemaDocsRoot = TestHelper.SchemaDocumentsPath;
 
         /// <summary>
-        /// Test the time taken to resolve the corpus
-        /// </summary>
-        [TestMethod]
-        public async Task ResolveCorpus()
-        {
-            Assert.IsTrue(Directory.Exists(Path.GetFullPath(SchemaDocsRoot)), "SchemaDocsRoot not found!!!");
-
-            var cdmCorpus = new CdmCorpusDefinition();
-            cdmCorpus.SetEventCallback(new EventCallback { Invoke = CommonDataModelLoader.ConsoleStatusReport }, CdmStatusLevel.Warning);
-
-            Console.WriteLine("reading source files");
-
-            var watch = Stopwatch.StartNew();
-            cdmCorpus.Storage.Mount("local", new LocalAdapter(SchemaDocsRoot));
-            var manifest = await cdmCorpus.FetchObjectAsync<CdmManifestDefinition>(TestHelper.CdmStandardSchemaPath);
-            var directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
-            await EntityResolutionTests.ListAllResolved(cdmCorpus, directives, manifest);
-            watch.Stop();
-            Assert.Performance(70000, watch.ElapsedMilliseconds);
-        }
-
-        /// <summary>
         /// Test the time taken to resolve all the entities
         /// </summary>
         [TestMethod]
@@ -189,7 +167,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                     List<CdmEntityDefinition> refs = new List<CdmEntityDefinition>();
                     foreach (List<string> val in constEnt.ConstantValues)
                     {
-                        refs.Add(await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(cdmCorpus.Storage.CreateAbsoluteCorpusPath(val[0])));
+                        refs.Add(await cdmCorpus.FetchObjectAsync<CdmEntityDefinition>(cdmCorpus.Storage.CreateAbsoluteCorpusPath(val[0], resolvedEntity)));
                     }
                     references.AddRange(refs);
                 }

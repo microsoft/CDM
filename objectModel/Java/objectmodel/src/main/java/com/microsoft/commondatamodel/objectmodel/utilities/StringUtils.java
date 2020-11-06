@@ -85,6 +85,7 @@ public class StringUtils {
    * @param source The source string
    * @param pattern A pattern in the format {p}. The code will try to find {p} and {P}
    * @param value The value to be replaced instead of the pattern
+   * @return string
    */
   public static String replace(String source, char pattern, String value) {
     if (value == null) {

@@ -42,6 +42,6 @@ describe('Cdm/Projection/ForwardCompatibility', () => {
         const resolvedTestEntityStringReference: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entTestEntityStringReference, [ 'referenceOnly' ]);
         expect(resolvedTestEntityStringReference)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, entityName, resolvedTestEntityStringReference);
     });
 });

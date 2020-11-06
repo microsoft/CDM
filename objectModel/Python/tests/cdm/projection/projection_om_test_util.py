@@ -2,12 +2,14 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import os
+from typing import List
 
 from cdm.enums import CdmObjectType
 from cdm.objectmodel import CdmEntityDefinition, CdmCorpusDefinition, \
     CdmManifestDefinition, CdmDocumentDefinition, \
     CdmTypeAttributeDefinition, CdmProjection, CdmEntityReference, \
-    CdmOperationIncludeAttributes, CdmEntityAttributeDefinition
+    CdmOperationIncludeAttributes, CdmEntityAttributeDefinition, CdmOperationCombineAttributes, CdmDataTypeReference, \
+    CdmPurposeReference
 from cdm.storage import LocalAdapter
 from tests.cdm.projection.type_attribute_param import TypeAttributeParam
 from tests.common import TestHelper
@@ -147,7 +149,7 @@ class ProjectionOMTestUtil:
 
             entity.attributes.append(attribute)
 
-        entity_doc = self._corpus.make_object(CdmObjectType.DOCUMENT_DEF, '{entity_name}.cdm.json', False)  # type: CdmDocumentDefinition
+        entity_doc = self._corpus.make_object(CdmObjectType.DOCUMENT_DEF, '{}.cdm.json'.format(entity_name), False)  # type: CdmDocumentDefinition
         entity_doc.imports.append(self._all_imports_doc_name)
         entity_doc.definitions.append(entity)
 
@@ -184,6 +186,29 @@ class ProjectionOMTestUtil:
 
         return include_attributes_op
 
+    # Create a Combine Attribute Operation
+    def create_operation_combine_attributes(self, projection: 'CdmProjection', selected_attributes: List[str], merge_into_attribute: 'CdmTypeAttributeDefinition') -> 'CdmOperationCombineAttributes':
+        # CombineAttributes Operation
+        combine_attributes_op = CdmOperationCombineAttributes(self._corpus.ctx)  # type: CdmOperationCombineAttributes
+        combine_attributes_op.select = selected_attributes
+        combine_attributes_op.merge_into = merge_into_attribute
+
+        projection.operations.append(combine_attributes_op)
+
+        return combine_attributes_op
+
+    # Create a Type Attribute
+    def create_type_attribute(self, attribute_name: str, dataType: str, purpose: str) -> 'CdmTypeAttributeDefinition':
+        data_type_ref = self._corpus.make_ref(CdmObjectType.DATA_TYPE_REF, dataType, False)  # type: CdmDataTypeReference
+
+        purpose_ref = self._corpus.make_ref(CdmObjectType.PURPOSE_REF, purpose, False)  # type: CdmPurposeReference
+
+        attribute = self._corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, attribute_name, False)  # type: CdmTypeAttributeDefinition
+        attribute.data_type = data_type_ref
+        attribute.purpose = purpose_ref
+
+        return attribute
+
     # Create an entity attribute
     def create_entity_attribute(self, entityAttributeName: str, projectionSourceEntityRef: 'CdmEntityReference') -> 'CdmEntityAttributeDefinition':
         entityAttribute = self._corpus.make_object(CdmObjectType.ENTITY_ATTRIBUTE_DEF, entityAttributeName, False)  # type: CdmEntityAttributeDefinition
@@ -192,9 +217,9 @@ class ProjectionOMTestUtil:
         return entityAttribute
 
     #  Get & validate resolved entity
-    async def get_and_validate_resolved_entity(self, entity: 'CdmEntityDefinition', resOpts: [str]) -> 'CdmEntityDefinition':
-        resolvedEntity = await ProjectionTestUtils.get_resolved_entity(self._corpus, entity, resOpts, True)  # type: CdmEntityDefinition
+    async def get_and_validate_resolved_entity(self, test, entity: 'CdmEntityDefinition', res_opts: [str]) -> 'CdmEntityDefinition':
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(self._corpus, entity, res_opts, True)  # type: CdmEntityDefinition
         separator = ', '  # type: str
-        self.assertIsNotNull(resolvedEntity, 'get_and_validate_resolved_entity: entity.entity_name resolution with options {} failed!'.format(separator.join(resOpts)))
+        test.assertIsNotNone(resolved_entity, 'get_and_validate_resolved_entity: entity.entity_name resolution with options {} failed!'.format(separator.join(res_opts)))
 
-        return resolvedEntity
+        return resolved_entity

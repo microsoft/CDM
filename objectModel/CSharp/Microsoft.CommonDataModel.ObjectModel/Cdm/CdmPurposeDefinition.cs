@@ -130,8 +130,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren?.Invoke(this, path) == true)
                 return false;
             if (this.ExtendsPurpose != null)
+            {
+                this.ExtendsPurpose.Owner = this;
                 if (this.ExtendsPurpose.Visit(path + "/extendsPurpose/", preChildren, postChildren))
                     return true;
+            }
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
             if (postChildren != null && postChildren.Invoke(this, path))

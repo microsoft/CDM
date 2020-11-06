@@ -72,6 +72,10 @@ export class ManifestPersistence {
             manifest.lastFileStatusCheckTime = new Date(obj['cdm:lastFileStatusCheckTime']);
         }
 
+        if (obj['cdm:documentVersion']) {
+            manifest.documentVersion = obj['cdm:documentVersion'];
+        }
+
         if (obj.application) {
             const applicationTrait: CdmTraitReference = ctx.corpus.MakeObject(cdmObjectType.traitRef, 'is.managedBy', false);
             applicationTrait.isFromProperty = true;
@@ -229,6 +233,7 @@ export class ManifestPersistence {
         result.modifiedTime = timeUtils.getFormattedDateString(instance.lastFileModifiedTime);
         result['cdm:lastChildFileModifiedTime'] = timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime);
         result['cdm:lastFileStatusCheckTime'] = timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime);
+        result['cdm:documentVersion'] = instance.documentVersion;
 
         const t2pm: traitToPropertyMap = new traitToPropertyMap(instance);
 

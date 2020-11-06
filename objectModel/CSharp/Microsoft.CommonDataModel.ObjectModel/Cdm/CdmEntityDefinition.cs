@@ -247,7 +247,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // this whole resolved entity ref goo will go away when resolved documents are done.
             // for now, it breaks if structured att sets get made.
-            resOpt = CdmObjectBase.CopyResolveOptions(resOpt);
+            resOpt = resOpt.Copy();
             resOpt.Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" });
 
             ResolveContext ctx = this.Ctx as ResolveContext; // what it actually is
@@ -342,10 +342,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
+            if (this.ExtendsEntity != null) this.ExtendsEntity.Owner = this;
             if (this.ExtendsEntity?.Visit(path + "/extendsEntity/", preChildren, postChildren) == true)
                 return true;
+            if (this.ExtendsEntityResolutionGuidance != null) this.ExtendsEntityResolutionGuidance.Owner = this;
+            if (this.ExtendsEntityResolutionGuidance != null)
+                if (this.ExtendsEntityResolutionGuidance.Visit(pathFrom + "/extendsEntityResolutionGuidance/", preChildren, postChildren))
+                    return true;
             if (this.VisitDef(path, preChildren, postChildren))
                 return true;
+            if (this.AttributeContext != null) this.AttributeContext.Owner = this;
             if (this.AttributeContext?.Visit(path + "/attributeContext/", preChildren, postChildren) == true)
                 return true;
             if (this.Attributes != null && this.Attributes.VisitList(path + "/hasAttributes/", preChildren, postChildren))
@@ -398,7 +404,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // an extended entity, traits applied to extended entity, exhibited traits of main entity, the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
             // the relationsip of the attribute, the attribute definition itself and included attribute groups, dynamic traits applied to the attribute.
             this.Rasb = new ResolvedAttributeSetBuilder();
-            this.Rasb.ResolvedAttributeSet.AttributeContext = under;
+            ResolvedAttributeSetBuilder rasb = this.Rasb; // local var needed because we now allow reentry
+            rasb.ResolvedAttributeSet.AttributeContext = under;
 
             if (this.ExtendsEntity != null)
             {
@@ -416,7 +423,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         Regarding = null,
                         IncludeTraits = false
                     };
-                    extendsRefUnder = this.Rasb.ResolvedAttributeSet.CreateAttributeContext(resOpt, acpExt);
+                    extendsRefUnder = rasb.ResolvedAttributeSet.CreateAttributeContext(resOpt, acpExt);
                 }
 
                 if (extRef.ExplicitReference != null && extRef.FetchObjectDefinition<CdmObjectDefinition>(resOpt).ObjectType == CdmObjectType.ProjectionDef)
@@ -440,7 +447,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     CdmProjection projDef = (CdmProjection)extRefObjDef;
                     ProjectionContext projCtx = projDef.ConstructProjectionContext(projDirective, extendsRefUnder);
 
-                    this.Rasb.ResolvedAttributeSet = projDef.ExtractResolvedAttributes(projCtx);
+                    rasb.ResolvedAttributeSet = projDef.ExtractResolvedAttributes(projCtx, under);
                 }
                 else
                 {
@@ -456,17 +463,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             type = CdmAttributeContextType.Entity,
                             Name = extRef.NamedReference ?? extRef.ExplicitReference.GetName(),
                             Regarding = extRef,
-                            IncludeTraits = false
+                            IncludeTraits = true // "Entity" is the thing with traits - That perches in the tree - And sings the tune and never waits - To see what it should be.
                         };
                     }
 
-                    // save moniker, extended entity may attach a different moniker that we do not
-                    // want to pass along to getting this entities attributes
-                    string oldMoniker = resOpt.FromMoniker;
+                    rasb.MergeAttributes((this.ExtendsEntityRef as CdmObjectReferenceBase).FetchResolvedAttributes(resOpt, acpExtEnt));
 
-                    this.Rasb.MergeAttributes((this.ExtendsEntityRef as CdmObjectReferenceBase).FetchResolvedAttributes(resOpt, acpExtEnt));
-
-                    if (!resOpt.CheckAttributeCount(this.Rasb.ResolvedAttributeSet.ResolvedAttributeCount))
+                    if (!resOpt.CheckAttributeCount(rasb.ResolvedAttributeSet.ResolvedAttributeCount))
                     {
                         Logger.Error(nameof(CdmEntityDefinition), this.Ctx, $"Maximum number of resolved attributes reached for the entity: {this.EntityName}.");
                         return null;
@@ -480,23 +483,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         // this context object holds all of the info about what needs to happen to resolve these attributes.
                         // make a copy and set defaults if needed
                         CdmAttributeResolutionGuidance resGuide = (CdmAttributeResolutionGuidance)this.ExtendsEntityResolutionGuidance.Copy(resOpt);
-                        resGuide.UpdateAttributeDefaults(resGuide.FetchObjectDefinitionName());
+                        resGuide.UpdateAttributeDefaults(resGuide.FetchObjectDefinitionName(), this);
                         // holds all the info needed by the resolver code
                         AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuide, rtsBase);
 
-                        this.Rasb.GenerateApplierAttributes(arc, false); // true = apply the prepared traits to new atts
+                        rasb.GenerateApplierAttributes(arc, false); // true = apply the prepared traits to new atts
                     }
 
-                    // reset to the old moniker
-                    resOpt.FromMoniker = oldMoniker;
                 }
             }
 
-            this.Rasb.MarkInherited();
-            this.Rasb.ResolvedAttributeSet.AttributeContext = under;
+            rasb.MarkInherited();
+            rasb.ResolvedAttributeSet.AttributeContext = under;
 
             if (this.Attributes != null)
             {
+                int furthestChildDepth = 0;
                 int l = this.Attributes.Count;
                 for (int i = 0; i < l; i++)
                 {
@@ -514,22 +516,40 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             IncludeTraits = false
                         };
                     }
-                    this.Rasb.MergeAttributes(att.FetchResolvedAttributes(resOpt, acpAtt));
 
-                    if (!resOpt.CheckAttributeCount(this.Rasb.ResolvedAttributeSet.ResolvedAttributeCount))
+                    // skip entity attributes when we are in a circular reference loop
+                    if (resOpt.InCircularReference && att is CdmEntityAttributeDefinition)
+                        continue;
+
+                    ResolvedAttributeSet rasFromAtt = att.FetchResolvedAttributes(resOpt, acpAtt);
+
+                    // we can now set depth now that children nodes have been resolved
+                    if (att is CdmEntityAttributeDefinition)
+                        furthestChildDepth = rasFromAtt.DepthTraveled > furthestChildDepth ? rasFromAtt.DepthTraveled : furthestChildDepth;
+
+                    // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+                    // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+                    // that didn't just pop out of that same named attribute now need to go away.
+                    // mark any attributes formerly from this named attribute that don't show again as orphans
+                    rasb.ResolvedAttributeSet.MarkOrphansForRemoval((att as CdmAttributeItem).FetchObjectDefinitionName(), rasFromAtt);
+                    // now merge
+                    rasb.MergeAttributes(rasFromAtt);
+
+                    if (!resOpt.CheckAttributeCount(rasb.ResolvedAttributeSet.ResolvedAttributeCount))
                     {
                         Logger.Error(nameof(CdmEntityDefinition), this.Ctx, $"Maximum number of resolved attributes reached for the entity: {this.EntityName}.");
                         return null;
                     }
                 }
+                rasb.ResolvedAttributeSet.DepthTraveled = furthestChildDepth;
             }
-            this.Rasb.MarkOrder();
-            this.Rasb.ResolvedAttributeSet.AttributeContext = under;
+            rasb.MarkOrder();
+            rasb.ResolvedAttributeSet.AttributeContext = under;
 
             // things that need to go away
-            this.Rasb.RemoveRequestedAtts();
+            rasb.RemoveRequestedAtts();
 
-            return this.Rasb;
+            return rasb;
         }
 
         /// <summary>
@@ -577,6 +597,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return null;
             }
 
+            // make sure the corpus has a set of default artifact attributes 
+            await this.Ctx.Corpus.PrepareArtifactAttributesAsync();
+
             // make the top level attribute context for this entity
             // for this whole section where we generate the attribute context tree and get resolved attributes
             // set the flag that keeps all of the parent changes and document dirty from from happening 
@@ -596,20 +619,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 Name = "attributeContext"
             };
             CdmAttributeContext attCtxAC = CdmAttributeContext.CreateChildUnder(resOpt, acp);
+            // this is the node that actually is first in the context we save. all definition refs should take the new perspective that they
+            // can only be understood through the resolvedFrom moniker
+            CdmEntityReference entRefThis = ctx.Corpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, this.GetName(), true);
+            entRefThis.Owner = this;
+            entRefThis.InDocument = this.InDocument; // need to set owner and inDocument to this starting entity so the ref will be portable to the new document
+            entRefThis.ExplicitReference = this;
             AttributeContextParameters acpEnt = new AttributeContextParameters
             {
                 under = attCtxAC,
                 type = CdmAttributeContextType.Entity,
                 Name = entName,
-                Regarding = ctx.Corpus.MakeObject<CdmObject>(CdmObjectType.EntityRef, this.GetName(), true)
+                Regarding = entRefThis
             };
 
-            // use this whenever we need to keep references pointing at things that were already found. used when 'fixing' references by localizing to a new document
-            ResolveOptions resOptCopy = CdmObjectBase.CopyResolveOptions(resOpt);
-            resOptCopy.SaveResolutionsOnCopy = true;
+            ResolveOptions resOptCopy = CdmAttributeContext.PrepareOptionsForResolveAttributes(resOpt);
 
             // resolve attributes with this context. the end result is that each resolved attribute
-            // points to the level of the context where it was created
+            // points to the level of the context where it was last modified, merged, created
             var ras = this.FetchResolvedAttributes(resOptCopy, acpEnt);
 
             if (ras == null)
@@ -617,12 +644,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 this.resolvingAttributes = false;
                 return null;
             }
-
-            // create a new copy of the attribute context for this entity
-            HashSet<CdmAttributeContext> allAttCtx = new HashSet<CdmAttributeContext>();
-            CdmAttributeContext newNode = attCtxEnt.CopyNode(resOpt) as CdmAttributeContext;
-            attCtxEnt = attCtxEnt.CopyAttributeContextTree(resOpt, newNode, ras, allAttCtx, "resolvedFrom");
-            CdmAttributeContext attCtx = (attCtxEnt.Contents[0] as CdmAttributeContext).Contents[0] as CdmAttributeContext;
 
             this.Ctx.Corpus.isCurrentlyResolving = wasResolving;
 
@@ -635,404 +656,522 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             // make the empty entity
             CdmEntityDefinition entResolved = docRes.Definitions.Add(entName);
-            // set the context to the copy of the tree. fix the docs on the context nodes
-            entResolved.AttributeContext = attCtx;
-            attCtx.Visit($"{entName}/attributeContext/",
-                new VisitCallback
-                {
-                    Invoke = (obj, path) =>
-                    {
-                        obj.InDocument = docRes;
-                        return false;
-                    }
-                },
-                null);
 
-            // add the traits of the entity
+            // grab that context that comes from fetchResolvedAttributes. We are sure this tree is a copy that we can own, so no need to copy it again
+            CdmAttributeContext attCtx = null;
+            if (attCtxAC != null && attCtxAC.Contents != null && attCtxAC.Contents.Count == 1)
+            {
+                attCtx = attCtxAC.Contents[0] as CdmAttributeContext;
+            }
+            entResolved.AttributeContext = attCtx;
+
+            if (attCtx != null)
+            {
+                // fix all of the definition references, parent and lineage references, owner documents, etc. in the context tree
+                attCtx.FinalizeAttributeContext(resOptCopy, $"{entName}/attributeContext/", docRes, this.InDocument, "resolvedFrom", true);
+
+                // TEST CODE
+                // run over the resolved attributes and make sure none have the dummy context
+                //Action<ResolvedAttributeSet> testResolveAttributeCtx = null;
+                //testResolveAttributeCtx = (rasSub) =>
+                //{
+                //    if (rasSub.Set.Count != 0 && rasSub.AttributeContext.AtCoprusPath.StartsWith("cacheHolder"))
+                //        System.Diagnostics.Debug.WriteLine("Bad");
+                //    rasSub.Set.ForEach(ra =>
+                //    {
+                //        if (ra.AttCtx.AtCoprusPath.StartsWith("cacheHolder"))
+                //            System.Diagnostics.Debug.WriteLine("Bad");
+
+                //        // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
+                //        if (ra.Target is ResolvedAttributeSet)
+                //        {
+                //            testResolveAttributeCtx(ra.Target as ResolvedAttributeSet);
+                //        }
+                //    });
+                //};
+                //testResolveAttributeCtx(ras);
+
+            }
+
+            // add the traits of the entity, also add to attribute context top node
             ResolvedTraitSet rtsEnt = this.FetchResolvedTraits(resOpt);
             rtsEnt.Set.ForEach(rt =>
             {
                 var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
                 (entResolved as CdmObjectDefinition).ExhibitsTraits.Add(traitRef);
+                traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt); // fresh copy
+                entResolved.AttributeContext?.ExhibitsTraits.Add(traitRef);
             });
 
-            // the attributes have been named, shaped, etc for this entity so now it is safe to go and 
-            // make each attribute context level point at these final versions of attributes
-            IDictionary<string, int> attPath2Order = new Dictionary<string, int>();
-            Action<ResolvedAttributeSet, string> pointContextAtResolvedAtts = null;
-            pointContextAtResolvedAtts = (rasSub, path) =>
+            // special trait to explain this is a resolved entity
+            entResolved.IndicateAbstractionLevel("resolved", resOpt);
+
+            if (entResolved.AttributeContext != null)
             {
-                rasSub.Set.ForEach(ra =>
+                // the attributes have been named, shaped, etc for this entity so now it is safe to go and 
+                // make each attribute context level point at these final versions of attributes
+
+                // what we have is a resolved attribute set (maybe with structure) where each ra points at the best tree node
+                // we also have the tree of context, we need to flip this around so that the right tree nodes point at the paths to the
+                // right attributes. so run over the resolved atts and then add a path reference to each one into the context contents where is last lived
+                IDictionary<string, int> attPath2Order = new Dictionary<string, int>();
+                HashSet<string> finishedGroups = new HashSet<string>();
+                HashSet<CdmAttributeContext> allPrimaryCtx = new HashSet<CdmAttributeContext>(); // keep a list so it is easier to think about these later
+                Action<ResolvedAttributeSet, string> pointContextAtResolvedAtts = null;
+                pointContextAtResolvedAtts = (rasSub, path) =>
                 {
-                    List<CdmAttributeContext> raCtxInEnt = new List<CdmAttributeContext>();
-                    HashSet<CdmAttributeContext> raCtxSet = null;
-                    rasSub.Ra2attCtxSet.TryGetValue(ra, out raCtxSet);
-
-                    // find the correct attCtx for this copy, intersect these two sets
-                    // (iterate over the shortest list)                    
-                    if (allAttCtx.Count < raCtxSet.Count)
+                    rasSub.Set.ForEach(ra =>
                     {
-                        foreach (CdmAttributeContext currAttCtx in allAttCtx)
-                        {
-                            if (raCtxSet.Contains(currAttCtx))
-                            {
-                                raCtxInEnt.Add(currAttCtx);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        foreach (CdmAttributeContext currAttCtx in raCtxSet)
-                        {
-                            if (allAttCtx.Contains(currAttCtx))
-                            {
-                                raCtxInEnt.Add(currAttCtx);
-                            }
-                        }
-                    }
-                    foreach (CdmAttributeContext raCtx in raCtxInEnt)
-                    {
+                        var raCtx = ra.AttCtx;
                         var refs = raCtx.Contents;
+                        allPrimaryCtx.Add(raCtx);
 
-                        // there might be more than one explanation for where and attribute came from when things get merges as they do
-                        // this won't work when I add the structured attributes to avoid name collisions
                         string attRefPath = path + ra.ResolvedName;
+                        // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
                         if ((ra.Target as CdmAttribute)?.GetType().GetMethod("GetObjectType") != null)
                         {
+                            // it was an attribute, add to the content of the context, also, keep track of the ordering for all of the att paths we make up
+                            // as we go through the resolved attributes, this is the order of atts in the final resolved entity
                             if (!attPath2Order.ContainsKey(attRefPath))
                             {
                                 var attRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmObjectType.AttributeRef, attRefPath, true);
                                 // only need one explanation for this path to the insert order
                                 attPath2Order.Add(attRef.NamedReference, ra.InsertOrder);
-                                refs.Add(attRef);
+                                raCtx.Contents.Add(attRef);
                             }
                         }
                         else
                         {
+                            // a group, so we know an attribute group will get created later with the name of the group and the things it contains will be in
+                            // the members of that group
                             attRefPath += "/members/";
-                            pointContextAtResolvedAtts(ra.Target as ResolvedAttributeSet, attRefPath);
+                            if (!finishedGroups.Contains(attRefPath))
+                            {
+                                pointContextAtResolvedAtts(ra.Target as ResolvedAttributeSet, attRefPath);
+                                finishedGroups.Add(attRefPath);
+                            }
                         }
-                    }
-                });
-            };
+                    });
+                };
 
-            pointContextAtResolvedAtts(ras, entName + "/hasAttributes/");
+                pointContextAtResolvedAtts(ras, entName + "/hasAttributes/");
 
-            // generated attribute structures may end up with 0 attributes after that. prune them
-            Func<CdmObject, bool, bool> CleanSubGroup = null;
-            CleanSubGroup = (subItem, underGenerated) =>
-            {
-                if (subItem.ObjectType == CdmObjectType.AttributeRef)
-                {
-                    return true; // not empty
-                }
-                CdmAttributeContext ac = subItem as CdmAttributeContext;
+                // the generated attribute structures sometimes has a LOT of extra nodes that don't say anything or explain anything
+                // our goal now is to prune that tree to just have the stuff one may need
+                // do this by keeping the leafs and all of the lineage nodes for the attributes that end up in the resolved entity
+                // along with some special nodes that explain entity structure and inherit
 
-                if (ac.Type == CdmAttributeContextType.GeneratedSet)
+                // run over the whole tree and make a set of the nodes that should be saved for sure. This is anything NOT under a generated set 
+                // (so base entity chains, entity attributes entity definitions)
+                HashSet<CdmAttributeContext> nodesToSave = new HashSet<CdmAttributeContext>();
+                Func<CdmObject, bool> SaveStructureNodes = null;
+                SaveStructureNodes = (subItem) =>
                 {
-                    underGenerated = true;
-                }
-                if (ac.Contents == null || ac.Contents.Count == 0)
-                {
-                    return false; // empty
-                }
-                // look at all children, make a set to remove
-                List<CdmAttributeContext> toRemove = new List<CdmAttributeContext>();
-                foreach (var subSub in ac.Contents)
-                {
-                    if (CleanSubGroup(subSub, underGenerated) == false)
+                    CdmAttributeContext ac = subItem as CdmAttributeContext;
+                    if (ac == null || ac.Type == CdmAttributeContextType.GeneratedSet)
                     {
-                        bool potentialTarget = underGenerated;
-                        if (potentialTarget == false)
+                        return true;
+                    }
+                    nodesToSave.Add(ac);
+                    if (ac.Contents == null || ac.Contents.Count == 0)
+                    {
+                        return true;
+                    }
+                    // look at all children
+                    foreach (var subSub in ac.Contents)
+                    {
+                        if (SaveStructureNodes(subSub) == false)
                         {
-                            // cast is safe because we returned false meaning empty and not a attribute ref
-                            // so is this the set holder itself?
-                            potentialTarget = (subSub as CdmAttributeContext).Type == CdmAttributeContextType.GeneratedSet;
+                            return false;
                         }
-                        if (potentialTarget)
-                            toRemove.Add(subSub as CdmAttributeContext);
+                    }
+                    return true;
+                };
+                if (SaveStructureNodes(attCtx) == false)
+                    return null;
+
+                // next, look at the attCtx for every resolved attribute. follow the lineage chain and mark all of those nodes as ones to save
+                // also mark any parents of those as savers
+
+                // helper that save the passed node and anything up the parent chain 
+                Func<CdmAttributeContext, bool> SaveParentNodes = null;
+                SaveParentNodes = (currNode) =>
+                {
+                    if (nodesToSave.Contains(currNode))
+                    {
+                        return true;
+                    }
+                    nodesToSave.Add(currNode);
+                    // get the parent 
+                    if (currNode.Parent != null && currNode.Parent.ExplicitReference != null)
+                    {
+                        return SaveParentNodes(currNode.Parent.ExplicitReference as CdmAttributeContext);
+                    }
+                    return true;
+                };
+
+                // helper that saves the current node (and parents) plus anything in the lineage (with their parents)
+                Func<CdmAttributeContext, bool> SaveLineageNodes = null;
+                SaveLineageNodes = (currNode) =>
+                {
+                    if (SaveParentNodes(currNode) == false)
+                    {
+                        return false;
+                    }
+                    if (currNode.Lineage != null && currNode.Lineage.Count > 0)
+                    {
+                        foreach (var lin in currNode.Lineage)
+                        {
+                            if (lin.ExplicitReference != null)
+                            {
+                                if (SaveLineageNodes(lin.ExplicitReference as CdmAttributeContext) == false)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                };
+
+                // so, do that ^^^ for every primary context found earlier
+                foreach (var primCtx in allPrimaryCtx)
+                {
+                    if (SaveLineageNodes(primCtx) == false)
+                    {
+                        return null;
                     }
                 }
-                foreach (var toDie in toRemove)
-                {
-                    ac.Contents.Remove(toDie);
-                }
-                return ac.Contents.Count != 0;
-            };
-            CleanSubGroup(attCtx, false);
 
-
-            Func<CdmAttributeContext, int?> orderContents = null;
-
-            // create an all-up ordering of attributes at the leaves of this tree based on insert order
-            // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted
-            Func<CdmObject, int?> getOrderNum = (item) =>
-            {
-                if (item.ObjectType == CdmObjectType.AttributeContextDef && orderContents != null)
+                // now the cleanup, we have a set of the nodes that should be saved
+                // run over the tree and re-build the contents collection with only the things to save
+                Func<CdmObject, bool> CleanSubGroup = null;
+                CleanSubGroup = (subItem) =>
                 {
-                    return orderContents(item as CdmAttributeContext);
-                }
-                else if (item.ObjectType == CdmObjectType.AttributeRef)
-                {
-                    string attName = (item as CdmAttributeReference).NamedReference;
-                    int o = attPath2Order[attName];
-                    return o;
-                }
-                else
-                {
-                    return -1; // put the mystery item on top.
-                }
-            };
-
-            orderContents = (CdmAttributeContext under) =>
-            {
-                if (under.LowestOrder == null)
-                {
-                    under.LowestOrder = -1; // used for group with nothing but traits
-                    if (under.Contents.Count == 1)
+                    if (subItem.ObjectType == CdmObjectType.AttributeRef)
                     {
-                        under.LowestOrder = getOrderNum(under.Contents[0]);
+                        return true; // not empty
+                    }
+
+                    CdmAttributeContext ac = subItem as CdmAttributeContext;
+
+                    if (nodesToSave.Contains(ac) == false)
+                    {
+                        return false; // don't even look at content, this all goes away
+                    }
+
+                    if (ac.Contents != null && ac.Contents.Count > 0)
+                    {
+                        // need to clean up the content array without triggering the code that fixes in document or paths
+                        var newContent = new List<CdmObject>();
+                        foreach (var sub in ac.Contents)
+                        {
+                            // true means keep this as a child
+                            if (CleanSubGroup(sub) == true)
+                            {
+                                newContent.Add(sub);
+                            }
+                        }
+                        // clear the old content and replace
+                        ac.Contents.AllItems.Clear();
+                        ac.Contents.AllItems.AddRange(newContent);
+                    }
+
+                    return true;
+                };
+                CleanSubGroup(attCtx);
+
+                // create an all-up ordering of attributes at the leaves of this tree based on insert order
+                // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted
+                Func<CdmAttributeContext, int?> orderContents = null;
+                Func<CdmObject, int?> getOrderNum = (item) =>
+                {
+                    if (item.ObjectType == CdmObjectType.AttributeContextDef && orderContents != null)
+                    {
+                        return orderContents(item as CdmAttributeContext);
+                    }
+                    else if (item.ObjectType == CdmObjectType.AttributeRef)
+                    {
+                        string attName = (item as CdmAttributeReference).NamedReference;
+                        int o = attPath2Order[attName];
+                        return o;
                     }
                     else
                     {
-                        under.Contents.AllItems.Sort((l, r) =>
-                        {
-                            int lNum = -1;
-                            int rNum = -1;
-
-                            int? aux;
-                            aux = getOrderNum(l);
-
-                            if (aux != null)
-                            {
-                                lNum = (int)aux;
-                            }
-
-                            aux = getOrderNum(r);
-
-                            if (aux != null)
-                            {
-                                rNum = (int)aux;
-                            }
-
-                            if (lNum != -1 && (under.LowestOrder == -1 || lNum < under.LowestOrder))
-                                under.LowestOrder = lNum;
-                            if (rNum != -1 && (under.LowestOrder == -1 || rNum < under.LowestOrder))
-                                under.LowestOrder = rNum;
-
-                            return lNum - rNum;
-                        });
+                        return -1; // put the mystery item on top.
                     }
-                }
-                return under.LowestOrder;
-            };
+                };
 
-            orderContents((CdmAttributeContext)attCtx);
-
-            // resolved attributes can gain traits that are applied to an entity when referenced
-            // since these traits are described in the context, it is redundant and messy to list them in the attribute
-            // so, remove them. create and cache a set of names to look for per context 
-            // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the 
-            // sub-context they come from. Same is true of attribute entities. so do this recursively top down
-            var ctx2traitNames = new Dictionary<CdmAttributeContext, HashSet<string>>();
-            Action<CdmAttributeContext, HashSet<string>> collectContextTraits = null;
-
-            collectContextTraits = (subAttCtx, inheritedTraitNames) =>
-            {
-                var traitNamesHere = new HashSet<string>(inheritedTraitNames);
-                var traitsHere = subAttCtx.ExhibitsTraits;
-                if (traitsHere != null)
-                    foreach (var tat in traitsHere) { traitNamesHere.Add(tat.NamedReference); }
-                ctx2traitNames.Add(subAttCtx, traitNamesHere);
-                subAttCtx.Contents.AllItems.ForEach((cr) =>
+                orderContents = (CdmAttributeContext under) =>
                 {
-                    if (cr.ObjectType == CdmObjectType.AttributeContextDef)
+                    if (under.LowestOrder == null)
                     {
-                        // do this for all types?
-                        collectContextTraits(cr as CdmAttributeContext, traitNamesHere);
-                    }
-                });
-
-            };
-            collectContextTraits(attCtx, new HashSet<string>());
-
-            // add the attributes, put them in attribute groups if structure needed
-            IDictionary<ResolvedAttribute, string> resAtt2RefPath = new Dictionary<ResolvedAttribute, string>();
-            Action<ResolvedAttributeSet, dynamic, string> addAttributes = null;
-            addAttributes = (rasSub, container, path) =>
-            {
-                rasSub.Set.ForEach(ra =>
-                {
-                    string attPath = path + ra.ResolvedName;
-                    // use the path of the context associated with this attribute to find the new context that matches on path
-                    HashSet<CdmAttributeContext> raCtxSet = null;
-                    rasSub.Ra2attCtxSet.TryGetValue(ra, out raCtxSet);
-                    CdmAttributeContext raCtx = null;
-                    // find the correct attCtx for this copy
-                    // (interate over the shortest list)                    
-                    if (allAttCtx.Count < raCtxSet.Count)
-                    {
-                        foreach (CdmAttributeContext currAttCtx in allAttCtx)
+                        under.LowestOrder = -1; // used for group with nothing but traits
+                        if (under.Contents.Count == 1)
                         {
-                            if (raCtxSet.Contains(currAttCtx))
+                            under.LowestOrder = getOrderNum(under.Contents[0]);
+                        }
+                        else
+                        {
+                            under.Contents.AllItems.Sort((l, r) =>
                             {
-                                raCtx = currAttCtx;
-                                break;
-                            }
+                                int lNum = -1;
+                                int rNum = -1;
+
+                                int? aux;
+                                aux = getOrderNum(l);
+
+                                if (aux != null)
+                                {
+                                    lNum = (int)aux;
+                                }
+
+                                aux = getOrderNum(r);
+
+                                if (aux != null)
+                                {
+                                    rNum = (int)aux;
+                                }
+
+                                if (lNum != -1 && (under.LowestOrder == -1 || lNum < under.LowestOrder))
+                                    under.LowestOrder = lNum;
+                                if (rNum != -1 && (under.LowestOrder == -1 || rNum < under.LowestOrder))
+                                    under.LowestOrder = rNum;
+
+                                return lNum - rNum;
+                            });
                         }
                     }
-                    else
-                    {
-                        foreach (CdmAttributeContext currAttCtx in raCtxSet)
-                        {
-                            if (allAttCtx.Contains(currAttCtx))
-                            {
-                                raCtx = currAttCtx;
-                                break;
-                            }
-                        }
-                    }
+                    return under.LowestOrder;
+                };
 
-                    if (ra.Target is ResolvedAttributeSet)
-                    {
-                        // this is a set of attributes.
-                        // make an attribute group to hold them
-                        CdmAttributeGroupDefinition attGrp = this.Ctx.Corpus.MakeObject<CdmAttributeGroupDefinition>(CdmObjectType.AttributeGroupDef, ra.ResolvedName, false);
-                        attGrp.AttributeContext = this.Ctx.Corpus.MakeObject<CdmAttributeContextReference>(CdmObjectType.AttributeContextRef, raCtx.AtCorpusPath, true);
-                        // take any traits from the set and make them look like traits exhibited by the group
-                        HashSet<string> avoidSet = ctx2traitNames[raCtx];
-                        ResolvedTraitSet rtsAtt = ra.ResolvedTraits;
-                        rtsAtt.Set.ForEach(rt =>
-                        {
-                            if (rt.Trait.Ugly != true)
-                            {
-                                // don't mention your ugly traits
-                                if (avoidSet?.Contains(rt.TraitName) != true)
-                                {
-                                    // avoid the ones from the context
-                                    var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
-                                    (attGrp as CdmObjectDefinitionBase).ExhibitsTraits.Add(traitRef);
-                                }
-                            }
-                        });
+                orderContents((CdmAttributeContext)attCtx);
 
-                        // wrap it in a reference and then recurse with this as the new container
-                        CdmAttributeGroupReference attGrpRef = this.Ctx.Corpus.MakeObject<CdmAttributeGroupReference>(CdmObjectType.AttributeGroupRef, null, false);
-                        attGrpRef.ExplicitReference = attGrp;
-                        container.AddAttributeDef(attGrpRef);
-                        // isn't this where ...
-                        addAttributes(ra.Target as ResolvedAttributeSet, attGrp, attPath + "/members/");
-                    }
-                    else
-                    {
-                        CdmTypeAttributeDefinition att = this.Ctx.Corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, ra.ResolvedName, false);
-                        att.AttributeContext = this.Ctx.Corpus.MakeObject<CdmAttributeContextReference>(CdmObjectType.AttributeContextRef, raCtx.AtCorpusPath, true);
-                        HashSet<string> avoidSet = ctx2traitNames[raCtx];
-                        ResolvedTraitSet rtsAtt = ra.ResolvedTraits;
-                        rtsAtt.Set.ForEach(rt =>
-                        {
-                            if (rt.Trait.Ugly != true)
-                            { // don't mention your ugly traits
-                                if (avoidSet?.Contains(rt.TraitName) != true)
-                                { // avoid the ones from the context
-                                    var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
-                                    ((CdmTypeAttributeDefinition)att).AppliedTraits.Add(traitRef);
-                                }
-                            }
-                        });
+                // resolved attributes can gain traits that are applied to an entity when referenced
+                // since these traits are described in the context, it is redundant and messy to list them in the attribute
+                // so, remove them. create and cache a set of names to look for per context 
+                // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the 
+                // sub-context they come from. Same is true of attribute entities. so do this recursively top down
+                var ctx2traitNames = new Dictionary<CdmAttributeContext, HashSet<string>>();
+                Action<CdmAttributeContext, HashSet<string>> collectContextTraits = null;
 
-                        // none of the dataformat traits have the bit set that will make them turn into a property
-                        // this is intentional so that the format traits make it into the resolved object
-                        // but, we still want a guess as the data format, so get it and set it.
-                        var impliedDataFormat = att.DataFormat;
-                        if (impliedDataFormat != CdmDataFormat.Unknown)
-                            att.DataFormat = impliedDataFormat;
-
-
-                        container.AddAttributeDef(att);
-                        resAtt2RefPath[ra] = attPath;
-                    }
-                });
-            };
-            addAttributes(ras, entResolved, entName + "/hasAttributes/");
-
-            // any resolved traits that hold arguments with attribute refs should get 'fixed' here
-            Action<CdmTraitReference, string, bool> replaceTraitAttRef = (tr, entityHint, isAttributeContext) =>
-            {
-                if (tr.Arguments != null)
+                collectContextTraits = (subAttCtx, inheritedTraitNames) =>
                 {
-                    foreach (CdmArgumentDefinition arg in tr.Arguments.AllItems)
+                    var traitNamesHere = new HashSet<string>(inheritedTraitNames);
+                    var traitsHere = subAttCtx.ExhibitsTraits;
+                    if (traitsHere != null)
+                        foreach (var tat in traitsHere) { traitNamesHere.Add(tat.NamedReference); }
+                    ctx2traitNames.Add(subAttCtx, traitNamesHere);
+                    subAttCtx.Contents.AllItems.ForEach((cr) =>
                     {
-                        dynamic v = arg.UnResolvedValue != null ? arg.UnResolvedValue : arg.Value;
-                        // is this an attribute reference?
-                        if (v != null && (v as CdmObject)?.ObjectType == CdmObjectType.AttributeRef)
+                        if (cr.ObjectType == CdmObjectType.AttributeContextDef)
                         {
-                            // only try this if the reference has no path to it (only happens with intra-entity att refs)
-                            var attRef = v as CdmAttributeReference;
-                            if (!string.IsNullOrEmpty(attRef.NamedReference) && attRef.NamedReference.IndexOf('/') == -1)
-                            {
-                                if (arg.UnResolvedValue == null)
-                                    arg.UnResolvedValue = arg.Value;
-
-                                // give a promise that can be worked out later. assumption is that the attribute must come from this entity.
-                                var newAttRef = this.Ctx.Corpus.MakeRef<CdmAttributeReference>(CdmObjectType.AttributeRef, entityHint + "/(resolvedAttributes)/" + attRef.NamedReference, true);
-                                // inDocument is not propagated during resolution, so set it here
-                                newAttRef.InDocument = arg.InDocument;
-                                arg.Value = newAttRef;
-                            }
+                            // do this for all types?
+                            collectContextTraits(cr as CdmAttributeContext, traitNamesHere);
                         }
-                    }
-                }
-            };
+                    });
 
-            // fix entity traits
-            if (entResolved.ExhibitsTraits != null)
-                foreach (var et in entResolved.ExhibitsTraits)
+                };
+                collectContextTraits(attCtx, new HashSet<string>());
+
+                // add the attributes, put them in attribute groups if structure needed
+                IDictionary<ResolvedAttribute, string> resAtt2RefPath = new Dictionary<ResolvedAttribute, string>();
+                Action<ResolvedAttributeSet, dynamic, string> addAttributes = null;
+                addAttributes = (rasSub, container, path) =>
                 {
-                    replaceTraitAttRef(et, newEntName, false);
-                }
+                    rasSub.Set.ForEach(ra =>
+                    {
+                        string attPath = path + ra.ResolvedName;
+                        // use the path of the context associated with this attribute to find the new context that matches on path
+                        CdmAttributeContext raCtx = ra.AttCtx;
 
-            // fix context traits
-            Action<CdmAttributeContext, string> fixContextTraits = null;
-            fixContextTraits = (subAttCtx, entityHint) =>
+                        if (ra.Target is ResolvedAttributeSet)
                         {
-                            var traitsHere = subAttCtx.ExhibitsTraits;
-                            if (traitsHere != null)
+                            // this is a set of attributes.
+                            // make an attribute group to hold them
+                            CdmAttributeGroupDefinition attGrp = this.Ctx.Corpus.MakeObject<CdmAttributeGroupDefinition>(CdmObjectType.AttributeGroupDef, ra.ResolvedName, false);
+                            attGrp.AttributeContext = this.Ctx.Corpus.MakeObject<CdmAttributeContextReference>(CdmObjectType.AttributeContextRef, raCtx.AtCorpusPath, true);
+                            // debugLineage
+                            //attGrp.AttributeContext.NamedReference = $"{ raCtx.AtCoprusPath}({raCtx.Id})";
+
+                            // take any traits from the set and make them look like traits exhibited by the group
+                            HashSet<string> avoidSet = ctx2traitNames[raCtx];
+                            // traits with the same name can show up on entities and attributes AND have different meanings.
+                            avoidSet.Clear();
+
+                            ResolvedTraitSet rtsAtt = ra.ResolvedTraits;
+                            rtsAtt.Set.ForEach(rt =>
                             {
-                                foreach (var tr in traitsHere)
+                                if (rt.Trait.Ugly != true)
                                 {
-                                    replaceTraitAttRef(tr, entityHint, true);
-                                }
-                            }
-                            subAttCtx.Contents.AllItems.ForEach((cr) =>
-                            {
-                                if (cr.ObjectType == CdmObjectType.AttributeContextDef)
-                                {
-                                    // if this is a new entity context, get the name to pass along
-                                    CdmAttributeContext subSubAttCtx = (CdmAttributeContext)cr;
-                                    string subEntityHint = entityHint;
-                                    if (subSubAttCtx.Type == CdmAttributeContextType.Entity)
+                                    // don't mention your ugly traits
+                                    if (avoidSet?.Contains(rt.TraitName) != true)
                                     {
-                                        subEntityHint = subSubAttCtx.Definition.NamedReference;
+                                        // avoid the ones from the context
+                                        var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
+                                        (attGrp as CdmObjectDefinitionBase).ExhibitsTraits.Add(traitRef);
                                     }
-                                    // do this for all types
-                                    fixContextTraits(subSubAttCtx, subEntityHint);
                                 }
                             });
 
-                        };
-            fixContextTraits(attCtx, newEntName);
-            // and the attribute traits
-            var entAttributes = entResolved.Attributes;
-            if (entAttributes != null)
-            {
-                foreach (var entAtt in entAttributes)
+                            // wrap it in a reference and then recurse with this as the new container
+                            CdmAttributeGroupReference attGrpRef = this.Ctx.Corpus.MakeObject<CdmAttributeGroupReference>(CdmObjectType.AttributeGroupRef, null, false);
+                            attGrpRef.ExplicitReference = attGrp;
+                            container.AddAttributeDef(attGrpRef);
+                            // isn't this where ...
+                            addAttributes(ra.Target as ResolvedAttributeSet, attGrp, attPath + "/members/");
+                        }
+                        else
+                        {
+                            CdmTypeAttributeDefinition att = this.Ctx.Corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, ra.ResolvedName, false);
+                            att.AttributeContext = this.Ctx.Corpus.MakeObject<CdmAttributeContextReference>(CdmObjectType.AttributeContextRef, raCtx.AtCorpusPath, true);
+                            // debugLineage
+                            //att.AttributeContext.NamedReference = $"{ raCtx.AtCoprusPath}({raCtx.Id})";
+
+                            HashSet<string> avoidSet = ctx2traitNames[raCtx];
+                            // i don't know why i thought this was the right thing to do,
+                            // traits with the same name can show up on entities and attributes AND have different meanings.
+                            avoidSet.Clear();
+                            // i really need to figure out the effects of this before making this change
+                            // without it, some traits don't make it to the resolved entity
+                            // with it, too many traits might make it there
+
+                            ResolvedTraitSet rtsAtt = ra.ResolvedTraits;
+                            rtsAtt.Set.ForEach(rt =>
+                            {
+                                if (rt.Trait.Ugly != true)
+                                { // don't mention your ugly traits
+                                    if (avoidSet?.Contains(rt.TraitName) != true)
+                                    { // avoid the ones from the context
+                                        var traitRef = CdmObjectBase.ResolvedTraitToTraitRef(resOptCopy, rt);
+                                        ((CdmTypeAttributeDefinition)att).AppliedTraits.Add(traitRef);
+
+                                        // the trait that points at other entities for foreign keys, that is trouble
+                                        // the string value in the table needs to be a relative path from the document of this entity
+                                        // to the document of the related entity. but, right now it is a relative path to the source entity
+                                        // so find those traits, and adjust the paths in the tables they hold
+                                        if (rt.TraitName == "is.linkedEntity.identifier")
+                                        {
+                                            // grab the content of the table from the new ref (should be a copy of orig) 
+                                            List<List<string>> linkTable = null;
+                                            if (traitRef.Arguments != null && traitRef.Arguments.Count > 0)
+                                            {
+                                                linkTable = ((traitRef.Arguments?[0].Value as CdmEntityReference)?
+                                                                .ExplicitReference as CdmConstantEntityDefinition)?
+                                                                .ConstantValues;
+                                            }
+                                            if (linkTable != null && linkTable.Count > 0)
+                                            {
+                                                foreach (var row in linkTable)
+                                                {
+                                                    if (row.Count == 2 || row.Count == 3) // either the old table or the new one with relationship name can be there
+                                                    {
+                                                        // entity path an attribute name
+                                                        string fixedPath = row[0];
+                                                        fixedPath = this.Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(fixedPath, this.InDocument); // absolute from relative to this
+                                                        fixedPath = this.Ctx.Corpus.Storage.CreateRelativeCorpusPath(fixedPath, docRes); // realtive to new entity
+                                                        row[0] = fixedPath;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+
+                            // none of the dataformat traits have the bit set that will make them turn into a property
+                            // this is intentional so that the format traits make it into the resolved object
+                            // but, we still want a guess as the data format, so get it and set it.
+                            var impliedDataFormat = att.DataFormat;
+                            if (impliedDataFormat != CdmDataFormat.Unknown)
+                                att.DataFormat = impliedDataFormat;
+
+
+                            container.AddAttributeDef(att);
+                            resAtt2RefPath[ra] = attPath;
+                        }
+                    });
+                };
+                addAttributes(ras, entResolved, entName + "/hasAttributes/");
+
+                // any resolved traits that hold arguments with attribute refs should get 'fixed' here
+                Action<CdmTraitReference, string, bool> replaceTraitAttRef = (tr, entityHint, isAttributeContext) =>
                 {
-                    CdmTraitCollection attTraits = entAtt.AppliedTraits;
-                    if (attTraits != null)
+                    if (tr.Arguments != null)
                     {
-                        foreach (var tr in attTraits)
-                            replaceTraitAttRef(tr, newEntName, false);
+                        foreach (CdmArgumentDefinition arg in tr.Arguments.AllItems)
+                        {
+                            dynamic v = arg.UnResolvedValue != null ? arg.UnResolvedValue : arg.Value;
+                            // is this an attribute reference?
+                            if (v != null && (v as CdmObject)?.ObjectType == CdmObjectType.AttributeRef)
+                            {
+                                // only try this if the reference has no path to it (only happens with intra-entity att refs)
+                                var attRef = v as CdmAttributeReference;
+                                if (!string.IsNullOrEmpty(attRef.NamedReference) && attRef.NamedReference.IndexOf('/') == -1)
+                                {
+                                    if (arg.UnResolvedValue == null)
+                                        arg.UnResolvedValue = arg.Value;
+
+                                    // give a promise that can be worked out later. assumption is that the attribute must come from this entity.
+                                    var newAttRef = this.Ctx.Corpus.MakeRef<CdmAttributeReference>(CdmObjectType.AttributeRef, entityHint + "/(resolvedAttributes)/" + attRef.NamedReference, true);
+                                    // inDocument is not propagated during resolution, so set it here
+                                    newAttRef.InDocument = arg.InDocument;
+                                    arg.Value = newAttRef;
+                                }
+                            }
+                        }
+                    }
+                };
+
+                // fix entity traits
+                if (entResolved.ExhibitsTraits != null)
+                    foreach (var et in entResolved.ExhibitsTraits)
+                    {
+                        replaceTraitAttRef(et, newEntName, false);
+                    }
+
+                // fix context traits
+                Action<CdmAttributeContext, string> fixContextTraits = null;
+                fixContextTraits = (subAttCtx, entityHint) =>
+                {
+                    var traitsHere = subAttCtx.ExhibitsTraits;
+                    if (traitsHere != null)
+                    {
+                        foreach (var tr in traitsHere)
+                        {
+                            replaceTraitAttRef(tr, entityHint, true);
+                        }
+                    }
+                    subAttCtx.Contents.AllItems.ForEach((cr) =>
+                    {
+                        if (cr.ObjectType == CdmObjectType.AttributeContextDef)
+                        {
+                            // if this is a new entity context, get the name to pass along
+                            CdmAttributeContext subSubAttCtx = (CdmAttributeContext)cr;
+                            string subEntityHint = entityHint;
+                            if (subSubAttCtx.Type == CdmAttributeContextType.Entity)
+                            {
+                                subEntityHint = subSubAttCtx.Definition.NamedReference;
+                            }
+                            // do this for all types
+                            fixContextTraits(subSubAttCtx, subEntityHint);
+                        }
+                    });
+
+                };
+                fixContextTraits(attCtx, newEntName);
+                // and the attribute traits
+                var entAttributes = entResolved.Attributes;
+                if (entAttributes != null)
+                {
+                    foreach (var entAtt in entAttributes)
+                    {
+                        CdmTraitCollection attTraits = entAtt.AppliedTraits;
+                        if (attTraits != null)
+                        {
+                            foreach (var tr in attTraits)
+                                replaceTraitAttRef(tr, newEntName, false);
+                        }
                     }
                 }
             }
@@ -1042,8 +1181,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // the catch-22 is that the new document needs these fixes done before it can be used to make these fixes.
             // the fix needs to happen in the middle of the refresh
             // trigger the document to refresh current content into the resolved OM
-            attCtx.Parent = null; // remove the fake parent that made the paths work
-            ResolveOptions resOptNew = CdmObjectBase.CopyResolveOptions(resOpt);
+            if (attCtx != null)
+                attCtx.Parent = null; // remove the fake parent that made the paths work
+            ResolveOptions resOptNew = resOpt.Copy();
             resOptNew.LocalizeReferencesFor = docRes;
             resOptNew.WrtDoc = docRes;
             if (!await docRes.RefreshAsync(resOptNew))
@@ -1058,6 +1198,41 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.Ctx.Corpus.resEntMap[this.AtCorpusPath] = entResolved.AtCorpusPath;
 
             return entResolved;
+        }
+
+        /// <summary>
+        /// creates or sets the has.entitySchemaAbstractionLevel trait to logical, composition, resolved or unknown
+        /// todo: consider making this public API
+        /// </summary>
+        internal void IndicateAbstractionLevel(string level, ResolveOptions resOpt)
+        {
+            // see if entitySchemaAbstractionLevel is a known trait to this entity
+            if (resOpt!= null && 
+                this.Ctx.Corpus.ResolveSymbolReference(resOpt, this.InDocument, "has.entitySchemaAbstractionLevel", CdmObjectType.TraitDef, retry: false) == null)
+            {
+                return;
+            }
+
+            // get or add the trait
+            CdmTraitReference traitRef = this.ExhibitsTraits.Item("has.entitySchemaAbstractionLevel");
+            if (traitRef == null)
+            {
+                traitRef = new CdmTraitReference(this.Ctx, "has.entitySchemaAbstractionLevel", false, true);
+                this.ExhibitsTraits.Add(traitRef);
+            }
+            // get or add the one argument
+            CdmArgumentDefinition argDef;
+            if (traitRef.Arguments != null && traitRef.Arguments.Count == 1)
+            {
+                argDef = traitRef.Arguments[0];
+            }
+            else
+            {
+                argDef = new CdmArgumentDefinition(this.Ctx, "level");
+                traitRef.Arguments.Add(argDef);
+            }
+            // set it
+            argDef.Value = level;
         }
     }
 }

@@ -1,0 +1,45 @@
+{
+  "jsonSchemaSemanticVersion" : "1.0.0",
+  "imports" : [
+    {
+      "corpusPath" : "cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/CareTeam.cdm.json"
+    }
+  ],
+  "definitions" : [
+    {
+      "traitName" : "means.temporary",
+      "extendsTrait" : "means",
+      "hasParameters" : [
+        {
+          "name" : "estimatedDays",
+          "defaultValue" : "30",
+          "dataType" : {
+            "dataTypeReference" : "integer"
+          }
+        }
+      ]
+    },
+    {
+      "entityName" : "MobileCareTeam",
+      "extendsEntity" : "CareTeam",
+      "hasAttributes" : [
+        {
+          "name" : "currentCity",
+          "dataType" : "city",
+          "appliedTraits" : [
+            {
+              "traitReference" : "means.temporary",
+              "arguments" : [
+                {
+                  "name" : "estimatedDays",
+                  "value" : "90"
+                }
+              ]
+            }
+          ],
+          "description" : "The current city where the mobile care team is working."
+        }
+      ]
+    }
+  ]
+}

@@ -15,5 +15,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public string Definition { get; set; }
         public List<JToken> AppliedTraits { get; set; }
         public List<JToken> Contents { get; set; }
+        public List<JToken> Lineage { get; set; }
     }
 }

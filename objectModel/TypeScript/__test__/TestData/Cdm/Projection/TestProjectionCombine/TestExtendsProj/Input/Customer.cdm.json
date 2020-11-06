@@ -1,0 +1,34 @@
+{
+    "$schema": "../../../../../../../../../schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "_allImports.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "Customer",
+            "extendsEntity": {
+                "source": "ContactInfo",
+                "operations": [
+                    {
+                        "$type": "combineAttributes",
+                        "select": [ "EmailID", "PhoneID", "SocialID" ],
+                        "mergeInto": {
+                            "name": "ContactID",
+                            "dataType": "entityId"
+                        }
+                    }
+                ]
+            },
+            "hasAttributes": [
+                {
+                    "purpose": "hasA",
+                    "dataType": "string",
+                    "name": "CustomerName"
+                }
+            ]
+        }
+    ]
+}

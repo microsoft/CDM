@@ -42,38 +42,18 @@ class AdlsAdapterAuthenticator {
   private static final String HTTP_XMS_VERSION = "x-ms-version";
 
   private String sharedKey;
-  private final String tenant;
+  private String tenant;
   private String clientId;
   private String secret;
   private AuthenticationResult lastAuthenticationResult;
   private TokenProvider tokenProvider;
 
-  AdlsAdapterAuthenticator(final String sharedKey) {
-    if (sharedKey == null) {
-      throw new IllegalArgumentException("sharedKey is null");
-    }
-    this.sharedKey = sharedKey;
+  AdlsAdapterAuthenticator() {
+    this.sharedKey = null;
     this.clientId = null;
     this.secret = null;
     this.tenant = null;
-  }
-
-  AdlsAdapterAuthenticator(final String tenant, final String clientId, final String secret) {
-    if ( tenant == null || clientId == null) {
-      throw new IllegalArgumentException("tenant or clientId is null");
-    }
-    this.sharedKey = null;
-    this.tenant = tenant;
-    this.clientId = clientId;
-    this.secret = secret;
-  }
-
-  AdlsAdapterAuthenticator(TokenProvider tokenProvider) {
-    this.sharedKey = null;
-    this.tenant = null;
-    this.clientId = null;
-    this.secret = null;
-    this.tokenProvider = tokenProvider;
+    this.tokenProvider = null;
   }
 
   /**
@@ -226,6 +206,10 @@ class AdlsAdapterAuthenticator {
 
   String getTenant() {
     return tenant;
+  }
+
+  void setTenant(String tenant) {
+    this.tenant = tenant;
   }
 
   String getClientId() {

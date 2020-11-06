@@ -8,7 +8,7 @@ from typing import cast, Dict, Iterable, Optional, TYPE_CHECKING
 from cdm.enums import CdmObjectType
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition
+    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityAttributeDefinition
     from cdm.resolvedmodel import ResolvedTraitSet, ResolvedTraitSetBuilder
     from cdm.utilities import AttributeContextParameters, FriendlyFormatNode, ResolveOptions
 
@@ -31,7 +31,8 @@ class CdmObject(abc.ABC):
 
         # internal
         self._declared_path = None  # type: Optional[str]
-        self._resolving_attributes = False  # type: bool
+        self.resolving_attributes = False  # type: bool
+        self.circular_reference = False  # type: bool
         self._resolving_traits = False  # type: bool
         self._trait_cache = None  # type: Optional[Dict[str, ResolvedTraitSetBuilder]]
         self._at_corpus_path = None  # type: Optional[str]
@@ -92,12 +93,19 @@ class CdmObject(abc.ABC):
     def _construct_resolved_traits(self, rtsb: 'ResolvedTraitSetBuilder', res_opt: 'ResolveOptions') -> None:
         raise NotImplementedError('Not implemented in type {}'.format(self.__class__.__name__))
 
+    def _fetch_object_from_cache(self, res_opt: 'ResolveOptions', acp_in_context: Optional['AttributeContextParameters'] = None) -> 'ResolvedAttributeSet':
+        kind = 'rasb'
+        ctx = self.ctx
+        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
+        return ctx._cache.get(cache_tag) if cache_tag else None
+
     def _fetch_resolved_attributes(self, res_opt: 'ResolveOptions', acp_in_context: Optional['AttributeContextParameters'] = None) -> 'ResolvedAttributeSet':
         from cdm.resolvedmodel import ResolvedAttributeSet
         from cdm.utilities import SymbolSet
 
         from .cdm_attribute_context import CdmAttributeContext
         from .cdm_corpus_def import CdmCorpusDefinition
+        from .cdm_entity_attribute_def import CdmEntityAttributeDefinition
 
         was_previously_resolving = self.ctx.corpus._is_currently_resolving
         self.ctx.corpus._is_currently_resolving = True
@@ -106,8 +114,7 @@ class CdmObject(abc.ABC):
 
         kind = 'rasb'
         ctx = self.ctx
-        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
-        rasb_cache = ctx._cache.get(cache_tag) if cache_tag else None
+        rasb_cache = self._fetch_object_from_cache(res_opt, acp_in_context)
         under_ctx = None
 
         # store the previous symbol set, we will need to add it with
@@ -120,12 +127,17 @@ class CdmObject(abc.ABC):
         from_moniker = res_opt._from_moniker
         res_opt._from_moniker = None
 
+        # if using the cache passes the maxDepth, we cannot use it
+        if rasb_cache and res_opt.depth_info and res_opt.depth_info.max_depth and res_opt.depth_info.current_depth + rasb_cache.ras._depth_traveled > res_opt.depth_info.max_depth:
+            rasb_cache = None
+
         if not rasb_cache:
-            if self._resolving_attributes:
+            if self.resolving_attributes:
                 # re-entered self attribute through some kind of self or looping reference.
                 self.ctx.corpus._is_currently_resolving = was_previously_resolving
-                return ResolvedAttributeSet()
-            self._resolving_attributes = True
+                res_opt.in_circular_reference = True
+                self.circular_reference = True
+            self.resolving_attributes = True
 
             # if a new context node is needed for these attributes, make it now
             if acp_in_context:
@@ -135,7 +147,7 @@ class CdmObject(abc.ABC):
 
             if rasb_cache:
 
-                self._resolving_attributes = False
+                self.resolving_attributes = False
 
                 # register set of possible docs
                 odef = self.fetch_object_definition(res_opt)
@@ -162,6 +174,8 @@ class CdmObject(abc.ABC):
                         if new_context.definition and new_context.definition.named_reference and new_context.definition.named_reference.startswith(moniker_path_added):
                             # slice it off the front
                             new_context.definition.named_reference = new_context.definition.named_reference[len(moniker_path_added):]
+            if self.circular_reference:
+                res_opt.in_circular_reference = False
         else:
             # get the SymbolSet for this cached object and pass that back
             key = CdmCorpusDefinition._fetch_cache_key_from_object(self, kind)
@@ -173,6 +187,14 @@ class CdmObject(abc.ABC):
                 under_ctx = CdmAttributeContext._create_child_under(res_opt, acp_in_context)
 
                 rasb_cache.ras.attribute_context._copy_attribute_context_tree(res_opt, under_ctx, rasb_cache.ras, None, from_moniker)
+
+        curr_depth_info = res_opt.depth_info
+        if isinstance(self, CdmEntityAttributeDefinition) and curr_depth_info is not None:
+            # if we hit the maxDepth, we are now going back up
+            curr_depth_info.current_depth -= 1
+            # now at the top of the chain where max depth does not influence the cache
+            if curr_depth_info.current_depth <= 0:
+                res_opt.depth_info = None
 
         # merge child reference symbols set with current
         curr_sym_ref_set._merge(res_opt._symbol_ref_set)
@@ -241,22 +263,6 @@ class CdmObject(abc.ABC):
 
         self.ctx.corpus._is_currently_resolving = was_previously_resolving
         return rtsb_all.resolved_trait_set
-
-    @staticmethod
-    def _copy_resolve_options(res_opt: 'ResolveOptions') -> 'ResolveOptions':
-        from cdm.utilities import ResolveOptions  # pylint: disable=redefined-outer-name
-        res_opt_copy = ResolveOptions()
-        res_opt_copy.wrt_doc = res_opt.wrt_doc
-        res_opt_copy._relationship_depth = res_opt._relationship_depth
-        res_opt_copy._localize_references_for = res_opt._localize_references_for
-        res_opt_copy._indexing_doc = res_opt._indexing_doc
-        res_opt_copy.shallow_validation = res_opt.shallow_validation
-        res_opt_copy._resolved_attribute_limit = res_opt._resolved_attribute_limit
-
-        if res_opt.directives:
-            res_opt_copy.directives = res_opt.directives.copy()
-
-        return res_opt_copy
 
     @staticmethod
     def _next_id():

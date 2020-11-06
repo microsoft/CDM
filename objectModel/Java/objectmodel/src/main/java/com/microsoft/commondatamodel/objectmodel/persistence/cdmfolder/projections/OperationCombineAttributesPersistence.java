@@ -42,7 +42,7 @@ public class OperationCombineAttributesPersistence {
             combineAttributesOp.setExplanation(obj.get("explanation").asText());
         }
 
-        combineAttributesOp.setTake(obj.get("take") == null ? null : JMapper.MAP.convertValue(obj.get("take"), new TypeReference<List<String>>() {
+        combineAttributesOp.setSelect(obj.get("select") == null ? null : JMapper.MAP.convertValue(obj.get("select"), new TypeReference<List<String>>() {
         }));
         combineAttributesOp.setMergeInto((CdmTypeAttributeDefinition) Utils.createAttribute(ctx, obj.get("mergeInto")));
 
@@ -57,7 +57,7 @@ public class OperationCombineAttributesPersistence {
         OperationCombineAttributes obj = new OperationCombineAttributes();
         obj.setType(OperationTypeConvertor.operationTypeToString(CdmOperationType.CombineAttributes));
         obj.setExplanation(instance.getExplanation());
-        obj.setTake(instance.getTake());
+        obj.setSelect(instance.getSelect());
         obj.setMergeInto(Utils.jsonForm(instance.getMergeInto(), resOpt, options));
 
         return obj;

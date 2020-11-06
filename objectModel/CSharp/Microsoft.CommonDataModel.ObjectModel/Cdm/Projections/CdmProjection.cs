@@ -223,10 +223,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         IncludeTraits = false
                     };
                     ResolvedAttributeSet ras = this.Source.FetchResolvedAttributes(projDirective.ResOpt, acpSourceProjection);
+                    // clean up the context tree, it was left in a bad state on purpose in this call
+                    ras.AttributeContext.FinalizeAttributeContext(projDirective.ResOpt, acSource.AtCorpusPath, this.InDocument, this.InDocument, null, false);
+
 
                     // Initialize the projection context
 
-                    CdmCorpusContext ctx = (projDirective.Owner?.Ctx);
+                    CdmCorpusContext ctx = projDirective.Owner?.Ctx;
 
                     ProjectionAttributeStateSet pasSet = null;
 
@@ -234,7 +237,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Dictionary<string, List<ProjectionAttributeState>> polySourceSet = null;
                     if (projDirective.IsSourcePolymorphic)
                     {
-                        polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, acpSourceProjection);
+                        polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras, acpSourceProjection);
                     }
 
                     // now initialize projection attribute state
@@ -322,16 +325,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="projCtx"></param>
         /// <returns></returns>
-        internal ResolvedAttributeSet ExtractResolvedAttributes(ProjectionContext projCtx)
+        internal ResolvedAttributeSet ExtractResolvedAttributes(ProjectionContext projCtx, CdmAttributeContext attCtxUnder)
         {
             ResolvedAttributeSet resolvedAttributeSet = new ResolvedAttributeSet
             {
-                AttributeContext = projCtx.CurrentAttributeContext
+                AttributeContext = attCtxUnder
             };
 
             foreach (var pas in projCtx.CurrentAttributeStateSet.States)
             {
-                resolvedAttributeSet.Merge(pas.CurrentResolvedAttribute, pas.CurrentResolvedAttribute.AttCtx);
+                resolvedAttributeSet.Merge(pas.CurrentResolvedAttribute);
             }
 
             return resolvedAttributeSet;

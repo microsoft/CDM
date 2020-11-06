@@ -167,6 +167,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         // Create a new resolved attribute for the expanded attribute
                         ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.CurrentResolvedAttribute.Target, currentPAS.CurrentResolvedAttribute.ResolvedName);
+                        newResAttr.AttCtx.AddLineage(currentPAS.CurrentResolvedAttribute.AttCtx);
 
                         // Create a projection attribute state for the expanded attribute
                         ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.Ctx)

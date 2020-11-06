@@ -66,6 +66,10 @@ public class ManifestPersistence {
       manifest.setJsonSchemaSemanticVersion(dataObj.getJsonSchemaSemanticVersion());
     }
 
+    if (!Strings.isNullOrEmpty(dataObj.getDocumentVersion())) {
+      manifest.setDocumentVersion(dataObj.getDocumentVersion());
+    }
+  
     if (!Strings.isNullOrEmpty(dataObj.getManifestName())) {
       manifest.setManifestName(dataObj.getManifestName());
     }
@@ -186,6 +190,7 @@ public class ManifestPersistence {
 
     manifestContent.setManifestName(instance.getManifestName());
     manifestContent.setJsonSchemaSemanticVersion(documentContent.getJsonSchemaSemanticVersion());
+    manifestContent.setDocumentVersion(documentContent.getDocumentVersion());
     manifestContent.setSchema(documentContent.getSchema());
     manifestContent.setImports(documentContent.getImports());
     manifestContent.setLastFileStatusCheckTime(instance.getLastFileStatusCheckTime());

@@ -170,7 +170,7 @@ public class PersistenceLayer {
         if (adapter.canRead()) {
           // log message used by navigator, do not change or remove
           Logger.debug(PersistenceLayer.class.getSimpleName(), this.ctx, Logger.format("request file: {0}", docPath), "loadDocumentFromPathAsync");
-          jsonData = adapter.readAsync(docPath).join();
+          jsonData = adapter.readAsync(docPath).get();
           // log message used by navigator, do not change or remove
           Logger.debug(PersistenceLayer.class.getSimpleName(), this.ctx, Logger.format("received file: {0}", docPath), "loadDocumentFromPathAsync");
         } else {

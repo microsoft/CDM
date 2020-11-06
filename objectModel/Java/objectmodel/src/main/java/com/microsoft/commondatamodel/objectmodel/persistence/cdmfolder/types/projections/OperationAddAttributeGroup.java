@@ -7,5 +7,13 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.pr
  * OperationAddAttributeGroup class
  */
 public class OperationAddAttributeGroup extends OperationBase {
-    // TODO (sukanyas): Property to be defined
+    private String attributeGroupName;
+
+    public String getAttributeGroupName() {
+        return attributeGroupName;
+    }
+
+    public void setAttributeGroupName(String attributeGroupName) {
+        this.attributeGroupName = attributeGroupName;
+    }
 }

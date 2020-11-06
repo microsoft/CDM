@@ -87,6 +87,10 @@ export class ManifestPersistence {
                 // TODO: validate that this is a version we can understand with the OM
             }
 
+            if (dataObj.documentVersion) {
+                manifest.documentVersion = dataObj.documentVersion;
+            }
+
             if (dataObj.manifestName) {
                 manifest.manifestName = dataObj.manifestName;
                 // Might be populated in the case of folio.cdm.json or manifest.cdm.json file.
@@ -201,6 +205,7 @@ export class ManifestPersistence {
         manifestContent.lastFileStatusCheckTime = timeUtils.getFormattedDateString(instance.lastFileStatusCheckTime);
         manifestContent.lastFileModifiedTime = timeUtils.getFormattedDateString(instance.lastFileModifiedTime);
         manifestContent.lastChildFileModifiedTime = timeUtils.getFormattedDateString(instance.lastChildFileModifiedTime);
+        manifestContent.documentVersion = instance.documentVersion;
         manifestContent.explanation = instance.explanation;
         manifestContent.exhibitsTraits = copyDataUtils.arrayCopyData<TraitReference>(
             resOpt,

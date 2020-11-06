@@ -40,6 +40,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.ExhibitsTraits.Clear();
             foreach (var trait in this.ExhibitsTraits)
                 copy.ExhibitsTraits.Add(trait);
+            copy.InDocument = this.InDocument; // if gets put into a new document, this will change. until, use the source
         }
 
         /// <inheritdoc />
@@ -56,7 +57,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
-            resOpt.FromMoniker = null;
             return (dynamic)this;
         }
 
@@ -120,5 +120,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             return cdmObjectRef;
         }
+
+        /// Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed 
+        /// into some final document. 
+        internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
+        {
+            CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true) as CdmObjectReferenceBase;
+            cdmObjectRef.ExplicitReference = this;
+            cdmObjectRef.InDocument = this.InDocument; // where it started life
+            return cdmObjectRef;
+        }
+
     }
 }

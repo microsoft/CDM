@@ -3,67 +3,21 @@
 
 import { Stopwatch } from 'ts-stopwatch';
 
-import { CdmCorpusDefinition, StringUtils } from '../../../internal';
+import { CdmCorpusDefinition, CdmManifestDefinition } from '../../../internal';
 import { ADLSAdapter } from '../../../Storage';
 import { StorageAdapterCacheContext } from '../../../Storage/StorageAdapterBase';
+import { TokenProvider } from '../../../Utilities/Network';
+import { adlsTestHelper } from '../../adlsTestHelper';
 import { testHelper } from '../../testHelper';
 import { MockADLSAdapter } from './MockADLSAdapter';
-import { CdmManifestDefinition } from '../../../Cdm/CdmManifestDefinition';
 
-const adlsTestHelper = {
+class FakeTokenProvider implements TokenProvider {
+    public getToken(): string {
+        return 'TOKEN';
+    }
+}
 
-    createAdapterWithSharedKey(rootRelativePath?: string): ADLSAdapter {
-        const hostname: string = process.env['ADLS_HOSTNAME'];
-        const rootPath: string = process.env['ADLS_ROOTPATH'];
-        const sharedKey: string = process.env['ADLS_SHAREDKEY'];
-
-        expect(StringUtils.isNullOrWhiteSpace(hostname))
-            .toBe(false);
-        expect(StringUtils.isNullOrWhiteSpace(rootPath))
-            .toBe(false);
-        expect(StringUtils.isNullOrWhiteSpace(sharedKey))
-            .toBe(false);
-
-        return new ADLSAdapter(hostname, adlsTestHelper.combinePath(rootPath, rootRelativePath), sharedKey);
-    },
-
-    createAdapterWithClientId(rootRelativePath?: string): ADLSAdapter {
-        const hostname: string = process.env['ADLS_HOSTNAME'];
-        const rootPath: string = process.env['ADLS_ROOTPATH'];
-        const tenant: string = process.env['ADLS_TENANT'];
-        const clientId: string = process.env['ADLS_CLIENTID'];
-        const clientSecret: string = process.env['ADLS_CLIENTSECRET'];
-
-        expect(StringUtils.isNullOrWhiteSpace(hostname))
-            .toBe(false);
-        expect(StringUtils.isNullOrWhiteSpace(rootPath))
-            .toBe(false);
-        expect(StringUtils.isNullOrWhiteSpace(tenant))
-            .toBe(false);
-        expect(StringUtils.isNullOrWhiteSpace(clientId))
-            .toBe(false);
-        expect(StringUtils.isNullOrWhiteSpace(clientSecret))
-            .toBe(false);
-
-        return new ADLSAdapter(hostname, adlsTestHelper.combinePath(rootPath, rootRelativePath), tenant, clientId, clientSecret);
-    },
-
-    combinePath(first: string, second: string) : string {
-        if (second === undefined || second === null) {
-            return first;
-        }
-
-        if (first.endsWith('/')) {
-            first = first.substring(0, first.length - 1);
-        }
-
-        if (second.startsWith('/')) {
-            second = second.substring(1);
-        }
-
-        return `${first}/${second}`;
-    },
-
+const adlsTest = {
     async runWriteReadTest(adapter: ADLSAdapter): Promise<void> {
         const filename: string = `WriteReadTest/${process.env['USERNAME']}_${process.env['COMPUTERNAME']}_TypeScript.txt`;
         const writeContents: string = `${new Date().toString()}\n${filename}`;
@@ -90,7 +44,7 @@ const adlsTestHelper = {
         expect(offset2)
             .not
             .toBeNull();
-        expect(offset1.getTime() == offset2.getTime())
+        expect(offset1.getTime() === offset2.getTime())
             .toBe(true);
         expect(offset1 < new Date())
             .toBe(true);
@@ -160,31 +114,31 @@ describe('Cdm.Storage.AdlsAdapter', () => {
      * temporarily replace "adlsIt" with "it"
      */
     adlsIt('ADLSWriteReadSharedKey', async () => {
-        await adlsTestHelper.runWriteReadTest(adlsTestHelper.createAdapterWithSharedKey());
+        await adlsTest.runWriteReadTest(adlsTestHelper.createAdapterWithSharedKey());
     });
 
     adlsIt('ADLSWriteReadClientId', async () => {
-        await adlsTestHelper.runWriteReadTest(adlsTestHelper.createAdapterWithClientId());
+        await adlsTest.runWriteReadTest(adlsTestHelper.createAdapterWithClientId());
     });
 
     adlsIt('ADLSCheckFileTimeSharedKey', async () => {
-        await adlsTestHelper.runCheckFileTimeTests(adlsTestHelper.createAdapterWithSharedKey());
+        await adlsTest.runCheckFileTimeTests(adlsTestHelper.createAdapterWithSharedKey());
     });
 
     adlsIt('ADLSCheckFileTimeClientId', async () => {
-        await adlsTestHelper.runCheckFileTimeTests(adlsTestHelper.createAdapterWithClientId());
+        await adlsTest.runCheckFileTimeTests(adlsTestHelper.createAdapterWithClientId());
     });
 
     adlsIt('ADLSFileEnumSharedKey', async () => {
-        await adlsTestHelper.runFileEnumTest(adlsTestHelper.createAdapterWithSharedKey());
+        await adlsTest.runFileEnumTest(adlsTestHelper.createAdapterWithSharedKey());
     });
 
     adlsIt('ADLSFileEnumClientId', async () => {
-        await adlsTestHelper.runFileEnumTest(adlsTestHelper.createAdapterWithClientId());
+        await adlsTest.runFileEnumTest(adlsTestHelper.createAdapterWithClientId());
     });
 
     adlsIt('ADLSSpecialCharactersTest', async () => {
-        await adlsTestHelper.runSpecialCharactersTest(adlsTestHelper.createAdapterWithClientId('PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:'));
+        await adlsTest.runSpecialCharactersTest(adlsTestHelper.createAdapterWithClientId('PathWithSpecialCharactersAndUnescapedStringTest/Root-With=Special Characters:'));
     });
 
     /**
@@ -274,7 +228,6 @@ describe('Cdm.Storage.AdlsAdapter', () => {
      * When constructing and ADLS adapter from config, the user should be able to set the secret after the adapter is constructed.
      */
     it('TestConfigAndUpdateConfigWithoutSecret', () => {
-        const adlsAdapter: MockADLSAdapter = new MockADLSAdapter();
         const config = {
             root: 'root',
             hostname: 'hostname',
@@ -283,9 +236,24 @@ describe('Cdm.Storage.AdlsAdapter', () => {
         };
 
         try {
-            adlsAdapter.updateConfig(JSON.stringify(config));
-            adlsAdapter.secret = 'secret';
-            adlsAdapter.sharedKey = 'sharedKey';
+            const adlsAdapter1: MockADLSAdapter = new MockADLSAdapter();
+            adlsAdapter1.updateConfig(JSON.stringify(config));
+            adlsAdapter1.clientId ='clientId2'
+            adlsAdapter1.secret = 'secret';
+            adlsAdapter1.sharedKey = 'sharedKey';
+            adlsAdapter1.tokenProvider = new FakeTokenProvider();
+        }
+        catch {
+            fail('adlsAdapter initialized without secret shouldn\'t throw exception when updating config.')
+        }
+
+        try {
+            const adlsAdapter2: MockADLSAdapter = new MockADLSAdapter();
+            adlsAdapter2.clientId ='clientId2'
+            adlsAdapter2.secret = 'secret';
+            adlsAdapter2.sharedKey = 'sharedKey';
+            adlsAdapter2.tokenProvider = new FakeTokenProvider();
+            adlsAdapter2.updateConfig(JSON.stringify(config));
         }
         catch {
             fail('adlsAdapter initialized without secret shouldn\'t throw exception when updating config.')

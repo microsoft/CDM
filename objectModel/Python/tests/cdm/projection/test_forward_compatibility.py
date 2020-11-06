@@ -34,4 +34,4 @@ class ForwardCompatibilityTest(unittest.TestCase):
         self.assertIsNotNone(ent_test_entity_string_reference)
         resolved_test_entity_string_reference = await ProjectionTestUtils.get_resolved_entity(corpus, ent_test_entity_string_reference, ['referenceOnly'])  # type: CdmEntityDefinition
         self.assertIsNotNone(resolved_test_entity_string_reference)
-        AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_string_reference)
+        await AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, entity_name, resolved_test_entity_string_reference)

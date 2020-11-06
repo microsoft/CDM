@@ -25,6 +25,7 @@ class Model(DataObject):
             "lastFileStatusCheckTime": "cdm:lastFileStatusCheckTime",
             "lastChildFileModifiedTime": "cdm:lastChildFileModifiedTime",
             "lastFileModifiedTime": "cdm:lastFileModifiedTime",
+            "documentVersion": "cdm:documentVersion",
             "traits": "cdm:traits"
         })
 
@@ -40,3 +41,4 @@ class Model(DataObject):
         self.imports = None  # <JToken> # type: list
         self.lastFileStatusCheckTime = None  # type: datetime
         self.lastChildFileModifiedTime = None  # type: datetime
+        self.documentVersion = None  # type: str

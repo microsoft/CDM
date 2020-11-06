@@ -15,6 +15,12 @@ import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpClient
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpRequest;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.CdmHttpResponse;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.http.client.utils.DateUtils;
+import org.apache.http.entity.StringEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -26,20 +32,11 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.http.client.utils.DateUtils;
-import org.apache.http.entity.StringEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class AdlsAdapter extends NetworkAdapter {
   protected static final Duration ADLS_DEFAULT_TIMEOUT = Duration.ofMillis(5000);
@@ -88,21 +85,23 @@ public class AdlsAdapter extends NetworkAdapter {
     this();
     this.updateRoot(root);
     this.updateHostname(hostname);
-    this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(tenant, clientId, secret);
+    this.adlsAdapterAuthenticator.setTenant(tenant);
+    this.adlsAdapterAuthenticator.setClientId(clientId);
+    this.adlsAdapterAuthenticator.setSecret(secret);
   }
 
   public AdlsAdapter(final String hostname, final String root, final String sharedKey) {
     this();
     this.updateRoot(root);
     this.updateHostname(hostname);
-    this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(sharedKey);
+    this.adlsAdapterAuthenticator.setSharedKey(sharedKey);
   }
 
   public AdlsAdapter(final String hostname, final String root, final TokenProvider tokenProvider) {
     this();
     this.updateRoot(root);
     this.updateHostname(hostname);
-    this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(tokenProvider);
+    this.adlsAdapterAuthenticator.setTokenProvider(tokenProvider);
   }
 
   /**
@@ -111,6 +110,7 @@ public class AdlsAdapter extends NetworkAdapter {
   public AdlsAdapter() {
     this.httpClient = new CdmHttpClient();
     this.setTimeout(ADLS_DEFAULT_TIMEOUT);
+    this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator();
   }
 
   @Override
@@ -511,13 +511,14 @@ public class AdlsAdapter extends NetworkAdapter {
     }
     if (configsJson.has("sharedKey")) {
       // Then it is shared key auth.
-      this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(configsJson.get("sharedKey").asText());
+      this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator();
+      this.adlsAdapterAuthenticator.setSharedKey(configsJson.get("sharedKey").asText());
     } else if (configsJson.has("tenant") && configsJson.has("clientId")) {
       // Check first for clientId/secret auth.
-      this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator(
-          configsJson.get("tenant").asText(),
-          configsJson.get("clientId").asText(),
-          configsJson.has("secret") ? configsJson.get("secret").asText() : null);
+      this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator();
+      this.adlsAdapterAuthenticator.setTenant(configsJson.get("tenant").asText());
+      this.adlsAdapterAuthenticator.setClientId(configsJson.get("clientId").asText());
+      this.adlsAdapterAuthenticator.setSecret(configsJson.has("secret") ? configsJson.get("secret").asText() : null);
     }
     this.setLocationHint(configsJson.has("locationHint") ? configsJson.get("locationHint").asText() : null);
   }

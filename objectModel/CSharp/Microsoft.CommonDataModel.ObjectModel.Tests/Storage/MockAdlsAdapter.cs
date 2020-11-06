@@ -172,7 +172,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Storage
         /// Returns the headers with the applied shared key.
         /// </summary>
         /// <param name="sharedKey">The account/shared key.</param>
-        /// <param name="url">The URL.</param>
+        /// <param name="url">The URL with sorted query parameters</param>
         /// <param name="method">The HTTP method.</param>
         /// <param name="content">The string content.</param>
         /// <param name="contentType">The content type.</param>

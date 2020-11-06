@@ -46,5 +46,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson.types
 
         [JsonProperty("cdm:lastChildFileModifiedTime", NullValueHandling = NullValueHandling.Ignore)]
         public DateTimeOffset? LastChildFileModifiedTime { get; set; }
+
+        [JsonProperty("cdm:documentVersion", NullValueHandling = NullValueHandling.Ignore)]
+        public string DocumentVersion { get; set; }
     }
 }

@@ -184,8 +184,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
             if (this.ExtendsTrait != null)
+            {
+                this.ExtendsTrait.Owner = this;
                 if (this.ExtendsTrait.Visit(path + "/extendsTrait/", preChildren, postChildren))
                     return true;
+            }
             if (this.Parameters != null)
                 if (this.Parameters.VisitList(path + "/hasParameters/", preChildren, postChildren))
                     return true;

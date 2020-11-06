@@ -64,6 +64,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
             manifest.LastChildFileModifiedTime = obj.LastChildFileModifiedTime;
             manifest.LastFileStatusCheckTime = obj.LastFileStatusCheckTime;
 
+            if (!string.IsNullOrEmpty(obj.DocumentVersion))
+            {
+                manifest.DocumentVersion = obj.DocumentVersion;
+            }
+
             if (obj.Application != null)
             {
                 var applicationTrait = ctx.Corpus.MakeRef<CdmTraitReference>(CdmObjectType.TraitRef, "is.managedBy", false);
@@ -240,7 +245,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                 Description = instance.Explanation,
                 ModifiedTime = instance.LastFileModifiedTime,
                 LastChildFileModifiedTime = instance.LastChildFileModifiedTime,
-                LastFileStatusCheckTime = instance.LastFileStatusCheckTime
+                LastFileStatusCheckTime = instance.LastFileStatusCheckTime,
+                DocumentVersion = instance.DocumentVersion
             };
 
             TraitToPropertyMap t2pm = new TraitToPropertyMap(instance);

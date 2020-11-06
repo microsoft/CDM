@@ -12,7 +12,7 @@ import nest_asyncio
 from cdm.storage import StorageManager
 from cdm.enums import CdmAttributeContextType, CdmObjectType, CdmStatusLevel, CdmValidationStep, ImportsLoadStrategy
 from cdm.objectmodel import CdmContainerDefinition
-from cdm.utilities import AttributeResolutionDirectiveSet, DocsResult, logger, ResolveOptions, SymbolSet, StorageUtils
+from cdm.utilities import AttributeResolutionDirectiveSet, DepthInfo, DocsResult, ImportInfo, ResolveOptions, StorageUtils, SymbolSet, logger
 
 from .cdm_attribute_ref import CdmAttributeReference
 from .cdm_corpus_context import CdmCorpusContext
@@ -376,7 +376,7 @@ class CdmCorpusDefinition:
         Given a list of 'From' attributes, find the E2E relationships based on the 'To' information stored in the trait of the attribute in the resolved entity
         """
         if from_atts:
-            res_opt_copy = CdmObject._copy_resolve_options(res_opt)
+            res_opt_copy = res_opt.copy()
             res_opt_copy.wrt_doc = res_entity.in_document
 
             # Extract the from entity from res_entity
@@ -393,9 +393,9 @@ class CdmCorpusDefinition:
                 # For each of the to attributes, create a relationship
                 for tuple in tuple_list:
                     new_e2e_rel = CdmE2ERelationship(self.ctx, tuple[2])
-                    new_e2e_rel.from_entity = from_entity
+                    new_e2e_rel.from_entity = self.storage.create_absolute_corpus_path(from_entity, unresolved_entity)
                     new_e2e_rel.from_entity_attribute = from_atts[i].fetch_object_definition_name()
-                    new_e2e_rel.to_entity = tuple[0]
+                    new_e2e_rel.to_entity = self.storage.create_absolute_corpus_path(tuple[0], unresolved_entity)
                     new_e2e_rel.to_entity_attribute = tuple[1]
 
                     out_rels.append(new_e2e_rel)
@@ -442,7 +442,8 @@ class CdmCorpusDefinition:
 
                 # get the list of toAttributes from the traits on the resolved attribute
                 resolved_res_opt = ResolveOptions(res_entity.in_document)
-                att_from_fk = self._resolve_symbol_reference(resolved_res_opt, res_entity.in_document, foreign_key, CdmObjectType.TYPE_ATTRIBUTE_DEF, False)  # type: CdmTypeAttributeDefinition
+                att_from_fk = self._resolve_symbol_reference(resolved_res_opt, res_entity.in_document, foreign_key,
+                                                             CdmObjectType.TYPE_ATTRIBUTE_DEF, False)  # type: CdmTypeAttributeDefinition
                 if att_from_fk is not None:
                     fk_arg_values = self._get_to_attributes(att_from_fk, resolved_res_opt)
 
@@ -510,6 +511,11 @@ class CdmCorpusDefinition:
 
         tag_suffix = '-{}-{}'.format(kind, this_id)
         tag_suffix += '-({})'.format(res_opt.directives.get_tag() if res_opt.directives else '')
+        if res_opt.depth_info and res_opt.depth_info.max_depth_exceeded:
+            curr_depth_info = res_opt.depth_info
+            tag_suffix += '-{}'.format(curr_depth_info.max_depth - curr_depth_info.current_depth)
+        if res_opt.in_circular_reference:
+            tag_suffix += '-pk'
         if extra_tags:
             tag_suffix += '-{}'.format(extra_tags)
 
@@ -579,13 +585,13 @@ class CdmCorpusDefinition:
             # make sure we can find everything that is named by reference
             for doc in docs_not_indexed:
                 if doc._is_valid:
-                    res_opt_local = CdmObject._copy_resolve_options(res_opt)
+                    res_opt_local = res_opt.copy()
                     res_opt_local.wrt_doc = doc
                     self._resolve_object_definitions(res_opt_local, doc)
 
             # now resolve any trait arguments that are type object
             for doc in docs_not_indexed:
-                res_opt_local = CdmObject._copy_resolve_options(res_opt)
+                res_opt_local = res_opt.copy()
                 res_opt_local.wrt_doc = doc
                 self._resolve_trait_arguments(res_opt_local, doc)
 
@@ -753,7 +759,7 @@ class CdmCorpusDefinition:
 
                 return None
 
-            last_folder = await namespace_folder._fetch_child_folder_from_path_async(object_path, namespace_adapter, False)
+            last_folder = namespace_folder._fetch_child_folder_from_path(object_path, False)
 
             # don't create new folders, just go as far as possible
             if last_folder:
@@ -773,29 +779,33 @@ class CdmCorpusDefinition:
         docs_now_loaded = set()  # type: Set[CdmDocumentDefinition]
         docs_not_loaded = self._document_library._list_docs_not_loaded()
 
-        if docs_not_loaded:
-            async def load_docs(missing: str) -> None:
-                if self._document_library._need_to_load_document(missing):
-                    # load it
-                    new_doc = await self._load_folder_or_document(missing, False, res_opt)  # type: CdmDocumentDefinition
+        if not docs_not_loaded:
+            return
 
-                    if self._document_library._mark_document_as_loaded_or_failed(new_doc, missing, docs_now_loaded):
-                        logger.info(self._TAG, self.ctx, 'resolved import for \'{}\''.format(new_doc.name), doc.at_corpus_path)
-                    else:
-                        logger.warning(self._TAG, self.ctx, 'unable to resolve import for \'{}\''.format(missing), doc.at_corpus_path)
+        async def load_docs(missing: str) -> None:
+            if self._document_library._need_to_load_document(missing, docs_now_loaded):
+                self._document_library._concurrent_read_lock.acquire()
+                # load it
+                new_doc = await self._load_folder_or_document(missing, False, res_opt)  # type: CdmDocumentDefinition
 
-            task_list = [load_docs(missing) for missing in docs_not_loaded]
+                if self._document_library._mark_document_as_loaded_or_failed(new_doc, missing, docs_now_loaded):
+                    logger.info(self._TAG, self.ctx, 'resolved import for \'{}\''.format(new_doc.name), doc.at_corpus_path)
+                else:
+                    logger.warning(self._TAG, self.ctx, 'unable to resolve import for \'{}\''.format(missing), doc.at_corpus_path)
+                self._document_library._concurrent_read_lock.release()
 
-            # wait for all of the missing docs to finish loading
-            await asyncio.gather(*task_list)
+        task_list = [load_docs(missing) for missing in docs_not_loaded]
 
-            # now that we've loaded new docs, find imports from them that need loading
-            for loaded_doc in docs_now_loaded:
-                self._find_missing_imports_from_document(loaded_doc)
+        # wait for all of the missing docs to finish loading
+        await asyncio.gather(*task_list)
 
-            # repeat self process for the imports of the imports
-            import_task_list = [self._load_imports_async(loaded_doc, res_opt) for loaded_doc in docs_now_loaded]
-            await asyncio.gather(*import_task_list)
+        # now that we've loaded new docs, find imports from them that need loading
+        for loaded_doc in docs_now_loaded:
+            self._find_missing_imports_from_document(loaded_doc)
+
+        # repeat self process for the imports of the imports
+        import_task_list = [self._load_imports_async(loaded_doc, res_opt) for loaded_doc in docs_now_loaded]
+        await asyncio.gather(*import_task_list)
 
     def make_object(self, of_type: 'CdmObjectType', name_or_ref: str = None, simple_name_ref: bool = False) -> 'TObject':
         """instantiates a OM class based on the object type passed as first parameter."""
@@ -889,7 +899,7 @@ class CdmCorpusDefinition:
         else:
             directives = self.default_resolution_directives
         res_opt = ResolveOptions(wrt_doc=None, directives=directives)
-        res_opt._relationship_depth = 0
+        res_opt.depth_info = DepthInfo(max_depth=None, current_depth=0, max_depth_exceeded=False)
 
         for doc in self._document_library._list_all_documents():
             await doc[1]._index_if_needed(res_opt)
@@ -1096,8 +1106,8 @@ class CdmCorpusDefinition:
 
         if wrt_doc._needs_indexing and res_opt.imports_load_strategy == ImportsLoadStrategy.DO_NOT_LOAD:
             logger.error(self._TAG, self.ctx,
-                        'Cannot find symbol definition \'{}\' because the ImportsLoadStrategy is set to DO_NOT_LOAD'.format(symbol_def),
-                        '_resolve_symbol_reference')
+                         'Cannot find symbol definition \'{}\' because the ImportsLoadStrategy is set to DO_NOT_LOAD'.format(symbol_def),
+                         '_resolve_symbol_reference')
             return None
 
         # get the array of documents where the symbol is defined
@@ -1117,7 +1127,7 @@ class CdmCorpusDefinition:
             if not wrt_doc._import_priorities:
                 return None  # need to index imports first, should have happened
 
-            import_priority = wrt_doc._import_priorities.import_priority  # type: Dict[CdmDocumentDefinition, int]
+            import_priority = wrt_doc._import_priorities.import_priority  # type: Dict[CdmDocumentDefinition, ImportInfo]
             if not import_priority:
                 return None
 
@@ -1244,7 +1254,7 @@ class CdmCorpusDefinition:
             if not imp._document:
                 # no document set for this import, see if it is already loaded into the corpus
                 path = self.storage.create_absolute_corpus_path(imp.corpus_path, doc)
-                imp_doc = self._document_library._fetch_document_and_mark_for_indexing(path)
+                imp_doc = self._document_library._fetch_document(path)
                 if imp_doc:
                     imp._document = imp_doc
                     # repeat the process for the import documents
@@ -1311,15 +1321,15 @@ class CdmCorpusDefinition:
         return '{}-{}'.format(definition.id, kind)
 
     @staticmethod
-    def _fetch_priority_doc(docs: List['CdmDocumentDefinition'], import_priority: Dict['CdmDocumentDefinition', int]) -> 'CdmDocumentDefinition':
+    def _fetch_priority_doc(docs: List['CdmDocumentDefinition'], import_priority: Dict['CdmDocumentDefinition', 'ImportInfo']) -> 'CdmDocumentDefinition':
         doc_best = None
         index_best = None
 
         for doc_defined in docs:
             # is this one of the imported docs?
-            index_found = import_priority.get(doc_defined)
-            if index_found is not None and (index_best is None or index_found < index_best):
-                index_best = index_found
+            import_info = import_priority.get(doc_defined)
+            if import_info is not None and (index_best is None or import_info.priority < index_best):
+                index_best = import_info.priority
                 doc_best = doc_defined
                 if index_best == 0:
                     #  hard to be better than the best
@@ -1348,7 +1358,7 @@ class CdmCorpusDefinition:
 
         return CdmObjectType.ERROR
 
-    async def fetch_object_async(self, object_path: str, relative_object: Optional['CdmObject'] = None, shallow_validation: Optional[bool] = False, \
+    async def fetch_object_async(self, object_path: str, relative_object: Optional['CdmObject'] = None, shallow_validation: Optional[bool] = False,
                                  force_reload: Optional[bool] = False, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObject':
         """gets an object by the path from the Corpus."""
         from cdm.persistence import PersistenceLayer

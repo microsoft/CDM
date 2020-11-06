@@ -19,5 +19,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
 
         [JsonProperty("definitions", NullValueHandling = NullValueHandling.Ignore)]
         public List<JToken> Definitions { get; set; }
+
+        [JsonProperty("documentVersion", NullValueHandling = NullValueHandling.Ignore)]
+        public string DocumentVersion { get; set; }
     }
 }

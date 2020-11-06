@@ -65,7 +65,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             copy.EntityShape = (CdmEntityReference)this.EntityShape.Copy(resOpt);
-            copy.ConstantValues = this.ConstantValues; // is a deep copy needed? 
+            if (this.ConstantValues != null)
+            {
+                // deep copy the content
+                copy.ConstantValues = new List<List<string>>();
+                foreach(var row in this.ConstantValues)
+                {
+                    copy.ConstantValues.Add(new List<string>(row));
+                }
+            }
             this.CopyDef(resOpt, copy);
             return copy;
         }
@@ -153,8 +161,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
             if (this.EntityShape != null)
+            {
+                this.EntityShape.Owner = this;
                 if (this.EntityShape.Visit(path + "/entityShape/", preChildren, postChildren))
                     return true;
+            }
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;

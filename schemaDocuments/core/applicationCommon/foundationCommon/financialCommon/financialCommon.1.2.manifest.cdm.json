@@ -1,0 +1,96 @@
+{
+  "$schema": "CdmManifest.cdm.json",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [],
+  "manifestName": "financialCommon",
+  "explanation": "CDM standard entities",
+  "entities": [
+    {
+      "type": "LocalEntity",
+      "entityName": "FinancialActivity",
+      "entityPath": "FinancialActivity.0.10.cdm.json/FinancialActivity"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "FiscalCalendarPeriod",
+      "entityPath": "FiscalCalendarPeriod.0.8.1.cdm.json/FiscalCalendarPeriod"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "Ledger",
+      "entityPath": "Ledger.0.10.cdm.json/Ledger"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "MainAccount",
+      "entityPath": "MainAccount.0.10.cdm.json/MainAccount"
+    },
+    {
+      "type": "LocalEntity",
+      "entityName": "MainAccountCategory",
+      "entityPath": "MainAccountCategory.0.8.1.cdm.json/MainAccountCategory"
+    }
+  ],
+  "relationships": [
+    {
+      "fromEntity": "FinancialActivity.0.10.cdm.json/FinancialActivity",
+      "fromEntityAttribute": "mainAccountCategoryKey",
+      "toEntity": "MainAccountCategory.0.8.1.cdm.json/MainAccountCategory",
+      "toEntityAttribute": "mainAccountCategoryId"
+    },
+    {
+      "fromEntity": "FinancialActivity.0.10.cdm.json/FinancialActivity",
+      "fromEntityAttribute": "mainAccountKey",
+      "toEntity": "MainAccount.0.10.cdm.json/MainAccount",
+      "toEntityAttribute": "mainAccountId"
+    },
+    {
+      "fromEntity": "FinancialActivity.0.10.cdm.json/FinancialActivity",
+      "fromEntityAttribute": "companyKey",
+      "toEntity": "/core/applicationCommon/foundationCommon/Company.1.2.cdm.json/Company",
+      "toEntityAttribute": "companyId"
+    },
+    {
+      "fromEntity": "FinancialActivity.0.10.cdm.json/FinancialActivity",
+      "fromEntityAttribute": "transactionCurrencyKey",
+      "toEntity": "/core/applicationCommon/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "FinancialActivity.0.10.cdm.json/FinancialActivity",
+      "fromEntityAttribute": "fiscalCalendarPeriodKey",
+      "toEntity": "FiscalCalendarPeriod.0.8.1.cdm.json/FiscalCalendarPeriod",
+      "toEntityAttribute": "fiscalCalendarPeriodId"
+    },
+    {
+      "fromEntity": "FinancialActivity.0.10.cdm.json/FinancialActivity",
+      "fromEntityAttribute": "ledgerId",
+      "toEntity": "Ledger.0.10.cdm.json/Ledger",
+      "toEntityAttribute": "ledgerId"
+    },
+    {
+      "fromEntity": "Ledger.0.10.cdm.json/Ledger",
+      "fromEntityAttribute": "companyKey",
+      "toEntity": "/core/applicationCommon/foundationCommon/Company.1.2.cdm.json/Company",
+      "toEntityAttribute": "companyId"
+    },
+    {
+      "fromEntity": "Ledger.0.10.cdm.json/Ledger",
+      "fromEntityAttribute": "accountingCurrencyKey",
+      "toEntity": "/core/applicationCommon/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    },
+    {
+      "fromEntity": "MainAccount.0.10.cdm.json/MainAccount",
+      "fromEntityAttribute": "mainAccountCategoryKey",
+      "toEntity": "MainAccountCategory.0.8.1.cdm.json/MainAccountCategory",
+      "toEntityAttribute": "mainAccountCategoryId"
+    },
+    {
+      "fromEntity": "MainAccount.0.10.cdm.json/MainAccount",
+      "fromEntityAttribute": "currencyKey",
+      "toEntity": "/core/applicationCommon/Currency.1.2.cdm.json/Currency",
+      "toEntityAttribute": "transactionCurrencyId"
+    }
+  ]
+}

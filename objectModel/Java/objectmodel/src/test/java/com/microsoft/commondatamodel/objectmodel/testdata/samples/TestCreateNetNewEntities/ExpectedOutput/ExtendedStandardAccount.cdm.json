@@ -1,0 +1,51 @@
+{
+  "jsonSchemaSemanticVersion" : "1.0.0",
+  "imports" : [
+    {
+      "corpusPath" : "cdm:/foundations.cdm.json"
+    },
+    {
+      "corpusPath" : "cdm:/core/applicationCommon/foundationCommon/crmCommon/accelerators/healthCare/electronicMedicalRecords/Account.cdm.json"
+    },
+    {
+      "corpusPath" : "CustomAccount.cdm.json"
+    }
+  ],
+  "definitions" : [
+    {
+      "entityName" : "ExtendedStandardAccount",
+      "extendsEntity" : "Account",
+      "hasAttributes" : [
+        {
+          "explanation" : "This is a simple custom account for this sample.",
+          "entity" : {
+            "entityReference" : "CustomAccount",
+            "appliedTraits" : [
+              {
+                "traitReference" : "is.identifiedBy",
+                "arguments" : [
+                  "CustomAccount/(resolvedAttributes)/CustomAccountId"
+                ]
+              }
+            ]
+          },
+          "name" : "SimpleCustomAccount",
+          "resolutionGuidance" : {
+            "renameFormat" : "{m}",
+            "entityByReference" : {
+              "allowReference" : true,
+              "foreignKeyAttribute" : {
+                "name" : "SimpleCustomAccountId",
+                "purpose" : "identifiedBy",
+                "dataType" : "entityId",
+                "appliedTraits" : [
+                  "is.linkedEntity.identifier"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

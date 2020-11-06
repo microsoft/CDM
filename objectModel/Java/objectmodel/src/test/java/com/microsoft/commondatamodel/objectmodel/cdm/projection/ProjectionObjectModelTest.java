@@ -22,10 +22,10 @@ public class ProjectionObjectModelTest {
      * The path between TestDataPath and TestName.
      */
     private static final String TESTS_SUBPATH =
-        new File(new File(
-            "cdm"),
-            "projection")
-            .toString();
+            new File(new File(
+                    "cdm"),
+                    "projection")
+                    .toString();
 
     /**
      * Basic test to save projection based entities and then try to reload them and validate that the projections were persisted correctly
@@ -62,7 +62,7 @@ public class ProjectionObjectModelTest {
         // Read back the newly persisted manifest and projection based entity TestEntityProjection and validate.
         CdmEntityDefinition entityTestEntityProjectionReadBack = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityTestEntityProjection.getEntityName() + ".cdm.json/" + entityTestEntityProjection.getEntityName(), manifestReadBack).join();
         Assert.assertNotNull(entityTestEntityProjectionReadBack);
-        actual = ((CdmEntityReference)((CdmProjection)entityTestEntityProjectionReadBack.getExtendsEntity().getExplicitReference()).getSource()).getNamedReference();
+        actual = ((CdmEntityReference) ((CdmProjection) entityTestEntityProjectionReadBack.getExtendsEntity().getExplicitReference()).getSource()).getNamedReference();
         actualType = entityTestEntityProjectionReadBack.getExtendsEntity().getExplicitReference().getObjectType();
         Assert.assertEquals(actual, expected);
         Assert.assertEquals(actualType, expectedType);
@@ -70,25 +70,25 @@ public class ProjectionObjectModelTest {
         // Read back the newly persisted manifest and projection based entity TestEntityNestedProjection and validate.
         CdmEntityDefinition entityTestEntityNestedProjectionReadBack = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityTestEntityNestedProjection.getEntityName() + ".cdm.json/" + entityTestEntityNestedProjection.getEntityName(), manifestReadBack).join();
         Assert.assertNotNull(entityTestEntityNestedProjectionReadBack);
-        actual = ((CdmProjection)(((CdmProjection)(((CdmProjection)(entityTestEntityNestedProjectionReadBack.getExtendsEntity()).getExplicitReference()).getSource()).getExplicitReference()).getSource()).getExplicitReference()).getSource().getNamedReference();
-        actualType = ((((CdmProjection)(((CdmProjection)(entityTestEntityNestedProjectionReadBack.getExtendsEntity()).getExplicitReference()).getSource()).getExplicitReference()).getSource()).getExplicitReference()).getObjectType();
+        actual = ((CdmProjection) (((CdmProjection) (((CdmProjection) (entityTestEntityNestedProjectionReadBack.getExtendsEntity()).getExplicitReference()).getSource()).getExplicitReference()).getSource()).getExplicitReference()).getSource().getNamedReference();
+        actualType = ((((CdmProjection) (((CdmProjection) (entityTestEntityNestedProjectionReadBack.getExtendsEntity()).getExplicitReference()).getSource()).getExplicitReference()).getSource()).getExplicitReference()).getObjectType();
         Assert.assertEquals(actual, expected);
         Assert.assertEquals(actualType, expectedType);
 
         // Read back the newly persisted manifest and projection based entity TestEntityAttributeProjection and validate.
         CdmEntityDefinition entityTestEntityAttributeProjectionReadBack = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityTestEntityAttributeProjection.getEntityName() + ".cdm.json/" + entityTestEntityAttributeProjection.getEntityName(), manifestReadBack).join();
         Assert.assertNotNull(entityTestEntityAttributeProjectionReadBack);
-        actual = ((CdmEntityReference)((CdmProjection)((CdmEntityAttributeDefinition)entityTestEntityAttributeProjectionReadBack.getAttributes().get(0)).getEntity().getExplicitReference()).getSource()).getNamedReference();
-        actualType = ((CdmEntityAttributeDefinition)entityTestEntityAttributeProjectionReadBack.getAttributes().get(0)).getEntity().getExplicitReference().getObjectType();
+        actual = ((CdmEntityReference) ((CdmProjection) ((CdmEntityAttributeDefinition) entityTestEntityAttributeProjectionReadBack.getAttributes().get(0)).getEntity().getExplicitReference()).getSource()).getNamedReference();
+        actualType = ((CdmEntityAttributeDefinition) entityTestEntityAttributeProjectionReadBack.getAttributes().get(0)).getEntity().getExplicitReference().getObjectType();
         Assert.assertEquals(actual, expected);
         Assert.assertEquals(actualType, expectedType);
 
         // Read back operations collections and validate.
         CdmEntityDefinition entityTestOperationCollectionReadBack = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityTestOperationCollection.getEntityName() + ".cdm.json/" + entityTestOperationCollection.getEntityName(), manifestReadBack).join();
         Assert.assertNotNull(entityTestOperationCollectionReadBack);
-        int actualOperationCount = ((CdmProjection)entityTestOperationCollectionReadBack.getExtendsEntity().getExplicitReference()).getOperations().size();
+        int actualOperationCount = ((CdmProjection) entityTestOperationCollectionReadBack.getExtendsEntity().getExplicitReference()).getOperations().size();
         Assert.assertEquals(actualOperationCount, 9);
-        CdmOperationCollection operations = ((CdmProjection)entityTestOperationCollectionReadBack.getExtendsEntity().getExplicitReference()).getOperations();
+        CdmOperationCollection operations = ((CdmProjection) entityTestOperationCollectionReadBack.getExtendsEntity().getExplicitReference()).getOperations();
         Assert.assertEquals(operations.get(0).getType(), CdmOperationType.AddCountAttribute);
         Assert.assertEquals(operations.get(1).getType(), CdmOperationType.AddSupportingAttribute);
         Assert.assertEquals(operations.get(2).getType(), CdmOperationType.AddTypeAttribute);
@@ -217,8 +217,7 @@ public class ProjectionObjectModelTest {
     /**
      * Create an entity 'TestEntityAttributeProjection' that contains an entity attribute with a projection as a source entity
      */
-    private CdmEntityDefinition createEntityTestEntityAttributeProjection(CdmCorpusDefinition corpus, CdmManifestDefinition manifestDefault, CdmFolderDefinition localRoot)
-    {
+    private CdmEntityDefinition createEntityTestEntityAttributeProjection(CdmCorpusDefinition corpus, CdmManifestDefinition manifestDefault, CdmFolderDefinition localRoot) {
         String entityName = "TestEntityAttributeProjection";
 
         CdmEntityReference inlineProjectionEntityRef = corpus.makeObject(CdmObjectType.EntityRef, null);
@@ -278,9 +277,9 @@ public class ProjectionObjectModelTest {
 
         // CombineAttributes Operation
         CdmOperationCombineAttributes combineAttributesOp = new CdmOperationCombineAttributes(corpus.getCtx());
-        combineAttributesOp.setTake(new ArrayList<String>());
+        combineAttributesOp.setSelect(new ArrayList<String>());
         combineAttributesOp.setMergeInto(corpus.makeObject(CdmObjectType.TypeAttributeDef));
-        combineAttributesOp.getTake().add("testAttribute1");
+        combineAttributesOp.getSelect().add("testAttribute1");
         projection.getOperations().add(combineAttributesOp);
 
         // RenameAttributes Operation

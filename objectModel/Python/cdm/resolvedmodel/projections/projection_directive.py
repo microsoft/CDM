@@ -66,8 +66,9 @@ class ProjectionDirective:
         self._is_array = res_opt.directives.has('isArray') == True if res_opt.directives else False  # type: Optional[bool]
 
         # Current depth of reference
-        self._current_depth = 1 if res_opt and res_opt._relationship_depth == None else res_opt._relationship_depth + 1  # type: Optional[int]
-        res_opt._relationship_depth = self._current_depth
+        if res_opt.depth_info is not None:
+            self._current_depth = 1 if res_opt and res_opt.depth_info == None else res_opt.depth_info.current_depth + 1  # type: Optional[int]
+            res_opt.depth_info.current_depth = self._current_depth
 
         # if noMaxDepth directive the max depth is 32 else defaults to 2
         # these depths were arbitrary and were set for the resolution guidance

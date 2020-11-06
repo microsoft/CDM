@@ -3,6 +3,7 @@
 
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Concurrent;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal IDictionary<string, byte> docsNotFound;
         internal List<Tuple<CdmFolderDefinition, CdmDocumentDefinition>> allDocuments;
         internal IDictionary<string, Tuple<CdmFolderDefinition, CdmDocumentDefinition>> pathLookup;
+        internal ConcurrentSemaphore concurrentReadLock;
 
         internal DocumentLibrary()
         {
@@ -27,6 +29,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.docsCurrentlyLoading = new Dictionary<string, byte>();
             this.docsNotFound = new Dictionary<string, byte>();
             this.docsNotIndexed = new Dictionary<CdmDocumentDefinition, byte>();
+            this.concurrentReadLock = new ConcurrentSemaphore();
         }
 
         /// <summary>
@@ -122,7 +125,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 if (!this.docsNotFound.ContainsKey(path))
                 {
                     this.pathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
-                    if (lookup == null)
+                    // If the imports were not indexed yet there might be documents imported that weren't loaded.
+                    if (lookup == null || (!lookup.Item2.ImportsIndexed && !lookup.Item2.CurrentlyIndexing))
                     {
                         this.docsNotLoaded[path] = 1;
                     }
@@ -131,11 +135,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         /// <summary>
-        /// Fetches a document from the path lookup and adds it to the list of documents that are not indexed.
+        /// Fetches a document from the path lookup.
         /// </summary>
         /// <param name="path">The document path.</param>
         /// <returns>The document with the given path.</returns>
-        internal CdmDocumentDefinition FetchDocumentAndMarkForIndexing(string path)
+        internal CdmDocumentDefinition FetchDocument(string path)
         {
             lock (this.allDocuments)
             {
@@ -144,12 +148,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     this.pathLookup.TryGetValue(path.ToLower(), out Tuple<CdmFolderDefinition, CdmDocumentDefinition> lookup);
                     if (lookup != null)
                     {
-                        if (!lookup.Item2.ImportsIndexed && !lookup.Item2.CurrentlyIndexing)
-                        {
-                            // Mark for indexing.
-                            lookup.Item2.CurrentlyIndexing = true;
-                            this.docsNotIndexed[lookup.Item2] = 1;
-                        }
                         return lookup.Item2;
                     }
                 }
@@ -162,20 +160,37 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         /// <param name="docName">The document name.</param>
         /// <returns>Whether a document needs to be loaded.</returns>
-        internal bool NeedToLoadDocument(string docName)
+        internal bool NeedToLoadDocument(string docName, ConcurrentDictionary<CdmDocumentDefinition, byte> docsNowLoaded)
         {
+            bool needToLoad = false;
+            CdmDocumentDefinition doc = null;
+
             lock (this.allDocuments)
             {
                 if (this.docsNotLoaded.ContainsKey(docName) && !this.docsNotFound.ContainsKey(docName) && !this.docsCurrentlyLoading.ContainsKey(docName))
                 {
                     // Set status to loading.
                     this.docsNotLoaded.Remove(docName);
-                    this.docsCurrentlyLoading.Add(docName, 1);
 
-                    return true;
-                }
-                return false;
+                    // The document was loaded already, skip it.
+                    if (this.pathLookup.TryGetValue(docName.ToLower(), out var lookup))
+                    {
+                        doc = lookup.Item2;
+                    }
+                    else
+                    {
+                        this.docsCurrentlyLoading.Add(docName, 1);
+                        needToLoad = true;
+                    }
+                }                
             }
+
+            if (doc != null)
+            {
+                MarkDocumentAsLoadedOrFailed(doc, docName, docsNowLoaded);
+            }
+
+            return needToLoad;
         }
 
         /// <summary>

@@ -11,6 +11,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.IO;
     using System.Threading.Tasks;
+    using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
+
     [TestClass]
     public class EntityTest
     {
@@ -118,6 +120,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
             await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Entity.cdm.json/Entity");
             // Load resolved entity with ShallowValidation = false.
             await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/ResolvedEntity.cdm.json/ResolvedEntity");
+        }
+
+        /// <summary>
+        /// Testing that an empty list in an Attribute Group still exists after persisting
+        /// </summary>
+        [TestMethod]
+        public async Task TestPersistAttributeGroupDefinition()
+        {
+            var corpus = new CdmCorpusDefinition();
+            var attGroup = new CdmAttributeGroupDefinition(corpus.Ctx, "attGroup");
+            var persistedGroup = AttributeGroupPersistence.ToData(attGroup, new ResolveOptions(attGroup.InDocument), new CopyOptions());
+            Assert.IsNotNull(persistedGroup.Members);
         }
     }
 }

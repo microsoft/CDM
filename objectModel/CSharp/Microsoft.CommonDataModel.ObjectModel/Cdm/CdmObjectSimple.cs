@@ -40,6 +40,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             return null;
         }
+        internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
+        {
+            return null;
+        }
 
         /// <inheritdoc />
         public override bool IsDerivedFrom(string baseDef, ResolveOptions resOpt = null)

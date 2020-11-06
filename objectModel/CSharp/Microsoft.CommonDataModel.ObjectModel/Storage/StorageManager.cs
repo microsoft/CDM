@@ -38,7 +38,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The namespace that will be used when one is not explicitly provided.
         /// </summary>
         public string DefaultNamespace { get; set; }
-        
+
+        /// <summary>
+        /// Number of documents read concurrently when loading imports.
+        /// </summary>
+        public int? MaxConcurrentReads 
+        {
+            get
+            {
+                return this.Corpus.documentLibrary.concurrentReadLock.Permits;
+            }
+            set
+            {
+                this.Corpus.documentLibrary.concurrentReadLock.Permits = value;
+            }
+        }
+
         /// <summary>
         /// Constructs a StorageManager.
         /// </summary>

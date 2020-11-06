@@ -60,6 +60,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         }
 
         /// <summary>
+        /// Projection scenario with the referenced entity in a different folder
+        /// </summary>
+        [TestMethod]
+        public void TestDiffRefLocation()
+        {
+            string testName = "TestDiffRefLocation";
+            string entityName = "Sales";
+
+            TestRun(testName, entityName);
+        }
+
+        /// <summary>
         /// Projection with composite keys
         /// </summary>
         [TestMethod]

@@ -2,15 +2,21 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import {
+    AttributeContextParameters,
     CdmAttributeContext,
+    cdmAttributeContextType,
     CdmCorpusContext,
     CdmObject,
     cdmObjectType,
     CdmOperationBase,
     cdmOperationType,
+    Errors,
     Logger,
+    ProjectionAttributeState,
     ProjectionAttributeStateSet,
     ProjectionContext,
+    ResolvedAttribute,
+    ResolvedAttributeSetBuilder,
     resolveOptions,
     VisitCallback
 } from '../../internal';
@@ -20,7 +26,11 @@ import {
  */
 export class CdmOperationAddAttributeGroup extends CdmOperationBase {
     private TAG: string = CdmOperationAddAttributeGroup.name;
-    // TODO (sukanyas): Property to be defined
+
+    /**
+     * Name given to the attribute group that will be created
+     */
+    public attributeGroupName: string;
 
     constructor(ctx: CdmCorpusContext) {
         super(ctx);
@@ -32,8 +42,9 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.copy.name);
-        return new CdmOperationAddAttributeGroup(this.ctx);
+        const copy = new CdmOperationAddAttributeGroup(this.ctx);
+        copy.attributeGroupName = this.attributeGroupName;
+        return copy;
     }
 
     /**
@@ -56,7 +67,20 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
     public validate(): boolean {
         const missingFields: string[] = [];
 
-        // TODO (sukanyas): required Property to be defined
+        if (!this.attributeGroupName) {
+            missingFields.push('attributeGroupName');
+        }
+
+        if (missingFields.length > 0) {
+            Logger.error(
+                this.TAG,
+                this.ctx,
+                Errors.validateErrorString(this.atCorpusPath, missingFields),
+                this.validate.name
+            );
+
+            return false;
+        }
 
         return true;
     }
@@ -89,8 +113,48 @@ export class CdmOperationAddAttributeGroup extends CdmOperationBase {
      * @inheritdoc
      * @internal
      */
-    public appendProjectionAttributeState(projCtx: ProjectionContext, projAttrStateSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.appendProjectionAttributeState.name);
-        return undefined;
+    public appendProjectionAttributeState(projCtx: ProjectionContext, projOutputSet: ProjectionAttributeStateSet, attrCtx: CdmAttributeContext): ProjectionAttributeStateSet {
+        // Create a new attribute context for the operation
+        const attrCtxOpAddAttrGroupParam: AttributeContextParameters = {
+            under: attrCtx,
+            type: cdmAttributeContextType.operationAddAttributeGroup,
+            name: `operation/index${this.index}/${this.getName()}`
+        };
+        const attrCtxOpAddAttrGroup: CdmAttributeContext  = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxOpAddAttrGroupParam);
+
+        // Create a new attribute context for the attribute group we will create
+        const attrCtxAttrGroupParam: AttributeContextParameters = {
+            under: attrCtxOpAddAttrGroup,
+            type: cdmAttributeContextType.attributeDefinition,
+            name: this.attributeGroupName
+        };
+        const attrCtxAttrGroup: CdmAttributeContext  = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxAttrGroupParam);
+
+        // Create a new resolve attribute set builder that will be used to combine all the attributes into one set
+        const rasb = new ResolvedAttributeSetBuilder();
+
+        // Iterate through all the projection attribute states generated from the source's resolved attributes
+        // Each projection attribute state contains a resolved attribute that it is corresponding to
+        for (const currentPAS of projCtx.currentAttributeStateSet.states) {
+            // Create an attribute set build that owns one resolved attribute
+            const attributeRasb = new ResolvedAttributeSetBuilder();
+            attributeRasb.ownOne(currentPAS.currentResolvedAttribute);
+
+            // Merge the attribute set containing one attribute with the one holding all the attributes
+            rasb.mergeAttributes(attributeRasb.ras);
+
+            // Add each attribute's attribute context to the resolved attribute set attribute context
+            attrCtxAttrGroup.contents.push(currentPAS.currentResolvedAttribute.attCtx);
+        }
+
+        // Create a new resolved attribute that will hold the attribute set containing all the attributes
+        const resAttrNew = new ResolvedAttribute(projCtx.projectionDirective.resOpt, rasb.ras, this.attributeGroupName, attrCtxAttrGroup);
+
+        // Create a new projection attribute state pointing to the resolved attribute set that represents the attribute group
+        const newPAS = new ProjectionAttributeState(this.ctx);
+        newPAS.currentResolvedAttribute = resAttrNew;
+        projOutputSet.add(newPAS);
+
+        return projOutputSet;
     }
 }

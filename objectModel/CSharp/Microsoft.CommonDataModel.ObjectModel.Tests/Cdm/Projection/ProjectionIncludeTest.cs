@@ -107,7 +107,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// Test for object model
         /// </summary>
         [TestMethod]
-        public void TestEAProjOM()
+        public async Task TestEAProjOM()
         {
             string className = "ProjectionIncludeTest";
             string testName = "TestEAProjOM";
@@ -143,7 +143,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 util.ValidateBasicEntity(entity_Color, entityName_Color, attributeParams_Color);
 
                 CdmProjection projection_RGBColor = util.CreateProjection(entity_RGB.EntityName);
-                CdmOperationIncludeAttributes operation_IncludeAttributes = util.CreateOperationInputAttribute(projection_RGBColor, includeAttributeNames);
+                CdmOperationIncludeAttributes operation_IncludeAttributes = util.CreateOperationInputAttributes(projection_RGBColor, includeAttributeNames);
                 CdmEntityReference projectionEntityRef_RGBColor = util.CreateProjectionInlineEntityReference(projection_RGBColor);
 
                 CdmEntityAttributeDefinition entityAttribute_RGBColor = util.CreateEntityAttribute("RGBColor", projectionEntityRef_RGBColor);
@@ -151,7 +151,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
 
                 foreach (List<string> resOpts in resOptsCombinations)
                 {
-                    CdmEntityDefinition resolvedEntity_Color = util.GetAndValidateResolvedEntity(entity_Color, resOpts);
+                    await util.GetAndValidateResolvedEntity(entity_Color, resOpts);
                 }
 
                 util.DefaultManifest.SaveAsAsync(util.ManifestDocName, saveReferenced: true).GetAwaiter().GetResult();

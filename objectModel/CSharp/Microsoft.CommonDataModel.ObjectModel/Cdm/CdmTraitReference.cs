@@ -74,8 +74,26 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             Dictionary<string, dynamic> finalArgs = new Dictionary<string, dynamic>();
             // get resolved traits does all the work, just clean up the answers
             ResolvedTraitSet rts = this.FetchResolvedTraits(resOpt);
-            if (rts == null)
+            if (rts == null || rts.Size != 1)
             {
+                // well didn't get the traits. maybe imports are missing or maybe things are just not defined yet.
+                // this function will try to fake up some answers then from the arguments that are set on this reference only
+                if (this.Arguments != null && this.Arguments.Count > 0)
+                {
+                    int unNamedCount = 0;
+                    foreach(var arg in this.Arguments)
+                    {
+                        // if no arg name given, use the position in the list.
+                        string argName = arg.Name;
+                        if (string.IsNullOrWhiteSpace(argName))
+                        {
+                            argName = unNamedCount.ToString();
+                        }
+                        finalArgs.Add(argName, arg.Value);
+                        unNamedCount++;
+                    }
+                    return finalArgs;
+                }
                 return null;
             }
             // there is only one resolved trait

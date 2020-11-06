@@ -4,7 +4,6 @@
 from typing import Dict, List, Optional, TYPE_CHECKING
 
 from cdm.resolvedmodel.projections.projection_attribute_context_tree_builder import ProjectionAttributeContextTreeBuilder
-from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
 
 from cdm.objectmodel import CdmAttribute, CdmAttributeContext
@@ -16,6 +15,7 @@ from .cdm_operation_base import CdmOperationBase
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext
+    from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
     from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
     from cdm.resolvedmodel.projections.projection_context import ProjectionContext
     from cdm.utilities import VisitCallback, ResolveOptions
@@ -113,7 +113,7 @@ class CdmOperationRenameAttributes(CdmOperationBase):
                 if isinstance(current_PAS._current_resolved_attribute.target, CdmAttribute):
                     # The current attribute should be renamed
 
-                    new_attribute_name = self._rename_attribute(current_PAS, source_attribute_name)  # type: str
+                    new_attribute_name = self._get_new_attribute_name(current_PAS, source_attribute_name)  # type: str
 
                     # Create new resolved attribute with the new name, set the new attribute as target
                     res_attr_new = self._create_new_resolved_attribute(proj_ctx, None, current_PAS._current_resolved_attribute.target, new_attribute_name)  # type: ResolvedAttribute
@@ -147,7 +147,7 @@ class CdmOperationRenameAttributes(CdmOperationBase):
 
         return proj_output_set
 
-    def _rename_attribute(self, attribute_state: 'ProjectionAttributeState', source_attribute_name: str):
+    def _get_new_attribute_name(self, attribute_state: 'ProjectionAttributeState', source_attribute_name: str):
         current_attribute_name = attribute_state._current_resolved_attribute._resolved_name
         ordinal = str(attribute_state._ordinal) if attribute_state._ordinal is not None else ''
 

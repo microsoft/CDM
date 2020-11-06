@@ -20,6 +20,7 @@ import {
     CdmTraitCollection,
     Errors,
     isCdmObjectReference,
+    isEntityDefinition,
     Logger,
     resolveContext,
     ResolvedAttribute,
@@ -192,12 +193,14 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             host as CdmObjectReferenceBase);
         if (resOpt.saveResolutionsOnCopy) {
             copy.explicitReference = this.explicitReference;
-            copy.inDocument = this.inDocument;
         }
         copy.appliedTraits.clear();
         for (const trait of this.appliedTraits) {
             copy.appliedTraits.push(trait);
         }
+
+        // Don't do anything else after this, as it may cause InDocument to become dirty
+        copy.inDocument = this.inDocument;
 
         return copy;
     }
@@ -382,7 +385,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
             // find and cache the complete set of attributes
             const rasb: ResolvedAttributeSetBuilder = new ResolvedAttributeSetBuilder();
             rasb.ras.setAttributeContext(under);
-            const def: CdmObjectDefinition = this.fetchObjectDefinition(resOpt);
+            let def: CdmObjectDefinition = this.fetchObjectDefinition(resOpt);
             if (def) {
                 let acpRef: AttributeContextParameters;
                 if (under) {

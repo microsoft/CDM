@@ -49,6 +49,9 @@ class DocumentPersistence:
                 # TODO: validate that this is a version we can understand with the OM
                 pass
 
+            if data.get('documentVersion'):
+                document.document_version = data.documentVersion
+
             if data.get('imports'):
                 for import_obj in data.imports:
                     document.imports.append(ImportPersistence.from_data(ctx, import_obj))
@@ -77,4 +80,5 @@ class DocumentPersistence:
         result.jsonSchemaSemanticVersion = instance.json_schema_semantic_version
         result.imports = copy_data_utils._array_copy_data(res_opt, instance.imports, options)
         result.definitions = copy_data_utils._array_copy_data(res_opt, instance.definitions, options)
+        result.documentVersion = instance.document_version
         return result

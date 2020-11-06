@@ -8,11 +8,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     internal class RelationshipInfo
     {
         internal ResolvedTraitSet Rts { get; set; }
-        public bool IsByRef { get; set; }
-        public bool IsArray { get; set; }
-        public bool SelectsOne { get; set; }
-        public int? NextDepth { get; set; }
-        public bool MaxDepthExceeded { get; set; }
+        internal bool IsByRef { get; set; }
+        internal bool IsArray { get; set; }
+        internal bool SelectsOne { get; set; }
+        internal int? NextDepth { get; set; }
+        internal int? MaxDepth { get; set; }
+        internal bool MaxDepthExceeded { get; set; }
 
     }
 }

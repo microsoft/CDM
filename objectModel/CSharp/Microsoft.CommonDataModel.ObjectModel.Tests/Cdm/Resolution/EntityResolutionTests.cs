@@ -238,13 +238,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             ResolveOptions resOpt = new ResolveOptions { WrtDoc = entity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "normalized", "referenceOnly" }) };
             CdmEntityDefinition resolvedEntity = await entity.CreateResolvedEntityAsync("resolved", resOpt);
 
-            Assert.AreEqual("is.linkedEntity.name", resolvedEntity.Attributes[1].AppliedTraits[7].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[1].AppliedTraits.Item("is.linkedEntity.name"));
 
             // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
             resOpt = new ResolveOptions { WrtDoc = entity.InDocument, Directives = new AttributeResolutionDirectiveSet(new HashSet<string> { "referenceOnly" }) };
             resolvedEntity = await entity.CreateResolvedEntityAsync("resolved2", resOpt);
 
-            Assert.AreEqual("is.linkedEntity.identifier", resolvedEntity.Attributes[0].AppliedTraits[7].NamedReference);
+            Assert.IsNotNull(resolvedEntity.Attributes[0].AppliedTraits.Item("is.linkedEntity.identifier"));
         }
 
         /// <summary>
@@ -309,6 +309,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// <returns> The text version of the resolved entities. (it's in a form that facilitates debugging) </returns>
         internal static async Task<string> ListAllResolved(CdmCorpusDefinition cdmCorpus, AttributeResolutionDirectiveSet directives, CdmManifestDefinition manifest, StringSpewCatcher spew = null)
         {
+            // make sure the corpus has a set of default artifact attributes 
+            await cdmCorpus.PrepareArtifactAttributesAsync();
+
             var seen = new HashSet<string>();
             Func<CdmManifestDefinition, Task> seekEntities = null;
             seekEntities = async (CdmManifestDefinition f) =>

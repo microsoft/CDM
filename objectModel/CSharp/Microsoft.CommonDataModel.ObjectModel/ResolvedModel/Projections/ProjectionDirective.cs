@@ -134,8 +134,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.HasNoMaximumDepth = (resOpt.Directives?.Has("noMaxDepth") == true);
             this.IsArray = (resOpt.Directives?.Has("isArray") == true);
 
-            this.CurrentDepth = (resOpt?.RelationshipDepth == null) ? 1 : resOpt.RelationshipDepth + 1;
-            resOpt.RelationshipDepth = this.CurrentDepth;
+            if (resOpt.DepthInfo != null)
+            {
+                this.CurrentDepth = (resOpt?.DepthInfo == null) ? 1 : resOpt.DepthInfo.CurrentDepth + 1;
+                resOpt.DepthInfo.CurrentDepth = (int)this.CurrentDepth;
+            }
 
             // if noMaxDepth directive the max depth is 32 else defaults to 2
             // these depths were arbitrary and were set for the resolution guidance

@@ -26,6 +26,7 @@ import {
     CdmPurposeReference,
     CdmTraitDefinition,
     CdmTraitReference,
+    DepthInfo,
     Errors,
     Logger,
     ProjectionContext,
@@ -47,18 +48,6 @@ import {
 } from '../internal';
 
 export class CdmEntityAttributeDefinition extends CdmAttribute {
-    public purpose: CdmPurposeReference;
-    /**
-     * The entity attribute's entity reference.
-     */
-    public entity: CdmEntityReference;
-    private readonly traitToPropertyMap: traitToPropertyMap;
-
-    /**
-     * For projection based models, a source is explicitly tagged as a polymorphic source for it to be recognized as such.
-     * This property of the entity attribute allows us to do that.
-     */
-    public isPolymorphicSource?: boolean;
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.entityAttributeDef;
@@ -75,6 +64,19 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
     public set displayName(val: string) {
         this.traitToPropertyMap.updatePropertyValue('displayName', val);
     }
+    public purpose: CdmPurposeReference;
+    /**
+     * The entity attribute's entity reference.
+     */
+    public entity: CdmEntityReference;
+
+    /**
+     * For projection based models, a source is explicitly tagged as a polymorphic source for it to be recognized as such.
+     * This property of the entity attribute allows us to do that.
+     */
+    public isPolymorphicSource?: boolean;
+
+    private readonly traitToPropertyMap: traitToPropertyMap;
 
     constructor(ctx: CdmCorpusContext, name: string) {
         super(ctx, name);
@@ -219,6 +221,28 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
     /**
      * @internal
      */
+    public fetchObjectFromCache(resOpt: resolveOptions, acpInContext?: AttributeContextParameters): ResolvedAttributeSetBuilder {
+        const kind: string = 'rasb';
+        const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
+
+        // check cache at the correct depth for entity attributes
+        const relInfo: relationshipInfo = this.getRelationshipInfo(resOpt, this.fetchAttResContext(resOpt));
+        if (relInfo.maxDepthExceeded) {
+            resOpt.depthInfo = {
+                currentDepth: relInfo.nextDepth,
+                maxDepth: relInfo.maxDepth,
+                maxDepthExceeded: relInfo.maxDepthExceeded
+            };
+        }
+
+        const cacheTag: string = ctx.corpus.createDefinitionCacheTag(resOpt, this, kind, acpInContext ? 'ctx' : '');
+
+        return cacheTag ? ctx.cache.get(cacheTag) : undefined;
+    }
+
+    /**
+     * @internal
+     */
     public constructResolvedAttributes(resOpt: resolveOptions, under?: CdmAttributeContext): ResolvedAttributeSetBuilder {
         // let bodyCode = () =>
         {
@@ -241,9 +265,8 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
 
                 const ras: ResolvedAttributeSet = projDef.extractResolvedAttributes(projCtx);
                 rasb.ras = ras;
-            } else {
+            } else if (!resOpt.inCircularReference) {
                 // An Entity Reference
-
                 if (underAtt) {
                     // make a context for this attribute that holds the attributes that come up from the entity
                     acpEnt = {
@@ -255,23 +278,18 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                     };
                 }
 
-                const rtsThisAtt: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
-
-                // this context object holds all of the info about what needs to happen to resolve these attributes.
-                // make a copy and add defaults if missing
-                let resGuideWithDefault: CdmAttributeResolutionGuidance;
-                if (this.resolutionGuidance !== undefined) {
-                    resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
-                } else {
-                    resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
-                }
-                resGuideWithDefault.updateAttributeDefaults(this.name);
-
-                const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
+                const arc: AttributeResolutionContext = this.fetchAttResContext(resOpt);
 
                 // complete cheating but is faster.
                 // this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
                 const relInfo: relationshipInfo = this.getRelationshipInfo(arc.resOpt, arc);
+                if (relInfo.nextDepth) {
+                    resOpt.depthInfo = {
+                        currentDepth: relInfo.nextDepth,
+                        maxDepthExceeded: relInfo.maxDepthExceeded,
+                        maxDepth: relInfo.maxDepth
+                    };
+                }
 
                 if (relInfo.isByRef) {
                     // make the entity context that a real recursion would have give us
@@ -328,10 +346,18 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                         arc.resOpt.directives.add('referenceOnly');
                     }
                 } else {
-                    const resLink: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+                    const resLink: resolveOptions = resOpt.copy();
                     resLink.symbolRefSet = resOpt.symbolRefSet;
-                    resLink.relationshipDepth = relInfo.nextDepth;
                     rasb.mergeAttributes(this.entity.fetchResolvedAttributes(resLink, acpEnt));
+
+                    // need to pass up maxDepthExceeded if it was hit
+                    if (resLink.depthInfo && resLink.depthInfo.maxDepthExceeded) {
+                        resOpt.depthInfo = {
+                            currentDepth: resLink.depthInfo.currentDepth,
+                            maxDepthExceeded: resLink.depthInfo.maxDepthExceeded,
+                            maxDepth: resLink.depthInfo.maxDepth
+                        };
+                    }
                 }
 
                 // from the traits of purpose and applied here, see if new attributes get generated
@@ -412,7 +438,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                 // a 'structured' directive wants to keep all entity attributes together in a group
                 if (arc.resOpt.directives && arc.resOpt.directives.has('structured')) {
                     const raSub: ResolvedAttribute = new ResolvedAttribute(
-                        rtsThisAtt.resOpt, rasb.ras, this.name, rasb.ras.attributeContext);
+                        arc.traitsToApply.resOpt, rasb.ras, this.name, rasb.ras.attributeContext);
                     if (relInfo.isArray) {
                         // put a resolved trait on this att group, yuck,
                         //  hope I never need to do this again and then need to make a function for this
@@ -422,10 +448,15 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                         const rt: ResolvedTrait = new ResolvedTrait(t, undefined, [], []);
                         raSub.resolvedTraits = raSub.resolvedTraits.merge(rt, true);
                     }
+                    const depth: number = rasb.ras.depthTraveled;
                     rasb = new ResolvedAttributeSetBuilder();
+                    rasb.ras.attributeContext = raSub.attCtx; // this got set to null with the new builder
                     rasb.ownOne(raSub);
+                    rasb.ras.depthTraveled = depth;
                 }
             }
+
+            rasb.ras.depthTraveled += 1;
 
             return rasb;
         }
@@ -438,6 +469,9 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         {
             if (!resOpt) {
                 resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+            } else {
+                // need to copy so that relationship depth of parent is not overwritten
+                resOpt = resOpt.copy();
             }
 
             const rtsThisAtt: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
@@ -518,6 +552,26 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
         // return p.measure(bodyCode);
     }
 
+    /**
+     * Creates an AttributeResolutionContext object based off of resolution guidance information
+     * @param resOpt The resolve options
+     */
+    private fetchAttResContext(resOpt: resolveOptions): AttributeResolutionContext {
+        const rtsThisAtt: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
+
+        // this context object holds all of the info about what needs to happen to resolve these attributes.
+        // make a copy and add defaults if missing
+        let resGuideWithDefault: CdmAttributeResolutionGuidance;
+        if (this.resolutionGuidance !== undefined) {
+            resGuideWithDefault = this.resolutionGuidance.copy(resOpt) as CdmAttributeResolutionGuidance;
+        } else {
+            resGuideWithDefault = new CdmAttributeResolutionGuidance(this.ctx);
+        }
+        resGuideWithDefault.updateAttributeDefaults(this.name);
+
+        return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
+    }
+
     private getRelationshipInfo(resOpt: resolveOptions, arc: AttributeResolutionContext): relationshipInfo {
         // let bodyCode = () =>
         {
@@ -528,6 +582,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             let isArray: boolean = false;
             let selectsOne: boolean = false;
             let nextDepth: number;
+            let maxDepth: number;
             let maxDepthExceeded: boolean = false;
 
             if (arc && arc.resGuide) {
@@ -544,7 +599,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                     isArray = arc.resOpt.directives.has('isArray');
                 }
                 // figure out the depth for the next level
-                const oldDepth: number = resOpt.relationshipDepth;
+                const oldDepth: number = resOpt.depthInfo ? resOpt.depthInfo.currentDepth : undefined;
                 nextDepth = oldDepth;
                 // if this is a 'selectone', then skip counting this entity in the depth, else count it
                 if (!selectsOne) {
@@ -556,14 +611,14 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                             nextDepth++;
                         }
                         // max comes from settings but may not be set
-                        let maxDepth: number = 2;
+                        maxDepth = DepthInfo.defaultMaxDepth;
                         if (hasRef && arc.resGuide.entityByReference.referenceOnlyAfterDepth !== undefined) {
                             maxDepth = arc.resGuide.entityByReference.referenceOnlyAfterDepth;
                         }
                         if (noMaxDepth) {
                             // no max? really? what if we loop forever? if you need more than 32 nested entities,
                             // then you should buy a different metadata description system.
-                            maxDepth = 32;
+                            maxDepth = DepthInfo.maxDepthLimit;
                         }
 
                         if (nextDepth > maxDepth) {
@@ -581,6 +636,7 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
                 isArray: isArray,
                 selectsOne: selectsOne,
                 nextDepth: nextDepth,
+                maxDepth: maxDepth,
                 maxDepthExceeded: maxDepthExceeded
             };
         }

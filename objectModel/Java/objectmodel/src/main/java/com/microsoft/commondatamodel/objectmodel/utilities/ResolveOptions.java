@@ -41,11 +41,6 @@ public class ResolveOptions {
    */
   private int maxOrdinalForArrayExpansion = 20;
   /**
-   * Tracks the number of entity attributes that have been travered when collecting resolved traits
-   * or attributes. prevents run away loops.
-   */
-  private Integer relationshipDepth;
-  /**
    * When references get copied, use previous resolution results if available (for use with copy
    * method).
    */
@@ -65,21 +60,27 @@ public class ResolveOptions {
    */
   private CdmDocumentDefinition indexingDoc;
   private String fromMoniker; // moniker that was found on the ref
-
-  public ResolveOptions() {
-    // Default constructor
-  }
+  /**
+   * Contains information about the depth that we are resolving at
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public DepthInfo depthInfo;
+  /**
+   * Indicates whether we are resolving inside of a circular reference, resolution is different in that case
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public boolean inCircularReference;
 
   /**
    * Creates a new instance of Resolve Options using most common parameters.
    * @param cdmDocument Document to use as point of reference when resolving relative paths and symbol names.
    */
   public ResolveOptions(final CdmDocumentDefinition cdmDocument) {
-    this.setWrtDoc(cdmDocument);
-    this.setDirectives(
-        new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized")))
-    );
-    this.symbolRefSet = new SymbolSet();
+    this(cdmDocument, null);
   }
 
   /**
@@ -88,9 +89,9 @@ public class ResolveOptions {
    * @param directives Directives to use when resolving attributes
    */
   public ResolveOptions(final CdmDocumentDefinition cdmDocument, AttributeResolutionDirectiveSet directives) {
+    this();
     this.setWrtDoc(cdmDocument);
-      this.setDirectives(directives != null ? directives.copy() : new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
-    this.symbolRefSet = new SymbolSet();
+    this.setDirectives(directives != null ? directives.copy() : new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
   }
 
   /**
@@ -98,11 +99,7 @@ public class ResolveOptions {
    * @param cdmObject A CdmObject from which to take the With Regards To Document
    */
   public ResolveOptions(final CdmObject cdmObject) {
-    this.setWrtDoc(fetchDocument(cdmObject));
-    this.setDirectives(
-        new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized")))
-    );
-    this.symbolRefSet = new SymbolSet();
+    this(cdmObject, null);
   }
 
   /**
@@ -111,9 +108,22 @@ public class ResolveOptions {
    * @param directives Directives to use when resolving attributes
    */
   public ResolveOptions(final CdmObject cdmObject, AttributeResolutionDirectiveSet directives) {
+    this();
     this.setWrtDoc(fetchDocument(cdmObject));
     this.setDirectives(directives != null ? directives.copy() : new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
+  }
+
+  /**
+   * Creates a new instance of Resolve Options using most common parameters.
+   */
+  public ResolveOptions() {
     this.symbolRefSet = new SymbolSet();
+
+    this.depthInfo = new DepthInfo();
+    this.depthInfo.setCurrentDepth(0);
+    this.depthInfo.setMaxDepthExceeded(false);
+
+    this.inCircularReference = false;
   }
 
   /**
@@ -214,16 +224,6 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
-   * @param relationshipDepth Integer 
-   */
-  @Deprecated
-  public void setRelationshipDepth(final Integer relationshipDepth) {
-    this.relationshipDepth = relationshipDepth;
-  }
-
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
-   * to be called externally at all. Please refrain from using it.
    * @return boolean
    */
   @Deprecated
@@ -258,16 +258,6 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
-   * @return Integer
-   */
-  @Deprecated
-  public Integer getRelationshipDepth() {
-    return relationshipDepth;
-  }
-
-  /**
-   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
-   * to be called externally at all. Please refrain from using it.
    * @return CdmDocumentDefinition
    */
   @Deprecated
@@ -293,12 +283,19 @@ public class ResolveOptions {
   public ResolveOptions copy() {
     final ResolveOptions resOptCopy = new ResolveOptions();
     resOptCopy.wrtDoc = this.wrtDoc;
-    resOptCopy.relationshipDepth = this.relationshipDepth;
+    if (this.depthInfo != null) {
+      resOptCopy.depthInfo = new DepthInfo();
+      resOptCopy.depthInfo.setMaxDepth(this.depthInfo.getMaxDepth());
+      resOptCopy.depthInfo.setCurrentDepth(this.depthInfo.getCurrentDepth());
+      resOptCopy.depthInfo.setMaxDepthExceeded(this.depthInfo.getMaxDepthExceeded());
+    }
     if (this.directives != null) {
       resOptCopy.directives = this.directives.copy();
     }
     resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
     resOptCopy.indexingDoc = this.indexingDoc;
+    resOptCopy.shallowValidation = this.shallowValidation;
+    resOptCopy.resolvedAttributeLimit = this.resolvedAttributeLimit;
     return resOptCopy;
   }
 

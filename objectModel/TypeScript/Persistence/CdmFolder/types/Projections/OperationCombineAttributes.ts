@@ -8,6 +8,6 @@ import { OperationBase } from './OperationBase';
  * OperationCombineAttributes class
  */
 export abstract class OperationCombineAttributes extends OperationBase {
-    public take: string[];
+    public select: string[];
     public mergeInto: TypeAttribute;
 }

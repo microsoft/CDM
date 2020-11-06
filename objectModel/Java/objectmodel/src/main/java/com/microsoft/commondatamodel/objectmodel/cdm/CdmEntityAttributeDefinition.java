@@ -15,6 +15,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.Proje
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
@@ -32,6 +33,8 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
   private CdmEntityReference entity;
   private TraitToPropertyMap t2pm;
   private Boolean isPolymorphicSource;
+
+  
 
   public CdmEntityAttributeDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx, name);
@@ -142,6 +145,9 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       directives.add("normalized");
       directives.add("referenceOnly");
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
+    } else {
+      // need to copy so that relationship depth of parent is not overwritten
+      resOpt = resOpt.copy();
     }
 
     final ResolvedTraitSet rtsThisAtt = this.fetchResolvedTraits(resOpt);
@@ -274,6 +280,28 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     //rtsb.CleanUp();
   }
 
+  /**
+   * Creates an AttributeResolutionContext object based off of resolution guidance information
+   * @param resOpt The resolve options
+   * @return AttributeResolutionContext
+   */
+  private AttributeResolutionContext fetchAttResContext(ResolveOptions resOpt) {
+    final ResolvedTraitSet rtsThisAtt = this.fetchResolvedTraits(resOpt);
+
+    // this context object holds all of the info about what needs to happen to resolve these attributes.
+    // make a copy and add defaults if missing
+    final CdmAttributeResolutionGuidance resGuideWithDefault;
+    if (this.getResolutionGuidance() != null) {
+      resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance()
+                .copy(resOpt);
+    } else {
+      resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
+    }
+    resGuideWithDefault.updateAttributeDefaults(this.getName());
+
+    return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
+  }
+
   private RelationshipInfo getRelationshipInfo(final ResolveOptions resOpt,
                                                final AttributeResolutionContext arc) {
     final ResolvedTraitSet rts = null;
@@ -283,6 +311,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     boolean isArray = false;
     boolean selectsOne = false;
     Integer nextDepth = null;
+    Integer maxDepth = null;
     boolean maxDepthExceeded = false;
 
     if (arc != null && arc.getResGuide() != null) {
@@ -303,7 +332,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         isArray = resDirectives.has("isArray");
       }
       // figure out the depth for the next level
-      final Integer oldDepth = resOpt.getRelationshipDepth();
+      final Integer oldDepth = resOpt.depthInfo != null ? resOpt.depthInfo.getCurrentDepth() : null;
       nextDepth = oldDepth;
       // if this is a 'selectone', then skip counting this entity in the depth, else count it
       if (!selectsOne) {
@@ -317,13 +346,13 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
           }
 
           // max comes from settings but may not be set
-          int maxDepth = 2;
+          maxDepth = DepthInfo.defaultMaxDepth;
           if (hasRef
               && arc.getResGuide().getEntityByReference().getReferenceOnlyAfterDepth() != null) {
             maxDepth = arc.getResGuide().getEntityByReference().getReferenceOnlyAfterDepth();
           }
           if (noMaxDepth) {
-            maxDepth = 32; // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system.
+            maxDepth = DepthInfo.maxDepthLimit; // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system.
           }
 
           if (nextDepth > maxDepth) {
@@ -341,8 +370,39 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     relationshipInfo.setArray(isArray);
     relationshipInfo.setSelectsOne(selectsOne);
     relationshipInfo.setNextDepth(nextDepth);
+    relationshipInfo.setMaxDepth(maxDepth);
     relationshipInfo.setMaxDepthExceeded(maxDepthExceeded);
     return relationshipInfo;
+  }
+
+  @Override
+  @Deprecated
+  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt) {
+    return this.fetchObjectFromCache(resOpt, null);
+  }
+
+  @Override
+  @Deprecated
+  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext) {
+    final String kind = "rasb";
+    final ResolveContext ctx = (ResolveContext) this.getCtx();
+
+    // check cache at the correct depth for entity attributes
+    RelationshipInfo relInfo = this.getRelationshipInfo(resOpt, this.fetchAttResContext(resOpt));
+    if (relInfo.isMaxDepthExceeded()) {
+      resOpt.depthInfo = new DepthInfo();
+      resOpt.depthInfo.setMaxDepth(relInfo.getMaxDepth());
+      resOpt.depthInfo.setCurrentDepth((int)relInfo.getNextDepth());
+      resOpt.depthInfo.setMaxDepthExceeded(relInfo.isMaxDepthExceeded());
+    }
+
+    String cacheTag = ctx.getCorpus()
+            .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
+    Object rasbCache = null;
+    if (cacheTag != null) {
+      rasbCache = ctx.getCache().get(cacheTag);
+    }
+    return (ResolvedAttributeSetBuilder)rasbCache;
   }
 
   /**
@@ -388,7 +448,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
       ResolvedAttributeSet ras = projDef.extractResolvedAttributes(projCtx);
       rasb.setResolvedAttributeSet(ras);
-    } else {
+    } else if (!resOpt.inCircularReference) {
       // An Entity Reference
 
       if (underAtt != null) {
@@ -401,25 +461,17 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         acpEnt.setIncludeTraits(true);
       }
 
-      final ResolvedTraitSet rtsThisAtt = this.fetchResolvedTraits(resOpt);
-
-      // this context object holds all of the info about what needs to happen to resolve these attributes.
-      // make a copy and add defaults if missing
-      final CdmAttributeResolutionGuidance resGuideWithDefault;
-      if (this.getResolutionGuidance() != null) {
-        resGuideWithDefault = (CdmAttributeResolutionGuidance) this.getResolutionGuidance()
-                .copy(resOpt);
-      } else {
-        resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
-      }
-      resGuideWithDefault.updateAttributeDefaults(this.getName());
-
-      final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault,
-              rtsThisAtt);
+      AttributeResolutionContext arc = this.fetchAttResContext(resOpt);
 
       // complete cheating but is faster.
       // this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
       final RelationshipInfo relInfo = this.getRelationshipInfo(arc.getResOpt(), arc);
+      if (relInfo.getNextDepth() != null) {
+        resOpt.depthInfo = new DepthInfo();
+        resOpt.depthInfo.setMaxDepth(relInfo.getMaxDepth());
+        resOpt.depthInfo.setCurrentDepth((int)relInfo.getNextDepth());
+        resOpt.depthInfo.setMaxDepthExceeded(relInfo.isMaxDepthExceeded());
+      }
       if (relInfo.isByRef()) {
         // make the entity context that a real recursion would have give us
         if (under != null) {
@@ -478,10 +530,17 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
           arc.getResOpt().getDirectives().add("referenceOnly");
         }
       } else {
-        final ResolveOptions resLink = copyResolveOptions(resOpt);
+        final ResolveOptions resLink = resOpt.copy();
         resLink.setSymbolRefSet(resOpt.getSymbolRefSet());
-        resLink.setRelationshipDepth(relInfo.getNextDepth());
         rasb.mergeAttributes(this.getEntity().fetchResolvedAttributes(resLink, acpEnt));
+
+        // need to pass up maxDepthExceeded if it was hit
+        if (resLink.depthInfo != null && resLink.depthInfo.getMaxDepthExceeded()) {
+          resOpt.depthInfo = new DepthInfo();
+          resOpt.depthInfo.setMaxDepth(resLink.depthInfo.getMaxDepth());
+          resOpt.depthInfo.setCurrentDepth(resLink.depthInfo.getCurrentDepth());
+          resOpt.depthInfo.setMaxDepthExceeded(resLink.depthInfo.getMaxDepthExceeded());
+        }
       }
 
       // from the traits of purpose and applied here, see if new attributes get generated
@@ -564,7 +623,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
       // a 'structured' directive wants to keep all entity attributes together in a group
       if (arc.getResOpt().getDirectives() != null && arc.getResOpt().getDirectives().has("structured")) {
-        final ResolvedAttribute raSub = new ResolvedAttribute(rtsThisAtt.getResOpt(),
+        final ResolvedAttribute raSub = new ResolvedAttribute(arc.getTraitsToApply().getResOpt(),
                 rasb.getResolvedAttributeSet(),
                 this.getName(),
                 rasb.getResolvedAttributeSet().getAttributeContext());
@@ -576,11 +635,14 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
           final ResolvedTrait rt = new ResolvedTrait(t, null, new ArrayList<>(), new ArrayList<>());
           raSub.setResolvedTraits(raSub.fetchResolvedTraits().merge(rt, true));
         }
+        int depth = rasb.getResolvedAttributeSet().getDepthTraveled();
         rasb = new ResolvedAttributeSetBuilder();
         rasb.getResolvedAttributeSet().setAttributeContext(raSub.getAttCtx()); // this got set to null with the new builder
         rasb.ownOne(raSub);
+        rasb.getResolvedAttributeSet().setDepthTraveled(depth);
       }
     }
+    rasb.getResolvedAttributeSet().setDepthTraveled(rasb.getResolvedAttributeSet().getDepthTraveled() + 1);
 
     return rasb;
   }

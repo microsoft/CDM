@@ -30,13 +30,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             doc.Namespace = nameSpace;
 
             if (!string.IsNullOrEmpty(obj.Schema))
+            {
                 doc.Schema = obj.Schema;
+            }
+
             if (DynamicObjectExtensions.HasProperty(obj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(obj.JsonSchemaSemanticVersion))
+            {
                 doc.JsonSchemaSemanticVersion = obj.JsonSchemaSemanticVersion;
+            }
 
             if (doc.JsonSchemaSemanticVersion != "0.9.0" && doc.JsonSchemaSemanticVersion != "1.0.0")
             {
                 // TODO: validate that this is a version we can understand with the OM
+            }
+
+            if (!string.IsNullOrEmpty(obj.DocumentVersion))
+            {
+                doc.DocumentVersion = obj.DocumentVersion;
             }
 
             if (obj.Imports != null)
@@ -53,17 +63,29 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 {
                     dynamic d = obj.Definitions[i];
                     if (d["dataTypeName"] != null)
+                    {
                         doc.Definitions.Add(DataTypePersistence.FromData(ctx, d));
+                    }
                     else if (d["purposeName"] != null)
+                    {
                         doc.Definitions.Add(PurposePersistence.FromData(ctx, d));
+                    }
                     else if (d["attributeGroupName"] != null)
+                    {
                         doc.Definitions.Add(AttributeGroupPersistence.FromData(ctx, d));
+                    }
                     else if (d["traitName"] != null)
+                    {
                         doc.Definitions.Add(TraitPersistence.FromData(ctx, d));
+                    }
                     else if (d["entityShape"] != null)
+                    {
                         doc.Definitions.Add(ConstantEntityPersistence.FromData(ctx, d));
+                    }
                     else if (d["entityName"] != null)
+                    {
                         doc.Definitions.Add(EntityPersistence.FromData(ctx, d));
+                    }
                 }
             }
 
@@ -83,7 +105,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Schema = instance.Schema,
                 JsonSchemaSemanticVersion = instance.JsonSchemaSemanticVersion,
                 Imports = Utils.ListCopyData<Import>(resOpt, instance.Imports, options),
-                Definitions = CopyDataUtils.ListCopyData(resOpt, instance.Definitions, options)
+                Definitions = CopyDataUtils.ListCopyData(resOpt, instance.Definitions, options),
+                DocumentVersion = instance.DocumentVersion
             };
         }
     }

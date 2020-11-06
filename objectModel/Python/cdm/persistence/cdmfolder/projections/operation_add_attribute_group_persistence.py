@@ -25,14 +25,15 @@ class OperationAddAttributeGroupPersistence:
         if not data:
             return None
 
-        add_attribute_group_op = ctx.corpus.make_object(CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF)
+        add_attribute_group_op = ctx.corpus.make_object(CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF)  # type: CdmOperationAddAttributeGroup
 
         if data.type and not StringUtils.equals_with_ignore_case(data.type, OperationTypeConvertor._operation_type_to_string(CdmOperationType.ADD_ATTRIBUTE_GROUP)):
             logger.error(_TAG, ctx, '$type {} is invalid for this operation.'.format(data.type))
         else:
             add_attribute_group_op.type = CdmOperationType.ADD_ATTRIBUTE_GROUP
 
-        # TODO (sukanyas): Property to be defined
+        add_attribute_group_op.attribute_group_name = data.attributeGroupName
+        add_attribute_group_op.explanation = data.explanation
 
         return add_attribute_group_op
 
@@ -43,7 +44,7 @@ class OperationAddAttributeGroupPersistence:
 
         obj = OperationAddAttributeGroup()
         obj.type = OperationTypeConvertor._operation_type_to_string(CdmOperationType.ADD_ATTRIBUTE_GROUP)
+        obj.attributeGroupName = instance.attribute_group_name
         obj.explanation = instance.explanation
-        # TODO (sukanyas): Property to be defined
 
         return obj

@@ -40,6 +40,7 @@ export class ADLSAdapter extends NetworkAdapter {
     public clientId: string;
     public secret: string;
     public sharedKey: string;
+    public tokenProvider: TokenProvider;
 
     // The map from corpus path to adapter path.
     private readonly adapterPaths: Map<string, string>; 
@@ -51,8 +52,6 @@ export class ADLSAdapter extends NetworkAdapter {
     private readonly httpXmsVersion: string = 'x-ms-version';
 
     private readonly resource: string = 'https://storage.azure.com';
-
-    private readonly tokenProvider: TokenProvider;
 
     private _hostname: string;
     private _root: string;

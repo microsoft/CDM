@@ -61,6 +61,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
         /// </summary>
         private Dictionary<AttributeContextParameters, ResolvedAttribute> actionAttrCtxParamToResAttr;
 
+        /// <summary>
+        /// Mapping between an "action" attribute context parameter to the context to consider 'where from' lineage
+        /// </summary>
+        private Dictionary<AttributeContextParameters, CdmAttributeContext> actionAttrCtxParamToLineageOut;
+        /// <summary>
+        /// Mapping between an "action" attribute context parameter to the context that wants to point here for lineage
+        /// </summary>
+        private Dictionary<AttributeContextParameters, CdmAttributeContext> actionAttrCtxParamToLineageIn;
+
         public ProjectionAttributeContextTreeBuilder(CdmAttributeContext root)
         {
             this.root = root;
@@ -68,6 +77,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
             this.searchForAttrCtxParamToFoundAttrCtxParam = new Dictionary<AttributeContextParameters, List<AttributeContextParameters>>();
             this.foundAttrCtxParamToActionAttrCtxParam = new Dictionary<AttributeContextParameters, AttributeContextParameters>();
             this.actionAttrCtxParamToResAttr = new Dictionary<AttributeContextParameters, ResolvedAttribute>();
+            this.actionAttrCtxParamToLineageOut = new Dictionary<AttributeContextParameters, CdmAttributeContext>();
+            this.actionAttrCtxParamToLineageIn = new Dictionary<AttributeContextParameters, CdmAttributeContext>();
         }
 
         /// <summary>
@@ -78,7 +89,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
         /// <param name="found">The projection attribute state that contains the "found" attribute</param>
         /// <param name="resAttrFromAction">The resolved attribute that resulted from the action</param>
         /// <param name="attrCtxType">The attribute context type to give the "action" attribute context parameter</param>
-        internal void CreateAndStoreAttributeContextParameters(string searchFor, ProjectionAttributeState found, ResolvedAttribute resAttrFromAction, CdmAttributeContextType attrCtxType)
+        /// <param name="storeLineage">normally lineage goes from new context to the found. false means don't and maybe even flip it</param>
+        internal void CreateAndStoreAttributeContextParameters(string searchFor, ProjectionAttributeState found, ResolvedAttribute resAttrFromAction, 
+                            CdmAttributeContextType attrCtxType, CdmAttributeContext lineageOut, CdmAttributeContext lineageIn)
         {
             // searchFor is null when we have to construct attribute contexts for the excluded attributes in Include or the included attributes in Exclude, 
             // as these attributes weren't searched for with a searchFor name.
@@ -143,14 +156,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
             // Store the action attribute context parameter with the resolved attribute resulting out of the action.
             // This is so that we can point the action attribute context to the correct resolved attribute once the attribute context is created.
             actionAttrCtxParamToResAttr[actionAttrCtxParam] = resAttrFromAction;
+
+            // store the current resAtt as the lineage of the new one
+            // of note, if no lineage is stored AND the resolved Att associated above holds an existing context? we will
+            // flip the lineage when we make a new context and point 'back' to this new node. this means this new node should
+            // point 'back' to the context of the source attribute
+            if (lineageOut != null)
+            {
+                actionAttrCtxParamToLineageOut[actionAttrCtxParam] = lineageOut;
+            }
+            if (lineageIn != null)
+            {
+                actionAttrCtxParamToLineageIn[actionAttrCtxParam] = lineageIn;
+            }
+
         }
 
         /// <summary>
         /// Takes all the stored attribute context parameters, creates attribute contexts from them, and then constructs the tree.
         /// </summary>
         /// <param name="projCtx">The projection context</param>
-        /// <param name="setAttrCtx">Whether to set the created attribute context on the associated resolved attribute</param>
-        internal void ConstructAttributeContextTree(ProjectionContext projCtx, bool setAttrCtx = false)
+        internal void ConstructAttributeContextTree(ProjectionContext projCtx)
         {
             // Iterate over all the searchFor attribute context parameters
             foreach (AttributeContextParameters searchForAttrCtxParam in this.searchForToSearchForAttrCtxParam.Values)
@@ -194,12 +220,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel.Projections
                     ResolvedAttribute resAttrFromAction = null;
                     actionAttrCtxParamToResAttr.TryGetValue(actionAttrCtxParam, out resAttrFromAction);
 
-                    // TODO (jibyun): For now, only set the created attribute context on the resolved attribute when specified to,
-                    // as pointing the resolved attribute at this attribute context won't work currently for certain operations (Include/Exclude).
-                    // This will be changed to always run once we work on the attribute context fix.
-                    if (setAttrCtx)
+                    // make sure the lineage of the attribute stays linked up
+                    // there can be either (or both) a lineageOut and a lineageIn.
+                    // out lineage is where this attribute came from
+                    // in lineage should be pointing back at this context as a source
+                    CdmAttributeContext lineageOut = null;
+                    if (actionAttrCtxParamToLineageOut.TryGetValue(actionAttrCtxParam, out lineageOut) == true)
                     {
-                        resAttrFromAction.AttCtx = actionAttrCtx;
+                        if (actionAttrCtx != null && lineageOut != null)
+                        {
+                            actionAttrCtx.AddLineage(lineageOut);
+                        }
+                        resAttrFromAction.AttCtx = actionAttrCtx; // probably the right context for this resAtt, unless ...
+                    }
+                    CdmAttributeContext lineageIn = null;
+                    if (actionAttrCtxParamToLineageIn.TryGetValue(actionAttrCtxParam, out lineageIn) == true)
+                    {
+                        if (actionAttrCtx != null && lineageIn != null)
+                        {
+                            lineageIn.AddLineage(actionAttrCtx);
+                        }
+                        resAttrFromAction.AttCtx = lineageIn; // if there is a lineageIn. it points to us as lineage, so it is best
                     }
                 }
             }

@@ -43,16 +43,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             if (!string.IsNullOrEmpty(dataObj.Schema))
                 manifest.Schema = dataObj.Schema;
             if (DynamicObjectExtensions.HasProperty(dataObj, "JsonSchemaSemanticVersion") && !string.IsNullOrEmpty(dataObj.JsonSchemaSemanticVersion))
+            {
                 manifest.JsonSchemaSemanticVersion = dataObj.JsonSchemaSemanticVersion;
+            }
+
+            if (!string.IsNullOrEmpty(dataObj.DocumentVersion))
+            {
+                manifest.DocumentVersion = dataObj.DocumentVersion;
+            }
 
             if (!string.IsNullOrEmpty(dataObj.ManifestName))
+            {
                 manifest.ManifestName = dataObj.ManifestName;
-            // Might be populated in the case of folio.cdm.json or manifest.cdm.json file.
+            }
             else if (!string.IsNullOrEmpty(dataObj.FolioName))
+            {
+                // Might be populated in the case of folio.cdm.json or manifest.cdm.json file.
                 manifest.ManifestName = dataObj.FolioName;
+            }
 
             if (dataObj.ExhibitsTraits != null)
+            {
                 Utils.AddListToCdmCollection(manifest.ExhibitsTraits, Utils.CreateTraitReferenceList(ctx, JArray.FromObject(dataObj.ExhibitsTraits)));
+            }
+
             if (dataObj.Imports != null)
             {
                 foreach (var importObj in dataObj.Imports)
@@ -179,7 +193,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 ManifestName = instance.ManifestName,
                 JsonSchemaSemanticVersion = documentContent.JsonSchemaSemanticVersion,
                 Schema = documentContent.Schema,
-                Imports = documentContent.Imports
+                Imports = documentContent.Imports,
+                DocumentVersion = documentContent.DocumentVersion
             };
 
             manifestContent.ManifestName = instance.ManifestName;

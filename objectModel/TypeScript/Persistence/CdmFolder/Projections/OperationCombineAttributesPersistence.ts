@@ -37,7 +37,7 @@ export class OperationCombineAttributesPersistence {
             combineAttributesOp.explanation = object.explanation;
         }
 
-        combineAttributesOp.take = object.take;
+        combineAttributesOp.select = object.select;
         combineAttributesOp.mergeInto = utils.createAttribute(ctx, object.mergeInto) as CdmTypeAttributeDefinition;
 
         return combineAttributesOp;
@@ -51,7 +51,7 @@ export class OperationCombineAttributesPersistence {
         return {
             $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.combineAttributes),
             explanation: instance.explanation,
-            take: instance.take,
+            select: instance.select,
             mergeInto: TypeAttributePersistence.toData(instance.mergeInto, resOpt, options)
         };
     }

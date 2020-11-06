@@ -60,6 +60,16 @@ describe('Cdm/Relationship/CalculateRelationshipTest', () => {
     });
 
     /**
+     *
+     */
+    it('TestDiffRefLocation', async() => {
+        const testName: string = 'TestDiffRefLocation';
+        const entityName: string = 'Sales';
+
+        await testRun(testName, entityName);
+    });
+
+    /**
      * Projection with composite keys
      */
     it('TestCompositeProj', async () => {

@@ -670,10 +670,6 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
         }
 
         resolvedManifest.getEntities().add(result);
-
-        // Absolute path is needed for generating relationships.
-        final String absoluteEntPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(result.getEntityPath(), resolvedManifest);
-        this.getCtx().getCorpus().resEntMap.put(this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument()), absoluteEntPath);
       }
 
       Logger.debug(CdmManifestDefinition.class.getSimpleName(), this.getCtx(), "    calculating relationships", "createResolvedManifestAsync");

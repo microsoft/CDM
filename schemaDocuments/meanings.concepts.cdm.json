@@ -380,11 +380,17 @@
     },
     {
       "traitName": "means.reference.URL",
-      "extendsTrait": "means.reference"
+      "extendsTrait": "means.reference",
+      "explanation": "A Uniform Resource Locator. A web address."
     },
     {
       "traitName": "means.reference.URL.image",
       "extendsTrait": "means.reference.URL"
+    },
+    {
+      "traitName": "means.reference.URI",
+      "extendsTrait": "means.reference",
+      "explanation": "A Uniform Resource Identifier"
     },
     {
       "traitName": "means.reference.language",
@@ -393,6 +399,14 @@
     {
       "traitName": "means.reference.language.tag",
       "extendsTrait": "means.reference.language"
+    },
+    {
+      "traitName": "means.reference.culture",
+      "extendsTrait": "means.reference"
+    },
+    {
+      "traitName": "means.reference.culture.tag",
+      "extendsTrait": "means.reference.culture"
     },
     {
       "explanation": "An attribute that helps document details about an entity",
@@ -419,6 +433,14 @@
       ]
     },
     {
+      "dataTypeName": "cultureTag",
+      "extendsDataType": "languageTag",
+      "explanation": "a BCP 47 language tag",
+      "exhibitsTraits": [
+        "means.reference.culture.tag"
+      ]
+    },
+    {
       "dataTypeName": "localizedDisplayText",
       "extendsDataType": "string",
       "exhibitsTraits": [
@@ -440,6 +462,13 @@
       ]
     },
     {
+      "dataTypeName": "uri",
+      "extendsDataType": "string",
+      "exhibitsTraits": [
+        "means.reference.URI"
+      ]
+    },
+    {
       "traitName": "has.category",
       "explanation": "the root trait for the system of traits of hierarchical categorization",
       "extendsTrait": "has",
@@ -455,6 +484,12 @@
           "explanation": "A description of the class of hierarchy members where many members share the same classification.",
           "dataType": "string",
           "defaultValue": "Unclassified"
+        },
+        {
+          "name": "parentCategoryName",
+          "explanation": "the name for the parent member in the classification of categories",
+          "dataType": "string",
+          "defaultValue": "all"
         },
         {
           "name": "hierarchyLevel",
@@ -632,7 +667,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "Recruitment"
           }
         ]
@@ -645,7 +680,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "Terminations"
           }
         ]
@@ -658,7 +693,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "Suppliers"
           }
         ]
@@ -671,7 +706,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "Warehousing"
           }
         ]
@@ -684,7 +719,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "GeneralLedger"
           }
         ]
@@ -697,7 +732,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "AccountsReceivable"
           }
         ]
@@ -710,7 +745,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "Auditing"
           }
         ]
@@ -723,7 +758,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "Budgeting"
           }
         ]
@@ -736,7 +771,7 @@
         "traitReference": "has.category.functionalArea",
         "arguments": [
           {
-            "name": "classification",
+            "name": "categoryName",
             "value": "Reporting"
           }
         ]

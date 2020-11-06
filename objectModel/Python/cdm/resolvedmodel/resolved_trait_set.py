@@ -15,7 +15,7 @@ class ResolvedTraitSet:
     def __init__(self, res_opt: 'ResolveOptions') -> None:
         from cdm.objectmodel import CdmObject
 
-        self.res_opt = CdmObject._copy_resolve_options(res_opt)  # type: ResolveOptions
+        self.res_opt = res_opt.copy()  # type: ResolveOptions
         self.rt_set = []  # type: List[ResolvedTrait]
         self.lookup_by_trait = {}  # type: Dict[CdmTraitDefinition, ResolvedTrait]
         self.has_elevated = False  # type: bool

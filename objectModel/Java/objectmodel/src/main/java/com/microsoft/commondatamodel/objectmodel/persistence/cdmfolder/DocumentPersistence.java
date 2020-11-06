@@ -45,6 +45,12 @@ public class DocumentPersistence {
             .isNullOrEmpty(obj.getJsonSchemaSemanticVersion())) {
       doc.setJsonSchemaSemanticVersion(obj.getJsonSchemaSemanticVersion());
     }
+
+    if (DynamicObjectExtensions.hasProperty(obj, "DocumentVersion") && !Strings
+            .isNullOrEmpty(obj.getDocumentVersion())) {
+      doc.setDocumentVersion(obj.getDocumentVersion());
+    }
+
     if (obj.getImports() != null) {
       for (final Import imp: obj.getImports()) {
         doc.getImports().add(ImportPersistence.fromData(ctx, imp));
@@ -97,6 +103,8 @@ public class DocumentPersistence {
     documentContent.setJsonSchemaSemanticVersion(instance.getJsonSchemaSemanticVersion());
     documentContent.setImports(Utils.listCopyDataAsCdmObject(instance.getImports(), resOpt, options));
     documentContent.setDefinitions(Utils.listCopyDataAsCdmObject(instance.getDefinitions(), resOpt, options));
+    documentContent.setDocumentVersion(instance.getDocumentVersion());
+
     return documentContent;
   }
 }

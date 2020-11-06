@@ -116,7 +116,7 @@ namespace create_manifest
                     header += att.Name;
                 }
 
-                Directory.CreateDirectory(cdmCorpus.Storage.CorpusPathToAdapterPath($"local:/{ entDef.EntityName}"));
+                Directory.CreateDirectory(cdmCorpus.Storage.CorpusPathToAdapterPath($"local:/{entDef.EntityName}"));
                 File.WriteAllText(partPath, header);
             }
 

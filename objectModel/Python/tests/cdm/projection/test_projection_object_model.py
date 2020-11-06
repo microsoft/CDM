@@ -247,9 +247,9 @@ class ProjectionObjectModelTest(unittest.TestCase):
 
         # CombineAttributes Operation
         combine_attributes_op = CdmOperationCombineAttributes(corpus.ctx)
-        combine_attributes_op.take = []
+        combine_attributes_op.select = []
         combine_attributes_op.merge_into = corpus.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF)
-        combine_attributes_op.take.append('testAttribute1')
+        combine_attributes_op.select.append('testAttribute1')
         projection.operations.append(combine_attributes_op)
 
         # RenameAttributes Operation

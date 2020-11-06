@@ -116,8 +116,7 @@ class ProjectionIncludeTest(unittest.TestCase):
         entity_Color.attributes.append(entity_attribute_rgb_color)
 
         for res_opts in self.res_opts_combinations:
-            resolvedEntity_Color = util.get_and_validate_resolved_entity(entity_Color, res_opts)
-            self.assertIsNotNone(resolvedEntity_Color)
+            await util.get_and_validate_resolved_entity(self, entity_Color, res_opts)
 
         await util._default_manifest.save_as_async(util._manifest_doc_name, False)
 
@@ -246,20 +245,18 @@ class ProjectionIncludeTest(unittest.TestCase):
         corpus = TestHelper.get_local_corpus(self.tests_sub_path, test_name)  # type: CdmCorpusDefinition
         corpus.storage.mount('expected', LocalAdapter(expected_output_path))
 
-        # entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
-        # resolved_entity = await TestUtils._get_resolved_entity(corpus, entity, res_opts, True)
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, res_opts, True)
 
         await self._validate_resolved_attributes(corpus, resolved_entity, entity_name, file_name_suffix)
 
-        AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, '{}{}'.format(entity_name, file_name_suffix), resolved_entity)
+        await AttributeContextUtil.validate_attribute_context(self, corpus, expected_output_path, '{}{}'.format(entity_name, file_name_suffix), resolved_entity)
 
     async def _validate_resolved_attributes(self, corpus: 'CdmCorpusDefinition', actual_resolved_entity: 'CdmEntityDefinition', entity_name: str, file_name_suffix: str) -> None:
         """Validate the list of resolved attributes against an expected list"""
         expected_resolved_entity = await corpus.fetch_object_async('expected:/Resolved_{0}{1}.cdm.json/Resolved_{0}{1}'.format(entity_name, file_name_suffix))  # type: CdmEntityDefinition
         self.assertIsNotNone(expected_resolved_entity)
 
-        self.assertEqual(expected_resolved_entity.attributes.__len__(), actual_resolved_entity.attributes.__len__())
-        for i in range(0, expected_resolved_entity.attributes.__len__()):
+        self.assertEqual(len(expected_resolved_entity.attributes), len(actual_resolved_entity.attributes))
+        for i in range(0, len(expected_resolved_entity.attributes)):
             self.assertEqual(expected_resolved_entity.attributes[i].fetch_object_definition_name(), actual_resolved_entity.attributes[i].fetch_object_definition_name())

@@ -1,6 +1,7 @@
 {
     "$schema": "./schema.cdm.json",
     "jsonSchemaSemanticVersion": "1.0.0",
+    "explanation": "Identity of persons, objects, organizations",
     "imports": [
         {
             "uri": "/primitives.cdm.json"
@@ -28,19 +29,31 @@
             "extendsTrait": "means.identity.name"
         },
         {
-            "traitName": "means.identity.person.firstName",
-            "extendsTrait": "means.identity.name"
+            "traitName": "means.identity.person.prefix",
+            "extendsTrait": "means.identity.name",
+            "explanation": "A salutation such as a title, rank or honorific to place before a person's name"
         },
         {
-            "traitName": "means.identity.person.fullName",
+            "traitName": "means.identity.person.firstName",
+            "extendsTrait": "means.identity.name",
+            "explanation": "A person's given or first name."
+        },
+        {
+            "traitName": "means.identity.person.middleName",
             "extendsTrait": "means.identity.name"
         },
         {
             "traitName": "means.identity.person.lastName",
-            "extendsTrait": "means.identity.name"
+            "extendsTrait": "means.identity.name",
+            "explanation": "A person's surname, family name or last name."
         },
         {
-            "traitName": "means.identity.person.middleName",
+            "traitName": "means.identity.person.suffix",
+            "extendsTrait": "means.identity.name",
+            "explanation": "Follows a person's name and provides additional information about their position, education or honorific"
+        },
+        {
+            "traitName": "means.identity.person.fullName",
             "extendsTrait": "means.identity.name"
         },
         {
@@ -94,6 +107,16 @@
         {
             "traitName": "means.identity.title",
             "extendsTrait": "means.identity"
+        },
+        {
+            "traitName": "means.identity.IP4Address",
+            "extendsTrait": "means.identity",
+            "explanation": "Internet Protocol V4 Address"
+        },
+        {
+            "traitName": "means.identity.IP6Address",
+            "extendsTrait": "means.identity",
+            "explanation": "Internet Protocol V6 Address"
         },
         {
             "dataTypeName": "governmentId",
@@ -190,6 +213,24 @@
             "exhibitsTraits": [
                 "means.userId"
             ]
+        },
+        {
+            "dataTypeName": "IP4Address",
+            "extendsDataType": "string",
+            "explanation": "Internet Protocol V4 Address of the form DDD.DDD.DDD.DDD",
+            "exhibitsTraits": [
+                "means.identity.IP4Address"
+            ]
+
+        },
+        {
+            "dataTypeName": "IP6Address",
+            "extendsDataType": "string",
+            "explanation": "Internet Protocol V6 Address of the form  XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX:XXXX",
+            "exhibitsTraits": [
+                "means.identity.IP6Address"
+            ]
         }
+
     ]
 }

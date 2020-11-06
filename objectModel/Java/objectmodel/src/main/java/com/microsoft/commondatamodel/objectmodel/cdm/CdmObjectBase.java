@@ -13,6 +13,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeContextParameters;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.DepthInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
@@ -32,6 +33,7 @@ public abstract class CdmObjectBase implements CdmObject {
   private String declaredPath;
   private Map<String, ResolvedTraitSetBuilder> traitCache;
   protected boolean resolvingAttributes = false;
+  protected boolean circularReference;
 
   public CdmObjectBase() {
   }
@@ -132,23 +134,6 @@ public abstract class CdmObjectBase implements CdmObject {
       traitRef.setFromProperty(true);
     }
     return traitRef;
-  }
-
-  static ResolveOptions copyResolveOptions(final ResolveOptions resOpt) {
-    final ResolveOptions resOptCopy = new ResolveOptions();
-    resOptCopy.setWrtDoc(resOpt.getWrtDoc());
-    resOptCopy.setRelationshipDepth(resOpt.getRelationshipDepth());
-
-    if (null != resOpt.getDirectives()) {
-      resOptCopy.setDirectives(resOpt.getDirectives().copy());
-    }
-
-    resOptCopy.setLocalizeReferencesFor(resOpt.getLocalizeReferencesFor());
-    resOptCopy.setIndexingDoc(resOpt.getIndexingDoc());
-    resOptCopy.setShallowValidation((resOpt.getShallowValidation()));
-    resOptCopy.setResolvedAttributeLimit(resOpt.getResolvedAttributeLimit());
-
-    return resOptCopy;
   }
 
   /**
@@ -370,6 +355,28 @@ public abstract class CdmObjectBase implements CdmObject {
     return rtsbAll.getResolvedTraitSet();
   }
 
+  @Deprecated
+  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt) {
+    return this.fetchObjectFromCache(resOpt, null);
+  }
+  /**
+   * @return Resolved attribute set builder
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public ResolvedAttributeSetBuilder fetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext) {
+    String kind = "rasb";
+    final ResolveContext ctx = (ResolveContext) this.getCtx();
+    String cacheTag = ctx.getCorpus().createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
+
+    Object rasbCache = null;
+    if (cacheTag != null) {
+      rasbCache = ctx.getCache().get(cacheTag);
+    }
+    return (ResolvedAttributeSetBuilder)rasbCache;
+  }
+
   /**
    *
    * @param resOpt Resolve Options
@@ -404,12 +411,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
-    String cacheTag = ctx.getCorpus()
-            .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
-    Object rasbCache = null;
-    if (cacheTag != null) {
-      rasbCache = ctx.getCache().get(cacheTag);
-    }
+    ResolvedAttributeSetBuilder rasbCache = this.fetchObjectFromCache(resOpt, acpInContext);
     CdmAttributeContext underCtx = null;
 
     // store the previous document set, we will need to add it with
@@ -425,11 +427,18 @@ public abstract class CdmObjectBase implements CdmObject {
     final String fromMoniker = resOpt.getFromMoniker();
     resOpt.setFromMoniker(null);
 
+    // if using the cache passes the maxDepth, we cannot use it
+    if (rasbCache != null && resOpt.depthInfo != null && resOpt.depthInfo.getMaxDepth() != null
+        && resOpt.depthInfo.getCurrentDepth() + rasbCache.getResolvedAttributeSet().getDepthTraveled() > resOpt.depthInfo.getMaxDepth()) {
+      rasbCache = null;
+    }
+
     if (rasbCache == null) {
       if (this.resolvingAttributes) {
         // re-entered this attribute through some kind of self or looping reference.
         this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-        return new ResolvedAttributeSet();
+        resOpt.inCircularReference = true;
+        this.circularReference = true;
       }
       this.resolvingAttributes = true;
 
@@ -450,7 +459,7 @@ public abstract class CdmObjectBase implements CdmObject {
                   .registerDefinitionReferenceSymbols(oDef, kind, resOpt.getSymbolRefSet());
 
           // get the new cache tag now that we have the list of docs
-          cacheTag = ctx.getCorpus()
+          String cacheTag = ctx.getCorpus()
                   .createDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : null);
 
           // save this as the cached version
@@ -500,6 +509,9 @@ public abstract class CdmObjectBase implements CdmObject {
           }
         }
       }
+      if (this.circularReference) {
+        resOpt.inCircularReference = false;
+      }
     } else {
       // cache found. if we are building a context, then fix what we got instead of making a new one
       if (acpInContext != null) {
@@ -515,6 +527,16 @@ public abstract class CdmObjectBase implements CdmObject {
                 ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet(),
                 null,
                 fromMoniker);
+      }
+    }
+
+    DepthInfo currDepthInfo = resOpt.depthInfo;
+    if (this instanceof CdmEntityAttributeDefinition && currDepthInfo != null) {
+      // if we hit the maxDepth, we are now going back up
+      currDepthInfo.setCurrentDepth(currDepthInfo.getCurrentDepth() - 1);
+      // now at the top of the chain where max depth does not influence the cache
+      if (currDepthInfo.getCurrentDepth() <= 0) {
+        resOpt.depthInfo = null;
       }
     }
 

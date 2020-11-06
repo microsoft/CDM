@@ -36,7 +36,7 @@ class OperationCombineAttributesPersistence:
         if data.explanation:
             combine_attributes_op.explanation = data.explanation
 
-        combine_attributes_op.take = data.take
+        combine_attributes_op.select = data.select
         combine_attributes_op.merge_into = utils.create_attribute(ctx, data.mergeInto)
 
         return combine_attributes_op
@@ -51,7 +51,7 @@ class OperationCombineAttributesPersistence:
         obj = OperationCombineAttributes()
         obj.type = OperationTypeConvertor._operation_type_to_string(CdmOperationType.COMBINE_ATTRIBUTES)
         obj.explanation = instance.explanation
-        obj.take = instance.take
+        obj.select = instance.select
         obj.mergeInto = TypeAttributePersistence.to_data(instance.merge_into, res_opt, options)
 
         return obj

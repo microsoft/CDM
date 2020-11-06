@@ -17,7 +17,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
 
         public ResolvedTraitSet(ResolveOptions resOpt)
         {
-            this.ResOpt = CdmObjectBase.CopyResolveOptions(resOpt);
+            this.ResOpt = resOpt.Copy();
             this.Set = new List<ResolvedTrait>();
             this.LookupByTrait = new Dictionary<CdmTraitDefinition, ResolvedTrait>();
             this.HasElevated = false;
@@ -223,9 +223,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 List<dynamic> av = resTrait.ParameterValues.Values;
                 dynamic newVal = arg.Value;
                 // get the value index from the parameter collection given the parameter that this argument is setting
-                int iParam = resTrait.ParameterValues.IndexOf(arg.GetParameterDef());
-                av[iParam] = ParameterValue.FetchReplacementValue(this.ResOpt, av[iParam], newVal, true);
-                resTrait.ParameterValues.WasSet[iParam] = true;
+                var paramDef = arg.GetParameterDef();
+                if (paramDef != null)
+                {
+                    int iParam = resTrait.ParameterValues.IndexOf(paramDef);
+                    av[iParam] = ParameterValue.FetchReplacementValue(this.ResOpt, av[iParam], newVal, true);
+                    resTrait.ParameterValues.WasSet[iParam] = true;
+                }
+                else
+                {
+                    // debug
+                    paramDef = arg.GetParameterDef();
+                }
             }
         }
 

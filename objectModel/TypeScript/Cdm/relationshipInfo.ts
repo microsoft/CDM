@@ -15,5 +15,6 @@ export interface relationshipInfo {
     isArray: boolean;
     selectsOne: boolean;
     nextDepth: number;
+    maxDepth: number;
     maxDepthExceeded: boolean;
 }

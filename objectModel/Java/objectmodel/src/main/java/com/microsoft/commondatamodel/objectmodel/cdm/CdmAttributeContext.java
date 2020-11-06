@@ -177,10 +177,9 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
     // now copy the children
     for (final CdmObject child : this.contents) {
-      CdmAttributeContext newChild = null;
       if (child instanceof CdmAttributeContext) {
         final CdmAttributeContext childAsAttributeContext = (CdmAttributeContext) child;
-        newChild = (CdmAttributeContext) childAsAttributeContext
+        final CdmAttributeContext newChild = (CdmAttributeContext) childAsAttributeContext
             .copyNode(resOpt);
         if (newNode != null) {
           newChild.setParent(resOpt, newNode);

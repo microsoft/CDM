@@ -1,0 +1,49 @@
+{
+    "$schema": "https://raw.githubusercontent.com/microsoft/CDM/master/schemaDocuments/schema.cdm.json",
+    "jsonSchemaSemanticVersion": "1.0.0",
+    "imports": [
+        {
+            "corpusPath": "cdm:/foundations.cdm.json"
+        },
+        {
+            "corpusPath": "C.cdm.json"
+        }
+    ],
+    "definitions": [
+        {
+            "entityName": "B",
+            "hasAttributes": [
+                {
+                    "purpose": "identifiedBy",
+                    "dataType": "string",
+                    "name": "bId"
+                },
+                {
+                    "name": "refToC",
+                    "entity": {
+                        "entityReference": "C",
+                        "appliedTraits": [
+                            {
+                                "traitReference": "is.identifiedBy",
+                                "arguments": [
+                                    "C/(resolvedAttributes)/cId"
+                                ]
+                            }
+                        ]
+                    },
+                    "resolutionGuidance": {
+                        "renameFormat": "{m}",
+                        "entityByReference": {
+                            "allowReference": true,
+                            "foreignKeyAttribute": {
+                                "purpose": "hasA",
+                                "dataType": "entityId",
+                                "name": "cId"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}

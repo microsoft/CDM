@@ -145,16 +145,20 @@ class ProjectionResolutionCommonUtil:
 
             if (res_attr and res_attr.target and res_attr.target.owner and
                 (res_attr.target.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF or res_attr.target.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF)):
+                # find the linked entity
                 owner = res_attr.target.owner
 
                 while owner and owner.object_type != CdmObjectType.ENTITY_DEF:
                     owner = owner.owner
+                
+                # find where the projection is defined
+                projection_doc = proj_dir._owner.in_document if proj_dir._owner else None
 
-                if owner and owner.object_type == CdmObjectType.ENTITY_DEF:
+                if owner and owner.object_type == CdmObjectType.ENTITY_DEF and projection_doc:
                     ent_def = owner.fetch_object_definition(proj_dir._res_opt)
                     if ent_def:
                         # should contain relative path without the namespace
-                        relative_ent_path = ent_def.ctx.corpus.storage.create_relative_corpus_path(ent_def.at_corpus_path, ent_def.in_document)
+                        relative_ent_path = ent_def.ctx.corpus.storage.create_relative_corpus_path(ent_def.at_corpus_path, projection_doc)
                         ent_ref_and_attr_name_list.append([relative_ent_path, res_attr.resolved_name])
 
         if len(ent_ref_and_attr_name_list) > 0:

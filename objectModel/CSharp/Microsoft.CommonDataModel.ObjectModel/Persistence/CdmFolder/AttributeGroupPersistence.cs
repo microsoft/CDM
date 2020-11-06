@@ -41,7 +41,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 AttributeGroupName = instance.AttributeGroupName,
                 ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options),
                 AttributeContext = instance.AttributeContext?.CopyData(resOpt, options) as string,
-                Members = CopyDataUtils.ListCopyData(resOpt, instance.Members, options)
+                Members = CopyDataUtils.ListCopyData(resOpt, instance.Members, options) ?? new List<JToken>()
             };
         }
     }

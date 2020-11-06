@@ -337,10 +337,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 // CombineAttributes Operation
                 CdmOperationCombineAttributes combineAttributesOp = new CdmOperationCombineAttributes(corpus.Ctx)
                 {
-                    Take = new List<string>(),
+                    Select = new List<string>(),
                     MergeInto = corpus.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef)
                 };
-                combineAttributesOp.Take.Add("testAttribute1");
+                combineAttributesOp.Select.Add("testAttribute1");
                 projection.Operations.Add(combineAttributesOp);
 
                 // RenameAttributes Operation

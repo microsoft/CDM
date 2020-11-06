@@ -240,6 +240,45 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             VerifyRelationships(manifest, expectedRels);
         }
 
+        /// <summary>
+        /// Test that relationships between entities in different namespaces are created correctly
+        /// </summary>
+        [TestMethod]
+        public async Task TestRelationshipToDifferentNamespace()
+        {
+            var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestRelationshipToDifferentNamespace", "expectedRels.json")).ToObject<List<E2ERelationship>>();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipToDifferentNamespace");
+
+            // entity B will be in a different namespace
+            corpus.Storage.Mount("differentNamespace", new LocalAdapter($"{TestHelper.GetInputFolderPath(testsSubpath, "TestRelationshipToDifferentNamespace")}\\differentNamespace"));
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
+
+            await corpus.CalculateEntityGraphAsync(manifest);
+            await manifest.PopulateManifestRelationshipsAsync();
+
+            // check that each relationship has been created correctly
+            VerifyRelationships(manifest, expectedRels);
+        }
+
+        /// <summary>
+        /// Test that relationships pointing from a manifest to an entity in a submanifest create correct paths
+        /// </summary>
+        [TestMethod]
+        public async Task TestRelationshipPointingToSubManifest()
+        {
+            var expectedRels = JToken.Parse(TestHelper.GetExpectedOutputFileContent(testsSubpath, "TestRelationshipPointingToSubManifest", "expectedRels.json")).ToObject<List<E2ERelationship>>();
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestRelationshipPointingToSubManifest");
+
+            var manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>("local:/main.manifest.cdm.json");
+
+            await corpus.CalculateEntityGraphAsync(manifest);
+            await manifest.PopulateManifestRelationshipsAsync();
+
+            // check that each relationship has been created correctly
+            VerifyRelationships(manifest, expectedRels);
+        }
+
         private static void VerifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships)
         {
             Assert.AreEqual(manifest.Relationships.Count, expectedRelationships.Count);

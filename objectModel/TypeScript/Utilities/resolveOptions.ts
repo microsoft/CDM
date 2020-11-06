@@ -6,6 +6,7 @@ import {
     CdmDocumentDefinition,
     CdmObject,
     CdmObjectBase,
+    DepthInfo,
     importsLoadStrategy,
     SymbolSet
 } from '../internal';
@@ -15,13 +16,14 @@ export class resolveOptions {
     public directives?: AttributeResolutionDirectiveSet; // a set of string flags that direct how attribute resolving traits behave
     public shallowValidation?: boolean; // when enabled, errors regarding references that are unable to be resolved or loaded are logged as warnings instead
     public importsLoadStrategy: importsLoadStrategy = importsLoadStrategy.lazyLoad; // defines at which point the Object Model will try to load the imported documents.
-    public resolvedAttributeLimit?: number = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
+    public resolvedAttributeLimit?: number = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
     public maxOrdinalForArrayExpansion: number = 20; // the maximum value for the end ordinal in an ArrayExpansion operation
 
     /**
      * @internal
+     * Contains information about the depth that we are resolving at
      */
-    public relationshipDepth?: number; // tracks the number of entity attributes that have been traversed
+    public depthInfo: DepthInfo;
 
     /**
      * @internal
@@ -39,7 +41,7 @@ export class resolveOptions {
 
     /**
      * @internal
-     * forces symbolic references to be re-written to be the precisely located reference based on the wrtDoc 
+     * forces symbolic references to be re-written to be the precisely located reference based on the wrtDoc
      */
     public localizeReferencesFor?: CdmDocumentDefinition;
 
@@ -62,7 +64,8 @@ export class resolveOptions {
         if (this.importsLoadStrategy === importsLoadStrategy.lazyLoad) {
             return undefined;
         }
-        return this.importsLoadStrategy == importsLoadStrategy.load;
+
+        return this.importsLoadStrategy === importsLoadStrategy.load;
     }
 
     /**
@@ -78,6 +81,12 @@ export class resolveOptions {
             this.importsLoadStrategy = importsLoadStrategy.doNotLoad;
         }
     }
+
+    /**
+     * @internal
+     * Indicates whether we are resolving inside of a circular reference, resolution is different in that case
+     */
+    public inCircularReference: boolean;
 
     public constructor(parameter?: CdmDocumentDefinition | CdmObject, directives?: AttributeResolutionDirectiveSet) {
         if (!parameter) {
@@ -103,6 +112,13 @@ export class resolveOptions {
             this.directives = new AttributeResolutionDirectiveSet(directivesSet);
         }
         this.symbolRefSet = new SymbolSet();
+
+        this.depthInfo = {
+            maxDepth: undefined,
+            currentDepth: 0,
+            maxDepthExceeded: false
+        };
+        this.inCircularReference = false;
     }
 
     /**
@@ -116,5 +132,31 @@ export class resolveOptions {
         }
 
         return true;
+    }
+
+    /**
+     * @internal
+     * Creates a copy of the resolve options object
+     */
+    public copy(): resolveOptions {
+        const resOptCopy: resolveOptions = new resolveOptions();
+        resOptCopy.wrtDoc = this.wrtDoc;
+        if (this.depthInfo) {
+            resOptCopy.depthInfo = {
+                currentDepth: this.depthInfo.currentDepth,
+                maxDepth: this.depthInfo.maxDepth,
+                maxDepthExceeded: this.depthInfo.maxDepthExceeded
+            };
+        }
+        if (this.directives) {
+            resOptCopy.directives = this.directives.copy();
+        }
+        resOptCopy.inCircularReference = this.inCircularReference;
+        resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
+        resOptCopy.indexingDoc = this.indexingDoc;
+        resOptCopy.shallowValidation = this.shallowValidation;
+        resOptCopy.resolvedAttributeLimit = this.resolvedAttributeLimit;
+
+        return resOptCopy;
     }
 }

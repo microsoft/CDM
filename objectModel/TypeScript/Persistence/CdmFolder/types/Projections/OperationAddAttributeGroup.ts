@@ -7,5 +7,5 @@ import { OperationBase } from './OperationBase';
  * OperationAddAttributeGroup class
  */
 export abstract class OperationAddAttributeGroup extends OperationBase {
-    // TODO (sukanyas): Property to be defined
+    public attributeGroupName: string;
 }

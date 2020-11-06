@@ -136,7 +136,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute, CdmAttributeContextType.AttributeDefinition);
+                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(includeAttributeName, currentPAS, currentPAS.CurrentResolvedAttribute,
+                        CdmAttributeContextType.AttributeDefinition,
+                        currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the included attribute
+                        null); // don't know who will point here yet
 
                     // Create a projection attribute state for the included attribute by creating a copy of the current state
                     // Copy() sets the current state as the previous state for the new one
@@ -149,7 +152,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(null, currentPAS, currentPAS.CurrentResolvedAttribute, CdmAttributeContextType.AttributeDefinition);
+                    attrCtxTreeBuilder.CreateAndStoreAttributeContextParameters(null, currentPAS, currentPAS.CurrentResolvedAttribute,
+                        CdmAttributeContextType.AttributeDefinition,
+                        currentPAS.CurrentResolvedAttribute.AttCtx, // lineage is the excluded attribute
+                        null); // don't know who will point here, probably nobody, I mean, we got excluded
                 }
             }
 

@@ -18,9 +18,7 @@ class ProjectionTestUtils:
     @staticmethod
     async def get_resolved_entity(corpus: 'CdmCorpusDefinition', input_entity: 'CdmEntityDefinition', resolution_options: List[str], add_res_opt_to_name: Optional[bool] = False) -> 'CdmEntityDefinition':
         """Resolves an entity"""
-        ro_hash_set = set()
-        for i in range(len(resolution_options)):
-            ro_hash_set.add(resolution_options[i])
+        ro_hash_set = set(resolution_options)
 
         resolved_entity_name = ''
 
@@ -58,7 +56,7 @@ class ProjectionTestUtils:
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))
         resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, res_opts, True)
-        AttributeContextUtil.validate_attribute_context(test, corpus, expected_output_path, '{}{}'.format(entity_name, file_name_suffix), resolved_entity)
+        await AttributeContextUtil.validate_attribute_context(test, corpus, expected_output_path, '{}{}'.format(entity_name, file_name_suffix), resolved_entity)
 
     @staticmethod
     def get_corpus(test_name: str, tests_subpath: str) -> 'CdmCorpusDefinition':

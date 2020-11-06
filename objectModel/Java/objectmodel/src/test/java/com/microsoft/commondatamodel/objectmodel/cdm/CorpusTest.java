@@ -69,6 +69,37 @@ public class CorpusTest {
     }
 
     /**
+     * Tests if a document that was fetched with lazy load and imported by another document is property indexed when needed.
+     */
+    @Test
+    public void testLazyLoadCreateResolvedEntity() throws InterruptedException {
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testLazyLoadCreateResolvedEntity", null);
+        corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+            // no error should be logged.
+            Assert.fail(message);
+        }, CdmStatusLevel.Warning);
+
+        // load with deferred imports.
+        final ResolveOptions resOpt = new ResolveOptions();
+        resOpt.setImportsLoadStrategy(ImportsLoadStrategy.LazyLoad);
+
+        // load entB which is imported by entA document.
+        final CdmDocumentDefinition docB = corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/entB.cdm.json", null, resOpt).join();
+        final CdmEntityDefinition entA = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/entA.cdm.json/entA", null, resOpt).join();
+
+        Assert.assertNull(entA.getInDocument().importPriorities);
+        Assert.assertNull(docB.importPriorities);
+
+        // createResolvedEntityAsync will force the entA document to be indexed.
+        final CdmEntityDefinition resEntA = entA.createResolvedEntityAsync("resolved-EntA").join();
+
+        // in createResolvedEntityAsync the documents should be indexed.
+        Assert.assertNotNull(entA.getInDocument().importPriorities);
+        Assert.assertNotNull(docB.importPriorities);
+        Assert.assertNotNull(resEntA.getInDocument().importPriorities);
+    }
+
+    /**
      * Tests the FetchObjectAsync function with the lazy imports load.
      */
     @Test

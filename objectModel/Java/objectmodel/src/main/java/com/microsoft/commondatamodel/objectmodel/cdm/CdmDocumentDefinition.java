@@ -9,6 +9,7 @@ import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
+import com.microsoft.commondatamodel.objectmodel.utilities.ImportInfo;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
@@ -31,7 +32,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   protected boolean isDirty = true;
   protected boolean isValid;
   protected boolean declarationsIndexed;
-  private ImportPriorities importPriorities;
+  protected ImportPriorities importPriorities;
   private boolean needsIndexing;
   private CdmDefinitionCollection definitions;
   private CdmImportCollection imports;
@@ -43,6 +44,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   private String name;
   private String schema;
   private String jsonSchemaSemanticVersion;
+  private String documentVersion;
   private OffsetDateTime _fileSystemModifiedTime;
 
   public CdmDocumentDefinition() {
@@ -54,6 +56,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.setObjectType(CdmObjectType.DocumentDef);
     this.name = name;
     this.jsonSchemaSemanticVersion = "1.0.0";
+    this.documentVersion = null;
     this.needsIndexing = true;
     this.isDirty = true;
     this.importsIndexed = false;
@@ -192,6 +195,14 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
   public void setJsonSchemaSemanticVersion(final String jsonSchemaSemanticVersion) {
     this.jsonSchemaSemanticVersion = jsonSchemaSemanticVersion;
+  }
+
+  public String getDocumentVersion() {
+    return this.documentVersion;
+  }
+
+  public void setDocumentVersion(final String documentVersion) {
+    this.documentVersion = documentVersion;
   }
 
   void clearCaches() {
@@ -396,6 +407,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    * @param resOpt Resolved options
+   * @param finalLoadImports boolean
    * @return CompletableFuture
    */
   @Deprecated
@@ -592,6 +604,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     copy.setFolderPath(this.getFolderPath());
     copy.setSchema(this.getSchema());
     copy.setJsonSchemaSemanticVersion(this.getJsonSchemaSemanticVersion());
+    copy.setDocumentVersion(this.getDocumentVersion());
 
     for (final CdmObjectDefinition definition : this.getDefinitions()) {
       copy.getDefinitions().add(definition);
@@ -658,7 +671,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     // for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
     // maps document to priority.
-    final Map<CdmDocumentDefinition, Integer> priorityMap = importPriorities.getImportPriority();
+    final Map<CdmDocumentDefinition, ImportInfo> priorityMap = importPriorities.getImportPriority();
 
     // maps moniker to document.
     final Map<String, CdmDocumentDefinition> monikerMap = importPriorities.getMonikerPriorityMap();
@@ -666,8 +679,8 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     // if already in list, don't do this again
     if (processedSet.contains(this)) {
       // if the first document in the priority map is this then the document was the starting point of the recursion.
-      // and if this document is present in the processedSet we know that there is a cicular list of imports.
-      if (priorityMap.containsKey(this) && priorityMap.get(this) == 0) {
+      // and if this document is present in the processedSet we know that there is a circular list of imports.
+      if (priorityMap.containsKey(this) && priorityMap.get(this).getPriority() == 0) {
           importPriorities.setHasCircularImport(true);
       }
 
@@ -679,16 +692,27 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
 
       // first add the imports done at this level only.
       final int l = this.getImports().getCount();
+      final ArrayList<CdmDocumentDefinition> monikerImports = new ArrayList<>();
       // reverse order
       for (int i = l - 1; i >= 0; i--) {
         final CdmImport imp = this.getImports().get(i);
         final CdmDocumentDefinition impDoc = imp.getDocument();
-        // don't add the moniker imports to the priority list.
+        // moniker imports will be added to the end of the priority list later.
         final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
-        if (imp.getDocument() != null && !isMoniker && !priorityMap.containsKey(impDoc)) {
-          // add doc.
-          priorityMap.put(impDoc, sequence);
-          sequence++;
+
+        if (impDoc != null) {
+          if (imp.getDocument() != null && !isMoniker && !priorityMap.containsKey(impDoc)) {
+            // add doc.
+            priorityMap.put(impDoc, new ImportInfo(sequence, false));
+            sequence++;
+          } else {
+            monikerImports.add(impDoc);
+          }
+        } else {
+          Logger.warning(
+            CdmDocumentDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("Import document {0} not loaded. This might cause an unexpected output.'", imp.getCorpusPath()));
         }
       }
 
@@ -698,20 +722,29 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
         final CdmDocumentDefinition impDoc = imp.getDocument();
         // don't add the moniker imports to the priority list.
         final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
-        
+
+        if (impDoc == null) {
+          Logger.warning(
+            CdmDocumentDefinition.class.getSimpleName(),
+            this.getCtx(),
+            Logger.format("Import document {0} not loaded. This might cause an unexpected output.'", imp.getCorpusPath()));
+        }
+
         // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
         // since the document itself will always be the first one on the list.
         if (impDoc != null && impDoc.importPriorities != null && !impDoc.importPriorities.getHasCircularImport()) {
           // lucky, already done so avoid recursion and copy.
           final ImportPriorities impPriSub = impDoc.getImportPriorities();
           impPriSub.getImportPriority().remove(impDoc); // because already added above.
-          for (final Map.Entry<CdmDocumentDefinition, Integer> ip : impPriSub.getImportPriority().entrySet()
+          for (final Map.Entry<CdmDocumentDefinition, ImportInfo> ip : impPriSub.getImportPriority().entrySet()
               .stream().sorted(
-                  Comparator.comparing(entry -> entry.getKey().getName()))
+                  Comparator.comparing(entry -> entry.getValue().getPriority()))
               .collect(Collectors.toList())) {
-            if (priorityMap.containsKey(ip.getKey()) == false) {
+            // if the document is imported with moniker in another document do not include it in the priority list of this one.
+            // moniker imports are only added to the priority list of the document that directly imports them.
+            if (!priorityMap.containsKey(ip.getKey()) && !ip.getValue().isMoniker()) {
               // add doc
-              priorityMap.put(ip.getKey(), sequence);
+              priorityMap.put(ip.getKey(), new ImportInfo(sequence, false));
               sequence++;
             }
           }
@@ -736,6 +769,17 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           final boolean isMoniker = !StringUtils.isNullOrTrimEmpty(imp.getMoniker());
           if (imp.getDocument() != null && isMoniker) {
             monikerMap.put(imp.getMoniker(), imp.getDocument());
+          }
+        }
+
+        // if the document index is zero, the document being processed is the root of the imports chain.
+        // in this case add the monikered imports to the end of the priorityMap.
+        if (priorityMap.containsKey(this) && priorityMap.get(this).getPriority() == 0) {
+          for (final CdmDocumentDefinition imp : monikerImports) {
+            if (!priorityMap.containsKey(imp)) {
+              priorityMap.put(imp, new ImportInfo(sequence, true));
+              sequence++;
+            }
           }
         }
       }
@@ -798,7 +842,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   ImportPriorities getImportPriorities() {
     if (this.importPriorities == null) {
       final ImportPriorities importPriorities = new ImportPriorities();
-      importPriorities.getImportPriority().put(this, 0);
+      importPriorities.getImportPriority().put(this, new ImportInfo(0, false));
       this.prioritizeImports(new LinkedHashSet<>(), importPriorities, 1, false);
       this.importPriorities = importPriorities;
     }

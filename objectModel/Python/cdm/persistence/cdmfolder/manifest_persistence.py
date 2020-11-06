@@ -69,6 +69,9 @@ class ManifestPersistence:
             # TODO: validate that this is a version we can understand with the OM
             pass
 
+        if data.get('documentVersion'):
+            manifest.document_version = data.documentVersion
+
         if data.get('exhibitsTraits'):
             exhibits_traits = utils.create_trait_reference_array(ctx, data.exhibitsTraits)
             manifest.exhibits_traits.extend(exhibits_traits)
@@ -135,6 +138,7 @@ class ManifestPersistence:
         manifest.manifestName = instance.manifest_name
         manifest.schema = instance.schema
         manifest.jsonSchemaSemanticVersion = instance.json_schema_semantic_version
+        manifest.documentVersion = instance.document_version
         manifest.lastFileStatusCheckTime = time_utils._get_formatted_date_string(instance.last_file_status_check_time)
         manifest.lastFileModifiedTime = time_utils._get_formatted_date_string(instance.last_file_modified_time)
         manifest.lastChildFileModifiedTime = time_utils._get_formatted_date_string(instance.last_child_file_modified_time)

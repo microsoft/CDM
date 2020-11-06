@@ -54,6 +54,10 @@ public class Model extends DataObject {
   @JsonInclude(JsonInclude.Include.NON_NULL)
   private OffsetDateTime lastChildFileModifiedTime;
 
+  @JsonProperty("cdm:documentVersion")
+  @JsonInclude(JsonInclude.Include.NON_NULL)
+  private String documentVersion;
+
   public OffsetDateTime getLastFileStatusCheckTime() {
     return lastFileStatusCheckTime;
   }
@@ -132,5 +136,13 @@ public class Model extends DataObject {
 
   public List<SingleKeyRelationship> getRelationships() {
     return relationships;
+  }
+
+  public String getDocumentVersion() {
+    return documentVersion;
+  }
+
+  public void setDocumentVersion(String documentVersion) {
+    this.documentVersion = documentVersion;
   }
 }

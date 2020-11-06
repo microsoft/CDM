@@ -8,9 +8,12 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.testng.Assert;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,12 +55,12 @@ public final class AttributeContextUtil {
             for (int i = 0; i < attribContext.getContents().size(); i++) {
                 String str = "";
                 if ((attribContext.getContents().get(0) instanceof CdmAttributeReference)) {
-                    CdmAttributeReference ar = (CdmAttributeReference)attribContext.getContents().get(i);
+                    CdmAttributeReference ar = (CdmAttributeReference) attribContext.getContents().get(i);
                     str = ar.getAtCorpusPath();
                     bldr.append(str);
                     bldr.append(endOfLine);
                 } else {
-                    CdmAttributeContext ac = (CdmAttributeContext)attribContext.getContents().get(i);
+                    CdmAttributeContext ac = (CdmAttributeContext) attribContext.getContents().get(i);
                     str = ac.getAtCorpusPath();
                     bldr.append(str);
                     bldr.append(endOfLine);
@@ -112,7 +115,7 @@ public final class AttributeContextUtil {
                 bldr.append(endOfLine);
             }
         } else if (args.getValue() != null ? ((CdmObjectReference) args.getValue()).getExplicitReference().getObjectType() == CdmObjectType.ConstantEntityDef : false) {
-            CdmConstantEntityDefinition constEnt = (CdmConstantEntityDefinition)((CdmObjectReferenceBase)args.getValue()).getExplicitReference();
+            CdmConstantEntityDefinition constEnt = (CdmConstantEntityDefinition) ((CdmObjectReferenceBase) args.getValue()).getExplicitReference();
             if (constEnt != null) {
                 List<CdmEntityDefinition> refs = new ArrayList<>();
                 for (List<String> val : constEnt.getConstantValues()) {
@@ -130,13 +133,25 @@ public final class AttributeContextUtil {
     public static void validateAttributeContext(CdmCorpusDefinition corpus, String expectedOutputPath, String entityName, CdmEntityDefinition resolvedEntity) {
         if (resolvedEntity.getAttributeContext() != null) {
             AttributeContextUtil attrCtxUtil = new AttributeContextUtil();
-            String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.getAttributeContext());
-            try {
-                final String expectedText = new String(Files.readAllBytes(
-                    new File(expectedOutputPath, "AttrCtx_" + entityName + ".txt").toPath()),
-                    StandardCharsets.UTF_8);
 
+            try {
+                // Expected
+                Path expectedStringFilePath = new File(expectedOutputPath, "AttrCtx_" + entityName + ".txt").toPath();
+                final String expectedText = new String(Files.readAllBytes(expectedStringFilePath), StandardCharsets.UTF_8);
+
+                // Actual
+                Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", "ActualOutput"), "AttrCtx_" + entityName + ".txt").toPath();
+                String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.getAttributeContext());
+
+                // Test if Actual is Equal to Expected
                 Assert.assertEquals(actualText, expectedText);
+
+                // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+                try (final BufferedWriter actualFileWriter = Files.newBufferedWriter(actualStringFilePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
+                    actualFileWriter.write(actualText);
+                    actualFileWriter.flush();
+                }
+                resolvedEntity.getInDocument().saveAsAsync("Resolved_" + entityName + ".cdm.json", false).join();
             } catch (Exception e) {
                 Assert.fail(e.getMessage());
             }

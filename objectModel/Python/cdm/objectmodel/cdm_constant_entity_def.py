@@ -159,7 +159,7 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         if self.constant_values is None:
             path_split = self._declared_path.split('/')
             entity_name = path_split[0] if path_split else ''
-            logger.warning(self._TAG, self.ctx, 'constant entity \'${}\' defined without a constant value.'.format(entity_name))
+            logger.warning(self._TAG, self.ctx, 'constant entity \'{}\' defined without a constant value.'.format(entity_name))
         if not bool(self.entity_shape):
             logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['entity_shape']))
             return False

@@ -310,9 +310,9 @@ describe('Cdm/Projection/ProjectionObjectModel', () => {
 
         // CombineAttributes Operation
         const combineAttributesOp: CdmOperationCombineAttributes = new CdmOperationCombineAttributes(corpus.ctx);
-        combineAttributesOp.take = [];
+        combineAttributesOp.select = [];
         combineAttributesOp.mergeInto = corpus.MakeObject<CdmTypeAttributeDefinition>(cdmObjectType.typeAttributeDef);
-        combineAttributesOp.take.push('testAttribute1');
+        combineAttributesOp.select.push('testAttribute1');
         projection.operations.push(combineAttributesOp);
 
         // RenameAttributes Operation

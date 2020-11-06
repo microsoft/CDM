@@ -58,10 +58,12 @@ import {
     CdmTraitReference,
     CdmTypeAttributeDefinition,
     cdmValidationStep,
+    DepthInfo,
     docsResult,
     DocumentLibrary,
     EventCallback,
     ICdmProfiler,
+    ImportInfo,
     Logger,
     p,
     ParameterCollection,
@@ -95,7 +97,6 @@ import {
 } from '../Utilities/cdmObjectTypeGuards';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { VisitCallback } from '../Utilities/VisitCallback';
-import { type } from 'os';
 
 export class CdmCorpusDefinition {
     public get profiler(): ICdmProfiler {
@@ -251,16 +252,16 @@ export class CdmCorpusDefinition {
     private static fetchPriorityDoc(
         docs: CdmDocumentDefinition[],
         importPriority: Map<CdmDocumentDefinition,
-            number>): CdmDocumentDefinition {
+            ImportInfo>): CdmDocumentDefinition {
         // let bodyCode = () =>
         {
             let docBest: CdmDocumentDefinition;
             let indexBest: number = Number.MAX_SAFE_INTEGER;
             for (const docDefined of docs) {
                 // is this one of the imported docs?
-                const indexFound: number = importPriority.get(docDefined);
-                if (indexFound < indexBest) {
-                    indexBest = indexFound;
+                const importInfo: ImportInfo = importPriority.get(docDefined);
+                if (importInfo && importInfo.priority < indexBest) {
+                    indexBest = importInfo.priority;
                     docBest = docDefined;
                     if (indexBest === 0) {
                         break;
@@ -278,7 +279,7 @@ export class CdmCorpusDefinition {
      */
     public async createRootManifest(corpusPath: string): Promise<CdmManifestDefinition> {
         if (this.isPathManifestDocument(corpusPath)) {
-            this.rootManifest = await this.fetchObjectAsync(corpusPath, undefined, false) as CdmManifestDefinition;
+            this.rootManifest = await this.fetchObjectAsync(corpusPath, undefined, false);
 
             return this.rootManifest;
         }
@@ -402,7 +403,8 @@ export class CdmCorpusDefinition {
         const wrtDoc: CdmDocumentDefinition = resOpt.wrtDoc;
 
         if (wrtDoc.needsIndexing && !wrtDoc.currentlyIndexing) {
-            Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Document not index previsouly. Please when calling fetchObjectAsync specify the 'importsLoadStrategy' to 'load' on the ResolveOptions object.`, this.resolveSymbolReference.name);
+            Logger.error(CdmCorpusDefinition.name, wrtDoc.ctx, `Please set the 'importsLoadStrategy' to 'load' on the ResolveOptions object when calling fetchObjectAsync.`, this.resolveSymbolReference.name);
+            return undefined;
         }
 
         // get the array of documents where the symbol is defined
@@ -421,7 +423,7 @@ export class CdmCorpusDefinition {
             if (!wrtDoc.importPriorities) {
                 return undefined; // need to index imports first, should have happened
             }
-            const importPriority: Map<CdmDocumentDefinition, number> = wrtDoc.importPriorities.importPriority;
+            const importPriority: Map<CdmDocumentDefinition, ImportInfo> = wrtDoc.importPriorities.importPriority;
             if (importPriority.size === 0) {
                 return undefined;
             }
@@ -523,6 +525,13 @@ export class CdmCorpusDefinition {
 
             let tagSuffix: string = `-${kind}-${thisId}`;
             tagSuffix += `-(${resOpt.directives ? resOpt.directives.getTag() : ''})`;
+            if (resOpt.depthInfo && resOpt.depthInfo.maxDepthExceeded) {
+                const currDepthInfo: DepthInfo = resOpt.depthInfo;
+                tagSuffix += `-${currDepthInfo.maxDepth - currDepthInfo.currentDepth}`;
+            }
+            if (resOpt.inCircularReference) {
+                tagSuffix += '-pk';
+            }
             if (extraTags) {
                 tagSuffix += `-${extraTags}`;
             }
@@ -779,7 +788,7 @@ export class CdmCorpusDefinition {
         if (docsNotIndexed.size === 0) {
             return true;
         }
-        
+
         for (const doc of docsNotIndexed) {
             if (!doc.declarationsIndexed) {
                 Logger.debug(CdmCorpusDefinition.name, this.ctx, `index start: ${doc.atCorpusPath}`, this.indexDocuments.name);
@@ -813,7 +822,7 @@ export class CdmCorpusDefinition {
             // make sure we can find everything that is named by reference
             for (const doc of docsNotIndexed) {
                 if (doc.isValid) {
-                    const resOptLocal: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+                    const resOptLocal: resolveOptions = resOpt.copy();
                     resOptLocal.wrtDoc = doc;
                     this.resolveObjectDefinitions(resOptLocal, doc);
                 }
@@ -821,7 +830,7 @@ export class CdmCorpusDefinition {
             // now resolve any trait arguments that are type object
             for (const doc of docsNotIndexed) {
                 if (doc.isValid) {
-                    const resOptLocal: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+                    const resOptLocal: resolveOptions = resOpt.copy();
                     resOptLocal.wrtDoc = doc;
                     this.resolveTraitArguments(resOptLocal, doc);
                 }
@@ -874,7 +883,7 @@ export class CdmCorpusDefinition {
 
                         return;
                     }
-                    const lastFolder: CdmFolderDefinition = await namespaceFolder.fetchChildFolderFromPathAsync(objectPath, false);
+                    const lastFolder: CdmFolderDefinition = namespaceFolder.fetchChildFolderFromPath(objectPath, false);
 
                     // don't create new folders, just go as far as possible
                     if (lastFolder) {
@@ -911,7 +920,7 @@ export class CdmCorpusDefinition {
      */
     public async fetchObjectAsync<T>(objectPath: string, obj?: CdmObject, shallowValidationOrResOpt: boolean | resolveOptions | undefined = undefined, forceReload: boolean = false): Promise<T> {
         let resOpt: resolveOptions;
-        if (typeof(shallowValidationOrResOpt) === 'boolean') {
+        if (typeof (shallowValidationOrResOpt) === 'boolean') {
             resOpt = new resolveOptions();
             resOpt.shallowValidation = shallowValidationOrResOpt;
         } else if (shallowValidationOrResOpt === undefined) {
@@ -1013,7 +1022,7 @@ export class CdmCorpusDefinition {
                 if (!imp.document) {
                     // no document set for this import, see if it is already loaded into the corpus
                     const path: string = this.storage.createAbsoluteCorpusPath(imp.corpusPath, doc);
-                    const impDoc: CdmDocumentDefinition = this.documentLibrary.fetchDocumentAndMarkForIndexing(path);
+                    const impDoc: CdmDocumentDefinition = this.documentLibrary.fetchDocument(path);
                     if (impDoc) {
                         imp.document = impDoc;
                         this.setImportDocuments(imp.document);
@@ -1030,33 +1039,37 @@ export class CdmCorpusDefinition {
         const docsNowLoaded: Set<CdmDocumentDefinition> = new Set<CdmDocumentDefinition>();
         const docsNotLoaded: Set<string> = this.documentLibrary.listDocsNotLoaded();
 
-        if (docsNotLoaded.size > 0) {
-            await Promise.all(Array.from(docsNotLoaded)
-                .map(async (missing: string) => {
-                    if (this.documentLibrary.needToLoadDocument(missing)) {
-                        // load it
-                        const newDoc: CdmDocumentDefinition = await this.loadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
-
-                        if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
-                            Logger.info(CdmCorpusDefinition.name, this.ctx, `resolved import for '${newDoc.name}'`, doc.atCorpusPath);
-                        } else {
-                            Logger.warning(CdmCorpusDefinition.name, this.ctx, `unable to resolve import for '${missing}'`, doc.atCorpusPath);
-                        }
-                    }
-                }));
-
-            // now that we've loaded new docs, find imports from them that need loading
-            for (const loadedDoc of docsNowLoaded) {
-                this.findMissingImportsFromDocument(loadedDoc);
-            }
-
-            // repeat this process for the imports of the imports
-            await Promise.all(Array.from(docsNowLoaded)
-                .map(async (loadedDoc: CdmDocumentDefinition) => {
-                    await this.loadImportsAsync(loadedDoc, resOpt);
-                })
-            );
+        if (docsNotLoaded.size === 0) {
+            return;
         }
+
+        await Promise.all(Array.from(docsNotLoaded)
+            .map(async (missing: string) => {
+                if (this.documentLibrary.needToLoadDocument(missing, docsNowLoaded)) {
+                    await this.documentLibrary.concurrentReadLock.acquire();
+                    // load it
+                    const newDoc: CdmDocumentDefinition = await this.loadFolderOrDocument(missing, false, resOpt) as CdmDocumentDefinition;
+
+                    if (this.documentLibrary.markDocumentAsLoadedOrFailed(newDoc, missing, docsNowLoaded)) {
+                        Logger.info(CdmCorpusDefinition.name, this.ctx, `resolved import for '${newDoc.name}'`, doc.atCorpusPath);
+                    } else {
+                        Logger.warning(CdmCorpusDefinition.name, this.ctx, `unable to resolve import for '${missing}'`, doc.atCorpusPath);
+                    }
+                    this.documentLibrary.concurrentReadLock.release();
+                }
+            }));
+
+        // now that we've loaded new docs, find imports from them that need loading
+        for (const loadedDoc of docsNowLoaded) {
+            this.findMissingImportsFromDocument(loadedDoc);
+        }
+
+        // repeat this process for the imports of the imports
+        await Promise.all(Array.from(docsNowLoaded)
+            .map(async (loadedDoc: CdmDocumentDefinition) => {
+                await this.loadImportsAsync(loadedDoc, resOpt);
+            })
+        );
     }
 
     /**
@@ -1743,7 +1756,7 @@ export class CdmCorpusDefinition {
         fromAtts: CdmAttributeReference[] = null
     ): CdmE2ERelationship[] {
         if (fromAtts) {
-            const resOptCopy: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+            const resOptCopy: resolveOptions = resOpt.copy();
             resOptCopy.wrtDoc = resEntity.inDocument;
 
             // Extract the from entity from resEntity
@@ -1759,9 +1772,9 @@ export class CdmCorpusDefinition {
                 // For each of the to attributes, create a relationship
                 for (const tuple of tupleList) {
                     const newE2ERel: CdmE2ERelationship = new CdmE2ERelationship(this.ctx, tuple[2]);
-                    newE2ERel.fromEntity = fromEntity;
+                    newE2ERel.fromEntity = this.storage.createAbsoluteCorpusPath(fromEntity, unResolvedEntity);
                     newE2ERel.fromEntityAttribute = fromAtts[i].fetchObjectDefinitionName();
-                    newE2ERel.toEntity = tuple[0];
+                    newE2ERel.toEntity = this.storage.createAbsoluteCorpusPath(tuple[0], unResolvedEntity);
                     newE2ERel.toEntityAttribute = tuple[1];
 
                     outRels.push(newE2ERel);
@@ -1894,7 +1907,11 @@ export class CdmCorpusDefinition {
                         directives = this.defaultResolutionDirectives;
                     }
                     resOpt = new resolveOptions(undefined, directives);
-                    resOpt.relationshipDepth = 0;
+                    resOpt.depthInfo = {
+                        currentDepth: 0,
+                        maxDepthExceeded: false,
+                        maxDepth: undefined
+                    };
 
                     for (const doc of this.documentLibrary.listAllDocuments()) {
                         await doc.indexIfNeeded(resOpt);
@@ -2112,8 +2129,7 @@ export class CdmCorpusDefinition {
                                     Logger.error(
                                         CdmCorpusDefinition.name,
                                         ctx,
-                                        `no argument supplied for required parameter '${paramName}' of trait '${
-                                        rt.traitName
+                                        `no argument supplied for required parameter '${paramName}' of trait '${rt.traitName
                                         }' on '${objectName}'`,
                                         currentDoc.folderPath + ctx.relativePath
                                     );
@@ -2444,7 +2460,7 @@ export class CdmCorpusDefinition {
         // if the to Doc is imported directly here,
         let pri: number;
         if (docFrom.importPriorities.importPriority.has(docResultTo.docBest)) {
-            pri = docFrom.importPriorities.importPriority.get(docResultTo.docBest);
+            pri = docFrom.importPriorities.importPriority.get(docResultTo.docBest).priority;
 
             // if the imported version is the highest priority, we are good
             if (!docResultTo.docList || docResultTo.docList.length === 1) {
@@ -2454,7 +2470,7 @@ export class CdmCorpusDefinition {
             // more than 1 symbol, see if highest pri
             let maxPri: number = -1;
             for (const docCheck of docResultTo.docList) {
-                const priCheck: number = docFrom.importPriorities.importPriority.get(docCheck);
+                const priCheck: number = docFrom.importPriorities.importPriority.get(docCheck).priority;
                 if (priCheck > maxPri) {
                     maxPri = priCheck;
                 }

@@ -28,8 +28,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationAddTypeAttribute(this.Ctx);
+            CdmOperationAddTypeAttribute copy = new CdmOperationAddTypeAttribute(this.Ctx)
+            {
+                TypeAttribute = this.TypeAttribute.Copy(resOpt, host) as CdmTypeAttributeDefinition
+            };
+            return copy;
         }
 
         /// <inheritdoc />
@@ -97,8 +100,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ProjectionAttributeStateSet projOutputSet,
             CdmAttributeContext attrCtx)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(AppendProjectionAttributeState));
-            return null;
+            // Pass through all the input projection attribute states if there are any
+            foreach (ProjectionAttributeState currentPAS in projCtx.CurrentAttributeStateSet.States)
+            {
+                projOutputSet.Add(currentPAS);
+            }
+
+            // Create a new attribute context for the operation
+            AttributeContextParameters attrCtxOpAddTypeParam = new AttributeContextParameters
+            {
+                under = attrCtx,
+                type = CdmAttributeContextType.OperationAddTypeAttribute,
+                Name = $"operation/index{Index}/operationAddTypeAttribute"
+            };
+            CdmAttributeContext attrCtxOpAddType = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxOpAddTypeParam);
+
+            // Create a new attribute context for the Type attribute we will create
+            AttributeContextParameters attrCtxTypeAttrParam = new AttributeContextParameters
+            {
+                under = attrCtxOpAddType,
+                type = CdmAttributeContextType.AddedAttributeSelectedType,
+                Name = "_selectedEntityName"
+            };
+            CdmAttributeContext attrCtxTypeAttr = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxTypeAttrParam);
+
+            // Create the Type attribute with the specified "typeAttribute" (from the operation) as its target and apply the trait "is.linkedEntity.name" to it
+            List<string> addTrait = new List<string>() { "is.linkedEntity.name" };
+            ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxTypeAttr, this.TypeAttribute, addedSimpleRefTraits: addTrait);
+
+            // Create a new projection attribute state for the new Type attribute and add it to the output set
+            // There is no previous state for the newly created Type attribute
+            ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.Ctx)
+            {
+                CurrentResolvedAttribute = newResAttr
+            };
+
+            projOutputSet.Add(newPAS);
+
+            return projOutputSet;
         }
     }
 }

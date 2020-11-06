@@ -16,7 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
     internal class ImportPriorities
     {
-        internal IDictionary<CdmDocumentDefinition, int> ImportPriority;
+        internal IDictionary<CdmDocumentDefinition, ImportInfo> ImportPriority;
         internal IDictionary<string, CdmDocumentDefinition> MonikerPriorityMap;
         
         /// <summary>
@@ -27,7 +27,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal ImportPriorities()
         {
-            this.ImportPriority = new Dictionary<CdmDocumentDefinition, int>();
+            this.ImportPriority = new Dictionary<CdmDocumentDefinition, ImportInfo>();
             this.MonikerPriorityMap = new Dictionary<string, CdmDocumentDefinition>();
             this.hasCircularImport = false;
         }
@@ -37,13 +37,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ImportPriorities copy = new ImportPriorities();
             if (this.ImportPriority != null)
             {
-                foreach (KeyValuePair<CdmDocumentDefinition, int> pair in this.ImportPriority)
+                foreach (KeyValuePair<CdmDocumentDefinition, ImportInfo> pair in this.ImportPriority)
+                {
                     copy.ImportPriority[pair.Key] = pair.Value;
+                }
             }
             if (this.MonikerPriorityMap != null)
             {
                 foreach (KeyValuePair<string, CdmDocumentDefinition> pair in this.MonikerPriorityMap)
+                {
                     copy.MonikerPriorityMap[pair.Key] = pair.Value;
+                }
             }
             copy.hasCircularImport = this.hasCircularImport;
             return copy;
@@ -80,6 +84,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.ObjectType = CdmObjectType.DocumentDef;
             this.Name = name;
             this.JsonSchemaSemanticVersion = "1.0.0";
+            this.DocumentVersion = null;
             this.NeedsIndexing = true;
             this.IsDirty = true;
             this.ImportsIndexed = false;
@@ -120,6 +125,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         /// <inheritdoc />
         public CdmImportCollection Imports { get; }
+
+        /// <summary>
+        /// Gets or sets the document version.
+        /// </summary>
+        public string DocumentVersion { get; set; }
 
         internal void ClearCaches()
         {
@@ -280,6 +290,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             copy.FolderPath = this.FolderPath;
             copy.Schema = this.Schema;
             copy.JsonSchemaSemanticVersion = this.JsonSchemaSemanticVersion;
+            copy.DocumentVersion = this.DocumentVersion;
 
             foreach (var def in this.Definitions)
                 copy.Definitions.Add(def);
@@ -361,6 +372,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             return default(T);
+        }
+
+        public override string FetchObjectDefinitionName()
+        {
+            return this.Name;
         }
 
         /// <inheritdoc />
@@ -510,7 +526,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.ImportPriorities == null)
             {
                 var importPriorities = new ImportPriorities();
-                importPriorities.ImportPriority.Add(this, 0);
+                importPriorities.ImportPriority.Add(this, new ImportInfo(0, false));
                 this.PrioritizeImports(new HashSet<CdmDocumentDefinition>(), importPriorities, 1, false);
                 this.ImportPriorities = importPriorities;
             }
@@ -526,7 +542,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             // for 'moniker' imports, keep track of the 'last/shallowest' use of each moniker tag.
 
             // maps document to priority.
-            IDictionary<CdmDocumentDefinition, int> priorityMap = importPriorities.ImportPriority;
+            IDictionary<CdmDocumentDefinition, ImportInfo> priorityMap = importPriorities.ImportPriority;
 
             // maps moniker to document.
             IDictionary<string, CdmDocumentDefinition> monikerMap = importPriorities.MonikerPriorityMap;
@@ -535,8 +551,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (processedSet.Contains(this))
             {
                 // if the first document in the priority map is this then the document was the starting point of the recursion.
-                // and if this document is present in the processedSet we know that there is a cicular list of imports.
-                if (priorityMap.ContainsKey(this) && priorityMap[this] == 0)
+                // and if this document is present in the processedSet we know that there is a circular list of imports.
+                if (priorityMap.ContainsKey(this) && priorityMap[this].Priority == 0)
                 {
                     importPriorities.hasCircularImport = true;
                 }
@@ -548,6 +564,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.Imports != null)
             {
                 var reversedImports = this.Imports.Reverse();
+                var monikerImports = new List<CdmDocumentDefinition>();
 
                 // first add the imports done at this level only in reverse order.
                 foreach (var imp in reversedImports)
@@ -555,12 +572,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     var impDoc = imp.Document;
                     bool isMoniker = !string.IsNullOrWhiteSpace(imp.Moniker);
 
-                    // don't add the moniker imports to the priority list.
-                    if (impDoc != null && !isMoniker && !priorityMap.ContainsKey(impDoc))
+                    // moniker imports will be added to the end of the priority list later.
+                    if (impDoc != null)
                     {
-                        // add doc.
-                        priorityMap.Add(impDoc, sequence);
-                        sequence++;
+                        if (!isMoniker && !priorityMap.ContainsKey(impDoc))
+                        {
+                            // add doc.
+                            priorityMap.Add(impDoc, new ImportInfo(sequence, false));
+                            sequence++;
+                        }
+                        else
+                        {
+                            monikerImports.Add(impDoc);
+                        }
+                    } 
+                    else
+                    {
+                        Logger.Warning(nameof(CdmDocumentDefinition), this.Ctx, $"Import document {imp.CorpusPath} not loaded. This might cause an unexpected output.");
                     }
                 }
 
@@ -569,6 +597,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     CdmDocumentDefinition impDoc = imp.Document;
                     bool isMoniker = !string.IsNullOrWhiteSpace(imp.Moniker);
+
+                    if (impDoc == null)
+                    {
+                        Logger.Warning(nameof(CdmDocumentDefinition), this.Ctx, $"Import document {imp.CorpusPath} not loaded. This might cause an unexpected output.");
+                    }
 
                     // if the document has circular imports its order on the impDoc.ImportPriorities list is not correct.
                     // since the document itself will always be the first one on the list.
@@ -580,10 +613,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                         foreach (var ip in impPriSub.ImportPriority)
                         {
-                            if (priorityMap.ContainsKey(ip.Key) == false)
+                            // if the document is imported with moniker in another document do not include it in the priority list of this one.
+                            // moniker imports are only added to the priority list of the document that directly imports them.
+                            if (!priorityMap.ContainsKey(ip.Key) && !ip.Value.IsMoniker)
                             {
                                 // add doc.
-                                priorityMap.Add(ip.Key, sequence);
+                                priorityMap.Add(ip.Key, new ImportInfo(sequence, false));
                                 sequence++;
                             }
                         }
@@ -616,10 +651,96 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             monikerMap[imp.Moniker] = imp.Document;
                         }
                     }
+
+                    // if the document index is zero, the document being processed is the root of the imports chain.
+                    // in this case add the monikered imports to the end of the priorityMap.
+                    if (priorityMap.ContainsKey(this) && priorityMap[this].Priority == 0)
+                    {
+                        foreach (var imp in monikerImports)
+                        {
+                            if (!priorityMap.ContainsKey(imp))
+                            {
+                                priorityMap.Add(imp, new ImportInfo(sequence, true));
+                                sequence++;
+                            }
+                        }
+                    }
                 }
             }
 
             return sequence;
+        }
+
+        internal string ImportPathToDoc(CdmDocumentDefinition docDest)
+        {
+            HashSet<CdmDocumentDefinition> avoidLoop = new HashSet<CdmDocumentDefinition>();
+            Func<CdmDocumentDefinition, string, string> InternalImportPathToDoc = null;
+            InternalImportPathToDoc = (docCheck, path) => 
+            {
+                if (docCheck == docDest)
+                {
+                    return "";
+                }
+                if (avoidLoop.Contains(docCheck))
+                {
+                    return null;
+                }
+                avoidLoop.Add(docCheck);
+                // if the docDest is one of the monikered imports of docCheck, then add the moniker and we are cool
+                if (docCheck.ImportPriorities?.MonikerPriorityMap?.Count > 0)
+                {
+                    foreach(var monPair in docCheck.ImportPriorities?.MonikerPriorityMap)
+                    {
+                        if (monPair.Value == docDest)
+                        {
+                            return $"{path}{monPair.Key}/";
+                        }
+                    }
+                }
+                // ok, what if the document can be reached directly from the imports here
+                ImportInfo impInfo = null;
+                if (docCheck.ImportPriorities?.ImportPriority?.TryGetValue(docDest, out impInfo) == false)
+                {
+                    impInfo = null;
+                }
+                if (impInfo != null && impInfo.IsMoniker == false)
+                {
+                    // good enough
+                    return path;
+                }
+
+                // still nothing, now we need to check those docs deeper
+                if (docCheck.ImportPriorities?.MonikerPriorityMap?.Count > 0)
+                {
+                    foreach(var monPair in docCheck.ImportPriorities?.MonikerPriorityMap)
+                    {
+                        string pathFound = InternalImportPathToDoc(monPair.Value, $"{path}{monPair.Key}/");
+                        if (pathFound != null)
+                        {
+                            return pathFound;
+                        }
+                    }
+                }
+                if (docCheck.ImportPriorities?.ImportPriority?.Count > 0)
+                {
+                    foreach(var impInfoPair in docCheck.ImportPriorities.ImportPriority)
+                    {
+                        if (!impInfoPair.Value.IsMoniker)
+                        {
+                            string pathFound = InternalImportPathToDoc(impInfoPair.Key, path);
+                            if (pathFound != null)
+                            {
+                                return pathFound;
+                            }
+                        }
+                    }
+                }
+                return null;
+               
+            };
+
+            return InternalImportPathToDoc(this, "");
+
         }
 
         internal async Task Reload()

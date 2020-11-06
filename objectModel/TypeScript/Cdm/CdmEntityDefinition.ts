@@ -50,9 +50,9 @@ import {
     traitToPropertyMap,
     VisitCallback
 } from '../internal';
-import { isAttributeReference } from '../Utilities/cdmObjectTypeGuards';
+import { isAttributeReference, isEntityAttributeDefinition } from '../Utilities/cdmObjectTypeGuards';
 
-export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmEntityDefinition {
+export class CdmEntityDefinition extends CdmObjectDefinitionBase {
     public static get objectType(): cdmObjectType {
         return cdmObjectType.entityDef;
     }
@@ -174,7 +174,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                 Logger.error(
                     CdmEntityDefinition.name,
                     this.ctx,
-                    Errors.validateErrorString(this.atCorpusPath, [ 'entityName' ]),
+                    Errors.validateErrorString(this.atCorpusPath, ['entityName']),
                     this.validate.name
                 );
 
@@ -387,7 +387,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                     const oldMoniker: string = resOpt.fromMoniker;
 
                     this.rasb.mergeAttributes(this.getExtendsEntityRef()
-                                                  .fetchResolvedAttributes(resOpt, acpExtEnt));
+                        .fetchResolvedAttributes(resOpt, acpExtEnt));
 
                     if (!resOpt.checkAttributeCount(this.rasb.ras.resolvedAttributeCount)) {
                         Logger.error(CdmEntityDefinition.name, this.ctx, `Maximum number of resolved attributes reached for the entity:${this.entityName}`);
@@ -423,6 +423,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             this.rasb.ras.setAttributeContext(under);
 
             if (this.attributes) {
+                let furthestChildDepth: number = 0;
+
                 for (const att of this.attributes) {
                     let acpAtt: AttributeContextParameters;
                     if (under) {
@@ -434,7 +436,19 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                             includeTraits: false
                         };
                     }
-                    this.rasb.mergeAttributes(att.fetchResolvedAttributes(resOpt, acpAtt));
+
+                    // skip entity attributes when we are in a circular reference loop
+                    if (resOpt.inCircularReference && isEntityAttributeDefinition(att)) {
+                        continue;
+                    }
+
+                    const attRas: ResolvedAttributeSet = att.fetchResolvedAttributes(resOpt, acpAtt);
+
+                    // we can now set depth now that children nodes have been resolved
+                    if (isEntityAttributeDefinition(att)) {
+                        furthestChildDepth = attRas.depthTraveled > furthestChildDepth ? attRas.depthTraveled : furthestChildDepth;
+                    }
+                    this.rasb.mergeAttributes(attRas);
 
                     if (!resOpt.checkAttributeCount(this.rasb.ras.resolvedAttributeCount)) {
                         Logger.error(CdmEntityDefinition.name, this.ctx, `Maximum number of resolved attributes reached for the entity:${this.entityName}`);
@@ -442,6 +456,8 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                         return undefined;
                     }
                 }
+
+                this.rasb.ras.depthTraveled = furthestChildDepth;
             }
 
             this.rasb.markOrder();
@@ -472,7 +488,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
      * @internal
      * @deprecated
      */
-     public getResolvedEntity(resOpt: resolveOptions): ResolvedEntity {
+    public getResolvedEntity(resOpt: resolveOptions): ResolvedEntity {
         return new ResolvedEntity(resOpt, this);
     }
 
@@ -487,7 +503,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
 
             // this whole resolved entity ref goo will go away when resolved documents are done.
             // for now, it breaks if structured att sets get made.
-            resOpt = CdmObjectBase.copyResolveOptions(resOpt);
+            resOpt = resOpt.copy();
             resOpt.directives = new AttributeResolutionDirectiveSet(new Set<string>(['normalized', 'referenceOnly']));
 
             const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
@@ -652,7 +668,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
 
             // use this whenever we need to keep references pointing at things that were already found.
             // used when 'fixing' references by localizing to a new document
-            const resOptCopy: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+            const resOptCopy: resolveOptions = resOpt.copy();
             resOptCopy.saveResolutionsOnCopy = true;
 
             // resolve attributes with this context. the end result is that each resolved attribute
@@ -725,8 +741,6 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                             }
                         }
                         for (const raCtx of raCtxInEnt) {
-
-                            const refs: CdmCollection<CdmObject> = raCtx.contents;
                             // there might be more than one explanation for where and attribute came from when things get merges as they do
                             // this won't work when I add the structured attributes to avoid name collisions
                             let attRefPath: string = path + ra.resolvedName;
@@ -735,7 +749,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
                                     const attRef: CdmObjectReference = this.ctx.corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true);
                                     // only need one explanation for this path to the insert order
                                     attPath2Order.set(attRef.namedReference, ra.insertOrder);
-                                    refs.push(attRef);
+                                    raCtx.contents.push(attRef);
                                 }
                             } else {
                                 attRefPath += '/members/';
@@ -1011,7 +1025,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmE
             // the fix needs to happen in the middle of the refresh
             // trigger the document to refresh current content into the resolved OM
             (attCtx).parent = undefined; // remove the fake parent that made the paths work
-            const resOptNew: resolveOptions = CdmObjectBase.copyResolveOptions(resOpt);
+            const resOptNew: resolveOptions = resOpt.copy();
             resOptNew.wrtDoc = docRes;
             resOptNew.localizeReferencesFor = docRes;
             if (!await docRes.refreshAsync(resOptNew)) {

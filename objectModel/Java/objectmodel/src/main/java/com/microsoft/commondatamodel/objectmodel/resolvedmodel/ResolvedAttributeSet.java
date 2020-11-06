@@ -39,6 +39,9 @@ public class ResolvedAttributeSet extends RefCounted {
   private CdmAttributeContext attributeContext;
   private int insertOrder;
   private int resolvedAttributeCount;
+  // indicates the depth level that this set was resolved at.
+  // resulting set can vary depending on the maxDepth value
+  private int depthTraveled;
 
   public ResolvedAttributeSet() {
     super();
@@ -48,6 +51,7 @@ public class ResolvedAttributeSet extends RefCounted {
     attCtx2ra = new LinkedHashMap<>();
     set = new ArrayList<>();
     resolvedAttributeCount = 0;
+    depthTraveled = 0;
   }
 
   public CdmAttributeContext createAttributeContext(
@@ -598,6 +602,7 @@ public class ResolvedAttributeSet extends RefCounted {
     // reset mappings to the correct one
     copy.setRa2attCtxSet(newRa2attCtxSet);
     copy.setAttCtx2ra(newAttCtx2ra);
+    copy.setDepthTraveled(this.depthTraveled);
 
     return copy;
   }
@@ -732,6 +737,16 @@ public class ResolvedAttributeSet extends RefCounted {
     }
 
     return null;
+  }
+
+  @Deprecated
+  public int getDepthTraveled() {
+    return depthTraveled;
+  }
+
+  @Deprecated
+  public void setDepthTraveled(int depth) {
+    this.depthTraveled = depth;
   }
 
   /**

@@ -143,7 +143,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     // find and getCache() the complete set of attributes
     final ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
     rasb.getResolvedAttributeSet().setAttributeContext(under);
-    final CdmObjectDefinition def = this.fetchObjectDefinition(resOpt);
+    CdmObjectDefinition def = this.fetchObjectDefinition(resOpt);
     if (def != null) {
       AttributeContextParameters acpRef = null;
       if (under != null) {
@@ -510,7 +510,6 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     if (resOpt.isSaveResolutionsOnCopy()) {
       copy.setExplicitReference(this.getExplicitReference());
     }
-    copy.setInDocument(this.getInDocument());
 
     copy.getAppliedTraits().clear();
     if (this.getAppliedTraits() != null) {
@@ -518,6 +517,10 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
         copy.getAppliedTraits().add(appliedTrait);
       }
     }
+
+    // Don't do anything else after this, as it may cause InDocument to become dirty
+    copy.setInDocument(this.getInDocument());
+
     return copy;
   }
 

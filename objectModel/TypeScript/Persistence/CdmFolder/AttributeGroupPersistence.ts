@@ -51,7 +51,7 @@ export class AttributeGroupPersistence {
             attributeContext: instance.
                 attributeContext ? instance.attributeContext.copyData(resOpt, options) as (string | identifierRef) : undefined,
             members: copyDataUtils.
-                arrayCopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(resOpt, instance.members, options)
+                arrayCopyData<string | AttributeGroupReference | TypeAttribute | EntityAttribute>(resOpt, instance.members, options) || []
         };
     }
 }

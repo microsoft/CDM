@@ -6,6 +6,7 @@ import {
     CdmConstantEntityDefinition,
     CdmCorpusContext,
     CdmCorpusDefinition,
+    CdmDocumentDefinition,
     CdmEntityAttributeDefinition,
     CdmEntityDefinition,
     CdmEntityReference,
@@ -74,7 +75,7 @@ export class ProjectionResolutionCommonUtil {
             if (attr.objectType === cdmObjectType.entityAttributeDef) {
                 const raSet: ResolvedAttributeSet = (attr as CdmEntityAttributeDefinition).fetchResolvedAttributes(projDir.resOpt);
                 for (const resAttr of raSet.set) {
-                    const projAttrState: ProjectionAttributeState = new ProjectionAttributeState(ctx)
+                    const projAttrState: ProjectionAttributeState = new ProjectionAttributeState(ctx);
                     projAttrState.currentResolvedAttribute = resAttr;
                     projAttrState.previousStateList = undefined;
 
@@ -175,17 +176,22 @@ export class ProjectionResolutionCommonUtil {
 
             if ((resAttr?.target as CdmObject)?.owner &&
                 ((resAttr.target as CdmObject).objectType === cdmObjectType.typeAttributeDef || (resAttr.target as CdmObject).objectType === cdmObjectType.entityAttributeDef)) {
+                // find the linked entity
                 let owner: CdmObject = (resAttr.target as CdmObject).owner;
 
                 while (owner && owner.objectType !== cdmObjectType.entityDef) {
                     owner = owner.owner;
                 }
 
-                if (owner && owner.objectType === cdmObjectType.entityDef) {
+                // find where the projection is defined
+                const projectionDoc: CdmDocumentDefinition = projDir.owner !== undefined ? projDir.owner.inDocument : undefined;
+
+                if (owner && owner.objectType === cdmObjectType.entityDef && projectionDoc) {
                     const entDef: CdmEntityDefinition = owner.fetchObjectDefinition(projDir.resOpt);
                     if (entDef) {
                         // should contain relative path without the namespace
-                        const relativeEntPath: string = entDef.ctx.corpus.storage.createRelativeCorpusPath(entDef.atCorpusPath, entDef.inDocument);
+                        const relativeEntPath: string =
+                            entDef.ctx.corpus.storage.createRelativeCorpusPath(entDef.atCorpusPath, projectionDoc);
                         entRefAndAttrNameList.push([relativeEntPath, resAttr.resolvedName]);
                     }
                 }

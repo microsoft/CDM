@@ -2,6 +2,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
 import * as fs from 'fs';
+import * as path from 'path';
+
 import { isArray, isDate, isObject, isString } from 'util';
 import { CdmCorpusDefinition, cdmStatusLevel } from '../internal';
 import { LocalAdapter, RemoteAdapter } from '../Storage';
@@ -28,6 +30,11 @@ export const testHelper = {
      * the entire set of CDM standard schemas, after 8000+ F&O entities were added.
      */
     cdmStandardsSchemaPath: 'local:/core/applicationCommon/applicationCommon.manifest.cdm.json',
+    /**
+     * The path of the CDM Sample Schema Documents Folder.
+     */
+    sampleSchemaFolderPath: '../../samples/example-public-standards',
+
     getInputFolderPath: (testSubpath: string, testName: string) =>
         getTestFolderPath(testSubpath, testName, testFolders.Input),
     getExpectedOutputFolderPath: (testSubpath: string, testName: string) =>
@@ -143,6 +150,18 @@ export const testHelper = {
         }
 
         return false;
+    },
+    deleteFilesFromActualOutput(actualOutputFolderPath: string) {
+        const itemNameList: string[] = fs.readdirSync(actualOutputFolderPath);
+        itemNameList.forEach((itemName: string) => {
+            const itemPath: string = path.join(actualOutputFolderPath, itemName);
+            if (fs.lstatSync(itemPath).isFile()) {
+                fs.unlinkSync(itemPath);
+            } else if(fs.lstatSync(itemPath).isDirectory()) {
+                testHelper.deleteFilesFromActualOutput(itemPath);
+                fs.rmdirSync(itemPath)
+            }
+        });
     },
     assertSameObjectWasSerialized(expected: string, actual: string) {
         const deserializedExpected: string = JSON.parse(expected);

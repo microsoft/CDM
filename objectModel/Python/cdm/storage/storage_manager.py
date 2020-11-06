@@ -48,6 +48,16 @@ class StorageManager:
     def _ctx(self):
         return self._corpus.ctx
 
+    @property
+    def max_concurrent_reads(self) -> Optional[int]:
+        """Maximum number of documents read concurrently when loading imports."""
+        return self._corpus._document_library._concurrent_read_lock.permits
+
+    @max_concurrent_reads.setter
+    def max_concurrent_reads(self, max_concurrent_reads: Optional[int]) -> None:
+        """Maximum number of documents read concurrently when loading imports."""
+        self._corpus._document_library._concurrent_read_lock.permits = max_concurrent_reads
+
     def adapter_path_to_corpus_path(self, adapter_path: str) -> Optional[str]:
         """Takes a storage adapter domain path, figures out the right adapter to use
         and then return a corpus path"""

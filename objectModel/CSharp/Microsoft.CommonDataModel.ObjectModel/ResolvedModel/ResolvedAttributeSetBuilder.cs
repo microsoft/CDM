@@ -35,22 +35,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.ActionsRemove = new List<AttributeResolutionApplier>();
             this.ApplierCaps = null;
 
-            this.ResOpt = CdmObjectBase.CopyResolveOptions(resOpt);
+            this.ResOpt = resOpt.Copy();
 
             if (resGuide != null)
             {
-                
-                    if (this.ApplierCaps == null)
-                        this.ApplierCaps = new AttributeResolutionApplierCapabilities()
-                        {
-                            CanAlterDirectives = false,
-                            CanCreateContext = false,
-                            CanRemove = false,
-                            CanAttributeModify = false,
-                            CanGroupAdd = false,
-                            CanRoundAdd = false,
-                            CanAttributeAdd = false
-                        };
+
+                if (this.ApplierCaps == null)
+                    this.ApplierCaps = new AttributeResolutionApplierCapabilities()
+                    {
+                        CanAlterDirectives = false,
+                        CanCreateContext = false,
+                        CanRemove = false,
+                        CanAttributeModify = false,
+                        CanGroupAdd = false,
+                        CanRoundAdd = false,
+                        CanAttributeAdd = false
+                    };
                 Func<AttributeResolutionApplier, bool> addApplier = (AttributeResolutionApplier apl) =>
                 {
 
@@ -138,6 +138,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         {
             if (rasNew != null)
                 this.TakeReference(this.ResolvedAttributeSet.MergeSet(rasNew));
+            if (rasNew.DepthTraveled > this.ResolvedAttributeSet.DepthTraveled)
+                this.ResolvedAttributeSet.DepthTraveled = rasNew.DepthTraveled;
         }
 
         internal void TakeReference(ResolvedAttributeSet rasNew)
@@ -171,7 +173,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             // save the current context
             CdmAttributeContext attCtx = this.ResolvedAttributeSet.AttributeContext;
             this.TakeReference(new ResolvedAttributeSet());
-            this.ResolvedAttributeSet.Merge(ra, ra.AttCtx);
+            this.ResolvedAttributeSet.Merge(ra);
             // reapply the old attribute context
             this.ResolvedAttributeSet.AttributeContext = attCtx;
         }
@@ -260,7 +262,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 ResolvedAttributeSet ras = this.ResolvedAttributeSet;
                 for (int i = 0; i < newAtts.Count; i++)
                 {
-                    ras = ras.Merge(newAtts[i], newAtts[i].AttCtx);
+                    ras = ras.Merge(newAtts[i]);
                 }
                 this.TakeReference(ras);
             }
@@ -443,6 +445,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                         }
                     }
                     appCtx.ResAttNew.CompleteContext(appCtx.ResOpt);
+                    // tie this new resolved att to the source via lineage
+                    if (appCtx.ResAttNew.AttCtx != null && resAttSource != null && resAttSource.AttCtx != null && resAttSource.ApplierState?.Flex_remove != true)
+                    {
+                        if (resAttSource.AttCtx.Lineage?.Count > 0)
+                        {
+                            foreach (var lineage in resAttSource.AttCtx.Lineage)
+                            {
+                                appCtx.ResAttNew.AttCtx.AddLineage(lineage);
+                            }
+                        }
+                        else
+                        {
+                            appCtx.ResAttNew.AttCtx.AddLineage(resAttSource.AttCtx);
+                        }
+                    }
                 }
                 return appCtx;
             };

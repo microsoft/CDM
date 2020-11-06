@@ -50,6 +50,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         private TraitToPropertyMap TraitToPropertyMap { get; }
 
+        /// <summary>
         /// For projection based models, a source is explicitly tagged as a polymorphic source for it to be recognized as such.
         /// This property of the entity attribute allows us to do that.
         /// </summary>
@@ -180,6 +181,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (preChildren != null && preChildren.Invoke(this, path))
                 return false;
 
+            if (this.Entity != null) this.Entity.Owner = this;
             if (this.Entity.Visit(path + "/entity/", preChildren, postChildren))
                 return true;
             if (this.VisitAtt(path, preChildren, postChildren))
@@ -187,6 +189,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (postChildren != null && postChildren.Invoke(this, path))
                 return true;
             return false;
+        }
+
+        /// <summary>
+        /// Creates an AttributeResolutionContext object based off of resolution guidance information
+        /// </summary>
+        /// <param name="resOpt"></param>
+        /// <returns>An AttributeResolutionContext used for correctly resolving an entity attribute.</returns>
+        private AttributeResolutionContext FetchAttResContext(ResolveOptions resOpt)
+        {
+            ResolvedTraitSet rtsThisAtt = this.FetchResolvedTraits(resOpt);
+
+            // this context object holds all of the info about what needs to happen to resolve these attributes.
+            // make a copy and add defaults if missing
+            CdmAttributeResolutionGuidance resGuideWithDefault;
+            if (this.ResolutionGuidance != null)
+                resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
+            else
+                resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
+            resGuideWithDefault.UpdateAttributeDefaults(this.Name, this);
+
+            return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
         }
 
         private RelationshipInfo GetRelationshipInfo(ResolveOptions resOpt, AttributeResolutionContext arc)
@@ -198,6 +221,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             bool isArray = false;
             bool selectsOne = false;
             int? nextDepth = null;
+            int? maxDepth = null;
             bool maxDepthExceeded = false;
 
             if (arc != null && arc.ResGuide != null)
@@ -214,7 +238,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     isArray = arc.ResOpt.Directives.Has("isArray");
                 }
                 // figure out the depth for the next level
-                int? oldDepth = resOpt.RelationshipDepth;
+                int? oldDepth = resOpt.DepthInfo?.CurrentDepth;
                 nextDepth = oldDepth;
                 // if this is a 'selectone', then skip counting this entity in the depth, else count it
                 if (!selectsOne)
@@ -228,11 +252,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             nextDepth++;
 
                         // max comes from settings but may not be set
-                        int maxDepth = 2;
+                        maxDepth = DepthInfo.DefaultMaxDepth;
                         if (hasRef && arc.ResGuide.entityByReference.referenceOnlyAfterDepth != null)
                             maxDepth = (int)arc.ResGuide.entityByReference.referenceOnlyAfterDepth;
                         if (noMaxDepth)
-                            maxDepth = 32; // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system.
+                            maxDepth = DepthInfo.MaxDepthLimit; // no max? really? what if we loop forever? if you need more than 32 nested entities, then you should buy a different metadata description system.
 
                         if (nextDepth > maxDepth)
                         {
@@ -251,6 +275,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 IsArray = isArray,
                 SelectsOne = selectsOne,
                 NextDepth = nextDepth,
+                MaxDepth = maxDepth,
                 MaxDepthExceeded = maxDepthExceeded
             };
         }
@@ -263,6 +288,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             this.AddResolvedTraitsApplied(rtsb, resOpt);
             //rtsb.CleanUp();
+        }
+
+        internal override ResolvedAttributeSetBuilder FetchObjectFromCache(ResolveOptions resOpt, AttributeContextParameters acpInContext = null)
+        {
+            const string kind = "rasb";
+            ResolveContext ctx = this.Ctx as ResolveContext;
+
+            // check cache at the correct depth for entity attributes
+            RelationshipInfo relInfo = this.GetRelationshipInfo(resOpt, this.FetchAttResContext(resOpt));
+            if (relInfo.MaxDepthExceeded)
+            {
+                resOpt.DepthInfo = new DepthInfo
+                {
+                    CurrentDepth = (int)relInfo.NextDepth,
+                    MaxDepth = relInfo.MaxDepth,
+                    MaxDepthExceeded = relInfo.MaxDepthExceeded
+                };
+            }
+            string cacheTag = ctx.Corpus.CreateDefinitionCacheTag(resOpt, this, kind, acpInContext != null ? "ctx" : "");
+
+            dynamic rasbCache = null;
+            if (cacheTag != null)
+                ctx.Cache.TryGetValue(cacheTag, out rasbCache);
+            return rasbCache;
         }
 
         internal override ResolvedAttributeSetBuilder ConstructResolvedAttributes(ResolveOptions resOpt, CdmAttributeContext under = null)
@@ -285,10 +334,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 CdmProjection projDef = (CdmProjection)ctxEntObjDef;
                 ProjectionContext projCtx = projDef.ConstructProjectionContext(projDirective, under);
 
-                ResolvedAttributeSet ras = projDef.ExtractResolvedAttributes(projCtx);
+                ResolvedAttributeSet ras = projDef.ExtractResolvedAttributes(projCtx, underAtt);
                 rasb.ResolvedAttributeSet = ras;
             }
-            else
+            else if (!resOpt.InCircularReference)
             {
                 // An Entity Reference
 
@@ -305,22 +354,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     };
                 }
 
-                ResolvedTraitSet rtsThisAtt = this.FetchResolvedTraits(resOpt);
-
-                // this context object holds all of the info about what needs to happen to resolve these attributes.
-                // make a copy and add defaults if missing
-                CdmAttributeResolutionGuidance resGuideWithDefault;
-                if (this.ResolutionGuidance != null)
-                    resGuideWithDefault = (CdmAttributeResolutionGuidance)this.ResolutionGuidance.Copy(resOpt);
-                else
-                    resGuideWithDefault = new CdmAttributeResolutionGuidance(this.Ctx);
-                resGuideWithDefault.UpdateAttributeDefaults(this.Name);
-
-                AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
+                AttributeResolutionContext arc = this.FetchAttResContext(resOpt);
 
                 // complete cheating but is faster.
                 // this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
                 RelationshipInfo relInfo = this.GetRelationshipInfo(arc.ResOpt, arc);
+                if (relInfo.NextDepth != null)
+                {
+                    resOpt.DepthInfo = new DepthInfo
+                    {
+                        MaxDepth = relInfo.MaxDepth,
+                        CurrentDepth = (int)relInfo.NextDepth,
+                        MaxDepthExceeded = relInfo.MaxDepthExceeded
+                    };
+                }
+
                 if (relInfo.IsByRef)
                 {
                     // make the entity context that a real recursion would have give us
@@ -382,10 +430,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
                 else
                 {
-                    ResolveOptions resLink = CopyResolveOptions(resOpt);
+                    ResolveOptions resLink = resOpt.Copy();
                     resLink.SymbolRefSet = resOpt.SymbolRefSet;
-                    resLink.RelationshipDepth = relInfo.NextDepth;
                     rasb.MergeAttributes(this.Entity.FetchResolvedAttributes(resLink, acpEnt));
+
+                    // need to pass up maxDepthExceeded if it was hit
+                    if (resLink.DepthInfo != null && resLink.DepthInfo.MaxDepthExceeded)
+                    {
+                        resOpt.DepthInfo = new DepthInfo
+                        {
+                            CurrentDepth = resLink.DepthInfo.CurrentDepth,
+                            MaxDepthExceeded = resLink.DepthInfo.MaxDepthExceeded,
+                            MaxDepth = resLink.DepthInfo.MaxDepth
+                        };
+                    }
                 }
 
                 // from the traits of purpose and applied here, see if new attributes get generated
@@ -471,21 +529,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // a 'structured' directive wants to keep all entity attributes together in a group
                 if (arc.ResOpt.Directives?.Has("structured") == true)
                 {
-                    ResolvedAttribute raSub = new ResolvedAttribute(rtsThisAtt.ResOpt, rasb.ResolvedAttributeSet, this.Name, rasb.ResolvedAttributeSet.AttributeContext);
+                    // make one resolved attribute with a name from this entityAttribute that contains the set 
+                    // of atts we just put together. 
+                    ResolvedAttribute raSub = new ResolvedAttribute(arc.TraitsToApply.ResOpt, rasb.ResolvedAttributeSet, this.Name, underAtt);
                     if (relInfo.IsArray)
                     {
-                        // put a resolved trait on this att group, yuck, hope I never need to do this again and then need to make a function for this
+                        // put a resolved trait on this att group, hope I never need to do this again and then need to make a function for this
                         CdmTraitReference tr = this.Ctx.Corpus.MakeObject<CdmTraitReference>(CdmObjectType.TraitRef, "is.linkedEntity.array", true);
                         var t = tr.FetchObjectDefinition<CdmTraitDefinition>(resOpt);
                         ResolvedTrait rt = new ResolvedTrait(t, null, new List<dynamic>(), new List<bool>());
                         raSub.ResolvedTraits = raSub.ResolvedTraits.Merge(rt, true);
                     }
+                    int depth = rasb.ResolvedAttributeSet.DepthTraveled;
                     rasb = new ResolvedAttributeSetBuilder();
                     rasb.ResolvedAttributeSet.AttributeContext = raSub.AttCtx; // this got set to null with the new builder
                     rasb.OwnOne(raSub);
+                    rasb.ResolvedAttributeSet.DepthTraveled = depth;
                 }
             }
 
+            // how ever they got here, mark every attribute from this entity attribute as now being 'owned' by this entityAtt
+            rasb.ResolvedAttributeSet.SetAttributeOwnership(this.Name);
+            rasb.ResolvedAttributeSet.DepthTraveled += 1;
             return rasb;
         }
 
@@ -495,6 +560,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (resOpt == null)
             {
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+            }
+            else
+            {
+                // need to copy so that relationship depth of parent is not overwritten
+                resOpt = resOpt.Copy();
             }
 
             ResolvedTraitSet rtsThisAtt = this.FetchResolvedTraits(resOpt);

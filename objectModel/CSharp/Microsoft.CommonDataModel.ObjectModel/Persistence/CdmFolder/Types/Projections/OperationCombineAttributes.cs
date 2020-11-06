@@ -11,7 +11,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
     /// </summary>
     public class OperationCombineAttributes : OperationBase
     {
-        public List<string> Take { get; set; }
+        public List<string> Select { get; set; }
 
         public JToken MergeInto { get; set; }
     }

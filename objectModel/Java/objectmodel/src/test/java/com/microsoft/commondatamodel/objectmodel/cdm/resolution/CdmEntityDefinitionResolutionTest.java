@@ -307,7 +307,7 @@ public class CdmEntityDefinitionResolutionTest {
     ResolveOptions resOpt = new ResolveOptions(entity.getInDocument(), null);
     CdmEntityDefinition resolvedEntity = entity.createResolvedEntityAsync("resolved", resOpt).join();
 
-    Assert.assertEquals(resolvedEntity.getAttributes().get(1).getAppliedTraits().get(7).getNamedReference(), "is.linkedEntity.name");
+    Assert.assertNotNull(resolvedEntity.getAttributes().get(1).getAppliedTraits().item("is.linkedEntity.name"));
 
     // Resolve with referenceOnly directives to get "is.linkedEntity.identifier" trait.
     Set<String> directives = new LinkedHashSet<>();
@@ -315,7 +315,7 @@ public class CdmEntityDefinitionResolutionTest {
     resOpt = new ResolveOptions(entity.getInDocument(), new AttributeResolutionDirectiveSet(directives));
     resolvedEntity = entity.createResolvedEntityAsync("resolved2", resOpt).join();
 
-    Assert.assertEquals(resolvedEntity.getAttributes().get(0).getAppliedTraits().get(7).getNamedReference(), "is.linkedEntity.identifier");
+    Assert.assertNotNull(resolvedEntity.getAttributes().get(0).getAppliedTraits().item("is.linkedEntity.identifier"));
   }
 
   /**
@@ -348,7 +348,7 @@ public class CdmEntityDefinitionResolutionTest {
    * files. This test does not check the output. Possibly because the schema docs
    * change often.
    */
-  //@Test
+  @Test
   public void testResolveTestCorpus() throws Exception {
     Assert.assertTrue((Files.isDirectory(Paths.get(TestHelper.SCHEMA_DOCS_ROOT))), "SchemaDocsRoot not found!!!");
 

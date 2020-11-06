@@ -74,11 +74,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         internal bool VisitAtt(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {
+            if (this.Purpose != null) this.Purpose.Owner = this;
             if (this.Purpose?.Visit(pathFrom + "/purpose/", preChildren, postChildren) == true)
                 return true;
             if (this.AppliedTraits != null)
                 if (this.AppliedTraits.VisitList(pathFrom + "/appliedTraits/", preChildren, postChildren))
                     return true;
+            if (this.ResolutionGuidance != null) this.ResolutionGuidance.Owner = this;
             if (this.ResolutionGuidance != null)
                 if (this.ResolutionGuidance.Visit(pathFrom + "/resolutionGuidance/", preChildren, postChildren))
                     return true;

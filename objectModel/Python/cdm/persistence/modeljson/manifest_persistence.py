@@ -60,6 +60,9 @@ class ManifestPersistence:
         if obj.get('lastFileStatusCheckTime'):
             manifest.last_file_status_check_time = dateutil.parser.parse(obj.get('lastFileStatusCheckTime'))
 
+        if obj.get('documentVersion'):
+            manifest.document_version = obj.get('documentVersion')
+
         if obj.get('application'):
             application_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.managedBy', False)
             arg = ctx.corpus.make_object(CdmObjectType.ARGUMENT_DEF, 'application')
@@ -158,6 +161,7 @@ class ManifestPersistence:
         result.modifiedTime = utils.get_formatted_date_string(instance.last_file_modified_time)
         result.lastChildFileModifiedTime = utils.get_formatted_date_string(instance.last_child_file_modified_time)
         result.lastFileStatusCheckTime = utils.get_formatted_date_string(instance.last_file_status_check_time)
+        result.documentVersion = instance.document_version
 
         t2pm = TraitToPropertyMap(instance)
 

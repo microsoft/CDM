@@ -6,7 +6,7 @@ from typing import cast, Optional, TYPE_CHECKING
 from cdm.enums import CdmAttributeContextType, CdmObjectType
 from cdm.objectmodel.projections.cardinality_settings import CardinalitySettings
 from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
-from cdm.utilities import Errors, logger, ResolveOptions, TraitToPropertyMap
+from cdm.utilities import DepthInfo, Errors, ResolveOptions, TraitToPropertyMap, logger
 
 from .cdm_attribute_def import CdmAttribute
 from .relationship_info import RelationshipInfo
@@ -57,11 +57,39 @@ class CdmEntityAttributeDefinition(CdmAttribute):
             self._ttpm = TraitToPropertyMap(self)
         return self._ttpm
 
+    def _fetch_att_res_context(self, res_opt):
+        from .cdm_attribute_resolution_guidance_def import CdmAttributeResolutionGuidanceDefinition
+        from cdm.resolvedmodel.resolved_attribute_set_builder import AttributeResolutionContext
+        rts_this_att = self._fetch_resolved_traits(res_opt)
+
+        # this context object holds all of the info about what needs to happen to resolve these attributes.
+        # make a copy and add defaults if missing
+        res_guide_with_default = None
+        if self.resolution_guidance is not None:
+            res_guide_with_default = self.resolution_guidance.copy(res_opt)
+        else:
+            res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
+
+        res_guide_with_default._update_attribute_defaults(self.name)
+
+        return AttributeResolutionContext(res_opt, res_guide_with_default, rts_this_att)
+
+    def _fetch_object_from_cache(self, res_opt: 'ResolveOptions', acp_in_context: Optional['AttributeContextParameters'] = None) -> 'ResolvedAttributeSet':
+        kind = 'rasb'
+        ctx = self.ctx
+
+        # check cache at the correct depth for entity attributes
+        rel_info = self._get_relationship_info(res_opt, self._fetch_att_res_context(res_opt))
+        if rel_info.max_depth_exceeded:
+            res_opt.depth_info = DepthInfo(current_depth=rel_info.next_depth, max_depth=rel_info.max_depth, max_depth_exceeded=rel_info.max_depth_exceeded)
+
+        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
+        return ctx._cache.get(cache_tag) if cache_tag else None
+
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext'] = None) -> 'ResolvedAttributeSetBuilder':
         from cdm.resolvedmodel import AttributeResolutionContext, ResolvedAttribute, ResolvedAttributeSetBuilder, ResolvedTrait
         from cdm.utilities import AttributeContextParameters, AttributeResolutionDirectiveSet
 
-        from .cdm_attribute_resolution_guidance_def import CdmAttributeResolutionGuidanceDefinition
         from .cdm_object import CdmObject
 
         rasb = ResolvedAttributeSetBuilder()
@@ -79,7 +107,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
             ras = proj_def._extract_resolved_attributes(projCtx)
             rasb.ras = ras
-        else:
+        elif not res_opt.in_circular_reference:
             # An Entity Reference
 
             if under_att:
@@ -91,23 +119,13 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                     regarding=ctx_ent,
                     include_traits=True)
 
-            rts_this_att = self._fetch_resolved_traits(res_opt)
-
-            # this context object holds all of the info about what needs to happen to resolve these attributes.
-            # make a copy and add defaults if missing
-            res_guide_with_default = None
-            if self.resolution_guidance is not None:
-                res_guide_with_default = self.resolution_guidance.copy(res_opt)
-            else:
-                res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
-
-            res_guide_with_default._update_attribute_defaults(self.name)
-
-            arc = AttributeResolutionContext(res_opt, res_guide_with_default, rts_this_att)
+            arc = self._fetch_att_res_context(res_opt)
 
             # complete cheating but is faster.
             # this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
             rel_info = self._get_relationship_info(arc.res_opt, arc)
+            if rel_info.next_depth:
+                res_opt.depth_info = DepthInfo(current_depth=rel_info.next_depth, max_depth_exceeded=rel_info.max_depth_exceeded, max_depth=rel_info.max_depth)
 
             if rel_info.is_by_ref:
                 # make the entity context that a real recursion would have give us
@@ -138,7 +156,8 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                                 pick_under = rasb.ras.create_attribute_context(res_opt, acp_ent_att)
                                 # and the entity under that attribute
                                 pick_ent = attribute.entity
-                                pick_ent_type = CdmAttributeContextType.PROJECTION if pick_ent.fetch_object_definition(res_opt).object_type == CdmObjectType.PROJECTION_DEF else CdmAttributeContextType.ENTITY
+                                pick_ent_type = CdmAttributeContextType.PROJECTION if pick_ent.fetch_object_definition(
+                                    res_opt).object_type == CdmObjectType.PROJECTION_DEF else CdmAttributeContextType.ENTITY
                                 acp_ent_att_ent = AttributeContextParameters(
                                     under=pick_under,
                                     type=pick_ent_type,
@@ -153,10 +172,14 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                         arc.res_opt.directives = AttributeResolutionDirectiveSet()
                     arc.res_opt.directives.add('referenceOnly')
             else:
-                res_link = CdmObject._copy_resolve_options(res_opt)
+                res_link = res_opt.copy()
                 res_link._symbol_ref_set = res_opt._symbol_ref_set
-                res_link._relationship_depth = rel_info.next_depth
                 rasb.merge_attributes(self.entity._fetch_resolved_attributes(res_link, acp_ent))
+
+                # need to pass up maxDepthExceeded if it was hit
+                if res_link.depth_info and res_link.depth_info.max_depth_exceeded:
+                    res_opt.depth_info = DepthInfo(current_depth=res_link.depth_info.current_depth,
+                                                   max_depth_exceeded=res_link.depth_info.max_depth_exceeded, max_depth=res_link.depth_info.max_depth)
 
             # from the traits of purpose and applied here, see if new attributes get generated
             rasb.ras.attribute_context = under_att
@@ -210,7 +233,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
             # a 'structured' directive wants to keep all entity attributes together in a group
             if arc and arc.res_opt.directives and arc.res_opt.directives.has('structured'):
-                ra_sub = ResolvedAttribute(rts_this_att.res_opt, rasb.ras, self.name, rasb.ras.attribute_context)
+                ra_sub = ResolvedAttribute(arc.traits_to_apply.res_opt, rasb.ras, self.name, rasb.ras.attribute_context)
                 if rel_info.is_array:
                     # put a resolved trait on this att group, yuck,
                     #  hope I never need to do this again and then need to make a function for this
@@ -218,8 +241,13 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                     t = tr.fetch_object_definition(res_opt)
                     rt = ResolvedTrait(t, None, [], [])
                     ra_sub.resolved_traits = ra_sub.resolved_traits.merge(rt, True)
+                depth = rasb.ras._depth_traveled
                 rasb = ResolvedAttributeSetBuilder()
+                rasb.ras.attribute_context = ra_sub.att_ctx  # this got set to null with the new builder
                 rasb.own_one(ra_sub)
+                rasb.ras._depth_traveled = depth
+
+        rasb.ras._depth_traveled += 1
 
         return rasb
 
@@ -255,6 +283,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         is_by_ref = False
         is_array = False
         selects_one = False
+        max_depth = None
         next_depth = None
         max_depth_exceeded = False
 
@@ -270,7 +299,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                 is_array = arc.res_opt.directives.has('isArray')
 
             # figure out the depth for the next level
-            old_depth = res_opt._relationship_depth
+            old_depth = res_opt.depth_info.current_depth if res_opt.depth_info else None
             next_depth = old_depth
             # if this is a 'selectone', then skip counting this entity in the depth, else count it
             if not selects_one:
@@ -282,13 +311,13 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                         next_depth += 1
 
                     # max comes from settings but may not be set
-                    max_depth = 2
+                    max_depth = DepthInfo.DEFAULT_MAX_DEPTH
                     if has_ref and arc.res_guide.entity_by_reference.reference_only_after_depth:
                         max_depth = arc.res_guide.entity_by_reference.reference_only_after_depth
                     if no_max_depth:
                         # no max? really? what if we loop forever? if you need more than 32 nested entities,
                         # then you should buy a different metadata description system.
-                        max_depth = 32
+                        max_depth = DepthInfo.MAX_DEPTH_LIMIT
 
                     if next_depth > max_depth:
                         # don't do it
@@ -301,10 +330,12 @@ class CdmEntityAttributeDefinition(CdmAttribute):
             is_array=is_array,
             selects_one=selects_one,
             next_depth=next_depth,
+            max_depth=max_depth,
             max_depth_exceeded=max_depth_exceeded)
 
     def fetch_resolved_entity_references(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedEntityReferenceSet':
-        res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
+        # need to copy so that relationship depth of parent is not overwritten
+        res_opt = res_opt.copy() if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         from cdm.resolvedmodel import AttributeResolutionContext, ResolvedEntityReference, ResolvedEntityReferenceSide, ResolvedEntityReferenceSet
         from cdm.utilities import ResolveOptions

@@ -187,7 +187,7 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
         const resolvedSalesForeignKeyProjection: CdmEntityDefinition = await saveResolved(corpus, manifest, testName, entSalesForeignKeyProjection, resOpts);
         expect(resolvedSalesForeignKeyProjection)
             .toBeTruthy();
-        AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, `${entityName}${fileNameSuffix}`, resolvedSalesForeignKeyProjection);
+        await AttributeContextUtil.validateAttributeContext(corpus, expectedOutputPath, `${entityName}${fileNameSuffix}`, resolvedSalesForeignKeyProjection);
     }
 
     async function saveResolved(corpus: CdmCorpusDefinition, manifest: CdmManifestDefinition, testName: string, inputEntity: CdmEntityDefinition, resolutionOptions: string[]): Promise<CdmEntityDefinition> {
