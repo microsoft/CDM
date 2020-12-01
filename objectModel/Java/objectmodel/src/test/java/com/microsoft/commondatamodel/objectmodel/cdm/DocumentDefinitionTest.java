@@ -42,7 +42,7 @@ public class DocumentDefinitionTest {
         // forces docB to be indexed first.
         docB.indexIfNeededAsync(new ResolveOptions(), true).join();
         docA.indexIfNeededAsync(new ResolveOptions(), true).join();
-        
+
         // should contain A, B and C.
         Assert.assertEquals(3, docA.getImportPriorities().getImportPriority().size());
 
@@ -53,7 +53,7 @@ public class DocumentDefinitionTest {
         Assert.assertTrue(docC.getImportPriorities().getHasCircularImport());
     }
 
-    /** 
+    /**
      * Test when A -> B -> C/M -> D -> C.
      * In this case, although B imports C with a moniker, C should be in the A's priorityImports because it is imported by D.
      */
@@ -80,7 +80,7 @@ public class DocumentDefinitionTest {
 
         // indexIfNeededAsync will internally call prioritizeImports on every document.
         docA.indexIfNeededAsync(new ResolveOptions(), true).join();
-        
+
         Assert.assertEquals(4, docA.getImportPriorities().getImportPriority().size());
         assertImportInfo(docA.getImportPriorities().getImportPriority().get(docA), 0, false);
         assertImportInfo(docA.getImportPriorities().getImportPriority().get(docB), 1, false);
@@ -146,10 +146,10 @@ public class DocumentDefinitionTest {
         assertImportInfo(docA.getImportPriorities().getImportPriority().get(docD), 2, false);
     }
 
-    /// <summary>
-    /// Test if monikered imports are added to the end of the priority list.
-    /// A -> B/M -> C
-    /// </summary>
+    /**
+     * Test if monikered imports are added to the end of the priority list.
+     * A -> B/M -> C
+     */
     @Test
     public void TestMonikeredImportIsAddedToEnd() throws InterruptedException {
         final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus("", "", null);
@@ -162,7 +162,7 @@ public class DocumentDefinitionTest {
         final CdmDocumentDefinition docB = new CdmDocumentDefinition(corpus.getCtx(), "B.cdm.json");
         folder.getDocuments().add(docB);
         docB.getImports().add("C.cdm.json");
-        
+
         final CdmDocumentDefinition docC = new CdmDocumentDefinition(corpus.getCtx(), "C.cdm.json");
         folder.getDocuments().add(docC);
 
@@ -214,8 +214,9 @@ public class DocumentDefinitionTest {
     /**
      * Helper function to assert the ImportInfo class.
      */
-    private static void assertImportInfo(ImportInfo importInfo, int expectedPriority, boolean expectedIsMoniker) {
+    private static void assertImportInfo(ImportInfo importInfo, int expectedPriority, boolean expectedIsMoniker)
+    {
         Assert.assertEquals(expectedPriority, importInfo.getPriority());
-        Assert.assertEquals(expectedIsMoniker, importInfo.isMoniker());
+        Assert.assertEquals(expectedIsMoniker, importInfo.getIsMoniker());
     }
 }

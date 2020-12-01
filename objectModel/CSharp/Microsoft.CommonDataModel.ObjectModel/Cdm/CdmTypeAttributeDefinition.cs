@@ -312,17 +312,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             return false;
         }
 
-        internal CdmDataTypeReference GetDataTypeRef()
-        {
-            return this.DataType;
-        }
-
-        internal CdmDataTypeReference SetDataTypeRef(CdmDataTypeReference dataType)
-        {
-            this.DataType = dataType as CdmDataTypeReference;
-            return dataType;
-        }
-
         /// <inheritdoc />
         public override bool Visit(string pathFrom, VisitCallback preChildren, VisitCallback postChildren)
         {

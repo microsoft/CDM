@@ -93,7 +93,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "testType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }
 
     /**
@@ -136,7 +136,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "testType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }
 
     /**
@@ -186,7 +186,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(2)).getName(), "value");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(3)).getName(), "date");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(4)).getName(), "testType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(4)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntityWithReferenceOnly.getAttributes().get(4)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
 
         // Now resolve the entity with the 'structured' directive
         resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<String>(Arrays.asList("structured"))));
@@ -229,7 +229,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "socialId");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "account");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "someType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }
 
     /**
@@ -259,7 +259,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "socialId");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "account");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "someType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }
 
     /**
@@ -289,7 +289,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "socialId");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "account");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "someType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }
 
     /**
@@ -319,7 +319,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "socialId");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "account");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "someType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }
 
     /**
@@ -347,7 +347,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "account");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "contactId");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "contactType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }
 
     /**
@@ -377,7 +377,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(5)).getName(), "socialId");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(6)).getName(), "account");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getName(), "someType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(7)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(8)).getName(), "homeAddress");
     }
 
@@ -404,7 +404,7 @@ public class ProjectionAddTypeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "new_isPrimary");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "new_contactId");
         Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "contactType");
-        Assert.assertNotNull(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getAppliedTraits().item("is.linkedEntity.name"));
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getAppliedTraits().get(4).getNamedReference(), "is.linkedEntity.name");
     }
 
     /**

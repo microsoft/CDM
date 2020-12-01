@@ -28,7 +28,7 @@ public class PredefinedTokensUnitTest {
     public void testGetPredefinedTokens() {
         List<String> tokens = PredefinedTokens.getPredefinedTokens();
 
-        String expected = "always depth maxDepth noMaxDepth isArray cardinality.minimum cardinality.maximum referenceOnly normalized structured";
+        String expected = "always depth maxDepth noMaxDepth isArray cardinality.minimum cardinality.maximum referenceOnly normalized structured virtual";
         String actual = String.join(" ", tokens.toArray(new String[tokens.size()]));
         Assert.assertEquals(actual, expected);
     }

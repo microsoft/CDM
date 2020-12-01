@@ -33,6 +33,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         REFERENCEONLY,
         NORMALIZED,
         STRUCTURED,
+        VIRTUAL,
 
         OPENPAREN,
         CLOSEPAREN

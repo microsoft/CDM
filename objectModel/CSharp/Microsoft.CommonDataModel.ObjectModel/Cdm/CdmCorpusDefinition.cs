@@ -2569,13 +2569,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     // fallback to the old ways, just make some
                     CdmTypeAttributeDefinition artAtt = this.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "count");
-                    artAtt.SetDataTypeRef(this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "integer", true));
+                    artAtt.DataType = this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "integer", true);
                     this.KnownArtifactAttributes["count"] = artAtt;
                     artAtt = this.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "id");
-                    artAtt.SetDataTypeRef(this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "entityId", true));
+                    artAtt.DataType =this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "entityId", true);
                     this.KnownArtifactAttributes["id"] = artAtt;
                     artAtt = this.MakeObject<CdmTypeAttributeDefinition>(CdmObjectType.TypeAttributeDef, "type");
-                    artAtt.SetDataTypeRef(this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "entityName", true));
+                    artAtt.DataType = this.MakeObject<CdmDataTypeReference>(CdmObjectType.DataTypeRef, "entityName", true);
                     this.KnownArtifactAttributes["type"] = artAtt;
                 }
                 else

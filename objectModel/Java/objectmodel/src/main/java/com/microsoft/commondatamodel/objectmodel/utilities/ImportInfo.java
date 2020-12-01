@@ -5,6 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.utilities;
 
 /**
  * @deprecated
+ * Contains information about an import in the imports pririty map.
  */
 public class ImportInfo {
     /**
@@ -20,24 +21,25 @@ public class ImportInfo {
     /**
      * Constructor of the ImportInfo class.
      */
-    public ImportInfo(int priority, boolean isMoniker) {
+    public ImportInfo(int priority, boolean isMoniker)
+    {
         this.priority = priority;
         this.isMoniker = isMoniker;
     }
 
     public int getPriority() {
-        return priority;
+        return this.priority;
     }
 
-    public void setPriority(int priority) {
+    public void setPriority(final int maxDepth) {
         this.priority = priority;
     }
 
-    public boolean isMoniker() {
-        return isMoniker;
+    public boolean getIsMoniker() {
+        return this.isMoniker;
     }
 
-    public void setMoniker(boolean moniker) {
-        isMoniker = moniker;
+    public void setIsMoniker(final boolean isMoniker) {
+        this.isMoniker = isMoniker;
     }
 }

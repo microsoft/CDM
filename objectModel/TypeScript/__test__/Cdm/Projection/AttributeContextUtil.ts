@@ -56,7 +56,7 @@ export class AttributeContextUtil {
         if (attribContext && attribContext.contents && attribContext.contents.length > 0) {
             for (let i: number = 0; i < attribContext.contents.length; i++) {
                 let str: string = '';
-                if ((attribContext.contents.allItems[0] instanceof CdmAttributeReference)) {
+                if ((attribContext.contents.allItems[i] instanceof CdmAttributeReference)) {
                     const ar: CdmAttributeReference = attribContext.contents.allItems[i] as CdmAttributeReference;
                     str = ar.atCorpusPath;
                     this.bldr += str;

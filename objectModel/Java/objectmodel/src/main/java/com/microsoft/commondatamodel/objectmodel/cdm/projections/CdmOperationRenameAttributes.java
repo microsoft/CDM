@@ -17,7 +17,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -94,7 +93,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
         ArrayList<String> missingFields = new ArrayList<>();
 
         if (StringUtils.isNullOrTrimEmpty(this.renameFormat)) {
-            missingFields.add("renameFormat");
+            missingFields.add(this.renameFormat.toString());
         }
         if (missingFields.size() > 0) {
             Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
@@ -169,7 +168,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
                 if (currentPAS.getCurrentResolvedAttribute().getTarget() instanceof CdmAttribute) {
                     // The current attribute should be renamed
 
-                    String newAttributeName = this.renameAttribute(currentPAS, sourceAttributeName);
+                    String newAttributeName = this.getNewAttributeName(currentPAS, sourceAttributeName);
 
                     // Create new resolved attribute with the new name, set the new attribute as target
                     ResolvedAttribute resAttrNew = createNewResolvedAttribute(projCtx, null, (CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget(), newAttributeName, null);
@@ -179,7 +178,10 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
 
                     // Create the attribute context parameters and just store it in the builder for now
                     // We will create the attribute contexts at the end
-                    attrCtxTreeBuilder.createAndStoreAttributeContextParameters(applyToName, currentPAS, resAttrNew, CdmAttributeContextType.AttributeDefinition);
+                    attrCtxTreeBuilder.createAndStoreAttributeContextParameters(applyToName, currentPAS, resAttrNew,
+                            CdmAttributeContextType.AttributeDefinition,
+                            currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the original attribute
+                            null); // don't know who will point here yet
 
                     // Create a projection attribute state for the renamed attribute by creating a copy of the current state
                     // Copy() sets the current state as the previous state for the new one
@@ -202,7 +204,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
         }
 
         // Create all the attribute contexts and construct the tree
-        attrCtxTreeBuilder.constructAttributeContextTree(projCtx, true);
+        attrCtxTreeBuilder.constructAttributeContextTree(projCtx);
 
         return projOutputSet;
     }
@@ -212,7 +214,7 @@ public class CdmOperationRenameAttributes extends CdmOperationBase {
      * @param attributeState The attribute state
      * @param sourceAttributeName The parent attribute name (if any
      */
-    private String renameAttribute(ProjectionAttributeState attributeState, String sourceAttributeName) {
+    private String getNewAttributeName(ProjectionAttributeState attributeState, String sourceAttributeName) {
         String currentAttributeName = attributeState.getCurrentResolvedAttribute().getResolvedName();
         String ordinal = attributeState.getOrdinal() != null ? attributeState.getOrdinal().toString() : "";
         String format = this.renameFormat;

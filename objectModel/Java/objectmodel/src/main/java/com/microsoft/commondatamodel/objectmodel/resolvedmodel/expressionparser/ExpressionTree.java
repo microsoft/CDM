@@ -275,6 +275,8 @@ public class ExpressionTree {
                         return input.getReferenceOnly();
                     case STRUCTURED:
                         return input.getStructured();
+                    case VIRTUAL:
+                        return input.getIsVirtual();
 
                     case ALWAYS:
                         return true;

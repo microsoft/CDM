@@ -98,6 +98,9 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
   }
 
   boolean visitAtt(final String pathFrom, final VisitCallback preChildren, final VisitCallback postChildren) {
+    if (this.getPurpose() != null) {
+      this.getPurpose().setOwner(this);
+    }
     if (this.getPurpose() != null && this.getPurpose()
         .visit(pathFrom + "/purpose/", preChildren, postChildren)) {
       return true;
@@ -106,9 +109,12 @@ public abstract class CdmAttribute extends CdmObjectDefinitionBase implements Cd
         .visitList(pathFrom + "/appliedTraits/", preChildren, postChildren)) {
       return true;
     }
-    if (this.getResolutionGuidance() != null && this.getResolutionGuidance()
+    if (this.getResolutionGuidance() != null) {
+      this.getResolutionGuidance().setOwner(this);
+      if (this.getResolutionGuidance()
         .visit(pathFrom + "/resolutionGuidance/", preChildren, postChildren)) {
-      return true;
+       return true;
+      }
     }
 
     return this.visitDef(pathFrom, preChildren, postChildren);

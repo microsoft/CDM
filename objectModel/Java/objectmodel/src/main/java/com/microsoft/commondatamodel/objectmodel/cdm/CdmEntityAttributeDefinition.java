@@ -103,8 +103,11 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       return false;
     }
 
-    if (this.getEntity().visit(path + "/entity/", preChildren, postChildren)) {
-      return true;
+    if (this.getEntity() != null) {
+      this.getEntity().setOwner(this);
+      if (this.getEntity().visit(path + "/entity/", preChildren, postChildren)) {
+        return true;
+      }
     }
     if (this.visitAtt(path, preChildren,
         postChildren)) {
@@ -297,7 +300,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
     } else {
       resGuideWithDefault = new CdmAttributeResolutionGuidance(this.getCtx());
     }
-    resGuideWithDefault.updateAttributeDefaults(this.getName());
+    resGuideWithDefault.updateAttributeDefaults(this.getName(), this);
 
     return new AttributeResolutionContext(resOpt, resGuideWithDefault, rtsThisAtt);
   }
@@ -446,7 +449,7 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       CdmProjection projDef = (CdmProjection)ctxEntObjDef;
       ProjectionContext projCtx = projDef.constructProjectionContext(projDirective, under);
 
-      ResolvedAttributeSet ras = projDef.extractResolvedAttributes(projCtx);
+      ResolvedAttributeSet ras = projDef.extractResolvedAttributes(projCtx, underAtt);
       rasb.setResolvedAttributeSet(ras);
     } else if (!resOpt.inCircularReference) {
       // An Entity Reference
@@ -554,8 +557,8 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
       if (rasb.getResolvedAttributeSet() != null && rasb.getResolvedAttributeSet().getSet() != null
               && relInfo.isByRef()) {
         for (final ResolvedAttribute att : rasb.getResolvedAttributeSet().getSet()) {
-          if (att.fetchResolvedTraits() != null) {
-            final ResolvedTrait reqdTrait = att.fetchResolvedTraits()
+          if (att.getResolvedTraits() != null) {
+            final ResolvedTrait reqdTrait = att.getResolvedTraits()
                     .find(resOpt, "is.linkedEntity.identifier");
             if (reqdTrait == null) {
               continue;
@@ -623,17 +626,20 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
 
       // a 'structured' directive wants to keep all entity attributes together in a group
       if (arc.getResOpt().getDirectives() != null && arc.getResOpt().getDirectives().has("structured")) {
+        // make one resolved attribute with a name from this entityAttribute that contains the set
+        // of atts we just put together.
+
         final ResolvedAttribute raSub = new ResolvedAttribute(arc.getTraitsToApply().getResOpt(),
                 rasb.getResolvedAttributeSet(),
                 this.getName(),
                 rasb.getResolvedAttributeSet().getAttributeContext());
         if (relInfo.isArray()) {
-          // put a resolved trait on this att group, yuck, hope I never need to do this again and then need to make a function for this
+          // put a resolved trait on this att group, hope I never need to do this again and then need to make a function for this
           final CdmTraitReference tr = this.getCtx().getCorpus()
                   .makeObject(CdmObjectType.TraitRef, "is.linkedEntity.array", true);
           final CdmTraitDefinition t = tr.fetchObjectDefinition(resOpt);
           final ResolvedTrait rt = new ResolvedTrait(t, null, new ArrayList<>(), new ArrayList<>());
-          raSub.setResolvedTraits(raSub.fetchResolvedTraits().merge(rt, true));
+          raSub.setResolvedTraits(raSub.getResolvedTraits().merge(rt, true));
         }
         int depth = rasb.getResolvedAttributeSet().getDepthTraveled();
         rasb = new ResolvedAttributeSetBuilder();
@@ -642,6 +648,8 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
         rasb.getResolvedAttributeSet().setDepthTraveled(depth);
       }
     }
+    // how ever they got here, mark every attribute from this entity attribute as now being 'owned' by this entityAtt
+    rasb.getResolvedAttributeSet().setAttributeOwnership(this.getName());
     rasb.getResolvedAttributeSet().setDepthTraveled(rasb.getResolvedAttributeSet().getDepthTraveled() + 1);
 
     return rasb;

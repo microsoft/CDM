@@ -67,12 +67,24 @@ public class ProjectionAttributeContextTreeBuilder {
      */
     private Map<AttributeContextParameters, ResolvedAttribute> actionAttrCtxParamToResAttr;
 
+    /**
+     * Mapping between an "action" attribute context parameter to the context to consider 'where from' lineage
+     */
+    private Map<AttributeContextParameters, CdmAttributeContext> actionAttrCtxParamToLineageOut;
+
+    /**
+     * Mapping between an "action" attribute context parameter to the context that wants to point here for lineage
+     */
+    private Map<AttributeContextParameters, CdmAttributeContext> actionAttrCtxParamToLineageIn;
+
     public ProjectionAttributeContextTreeBuilder(CdmAttributeContext root) {
         this.root = root;
         this.searchForToSearchForAttrCtxParam = new LinkedHashMap<>();
         this.searchForAttrCtxParamToFoundAttrCtxParam = new LinkedHashMap<>();
         this.foundAttrCtxParamToActionAttrCtxParam = new LinkedHashMap<>();
         this.actionAttrCtxParamToResAttr = new LinkedHashMap<>();
+        this.actionAttrCtxParamToLineageOut = new LinkedHashMap<>();
+        this.actionAttrCtxParamToLineageIn = new LinkedHashMap<>();
     }
 
     /**
@@ -88,7 +100,12 @@ public class ProjectionAttributeContextTreeBuilder {
      * meant to be called externally at all. Please refrain from using it.
      */
     @Deprecated
-    public void createAndStoreAttributeContextParameters(String searchFor, ProjectionAttributeState found, ResolvedAttribute resAttrFromAction, CdmAttributeContextType attrCtxType) {
+    public void createAndStoreAttributeContextParameters(
+            String searchFor, ProjectionAttributeState found,
+            ResolvedAttribute resAttrFromAction,
+            CdmAttributeContextType attrCtxType,
+            CdmAttributeContext lineageOut,
+            CdmAttributeContext lineageIn) {
         // searchFor is null when we have to construct attribute contexts for the excluded attributes in Include or the included attributes in Exclude,
         // as these attributes weren't searched for with a searchFor name.
         // If searchFor is null, just set it to have the same name as found so that it'll collapse in the final tree.
@@ -138,6 +155,17 @@ public class ProjectionAttributeContextTreeBuilder {
         // Store the action attribute context parameter with the resolved attribute resulting out of the action.
         // This is so that we can point the action attribute context to the correct resolved attribute once the attribute context is created.
         actionAttrCtxParamToResAttr.put(actionAttrCtxParam, resAttrFromAction);
+
+        // store the current resAtt as the lineage of the new one
+        // of note, if no lineage is stored AND the resolved Att associated above holds an existing context? we will
+        // flip the lineage when we make a new context and point 'back' to this new node. this means this new node should
+        // point 'back' to the context of the source attribute
+        if (lineageOut != null) {
+            actionAttrCtxParamToLineageOut.put(actionAttrCtxParam, lineageOut);
+        }
+        if (lineageIn != null) {
+            actionAttrCtxParamToLineageIn.put(actionAttrCtxParam, lineageIn);
+        }
     }
 
     /**
@@ -150,20 +178,6 @@ public class ProjectionAttributeContextTreeBuilder {
      */
     @Deprecated
     public void constructAttributeContextTree(ProjectionContext projCtx) {
-        constructAttributeContextTree(projCtx, false);
-    }
-
-    /**
-     * Takes all the stored attribute context parameters, creates attribute contexts from them, and then constructs the tree.
-     *
-     * @param projCtx The projection context
-     * @param setAttrCtx Whether to set the created attribute context on the associated resolved attribute
-     *
-     * @deprecated This function is extremely likely to be removed in the public interface, and not
-     * meant to be called externally at all. Please refrain from using it.
-     */
-    @Deprecated
-    public void constructAttributeContextTree(ProjectionContext projCtx, boolean setAttrCtx) {
         // Iterate over all the searchFor attribute context parameters
         for (AttributeContextParameters searchForAttrCtxParam : this.searchForToSearchForAttrCtxParam.values()) {
             CdmAttributeContext searchForAttrCtx = null;
@@ -199,11 +213,24 @@ public class ProjectionAttributeContextTreeBuilder {
                 // Fetch the resolved attribute that should now point at this action attribute context
                 ResolvedAttribute resAttrFromAction = actionAttrCtxParamToResAttr.get(actionAttrCtxParam);
 
-                // TODO (jibyun): For now, only set the created attribute context on the resolved attribute when specified to,
-                // as pointing the resolved attribute at this attribute context won't work currently for certain operations (Include/Exclude).
-                // This will be changed to always run once we work on the attribute context fix.
-                if (setAttrCtx) {
-                    resAttrFromAction.setAttCtx(actionAttrCtx);
+                // make sure the lineage of the attribute stays linked up
+                // there can be either (or both) a lineageOut and a lineageIn.
+                // out lineage is where this attribute came from
+                // in lineage should be pointing back at this context as a source
+                CdmAttributeContext lineageOut = actionAttrCtxParamToLineageOut.get(actionAttrCtxParam);
+
+                if (lineageOut != null) {
+                    if (actionAttrCtx != null) {
+                        actionAttrCtx.addLineage(lineageOut);
+                    }
+                    resAttrFromAction.setAttCtx(actionAttrCtx); // probably the right context for this resAtt, unless ...
+                }
+                CdmAttributeContext lineageIn = actionAttrCtxParamToLineageIn.get(actionAttrCtxParam);
+                if (lineageIn != null) {
+                    if (actionAttrCtx != null) {
+                        lineageIn.addLineage(actionAttrCtx);
+                    }
+                    resAttrFromAction.setAttCtx(lineageIn); // if there is a lineageIn. it points to us as lineage, so it is best
                 }
             }
         }

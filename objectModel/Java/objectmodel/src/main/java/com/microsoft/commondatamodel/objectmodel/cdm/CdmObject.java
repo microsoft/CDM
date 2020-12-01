@@ -251,4 +251,14 @@ public interface CdmObject {
    * @return CDM Object reference
    */
   CdmObjectReference createSimpleReference(ResolveOptions resOpt);
+
+  /**
+   *
+   * @param resOpt Resolve Options
+   * @return CDM Object reference
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  CdmObjectReference createPortableReference(ResolveOptions resOpt);
 }

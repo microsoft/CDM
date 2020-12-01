@@ -117,6 +117,12 @@ export class ProjectionDirective {
      */
     public isStructured: boolean;
 
+    /**
+     * Is virtual
+     * @internal
+     */
+    public isVirtual: boolean;
+
     constructor(resOpt: resolveOptions, owner: CdmObjectDefinitionBase, ownerRef: CdmObjectReference = null) {
         this.resOpt = resOpt;
 
@@ -141,6 +147,7 @@ export class ProjectionDirective {
         this.isReferenceOnly = (resOpt.directives?.has('referenceOnly') === true);
         this.isNormalized = (resOpt.directives?.has('normalized') === true);
         this.isStructured = (resOpt.directives?.has('structured') === true);
+        this.isVirtual = (resOpt.directives?.has('virtual') === true);
         this.hasNoMaximumDepth = (resOpt.directives?.has('noMaxDepth') === true);
         this.isArray = (resOpt.directives?.has('isArray') === true);
 

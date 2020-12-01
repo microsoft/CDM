@@ -6,12 +6,17 @@ package com.microsoft.commondatamodel.objectmodel.cdm.resolutionguidance;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import org.testng.Assert;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -57,14 +62,21 @@ public class CommonTest {
         return CompletableFuture.runAsync(() -> {
             try {
                 String testInputPath = TestHelper.getInputFolderPath(TESTS_SUBPATH, testName);
+                String testActualPath = TestHelper.getActualOutputFolderPath(TESTS_SUBPATH, testName);
+                String testExpectedPath = TestHelper.getExpectedOutputFolderPath(TESTS_SUBPATH, testName);
+                String corpusPath = testInputPath.substring(0, testInputPath.length() - "/Input".length());
+                testActualPath = Paths.get(testActualPath).toString();
 
                 CdmCorpusDefinition corpus = new CdmCorpusDefinition();
                 corpus.setEventCallback((CdmStatusLevel level, String message) -> { }, CdmStatusLevel.Warning);
-                corpus.getStorage().mount("localInput", new LocalAdapter(testInputPath));
+                corpus.getStorage().mount("local", new LocalAdapter(corpusPath));
                 corpus.getStorage().mount("cdm", new LocalAdapter(SCHEMA_DOCS_PATH));
-                corpus.getStorage().setDefaultNamespace("localInput");
+                corpus.getStorage().setDefaultNamespace("local");
 
-                CdmEntityDefinition srcEntityDef = corpus.<CdmEntityDefinition>fetchObjectAsync("localInput:/" + sourceEntityName + ".cdm.json/" + sourceEntityName).join();
+                String outFolderPath = corpus.getStorage().adapterPathToCorpusPath(testActualPath) + "/"; // interesting 'bug'
+                CdmFolderDefinition outFolder = (CdmFolderDefinition) corpus.fetchObjectAsync(outFolderPath).join();
+
+                CdmEntityDefinition srcEntityDef = (CdmEntityDefinition)corpus.fetchObjectAsync("local:/Input/"+ sourceEntityName + ".cdm.json/" + sourceEntityName).join();
                 Assert.assertTrue(srcEntityDef != null);
 
                 ResolveOptions resOpt = new ResolveOptions(srcEntityDef.getInDocument());
@@ -75,75 +87,75 @@ public class CommonTest {
                 String entityFileName = "";
 
                 if (expectedContext_default != null && expected_default != null) {
-                    entityFileName = "default";
+                    entityFileName = "d";
                     resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>()));
-                    outputEntityName = sourceEntityName + "_Resolved_" + entityFileName;
+                    outputEntityName = sourceEntityName + "_R_" + entityFileName;
                     outputEntityFileName = outputEntityName + ".cdm.json";
-                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt).join();
-                    validateOutputWithValues(expectedContext_default, expected_default, resolvedEntityDef);
+                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt, outFolder).join();
+                    validateOutputWithValuesSaveActualEntityAndValidateWithExpected(Paths.get(testExpectedPath, outputEntityFileName).toString(), resolvedEntityDef);
                 }
 
                 if (expectedContext_normalized != null && expected_normalized != null) {
-                    entityFileName = "normalized";
+                    entityFileName = "n";
                     resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("normalized"))));
-                    outputEntityName = sourceEntityName + "_Resolved_" + entityFileName;
+                    outputEntityName = sourceEntityName + "_R_" + entityFileName;
                     outputEntityFileName = outputEntityName + ".cdm.json";
-                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt).join();
-                    validateOutputWithValues(expectedContext_normalized, expected_normalized, resolvedEntityDef);
+                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt, outFolder).join();
+                    validateOutputWithValuesSaveActualEntityAndValidateWithExpected(Paths.get(testExpectedPath, outputEntityFileName).toString(), resolvedEntityDef);
                 }
 
                 if (expectedContext_referenceOnly != null && expected_referenceOnly != null) {
-                    entityFileName = "referenceOnly";
+                    entityFileName = "ro";
                     resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly"))));
-                    outputEntityName = sourceEntityName + "_Resolved_" + entityFileName;
+                    outputEntityName = sourceEntityName + "_R_" + entityFileName;
                     outputEntityFileName = outputEntityName + ".cdm.json";
-                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt).join();
-                    validateOutputWithValues(expectedContext_referenceOnly, expected_referenceOnly, resolvedEntityDef);
+                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt,outFolder).join();
+                    validateOutputWithValuesSaveActualEntityAndValidateWithExpected(Paths.get(testExpectedPath, outputEntityFileName).toString(), resolvedEntityDef);
                 }
 
                 if (expectedContext_structured != null && expected_structured != null) {
-                    entityFileName = "structured";
+                    entityFileName = "s";
                     resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("structured"))));
-                    outputEntityName = sourceEntityName + "_Resolved_" + entityFileName;
+                    outputEntityName = sourceEntityName + "_R_" + entityFileName;
                     outputEntityFileName = outputEntityName + ".cdm.json";
-                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt).join();
-                    validateOutputWithValues(expectedContext_structured, expected_structured, resolvedEntityDef);
+                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt, outFolder).join();
+                    validateOutputWithValuesSaveActualEntityAndValidateWithExpected(Paths.get(testExpectedPath, outputEntityFileName).toString(), resolvedEntityDef);
                 }
 
                 if (expectedContext_normalized_structured != null && expected_normalized_structured != null) {
-                    entityFileName = "normalized_structured";
+                    entityFileName = "n_s";
                     resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("normalized", "structured"))));
-                    outputEntityName = sourceEntityName + "_Resolved_" + entityFileName;
+                    outputEntityName = sourceEntityName + "_R_" + entityFileName;
                     outputEntityFileName = outputEntityName + ".cdm.json";
-                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt).join();
-                    validateOutputWithValues(expectedContext_normalized_structured, expected_normalized_structured, resolvedEntityDef);
+                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt, outFolder).join();
+                    validateOutputWithValuesSaveActualEntityAndValidateWithExpected(Paths.get(testExpectedPath, outputEntityFileName).toString(), resolvedEntityDef);
                 }
 
                 if (expectedContext_referenceOnly_normalized != null && expected_referenceOnly_normalized != null) {
-                    entityFileName = "referenceOnly_normalized";
+                    entityFileName = "ro_n";
                     resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized"))));
-                    outputEntityName = sourceEntityName + "_Resolved_" + entityFileName;
+                    outputEntityName = sourceEntityName + "_R_" + entityFileName;
                     outputEntityFileName = outputEntityName + ".cdm.json";
-                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt).join();
-                    validateOutputWithValues(expectedContext_referenceOnly_normalized, expected_referenceOnly_normalized, resolvedEntityDef);
+                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt, outFolder).join();
+                    validateOutputWithValuesSaveActualEntityAndValidateWithExpected(Paths.get(testExpectedPath, outputEntityFileName).toString(), resolvedEntityDef);
                 }
 
                 if (expectedContext_referenceOnly_structured != null && expected_referenceOnly_structured != null) {
-                    entityFileName = "referenceOnly_structured";
+                    entityFileName = "ro_s";
                     resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "structured"))));
-                    outputEntityName = sourceEntityName + "_Resolved_" + entityFileName;
+                    outputEntityName = sourceEntityName + "_R_" + entityFileName;
                     outputEntityFileName = outputEntityName + ".cdm.json";
-                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt).join();
-                    validateOutputWithValues(expectedContext_referenceOnly_structured, expected_referenceOnly_structured, resolvedEntityDef);
+                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt, outFolder).join();
+                    validateOutputWithValuesSaveActualEntityAndValidateWithExpected(Paths.get(testExpectedPath, outputEntityFileName).toString(), resolvedEntityDef);
                 }
 
                 if (expectedContext_referenceOnly_normalized_structured != null && expected_referenceOnly_normalized_structured != null) {
-                    entityFileName = "referenceOnly_normalized_structured";
+                    entityFileName = "ro_n_s";
                     resOpt.setDirectives(new AttributeResolutionDirectiveSet(new HashSet<>(Arrays.asList("referenceOnly", "normalized", "structured"))));
-                    outputEntityName = sourceEntityName + "_Resolved_" + entityFileName;
+                    outputEntityName = sourceEntityName + "_R_" + entityFileName;
                     outputEntityFileName = outputEntityName + ".cdm.json";
-                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt).join();
-                    validateOutputWithValues(expectedContext_referenceOnly_normalized_structured, expected_referenceOnly_normalized_structured, resolvedEntityDef);
+                    resolvedEntityDef = srcEntityDef.createResolvedEntityAsync(outputEntityName, resOpt, outFolder).join();
+                    validateOutputWithValuesSaveActualEntityAndValidateWithExpected(Paths.get(testExpectedPath, outputEntityFileName).toString(), resolvedEntityDef);
                 }
 
             } catch (Exception e) {
@@ -155,12 +167,17 @@ public class CommonTest {
     /**
      * Runs validation to test actual output vs expected output for attributes collection vs attribute context.
      */
-    protected static void validateOutputWithValues(
-        final AttributeContextExpectedValue expectedContext,
-        final List<AttributeExpectedValue> expectedAttributes,
-        final CdmEntityDefinition actualResolvedEntityDef
-    ) {
-        ObjectValidator.validateAttributesCollection(expectedAttributes, actualResolvedEntityDef.getAttributes());
-        ObjectValidator.validateAttributeContext(expectedContext, actualResolvedEntityDef.getAttributeContext());
+    protected static CompletableFuture<Void> validateOutputWithValuesSaveActualEntityAndValidateWithExpected(
+            final String expectedPath, final CdmEntityDefinition actualResolvedEntityDef) throws IOException {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                actualResolvedEntityDef.getInDocument().saveAsAsync(actualResolvedEntityDef.getInDocument().getName());
+                final String actualPath = actualResolvedEntityDef.getCtx().getCorpus().getStorage().corpusPathToAdapterPath(actualResolvedEntityDef.getInDocument().getAtCorpusPath());
+                Assert.assertEquals(new String(Files.readAllBytes(new File(expectedPath).toPath()), StandardCharsets.UTF_8),
+                        new String(Files.readAllBytes(new File(actualPath).toPath()), StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                Assert.fail(e.getMessage());
+            }
+        });
     }
 }

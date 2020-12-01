@@ -66,8 +66,11 @@ public class CdmPurposeDefinition extends CdmObjectDefinitionBase {
     if (preChildren != null && preChildren.invoke(this, path)){
       return false;
     }
-    if (this.getExtendsPurpose() != null && this.getExtendsPurpose().visit(path + "/extendsPurpose/", preChildren, postChildren)) {
-      return true;
+    if (this.getExtendsPurpose() != null) {
+      this.getExtendsPurpose().setOwner(this);
+      if (this.getExtendsPurpose().visit(path + "/extendsPurpose/", preChildren, postChildren)) {
+        return true;
+      }
     }
     if (this.visitDef(path, preChildren, postChildren)) {
       return true;

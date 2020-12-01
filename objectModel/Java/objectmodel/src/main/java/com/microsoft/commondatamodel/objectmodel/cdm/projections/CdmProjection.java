@@ -277,6 +277,8 @@ public class CdmProjection extends CdmObjectDefinitionBase {
                 acpSourceProjection.setIncludeTraits(false);
                 ResolvedAttributeSet ras = this.source.fetchResolvedAttributes(projDirective.getResOpt(), acpSourceProjection);
 
+                // clean up the context tree, it was left in a bad state on purpose in this call
+                ras.getAttributeContext().finalizeAttributeContext(projDirective.getResOpt(), acSource.getAtCorpusPath(), this.getInDocument(), this.getInDocument(), null, false);
                 // Initialize the projection context
 
                 CdmCorpusContext ctx = (projDirective.getOwner() != null ? projDirective.getOwner().getCtx() : null);
@@ -286,7 +288,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
                 // if polymorphic keep original source as previous state
                 Map<String, List<ProjectionAttributeState>> polySourceSet = null;
                 if (projDirective.getIsSourcePolymorphic()) {
-                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, acpSourceProjection);
+                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras, acpSourceProjection);
                 }
 
                 // now initialize projection attribute state
@@ -304,6 +306,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
                 input.setReferenceOnly(projDirective.getIsReferenceOnly());
                 input.setNormalized(projDirective.getIsNormalized());
                 input.setStructured(projDirective.getIsStructured());
+                input.setIsVirtual(projDirective.getIsVirtual());
 
                 int currentDepth = projDirective.getCurrentDepth();
                 input.setNextDepth(++currentDepth);
@@ -362,12 +365,12 @@ public class CdmProjection extends CdmObjectDefinitionBase {
      * @return ResolvedAttributeSet
      */
     @Deprecated
-    public ResolvedAttributeSet extractResolvedAttributes(ProjectionContext projCtx) {
+    public ResolvedAttributeSet extractResolvedAttributes(ProjectionContext projCtx, CdmAttributeContext attCtxUnder) {
         ResolvedAttributeSet resolvedAttributeSet = new ResolvedAttributeSet();
-        resolvedAttributeSet.setAttributeContext(projCtx.getCurrentAttributeContext());
+        resolvedAttributeSet.setAttributeContext(attCtxUnder);
 
         for (ProjectionAttributeState pas : projCtx.getCurrentAttributeStateSet().getStates()) {
-            resolvedAttributeSet.merge(pas.getCurrentResolvedAttribute(), pas.getCurrentResolvedAttribute().getAttCtx());
+            resolvedAttributeSet.merge(pas.getCurrentResolvedAttribute());
         }
 
         return resolvedAttributeSet;

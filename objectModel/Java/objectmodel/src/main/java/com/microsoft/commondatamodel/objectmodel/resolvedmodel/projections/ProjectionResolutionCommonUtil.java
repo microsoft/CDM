@@ -97,7 +97,8 @@ public final class ProjectionResolutionCommonUtil {
      * meant to be called externally at all. Please refrain from using it.
      * @param projDir ProjectionDirective
      * @param ctx CdmCorpusContext 
-     * @param source CdmEntityReference 
+     * @param source CdmEntityReference
+     * @param rasSource ResolvedAttributeSet
      * @param attrCtxParam AttributeContextParameters  
      * @return Map of String and List of ProjectionAttributeState
      */
@@ -106,6 +107,7 @@ public final class ProjectionResolutionCommonUtil {
         ProjectionDirective projDir,
         CdmCorpusContext ctx,
         CdmEntityReference source,
+        ResolvedAttributeSet rasSource,
         AttributeContextParameters attrCtxParam) {
         Map<String, List<ProjectionAttributeState>> polySources = new HashMap<>();
 
@@ -116,6 +118,13 @@ public final class ProjectionResolutionCommonUtil {
             if (attr.getObjectType() == CdmObjectType.EntityAttributeDef) {
                 ResolvedAttributeSet raSet = ((CdmEntityAttributeDefinition) attr).fetchResolvedAttributes(projDir.getResOpt(), null);
                 for (ResolvedAttribute resAttr : raSet.getSet()) {
+                    // we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
+                    // so steal them based on name
+                    final ResolvedAttribute resAttSrc = rasSource.get(resAttr.getResolvedName());
+                    if (resAttSrc != null) {
+                        resAttr.setAttCtx(resAttSrc.getAttCtx());
+                    }
+
                     ProjectionAttributeState projAttrState = new ProjectionAttributeState(ctx);
                     projAttrState.setCurrentResolvedAttribute(resAttr);
                     projAttrState.setPreviousStateList(null);

@@ -3,12 +3,12 @@
 
 package com.microsoft.commondatamodel.objectmodel.utilities;
 
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 
-import java.util.Arrays;
-import java.util.HashSet;
+import java.util.*;
 
 public class ResolveOptions {
   /**
@@ -74,6 +74,7 @@ public class ResolveOptions {
    */
   @Deprecated
   public boolean inCircularReference;
+  private HashMap<CdmAttributeContext, CdmAttributeContext> mapOldCtxToNewCtx;
 
   /**
    * Creates a new instance of Resolve Options using most common parameters.
@@ -296,6 +297,10 @@ public class ResolveOptions {
     resOptCopy.indexingDoc = this.indexingDoc;
     resOptCopy.shallowValidation = this.shallowValidation;
     resOptCopy.resolvedAttributeLimit = this.resolvedAttributeLimit;
+    resOptCopy.setMapOldCtxToNewCtx(this.mapOldCtxToNewCtx); // ok to share this map
+    resOptCopy.importsLoadStrategy = this.importsLoadStrategy;
+    resOptCopy.saveResolutionsOnCopy = this.saveResolutionsOnCopy;
+
     return resOptCopy;
   }
 
@@ -319,6 +324,25 @@ public class ResolveOptions {
     this.fromMoniker = fromMoniker;
   }
 
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @return String
+   */
+  @Deprecated
+  public HashMap<CdmAttributeContext, CdmAttributeContext> getMapOldCtxToNewCtx() {
+    return mapOldCtxToNewCtx;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   * @param mapOldCtxToNewCtx LinkedHashMap<CdmAttributeContext, CdmAttributeContext>
+   */
+  @Deprecated
+  public void setMapOldCtxToNewCtx(final HashMap<CdmAttributeContext, CdmAttributeContext> mapOldCtxToNewCtx) {
+    this.mapOldCtxToNewCtx = mapOldCtxToNewCtx;
+  }
   /**
    * Fetches the document that contains the owner of the CdmObject.
    * @param obj CdmObject to fetch the document for

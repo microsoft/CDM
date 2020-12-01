@@ -12,7 +12,6 @@ import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
@@ -32,6 +31,23 @@ public class PrimitiveAppliers {
     isRemoved.priority = 10;
     isRemoved.overridesBase = false;
     isRemoved.willRemove = (ApplierContext onStep) -> true;
+  }
+
+  /**
+   * @deprecated This field is extremely likely to be removed in the public interface, and not meant
+   * to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public static AttributeResolutionApplier isRemovedInternal = new AttributeResolutionApplier();
+
+  static {
+    isRemovedInternal.matchName = "is.removed.internal";
+    isRemovedInternal.priority = 10;
+    isRemovedInternal.overridesBase = false;
+    isRemovedInternal.willRemove = (ApplierContext appCtx) -> {
+      final ApplierState applierState = appCtx.resAttSource.getApplierState();
+      return applierState != null && applierState.flexRemove;
+    };
   }
 
   /**
@@ -107,7 +123,7 @@ public class PrimitiveAppliers {
       if (appCtx.resAttSource != null)
         supporting = appCtx.resAttSource.getResolvedName();
 
-      appCtx.resAttNew.setResolvedTraits(appCtx.resAttNew.fetchResolvedTraits().setTraitParameterValue(appCtx.resOpt, supTraitDef, "inSupportOf", supporting));
+      appCtx.resAttNew.setResolvedTraits(appCtx.resAttNew.getResolvedTraits().setTraitParameterValue(appCtx.resOpt, supTraitDef, "inSupportOf", supporting));
 
       appCtx.resAttNew.setTarget(sub);
       appCtx.resGuideNew = sub.getResolutionGuidance();
@@ -231,9 +247,9 @@ public class PrimitiveAppliers {
     doesExplainArray.doCreateContext = (ApplierContext appCtx) -> {
       if (appCtx.resAttNew != null
           && appCtx.resAttNew.getApplierState() != null
-          && appCtx.resAttNew.getApplierState().array_specializedContext != null) {
+          && appCtx.resAttNew.getApplierState().arraySpecializedContext != null) {
         // this attribute may have a special context that it wants, use that instead
-        appCtx.resAttNew.getApplierState().array_specializedContext.accept(appCtx);
+        appCtx.resAttNew.getApplierState().arraySpecializedContext.accept(appCtx);
       } else {
         CdmAttributeContextType ctxType = CdmAttributeContextType.AttributeDefinition;
         // if this is the group add, then we are adding the counter
@@ -294,7 +310,7 @@ public class PrimitiveAppliers {
           appCtx.resAttNew.setTarget(template.getTarget());
           // copy the template
           appCtx.resAttNew.updateResolvedName(state.arrayTemplate.getPreviousResolvedName());
-          appCtx.resAttNew.setResolvedTraits(template.fetchResolvedTraits().deepCopy());
+          appCtx.resAttNew.setResolvedTraits(template.getResolvedTraits().deepCopy());
           appCtx.resGuideNew = appCtx.resGuide; // just take the source, because this is not a new attribute that may have different settings
           appCtx.continues = state.flexCurrentOrdinal < state.arrayFinalOrdinal;
         }
@@ -370,8 +386,8 @@ public class PrimitiveAppliers {
       appCtx.resGuideNew = sub.getResolutionGuidance();
       appCtx.resAttNew.setResolvedTraits(sub.fetchResolvedTraits(appCtx.resOpt));
 
-      if (appCtx.resAttNew.fetchResolvedTraits() != null) {
-        appCtx.resAttNew.setResolvedTraits(appCtx.resAttNew.fetchResolvedTraits().deepCopy());
+      if (appCtx.resAttNew.getResolvedTraits() != null) {
+        appCtx.resAttNew.setResolvedTraits(appCtx.resAttNew.getResolvedTraits().deepCopy());
       }
     };
     doesReferenceEntity.willCreateContext = (ApplierContext appCtx) -> true;
@@ -409,7 +425,7 @@ public class PrimitiveAppliers {
 
       if (doFKOnly && appCtx.resAttSource != null)
         // if in reference only mode, then remove everything that isn't marked to retain
-        visible = alwaysAdd || appCtx.resAttSource.getApplierState() == null || !appCtx.resAttSource.getApplierState().flexRemove;
+        visible = alwaysAdd || (appCtx.resAttSource.getApplierState() != null && !appCtx.resAttSource.getApplierState().flexRemove);
 
       return !visible;
     };
@@ -446,12 +462,12 @@ public class PrimitiveAppliers {
       appCtx.resGuideNew = sub.getResolutionGuidance();
       appCtx.resAttNew.setResolvedTraits(sub.fetchResolvedTraits(appCtx.resOpt));
 
-      if (appCtx.resAttNew.fetchResolvedTraits() != null) {
-        appCtx.resAttNew.setResolvedTraits(appCtx.resAttNew.fetchResolvedTraits().deepCopy());
+      if (appCtx.resAttNew.getResolvedTraits() != null) {
+        appCtx.resAttNew.setResolvedTraits(appCtx.resAttNew.getResolvedTraits().deepCopy());
       }
 
       // make this code create a context for any copy of this attribute that gets repeated in an array
-      appCtx.resAttNew.getApplierState().array_specializedContext = PrimitiveAppliers.doesReferenceEntityVia.doCreateContext;
+      appCtx.resAttNew.getApplierState().arraySpecializedContext = PrimitiveAppliers.doesReferenceEntityVia.doCreateContext;
     };
     doesReferenceEntityVia.willCreateContext = (ApplierContext appCtx) -> {
       final AttributeResolutionDirectiveSet dir = appCtx.resOpt.getDirectives();
@@ -529,7 +545,7 @@ public class PrimitiveAppliers {
       appCtx.resGuideNew = sub.getResolutionGuidance();
 
       // make this code create a context for any copy of this attribute that gets repeated in an array
-      appCtx.resAttNew.getApplierState().array_specializedContext = PrimitiveAppliers.doesSelectAttributes.doCreateContext;
+      appCtx.resAttNew.getApplierState().arraySpecializedContext = PrimitiveAppliers.doesSelectAttributes.doCreateContext;
     };
     doesSelectAttributes.willCreateContext = (ApplierContext appCtx) -> {
       final AttributeResolutionDirectiveSet dir = appCtx.resOpt.getDirectives();

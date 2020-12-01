@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
@@ -35,11 +34,13 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.HashSet;
 import java.util.concurrent.CompletableFuture;
 
 public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmReferencesEntities {
@@ -182,7 +183,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   @Override
   void constructResolvedTraits(final ResolvedTraitSetBuilder rtsb, final ResolveOptions resOpt) {
     // base traits then add any elevated from attributes then add things exhibited by the att.
-    final CdmObjectReference baseClass = this.extendsEntity;
+    final CdmObjectReference baseClass = this.getExtendsEntityRef();
     if (baseClass != null) {
       // merge in all from base class
       rtsb.mergeTraits(baseClass.fetchResolvedTraits(resOpt));
@@ -224,7 +225,8 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     // an extended entity, traits applied to extended entity, exhibited traits of main entity, the (datatype or entity) used as an attribute, traits applied to that datatype or entity,
     // the relationship of the attribute, the attribute definition itself and included attribute groups, dynamic traits applied to the attribute.
     this.rasb = new ResolvedAttributeSetBuilder();
-    this.rasb.getResolvedAttributeSet().setAttributeContext(under);
+    ResolvedAttributeSetBuilder rasb = this.rasb; // local var needed because we now allow reentry
+    rasb.getResolvedAttributeSet().setAttributeContext(under);
 
     if (this.getExtendsEntity() != null) {
       final CdmObjectReference extRef = this.extendsEntity;
@@ -239,7 +241,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         acpExt.setRegarding(null);
         acpExt.setIncludeTraits(false);
 
-        extendsRefUnder = this.rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpExt);
+        extendsRefUnder = rasb.getResolvedAttributeSet().createAttributeContext(resOpt, acpExt);
       }
 
       if (extRef.getExplicitReference() != null && extRef.fetchObjectDefinition(resOpt).getObjectType() == CdmObjectType.ProjectionDef) {
@@ -259,7 +261,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         CdmProjection projDef = (CdmProjection) extRefObjDef;
         ProjectionContext projCtx = projDef.constructProjectionContext(projDirective, extendsRefUnder);
 
-        this.rasb.setResolvedAttributeSet(projDef.extractResolvedAttributes(projCtx));
+        rasb.setResolvedAttributeSet(projDef.extractResolvedAttributes(projCtx, under));
       } else {
         // An Entity Reference
 
@@ -272,16 +274,12 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           acpExtEnt.setType(CdmAttributeContextType.Entity);
           acpExtEnt.setName(extRef.getNamedReference() != null ? extRef.getNamedReference() : extRef.getExplicitReference().getName());
           acpExtEnt.setRegarding(extRef);
-          acpExtEnt.setIncludeTraits(false);
+          acpExtEnt.setIncludeTraits(true);  // "Entity" is the thing with traits - That perches in the tree - And sings the tune and never waits - To see what it should be.
         }
 
-        // save moniker, extended entity may attach a different moniker that we do not
-        // want to pass along to getting this entities attributes
-        final String oldMoniker = resOpt.getFromMoniker();
+        rasb.mergeAttributes((this.getExtendsEntityRef()).fetchResolvedAttributes(resOpt, acpExtEnt));
 
-        this.rasb.mergeAttributes((this.getExtendsEntityRef()).fetchResolvedAttributes(resOpt, acpExtEnt));
-
-        if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
+        if (!resOpt.checkAttributeCount(rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
           Logger.error(
                   CdmEntityDefinition.class.getSimpleName(),
                   this.getCtx(),
@@ -298,20 +296,17 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           // make a copy and set defaults if needed
           CdmAttributeResolutionGuidance resGuide =
                   (CdmAttributeResolutionGuidance) this.getExtendsEntityResolutionGuidance().copy(resOpt);
-          resGuide.updateAttributeDefaults(resGuide.fetchObjectDefinitionName());
+          resGuide.updateAttributeDefaults(resGuide.fetchObjectDefinitionName(), this);
           // holds all the info needed by the resolver code
           AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuide, rtsBase);
 
-          this.rasb.generateApplierAttributes(arc, false); // true = apply the prepared traits to new atts
+          rasb.generateApplierAttributes(arc, false); // true = apply the prepared traits to new atts
         }
-
-        // reset to the old moniker
-        resOpt.setFromMoniker(oldMoniker);
       }
     }
 
-    this.rasb.markInherited();
-    this.rasb.getResolvedAttributeSet().setAttributeContext(under);
+    rasb.markInherited();
+    rasb.getResolvedAttributeSet().setAttributeContext(under);
 
     if (this.getAttributes() != null) {
       int furthestChildDepth = 0;
@@ -333,16 +328,22 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           continue;
         }
 
-        ResolvedAttributeSet attRas = att.fetchResolvedAttributes(resOpt, acpAtt);
+        ResolvedAttributeSet rasFromAtt = att.fetchResolvedAttributes(resOpt, acpAtt);
         
         // we can now set depth now that children nodes have been resolved
         if (att instanceof CdmEntityAttributeDefinition) {
-          furthestChildDepth = attRas.getDepthTraveled() > furthestChildDepth ? attRas.getDepthTraveled() : furthestChildDepth;
+          furthestChildDepth = rasFromAtt.getDepthTraveled() > furthestChildDepth ? rasFromAtt.getDepthTraveled() : furthestChildDepth;
         }
 
-        this.rasb.mergeAttributes(attRas);
+        // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+        // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+        // that didn't just pop out of that same named attribute now need to go away.
+        // mark any attributes formerly from this named attribute that don't show again as orphans
+        rasb.getResolvedAttributeSet().markOrphansForRemoval(att.fetchObjectDefinitionName(), rasFromAtt);
+        // now merge
+        rasb.mergeAttributes(rasFromAtt);
 
-        if (!resOpt.checkAttributeCount(this.rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
+        if (!resOpt.checkAttributeCount(rasb.getResolvedAttributeSet().getResolvedAttributeCount())) {
           Logger.error(
               CdmEntityDefinition.class.getSimpleName(),
               this.getCtx(),
@@ -351,15 +352,15 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           return null;
         }
       }
-      this.rasb.getResolvedAttributeSet().setDepthTraveled(furthestChildDepth);
+      rasb.getResolvedAttributeSet().setDepthTraveled(furthestChildDepth);
     }
-    this.rasb.markOrder();
-    this.rasb.getResolvedAttributeSet().setAttributeContext(under);
+    rasb.markOrder();
+    rasb.getResolvedAttributeSet().setAttributeContext(under);
 
     // things that need to go away
-    this.rasb.removeRequestedAtts();
+    rasb.removeRequestedAtts();
 
-    return this.rasb;
+    return rasb;
   }
 
   public CompletableFuture<CdmEntityDefinition> createResolvedEntityAsync(final String newEntName) {
@@ -393,50 +394,51 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       return CompletableFuture.completedFuture(null);
     }
 
-    if (Strings.isNullOrEmpty(newEntName)) {
+    if (StringUtils.isNullOrEmpty(newEntName)) {
       Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "No Entity Name provided.", "createResolvedEntityAsync");
       return CompletableFuture.completedFuture(null);
     }
 
-    if (folderDef == null) {
-      folderDef = this.getInDocument().getFolder();
-    }
-
     final ResolveOptions finalResOpt = resOpt;
     final CdmFolderDefinition folder = folderDef != null ? folderDef : this.getInDocument().getFolder();
-    return CompletableFuture.supplyAsync(() -> {
-      final String fileName = (Strings.isNullOrEmpty(newDocName)) ? String.format("%s.cdm.json", newEntName) : newDocName;
-      String origDoc = this.getInDocument().getAtCorpusPath();
-      // Don't overwrite the source document
-      final String targetAtCorpusPath = String.format("%s%s",
-          this.getCtx()
-              .getCorpus()
-              .getStorage()
-              .createAbsoluteCorpusPath(folder.getAtCorpusPath(), folder),
-          fileName);
-      if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
-        Logger.error(
-            CdmEntityDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("Attempting to replace source entity's document '{0}'", targetAtCorpusPath),
-            "createResolvedEntityAsync"
-        );
-        return null;
-      }
 
+    return CompletableFuture.supplyAsync(() -> {
       // if the wrtDoc needs to be indexed (like it was just modified) then do that first
       if (!finalResOpt.getWrtDoc().indexIfNeededAsync(finalResOpt, true).join()) {
         Logger.error(CdmEntityDefinition.class.getSimpleName(), this.getCtx(), "Couldn't index source document.", "createResolvedEntityAsync");
         return null;
       }
 
+      final String fileName = (StringUtils.isNullOrEmpty(newDocName)) ? String.format("%s.cdm.json", newEntName) : newDocName;
+      String origDoc = this.getInDocument().getAtCorpusPath();
+      // Don't overwrite the source document
+      final String targetAtCorpusPath = String.format("%s%s",
+              this.getCtx()
+                      .getCorpus()
+                      .getStorage()
+                      .createAbsoluteCorpusPath(folder.getAtCorpusPath(), folder),
+              fileName);
+      if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
+        Logger.error(
+                CdmEntityDefinition.class.getSimpleName(),
+                this.getCtx(),
+                Logger.format("Attempting to replace source entity's document '{0}'", targetAtCorpusPath),
+                "createResolvedEntityAsync"
+        );
+        return null;
+      }
+
+      // make sure the corpus has a set of default artifact attributes
+      this.getCtx().getCorpus().prepareArtifactAttributesAsync().join();
+
       // Make the top level attribute context for this entity.
       // For this whole section where we generate the attribute context tree and get resolved attributes.
       // Set the flag that keeps all of the parent changes and document dirty from from happening.
       boolean wasResolving = this.getCtx().getCorpus().isCurrentlyResolving;
       this.getCtx().getCorpus().isCurrentlyResolving = true;
+      final String entName = newEntName;
       final ResolveContext ctx = (ResolveContext) this.getCtx();
-      CdmAttributeContext attCtxEnt = ctx.getCorpus().makeObject(CdmObjectType.AttributeContextDef, newEntName, true);
+      CdmAttributeContext attCtxEnt = ctx.getCorpus().makeObject(CdmObjectType.AttributeContextDef, entName, true);
       attCtxEnt.setCtx(ctx);
       attCtxEnt.setInDocument(this.getInDocument());
 
@@ -447,30 +449,27 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       acp.setName("attributeContext");
 
       final CdmAttributeContext attCtxAC = CdmAttributeContext.createChildUnder(finalResOpt, acp);
+      // this is the node that actually is first in the context we save. all definition refs should take the new perspective that they
+      // can only be understood through the resolvedFrom moniker
+      final CdmEntityReference entRefThis = ctx.getCorpus().makeObject(CdmObjectType.EntityRef, this.getName(), true);
+      entRefThis.setOwner(this);
+      entRefThis.setInDocument(this.getInDocument()); // need to set owner and inDocument to this starting entity so the ref will be portable to the new document
+      entRefThis.setExplicitReference(this);
       final AttributeContextParameters acpEnt = new AttributeContextParameters();
       acpEnt.setUnder(attCtxAC);
       acpEnt.setType(CdmAttributeContextType.Entity);
-      acpEnt.setName(newEntName);
-      acpEnt.setRegarding(ctx.getCorpus().makeObject(CdmObjectType.EntityRef, this.getName(), true));
+      acpEnt.setName(entName);
+      acpEnt.setRegarding(entRefThis);
 
-      // use this whenever we need to keep references pointing at things that were already found. used when 'fixing' references by localizing to a new document
-      final ResolveOptions resOptCopy = finalResOpt.copy();
-      resOptCopy.setSaveResolutionsOnCopy(true);
-
+      final ResolveOptions resOptCopy = CdmAttributeContext.prepareOptionsForResolveAttributes(finalResOpt);
       // resolve attributes with this context. the end result is that each resolved attribute
-      // points to the level of the context where it was created
+      // points to the level of the context where it was  last modified, merged, created
       final ResolvedAttributeSet ras = this.fetchResolvedAttributes(resOptCopy, acpEnt);
 
       if (ras == null) {
         this.resolvingAttributes = false;
         return null;
       }
-
-      // create a new copy of the attribute context for this entity
-      final LinkedHashSet<CdmAttributeContext> allAttCtx = new LinkedHashSet<>();
-      final CdmAttributeContext newNode = ((CdmAttributeContext) attCtxEnt.copyNode(finalResOpt));
-      attCtxEnt = attCtxEnt.copyAttributeContextTree(finalResOpt, newNode, ras, allAttCtx, "resolvedFrom");
-      final CdmAttributeContext attCtx = (CdmAttributeContext) (((CdmAttributeContext) attCtxEnt.getContents().get(0))).getContents().get(0);
 
       this.getCtx().getCorpus().isCurrentlyResolving = wasResolving;
 
@@ -482,65 +481,129 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       docRes.getImports().add(origDoc, "resolvedFrom");
 
       // Make the empty entity.
-      CdmEntityDefinition entResolved = docRes.getDefinitions().add(newEntName);
-      // Set the context to the copy of the tree. Fix the docs on the context nodes.
-      entResolved.setAttributeContext(attCtx);
-      attCtx.visit(newEntName + "/attributeContext/", (obj, path) -> {
-            obj.setInDocument(docRes);
-            return false;
-          },
-          null);
+      CdmEntityDefinition entResolved = docRes.getDefinitions().add(entName);
 
-      // Add the traits of the entity.
+      // grab that context that comes from fetchResolvedAttributes. We are sure this tree is a copy that we can own, so no need to copy it again
+      CdmAttributeContext attCtx = null;
+      if (attCtxAC != null && attCtxAC.getContents() != null && attCtxAC.getContents().size() == 1) {
+        attCtx = (CdmAttributeContext) attCtxAC.getContents().get(0);
+      }
+      entResolved.setAttributeContext(attCtx);
+
+      if (attCtx != null) {
+        // fix all of the definition references, parent and lineage references, owner documents, etc. in the context tree
+        attCtx.finalizeAttributeContext(resOptCopy, String.format("%s/attributeContext/", entName), docRes, this.getInDocument(), "resolvedFrom", true);
+
+        // TEST CODE in C# by Jeff
+        // run over the resolved attributes and make sure none have the dummy context
+        //Action<ResolvedAttributeSet> testResolveAttributeCtx = null;
+        //testResolveAttributeCtx = (rasSub) =>
+        //{
+        //    if (rasSub.Set.Count != 0 && rasSub.AttributeContext.AtCoprusPath.StartsWith("cacheHolder"))
+        //        System.Diagnostics.Debug.WriteLine("Bad!!");
+        //    rasSub.Set.ForEach(ra =>
+        //    {
+        //        if (ra.AttCtx.AtCoprusPath.StartsWith("cacheHolder"))
+        //            System.Diagnostics.Debug.WriteLine("Bad!!");
+
+        //        // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
+        //        if (ra.Target is ResolvedAttributeSet)
+        //        {
+        //            testResolveAttributeCtx(ra.Target as ResolvedAttributeSet);
+        //        }
+        //    });
+        //};
+        //testResolveAttributeCtx(ras);
+
+      }
+      // Add the traits of the entity, also add to attribute context top node
       ResolvedTraitSet rtsEnt = this.fetchResolvedTraits(finalResOpt);
       for (final ResolvedTrait rt : rtsEnt.getSet()) {
-        final CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
+        CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
         entResolved.getExhibitsTraits().add(traitRef);
-      }
-
-      // the attributes have been named, shaped, etc for this entity so now it is safe to go and
-      // make each attribute context level point at these final versions of attributes
-      final Map<String, Integer> attPath2Order = new LinkedHashMap<>();
-
-      pointContextAtResolvedAtts(ras, newEntName + "/hasAttributes/", allAttCtx, attPath2Order);
-
-      // generate attribute structures may end up with 0 attributes after that. prune them
-      cleanSubGroup(attCtx, false);
-
-      orderContents(attCtx, attPath2Order);
-
-      // resolved attributes can gain traits that are applied to an entity when referenced
-      // since these traits are described in the context, it is redundant and messy to list them in the attribute
-      // so, remove them. create and cache a set of names to look for per context
-      // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the
-      // sub-context they come from. Same is true of attribute entities. so do this recursively top down
-      final Map<CdmAttributeContext, LinkedHashSet<String>> ctx2traitNames = new LinkedHashMap<>();
-
-      collectContextTraits(attCtx, new LinkedHashSet<>(), ctx2traitNames);
-
-      // add the attributes, put them in attribute groups if structure needed
-      final Map<ResolvedAttribute, String> resAtt2RefPath = new LinkedHashMap<>();
-
-      addAttributes(ras, entResolved, newEntName + "/hasAttributes/", allAttCtx,
-              ctx2traitNames, resOptCopy, resAtt2RefPath);
-
-      // fix entity traits
-      if (entResolved.getExhibitsTraits() != null) {
-        for (final CdmTraitReference et : entResolved.getExhibitsTraits()) {
-          replaceTraitAttRef(et, newEntName, false);
+        traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt); // fresh copy
+        if (entResolved.getAttributeContext() != null) {
+          entResolved.getAttributeContext().getExhibitsTraits().add(traitRef);
         }
       }
 
-      fixContextTraits(attCtx, newEntName);
-      // and the attribute traits
-      final CdmCollection<CdmAttributeItem> entAttributes = entResolved.getAttributes();
-      if (entAttributes != null) {
-        entAttributes.forEach(entAtt -> {
-          final CdmTraitCollection attTraits = entAtt.getAppliedTraits();
-          if (attTraits != null) {
-            attTraits.forEach(tr -> replaceTraitAttRef(tr, newEntName, false));
+      // special trait to explain this is a resolved entity
+      entResolved.indicateAbstractionLevel("resolved", finalResOpt);
+
+      if (entResolved.getAttributeContext() != null) {
+        // the attributes have been named, shaped, etc for this entity so now it is safe to go and
+        // make each attribute context level point at these final versions of attributes
+
+        // what we have is a resolved attribute set (maybe with structure) where each ra points at the best tree node
+        // we also have the tree of context, we need to flip this around so that the right tree nodes point at the paths to the
+        // right attributes. so run over the resolved atts and then add a path reference to each one into the context contents where is last lived
+        final Map<String, Integer> attPath2Order = new LinkedHashMap<>();
+        final Set<String> finishedGroups = new LinkedHashSet<>();
+        final Set<CdmAttributeContext> allPrimaryCtx = new LinkedHashSet<>(); // keep a list so it is easier to think about these later
+        pointContextAtResolvedAtts(ras, entName + "/hasAttributes/", allPrimaryCtx, attPath2Order, finishedGroups);
+        // the generated attribute structures sometimes has a LOT of extra nodes that don't say anything or explain anything
+        // our goal now is to prune that tree to just have the stuff one may need
+        // do this by keeping the leafs and all of the lineage nodes for the attributes that end up in the resolved entity
+        // along with some special nodes that explain entity structure and inherit
+
+        // run over the whole tree and make a set of the nodes that should be saved for sure. This is anything NOT under a generated set
+        // (so base entity chains, entity attributes entity definitions)
+        HashSet<CdmAttributeContext> nodesToSave = new LinkedHashSet<>();
+        if (!saveStructureNodes(attCtx, nodesToSave)) {
+          return null;
+        }
+
+        // next, look at the attCtx for every resolved attribute. follow the lineage chain and mark all of those nodes as ones to save
+        // also mark any parents of those as savers
+
+        // so, do that ^^^ for every primary context found earlier
+        for (final CdmAttributeContext primCtx : allPrimaryCtx) {
+          if (!SaveLineageNodes(primCtx, nodesToSave)) {
+            return null;
           }
-        });
+        }
+
+        // now the cleanup, we have a set of the nodes that should be saved
+        // run over the tree and re-build the contents collection with only the things to save
+        cleanSubGroup(attCtx, nodesToSave);
+
+        // create an all-up ordering of attributes at the leaves of this tree based on insert order
+        // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted
+        orderContents(attCtx, attPath2Order);
+
+        // resolved attributes can gain traits that are applied to an entity when referenced
+        // since these traits are described in the context, it is redundant and messy to list them in the attribute
+        // so, remove them. create and cache a set of names to look for per context
+        // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the
+        // sub-context they come from. Same is true of attribute entities. so do this recursively top down
+        final HashMap<CdmAttributeContext, HashSet<String>> ctx2traitNames = new LinkedHashMap<>();
+
+        collectContextTraits(attCtx, new LinkedHashSet<>(), ctx2traitNames);
+
+        // add the attributes, put them in attribute groups if structure needed
+        final Map<ResolvedAttribute, String> resAtt2RefPath = new LinkedHashMap<>();
+
+        addAttributes(ras, entResolved, entName + "/hasAttributes/", docRes,
+                ctx2traitNames, resOptCopy, resAtt2RefPath);
+
+        // fix entity traits
+        if (entResolved.getExhibitsTraits() != null) {
+          for (final CdmTraitReference et : entResolved.getExhibitsTraits()) {
+            replaceTraitAttRef(et, newEntName, false);
+          }
+        }
+
+        fixContextTraits(attCtx, newEntName);
+        // and the attribute traits
+        final CdmCollection<CdmAttributeItem> entAttributes = entResolved.getAttributes();
+        if (entAttributes != null) {
+          entAttributes.forEach(entAtt -> {
+            final CdmTraitCollection attTraits = entAtt.getAppliedTraits();
+            if (attTraits != null) {
+              attTraits.forEach(tr -> replaceTraitAttRef(tr, newEntName, false));
+            }
+          });
+        }
       }
 
       // we are about to put this content created in the context of various documents (like references to attributes from base entities, etc.)
@@ -548,7 +611,9 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       // the catch-22 is that the new document needs these fixes done before it can be used to make these fixes.
       // the fix needs to happen in the middle of the refresh
       // trigger the document to refresh current content into the resolved OM
-      attCtx.setParent(null); // remove the fake parent that made the paths work
+      if (attCtx != null) {
+        attCtx.setParent(null); // remove the fake parent that made the paths work
+      }
       final ResolveOptions resOptNew = finalResOpt.copy();
       resOptNew.setLocalizeReferencesFor(docRes);
       resOptNew.setWrtDoc(docRes);
@@ -563,88 +628,114 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   }
 
   private void pointContextAtResolvedAtts(final ResolvedAttributeSet rasSub, final String
-          path, final Set<CdmAttributeContext> allAttCtx, final Map<String, Integer> attPath2Order) {
+          path, final Set<CdmAttributeContext> allPrimaryCtx, final Map<String, Integer> attPath2Order, final Set<String> finishedGroups) {
     rasSub.getSet().forEach(ra -> {
-      final Set<CdmAttributeContext> raCtxSet = rasSub.getRa2attCtxSet().get(ra);
-      List<CdmAttributeContext> raCtxInEnt = new ArrayList<>();
+      final CdmAttributeContext raCtx = ra.getAttCtx();
+      final CdmCollection<CdmObject> refs = raCtx.getContents();
+      allPrimaryCtx.add(raCtx);
 
-      // Find the correct attCtx for this copy, intersect these two sets.
-      // (Iterate over the shortest list.)
-      if (raCtxSet != null && allAttCtx.size() < raCtxSet.size()) {
-        // find the correct attCtx for this copy
-        for (final CdmAttributeContext currAttCtx : allAttCtx) {
-          if (raCtxSet.contains(currAttCtx)) {
-            raCtxInEnt.add(currAttCtx);
+      String attRefPath = path + ra.getResolvedName();
+      // the target for a resolved att can be a typeAttribute OR it can be another resolvedAttributeSet (meaning a group)
+      try {
+        if (ra.getTarget() instanceof CdmAttribute && ((CdmAttribute)ra.getTarget()).getClass().getMethod("getObjectType") != null) {
+          // it was an attribute, add to the content of the context, also, keep track of the ordering for all of the att paths we make up
+          // as we go through the resolved attributes, this is the order of atts in the final resolved entity
+          if (!attPath2Order.containsKey(attRefPath)) {
+            final CdmObjectReference attRef = this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeRef, attRefPath, true);
+            // only need one explanation for this path to the insert order
+            attPath2Order.put(attRef.getNamedReference(), ra.getInsertOrder());
+            raCtx.getContents().add(attRef);
+          }
+        } else {
+          // a group, so we know an attribute group will get created later with the name of the group and the things it contains will be in
+          // the members of that group
+          attRefPath += "/members/";
+          if (!finishedGroups.contains(attRefPath)) {
+            pointContextAtResolvedAtts((ResolvedAttributeSet)ra.getTarget(), attRefPath, allPrimaryCtx, attPath2Order, finishedGroups);
+            finishedGroups.add(attRefPath);
           }
         }
-      } else {
-        raCtxSet.forEach(currAttCtx -> {
-          if (allAttCtx.contains(currAttCtx)) {
-            raCtxInEnt.add(currAttCtx);
-          }
-        });
-      }
-
-      for (final CdmAttributeContext raCtx : raCtxInEnt) {
-        if (raCtx != null) {
-          // there might be more than one explanation for where and attribute came from when things get merges as they do
-          // this won't work when I add the structured attributes to avoid name collisions
-          String attRefPath = path + ra.getResolvedName();
-          if (ra.getTarget() != null
-              && ra.getTarget() instanceof CdmAttribute
-              // No need to check if method exists since we confirmed the object type is CdmAttribute
-              // && ra.getTarget().getClass().getMethod("getObjectType") != null
-            ) {
-            if (!attPath2Order.containsKey(attRefPath)) {
-              final CdmObjectReference attRef = this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeRef, attRefPath, true);
-              attPath2Order.put(attRef.getNamedReference(), ra.getInsertOrder());
-              raCtx.getContents().add(attRef);
-            }
-          } else {
-            attRefPath += "/members/";
-            pointContextAtResolvedAtts(((ResolvedAttributeSet) ra.getTarget()), attRefPath, allAttCtx, attPath2Order);
-          }
-        }
+      } catch (NoSuchMethodException e) {
+        throw new RuntimeException("The method 'getObjectType' doesn't exist.", e);
       }
     });
   }
 
-  private boolean cleanSubGroup(final CdmObject subItem, boolean underGenerated) {
-    if (subItem.getObjectType() == CdmObjectType.AttributeRef) {
-      return true; // not empty
+  private boolean saveStructureNodes(final CdmObject subItem, HashSet<CdmAttributeContext> nodesToSave) {
+    if (!(subItem instanceof CdmAttributeContext) || ((CdmAttributeContext)subItem).getType() == CdmAttributeContextType.GeneratedSet) {
+      return true;
     }
-    if (subItem instanceof CdmAttributeContext) {
-      final CdmAttributeContext ac = (CdmAttributeContext) subItem;
-
-      if (ac.getType() == CdmAttributeContextType.GeneratedSet) {
-        underGenerated = true;
+    CdmAttributeContext ac = (CdmAttributeContext)subItem;
+    nodesToSave.add(ac);
+    if (ac.getContents() == null || ac.getContents().size() == 0) {
+      return true;
+    }
+    // look at all children
+    for (final CdmObject subSub : ac.getContents()) {
+      if (!saveStructureNodes(subSub, nodesToSave)) {
+        return false;
       }
-      if (ac.getContents() == null || ac.getContents().size() == 0) {
-        return false; // empty
-      }
-      // look at all children, make a set to remove
-      final List<CdmAttributeContext> toRemove = new ArrayList<>();
-      for (final CdmObject subSub : ac.getContents()) {
-        if (!cleanSubGroup(subSub, underGenerated)) {
-          boolean potentialTarget = underGenerated;
+    }
+    return true;
+  }
 
-          if (!potentialTarget) {
-            // cast is safe because we returned false meaning empty and not a attribute ref
-            // so is this the set holder itself?
-            potentialTarget = ((CdmAttributeContext) subSub).getType() == CdmAttributeContextType.GeneratedSet;
-          }
+  // helper that save the passed node and anything up the parent chain
+  private boolean saveParentNodes(final CdmAttributeContext currNode, HashSet<CdmAttributeContext> nodesToSave) {
+    if (nodesToSave.contains(currNode)) {
+      return true;
+    }
+    nodesToSave.add(currNode);
+    // get the parent
+    if (currNode.getParent() != null && currNode.getParent().getExplicitReference() != null)
+    {
+      return saveParentNodes((CdmAttributeContext)currNode.getParent().getExplicitReference(), nodesToSave);
+    }
+    return true;
+  }
 
-          if (potentialTarget) {
-            toRemove.add((CdmAttributeContext) subSub);
+  // helper that saves the current node (and parents) plus anything in the lineage (with their parents)
+  private boolean SaveLineageNodes(final CdmAttributeContext currNode, HashSet<CdmAttributeContext> nodesToSave) {
+    if (!saveParentNodes(currNode, nodesToSave)) {
+      return false;
+    }
+    if (currNode.getLineage() != null && currNode.getLineage().size() > 0) {
+      for (final CdmAttributeContextReference lin : currNode.getLineage()) {
+        if (lin.getExplicitReference() != null) {
+          if (!SaveLineageNodes((CdmAttributeContext)lin.getExplicitReference(), nodesToSave)) {
+            return false;
           }
         }
       }
-      for (final CdmAttributeContext toDie : toRemove) {
-        ac.getContents().remove(toDie);
-      }
-      return ac.getContents().size() != 0;
     }
-    return false;
+    return true;
+  }
+
+  private boolean cleanSubGroup(final CdmObject subItem, HashSet<CdmAttributeContext> nodesToSave) {
+    if (subItem.getObjectType() == CdmObjectType.AttributeRef) {
+      return true; // not empty
+    }
+
+    CdmAttributeContext ac = (CdmAttributeContext)subItem;
+
+    if (!nodesToSave.contains(ac)) {
+      return false; // don't even look at content, this all goes away
+    }
+
+    if (ac.getContents() != null && ac.getContents().size() > 0) {
+      // need to clean up the content array without triggering the code that fixes in document or paths
+      final List<CdmObject> newContent = new ArrayList<>();
+      for (final CdmObject sub : ac.getContents()) {
+        // true means keep this as a child
+        if (cleanSubGroup(sub, nodesToSave)) {
+          newContent.add(sub);
+        }
+      }
+      // clear the old content and replace
+      ac.getContents().allItems.clear();
+      ac.getContents().allItems.addAll(newContent);
+    }
+
+    return true;
   }
 
   private Integer orderContents(final CdmAttributeContext under, final Map<String, Integer> attPath2Order) {
@@ -678,8 +769,6 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   }
 
   private Integer getOrderNum(final CdmObject item, final Map<String, Integer> attPath2Order) {
-    // create an all-up ordering of attributes at the leaves of this tree based on insert order
-    // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted
     if (item.getObjectType() == CdmObjectType.AttributeContextDef) {
       return orderContents(((CdmAttributeContext) item), attPath2Order);
     } else if (item.getObjectType() == CdmObjectType.AttributeRef) {
@@ -691,8 +780,8 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     }
   }
 
-  private void collectContextTraits(final CdmAttributeContext subAttCtx, final LinkedHashSet<String> inheritedTraitNames,
-                                    final Map<CdmAttributeContext, LinkedHashSet<String>> ctx2traitNames) {
+  private void collectContextTraits(final CdmAttributeContext subAttCtx, final HashSet<String> inheritedTraitNames,
+                                    final Map<CdmAttributeContext, HashSet<String>> ctx2traitNames) {
     final LinkedHashSet<String> traitNamesHere = new LinkedHashSet<>(inheritedTraitNames);
 
     final CdmTraitCollection traitsHere = subAttCtx.getExhibitsTraits();
@@ -710,31 +799,13 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   }
 
   private void addAttributes(final ResolvedAttributeSet rasSub, final Object container, final String path,
-                             final Set<CdmAttributeContext> allAttCtx,
-                             final Map<CdmAttributeContext, LinkedHashSet<String>> ctx2traitNames, final ResolveOptions resOptCopy,
+                             final CdmDocumentDefinition docRes,
+                             final Map<CdmAttributeContext, HashSet<String>> ctx2traitNames, final ResolveOptions resOptCopy,
                              final Map<ResolvedAttribute, String> resAtt2RefPath) {
     rasSub.getSet().forEach(ra -> {
       final String attPath = path + ra.getResolvedName();
       // use the path of the context associated with this attribute to find the new context that matches on path
-      final Set<CdmAttributeContext> raCtxSet = rasSub.getRa2attCtxSet().get(ra);
-      CdmAttributeContext raCtx = null;
-      // find the correct attCtx for this copy
-      // (iterate over the shortest list)
-      if (allAttCtx.size() < raCtxSet.size()) {
-        for (final CdmAttributeContext currAttCtx : allAttCtx) {
-          if (raCtxSet.contains(currAttCtx)) {
-            raCtx = currAttCtx;
-            break;
-          }
-        }
-      } else {
-        for (final CdmAttributeContext currAttCtx : raCtxSet) {
-          if (allAttCtx.contains(currAttCtx)) {
-            raCtx = currAttCtx;
-            break;
-          }
-        }
-      }
+      final CdmAttributeContext raCtx = ra.getAttCtx();
 
       final Object target = ra.getTarget();
       if (target instanceof ResolvedAttributeSet) {
@@ -744,18 +815,24 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
                   .makeObject(CdmObjectType.AttributeGroupDef, ra.getResolvedName(), false);
           attGrp.setAttributeContext(this.getCtx().getCorpus()
                   .makeObject(CdmObjectType.AttributeContextRef, raCtx.getAtCorpusPath(), true));
+
+          // debugLineage - from C#
+          //attGrp.AttributeContext.NamedReference = $"{ raCtx.AtCoprusPath}({raCtx.Id})";
+
           // take any traits from the set and make them look like traits exhibited by the group
-          final LinkedHashSet<String> avoidSet = ctx2traitNames.get(raCtx);
-          final ResolvedTraitSet rtsAtt = ra.fetchResolvedTraits();
-          rtsAtt.getSet().forEach(rt -> {
-            if (rt.getTrait().getUgly() == null || (rt.getTrait().getUgly() != null && !rt.getTrait().getUgly())) {
-              if (avoidSet == null || !avoidSet.contains(rt.getTraitName())) {
-                // avoid the ones from the context
-                final CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
-                attGrp.getExhibitsTraits().add(traitRef);
+          final HashSet<String> avoidSet = ctx2traitNames.get(raCtx);
+          // traits with the same name can show up on entities and attributes AND have different meanings.
+          avoidSet.clear();
+          final ResolvedTraitSet rtsAtt = ra.getResolvedTraits();
+            rtsAtt.getSet().forEach(rt -> {
+              if (rt.getTrait().getUgly() == null || (rt.getTrait().getUgly() != null && !rt.getTrait().getUgly())) {
+                if (avoidSet == null || !avoidSet.contains(rt.getTraitName())) {
+                  // avoid the ones from the context
+                  final CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
+                  attGrp.getExhibitsTraits().add(traitRef);
+                }
               }
-            }
-          });
+            });
 
           // wrap it in a reference and then recurse with this as the new container
           final CdmAttributeGroupReference attGrpRef = this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeGroupRef, null, false);
@@ -766,13 +843,22 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
             ((CdmAttributeGroupDefinition) container).addAttributeDef(attGrpRef);
           }
           // isn't this where ...
-          addAttributes(((ResolvedAttributeSet) ra.getTarget()), attGrp, attPath + "/members/", allAttCtx, ctx2traitNames, resOptCopy, resAtt2RefPath);
+          addAttributes(((ResolvedAttributeSet) ra.getTarget()), attGrp, attPath + "/members/", docRes, ctx2traitNames, resOptCopy, resAtt2RefPath);
       } else {
         final CdmTypeAttributeDefinition att = this.getCtx().getCorpus().makeObject(CdmObjectType.TypeAttributeDef, ra.getResolvedName(), false);
-        att.setAttributeContext(this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeContextRef, raCtx != null ? raCtx.getAtCorpusPath() : null, true));
+        att.setAttributeContext(this.getCtx().getCorpus().makeObject(CdmObjectType.AttributeContextRef, raCtx.getAtCorpusPath(), true));
+        // debugLineage
+        //att.AttributeContext.NamedReference = $"{ raCtx.AtCoprusPath}({raCtx.Id})";
 
-        final LinkedHashSet<String> avoidSet = ctx2traitNames.get(raCtx);
-        final ResolvedTraitSet rtsAtt = ra.fetchResolvedTraits();
+        final HashSet<String> avoidSet = ctx2traitNames.get(raCtx);
+        // i don't know why i thought this was the right thing to do,
+        // traits with the same name can show up on entities and attributes AND have different meanings.
+        avoidSet.clear();
+        // i really need to figure out the effects of this before making this change
+        // without it, some traits don't make it to the resolved entity
+        // with it, too many traits might make it there
+
+        final ResolvedTraitSet rtsAtt = ra.getResolvedTraits();
         rtsAtt.getSet().forEach(rt -> {
           if (rt.getTrait().getUgly() == null || !rt.getTrait().getUgly()) {
             // don't mention your ugly traits
@@ -780,10 +866,35 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
               // avoid the ones from the context
               final CdmTraitReference traitRef = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
               att.getAppliedTraits().add(traitRef);
+
+              // the trait that points at other entities for foreign keys, that is trouble
+              // the string value in the table needs to be a relative path from the document of this entity
+              // to the document of the related entity. but, right now it is a relative path to the source entity
+              // so find those traits, and adjust the paths in the tables they hold
+              if (rt.getTraitName().equals("is.linkedEntity.identifier")) {
+                // grab the content of the table from the new ref (should be a copy of orig)
+                List<List<String>> linkTable = null;
+                if (traitRef.getArguments() != null && traitRef.getArguments().size() > 0) {
+                  final CdmArgumentCollection args = traitRef.getArguments();
+                  final CdmEntityReference entRef = args != null ? (CdmEntityReference)args.get(0).getValue() : null;
+                  final CdmConstantEntityDefinition constantEntDef = entRef != null ? (CdmConstantEntityDefinition)entRef.getExplicitReference() : null;
+                  linkTable = constantEntDef != null ? constantEntDef.getConstantValues() : null;
+                }
+                if (linkTable != null && linkTable.size() > 0) {
+                  for (final List<String> row : linkTable) {
+                    if (row.size() == 2 || row.size() == 3) { // either the old table or the new one with relationship name can be there
+                      // entity path an attribute name
+                      String fixedPath = row.get(0);
+                      fixedPath = this.getCtx().getCorpus().getStorage().createAbsoluteCorpusPath(fixedPath, this.getInDocument()); // absolute from relative to this
+                      fixedPath = this.getCtx().getCorpus().getStorage().createRelativeCorpusPath(fixedPath, docRes); // realtive to new entity
+                      row.set(0, fixedPath);
+                    }
+                  }
+                }
+              }
             }
           }
         });
-
 
         // none of the dataformat traits have the bit set that will make them turn into a property
         // this is intentional so that the format traits make it into the resolved object
@@ -815,7 +926,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           if (((CdmObject) v).getObjectType() == CdmObjectType.AttributeRef) {
             // only try this if the reference has no path to it (only happens with intra-entity att refs)
             final CdmAttributeReference attRef = ((CdmAttributeReference) v);
-            if (!Strings.isNullOrEmpty(attRef.getNamedReference()) && attRef.getNamedReference().indexOf('/') == -1) {
+            if (!StringUtils.isNullOrEmpty(attRef.getNamedReference()) && attRef.getNamedReference().indexOf('/') == -1) {
               if (arg.getUnResolvedValue() == null) {
                 arg.setUnResolvedValue(arg.getValue());
               }
@@ -905,7 +1016,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         && this.getCtx().getCorpus() != null
         && !this.getCtx().getCorpus().blockDeclaredPathChanges) {
       path = this.getDeclaredPath();
-      if (Strings.isNullOrEmpty(path)) {
+      if (StringUtils.isNullOrEmpty(path)) {
         path = pathFrom + this.getEntityName();
         this.setDeclaredPath(path);
       }
@@ -914,16 +1025,29 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
     }
-    if (this.getExtendsEntity() != null && this.getExtendsEntity()
-            .visit(path + "/extendsEntity/", preChildren, postChildren)) {
-      return true;
+    if (this.getExtendsEntity() != null) {
+      this.getExtendsEntity().setOwner(this);
+      if (this.getExtendsEntity().visit(path + "/extendsEntity/", preChildren, postChildren)) {
+        return true;
+      }
     }
+
+    if (this.getExtendsEntityResolutionGuidance() != null)  {
+      this.getExtendsEntityResolutionGuidance().setOwner(this);
+      if (this.getExtendsEntityResolutionGuidance().visit(pathFrom + "/extendsEntityResolutionGuidance/", preChildren, postChildren)) {
+        return true;
+      }
+    }
+
     if (this.visitDef(path, preChildren, postChildren)) {
       return true;
     }
-    if (this.getAttributeContext() != null && this.getAttributeContext()
-            .visit(path + "/attributeContext/", preChildren, postChildren)) {
-      return true;
+    if (this.getAttributeContext() != null) {
+      this.getAttributeContext().setOwner(this);
+      if (this.getAttributeContext()
+              .visit(path + "/attributeContext/", preChildren, postChildren)) {
+        return true;
+      }
     }
     if (this.getAttributes() != null && this.attributes.visitList(path + "/hasAttributes/", preChildren, postChildren)) {
       return true;
@@ -991,6 +1115,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
 
     // this whole resolved entity ref goo will go away when resolved documents are done.
     // for now, it breaks if structured att sets get made.
+    resOpt = resOpt.copy();
     final Set<String> LinkedHashSet = new LinkedHashSet<>();
     LinkedHashSet.add("normalized");
     LinkedHashSet.add("referenceOnly");
@@ -1048,5 +1173,39 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   CdmAttributeItem addAttributeDef(CdmAttributeItem attributeDef) {
       this.getAttributes().add(attributeDef);
       return attributeDef;
+  }
+
+  /**
+   * Creates or sets the has.entitySchemaAbstractionLevel trait to logical, composition, resolved or unknown
+   * todo: consider making this public API
+   * @deprecated CopyData is deprecated. Please use the Persistence Layer instead. This function is
+   * extremely likely to be removed in the public interface, and not meant to be called externally
+   * at all. Please refrain from using it.
+   */
+  @Deprecated
+  public void indicateAbstractionLevel(final String level, final ResolveOptions resOpt)
+  {
+    // see if entitySchemaAbstractionLevel is a known trait to this entity
+    if (resOpt!= null &&
+            this.getCtx().getCorpus().resolveSymbolReference(resOpt, this.getInDocument(), "has.entitySchemaAbstractionLevel", CdmObjectType.TraitDef, false) == null) {
+      return;
+    }
+
+    // get or add the trait
+    CdmTraitReference traitRef = this.getExhibitsTraits().item("has.entitySchemaAbstractionLevel");
+    if (traitRef == null) {
+      traitRef = new CdmTraitReference(this.getCtx(), "has.entitySchemaAbstractionLevel", false, true);
+      this.getExhibitsTraits().add(traitRef);
+    }
+    // get or add the one argument
+    CdmArgumentDefinition argDef;
+    if (traitRef.getArguments() != null && traitRef.getArguments().size() == 1) {
+      argDef = traitRef.getArguments().get(0);
+    } else {
+      argDef = new CdmArgumentDefinition(this.getCtx(), "level");
+      traitRef.getArguments().add(argDef);
+    }
+    // set it
+    argDef.setValue(level);
   }
 }

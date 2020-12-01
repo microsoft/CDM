@@ -163,10 +163,11 @@ public abstract class NetworkAdapter extends StorageAdapterBase {
     }
   }
 
-  /// <summary>
-  /// Constructs the network configs.
-  /// </summary>
-  /// <returns>A Map of String and JsonNode containing the network specific properties.</returns>
+  /**
+   * Constructs the network configs.
+   *
+   * @return A Map of String and JsonNode containing the network specific properties.
+   */
   protected Map<String, JsonNode> fetchNetworkConfig() {
       final Map<String, JsonNode> config = new LinkedHashMap<>();
       config.put("timeout", JsonNodeFactory.instance.numberNode(this.timeout.toMillis()));

@@ -201,7 +201,7 @@ public class PerformanceTest {
           constEnt.getConstantValues().forEach(val ->
               refs.add(
                   cdmCorpus.<CdmEntityDefinition>fetchObjectAsync(
-                      cdmCorpus.getStorage().createAbsoluteCorpusPath(val.get(0))
+                      cdmCorpus.getStorage().createAbsoluteCorpusPath(val.get(0), resolvedEntity)
                   ).join()));
           references.addAll(refs);
         }

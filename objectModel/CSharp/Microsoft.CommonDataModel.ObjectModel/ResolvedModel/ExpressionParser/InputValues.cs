@@ -19,5 +19,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         public bool referenceOnly { get; set; }
         public bool normalized { get; set; }
         public bool structured { get; set; }
+        public bool isVirtual { get; set; }
     }
 }

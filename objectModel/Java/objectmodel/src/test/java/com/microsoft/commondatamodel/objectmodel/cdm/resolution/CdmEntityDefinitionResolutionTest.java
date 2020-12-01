@@ -5,19 +5,7 @@ package com.microsoft.commondatamodel.objectmodel.cdm.resolution;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeItem;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntity;
@@ -80,7 +68,9 @@ public class CdmEntityDefinitionResolutionTest {
       final AttributeResolutionDirectiveSet directives, final CdmManifestDefinition manifest,
       final StringSpewCatcher spew) {
     return CompletableFuture.supplyAsync(() -> {
-      seekEntities(cdmCorpus, directives, manifest, spew).join();
+      // make sure the corpus has a set of default artifact attributes
+      cdmCorpus.prepareArtifactAttributesAsync().join();
+      seekEntities(manifest, cdmCorpus, directives, spew).join();
 
       if (spew != null) {
         return spew.getContent();
@@ -89,8 +79,8 @@ public class CdmEntityDefinitionResolutionTest {
     });
   }
 
-  private static CompletableFuture<Void> seekEntities(final CdmCorpusDefinition cdmCorpus,
-      final AttributeResolutionDirectiveSet directives, final CdmManifestDefinition manifest,
+  private static CompletableFuture<Void> seekEntities(final CdmManifestDefinition manifest, final CdmCorpusDefinition cdmCorpus,
+      final AttributeResolutionDirectiveSet directives,
       final StringSpewCatcher spew) {
     return CompletableFuture.runAsync(() -> {
       if (manifest.getEntities() != null) {
@@ -98,16 +88,20 @@ public class CdmEntityDefinitionResolutionTest {
           spew.spewLine(manifest.getFolderPath());
         }
         for (final CdmEntityDeclarationDefinition entity : manifest.getEntities()) {
+          String corpusPath;
           CdmEntityDeclarationDefinition ent = entity;
           CdmObject currentFile = manifest;
           while (ent instanceof CdmReferencedEntityDeclarationDefinition) {
-            ent = cdmCorpus.<CdmEntityDeclarationDefinition>fetchObjectAsync(ent.getEntityPath(), currentFile).join();
+            corpusPath = cdmCorpus.getStorage().createAbsoluteCorpusPath(ent.getEntityPath(), currentFile);
+            ent = cdmCorpus.<CdmReferencedEntityDeclarationDefinition>fetchObjectAsync(corpusPath).join();
             currentFile = ent;
           }
+          corpusPath = cdmCorpus.getStorage().createAbsoluteCorpusPath(((CdmLocalEntityDeclarationDefinition)ent).getEntityPath(), currentFile);
+
           final ResolveOptions resOpt = new ResolveOptions();
           resOpt.setImportsLoadStrategy(ImportsLoadStrategy.Load);
           final CdmEntityDefinition newEnt = cdmCorpus
-              .<CdmEntityDefinition>fetchObjectAsync(ent.getEntityPath(), currentFile, resOpt).join();
+              .<CdmEntityDefinition>fetchObjectAsync(corpusPath, null, resOpt).join();
           resOpt.setWrtDoc(newEnt.getInDocument());
           resOpt.setDirectives(directives);
 
@@ -125,9 +119,8 @@ public class CdmEntityDefinitionResolutionTest {
 
       if (manifest.getSubManifests() != null) {
         for (final CdmManifestDeclarationDefinition subManifest : manifest.getSubManifests()) {
-          seekEntities(cdmCorpus, directives,
-              cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(subManifest.getDefinition(), manifest).join(), spew)
-                  .join();
+          String corpusPath = cdmCorpus.getStorage().createAbsoluteCorpusPath(subManifest.getDefinition(), manifest);
+          seekEntities(cdmCorpus.<CdmManifestDefinition>fetchObjectAsync(corpusPath).join(), cdmCorpus, directives, spew).join();
         }
       }
     });
@@ -349,6 +342,7 @@ public class CdmEntityDefinitionResolutionTest {
    * change often.
    */
   @Test
+  @Ignore
   public void testResolveTestCorpus() throws Exception {
     Assert.assertTrue((Files.isDirectory(Paths.get(TestHelper.SCHEMA_DOCS_ROOT))), "SchemaDocsRoot not found!!!");
 

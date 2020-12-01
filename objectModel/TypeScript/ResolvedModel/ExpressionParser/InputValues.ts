@@ -17,4 +17,5 @@ export class InputValues {
     public referenceOnly: boolean;
     public normalized: boolean;
     public structured: boolean;
+    public isVirtual: boolean;
 }

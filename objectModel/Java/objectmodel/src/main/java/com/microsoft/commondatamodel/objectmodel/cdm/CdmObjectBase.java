@@ -18,6 +18,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.SymbolSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.VisitCallback;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -102,7 +103,7 @@ public abstract class CdmObjectBase implements CdmObject {
 
       if (l == 1) {
         // just one argument, use the shortcut syntax
-        final Object val = rt.getParameterValues().fetchValue(0);
+        final Object val = ProtectParameterValues(resOpt, rt.getParameterValues().getValues().get(0));
 
         if (val != null) {
           traitRef.getArguments().add(null, val);
@@ -110,7 +111,7 @@ public abstract class CdmObjectBase implements CdmObject {
       } else {
         for (int i = 0; i < l; i++) {
           final CdmParameterDefinition param = rt.getParameterValues().fetchParameter(i);
-          final Object val = rt.getParameterValues().getValues().get(i);
+          final Object val = ProtectParameterValues(resOpt, rt.getParameterValues().getValues().get(i));
 
           if (val != null) {
             traitRef.getArguments().add(param.getName(), val);
@@ -129,8 +130,9 @@ public abstract class CdmObjectBase implements CdmObject {
     }
 
     // always make it a property when you can, however the dataFormat traits should be left alone
-    if (rt.getTrait().getAssociatedProperties() != null
-        && !rt.getTrait().isDerivedFrom("is.dataFormat", resOpt)) {
+    // also the wellKnown is the first constrained list that uses the datatype to hold the table instead of the default value property.
+    // so until we figure out how to move the enums away from default value, show that trait too
+    if (rt.getTrait().getAssociatedProperties() != null && !rt.getTrait().isDerivedFrom("is.dataFormat", resOpt) && !(rt.getTrait().getTraitName().equals("is.constrainedList.wellKnown"))) {
       traitRef.setFromProperty(true);
     }
     return traitRef;
@@ -411,8 +413,15 @@ public abstract class CdmObjectBase implements CdmObject {
 
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
+    ResolvedAttributeSetBuilder rasbResult = null;
+    // keep track of the context node that the results of this call would like to use as the parent
+    CdmAttributeContext parentCtxForResult = null;
     ResolvedAttributeSetBuilder rasbCache = this.fetchObjectFromCache(resOpt, acpInContext);
     CdmAttributeContext underCtx = null;
+    if (acpInContext != null)
+    {
+      parentCtxForResult = acpInContext.getUnder();
+    }
 
     // store the previous document set, we will need to add it with
     // children found from the constructResolvedTraits call
@@ -421,11 +430,6 @@ public abstract class CdmObjectBase implements CdmObject {
       currDocRefSet = new SymbolSet();
     }
     resOpt.setSymbolRefSet(new SymbolSet());
-
-    // get the moniker that was found and needs to be appended to all
-    // refs in the children attribute context nodes
-    final String fromMoniker = resOpt.getFromMoniker();
-    resOpt.setFromMoniker(null);
 
     // if using the cache passes the maxDepth, we cannot use it
     if (rasbCache != null && resOpt.depthInfo != null && resOpt.depthInfo.getMaxDepth() != null
@@ -437,21 +441,23 @@ public abstract class CdmObjectBase implements CdmObject {
       if (this.resolvingAttributes) {
         // re-entered this attribute through some kind of self or looping reference.
         this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
+        //return new ResolvedAttributeSet();  // uncomment this line as a test to turn off allowing cycles
         resOpt.inCircularReference = true;
         this.circularReference = true;
       }
       this.resolvingAttributes = true;
 
-      // if a new context node is needed for these attributes, make it now
-      if (acpInContext != null) {
-        underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
-      }
+      // a new context node is needed for these attributes,
+      // this tree will go into the cache, so we hang it off a placeholder parent
+      // when it is used from the cache (or now), then this placeholder parent is ignored and the things under it are
+      // put into the 'receiving' tree
+      underCtx = CdmAttributeContext.getUnderContextForCacheContext(resOpt, this.getCtx(), acpInContext);
 
       rasbCache = this.constructResolvedAttributes(resOpt, underCtx);
 
-      if (rasbCache != null) {
-        this.resolvingAttributes = false;
+      this.resolvingAttributes = false;
 
+      if (rasbCache != null) {
         // register set of possible docs
         final CdmObjectDefinition oDef = this.fetchObjectDefinition(resOpt);
         if (oDef != null) {
@@ -466,67 +472,42 @@ public abstract class CdmObjectBase implements CdmObject {
           if (!StringUtils.isNullOrTrimEmpty(cacheTag) && rasbCache != null) {
             ctx.getCache().put(cacheTag, rasbCache);
           }
-
-          if (!StringUtils.isNullOrTrimEmpty(fromMoniker)
-                  && acpInContext != null
-                  && this instanceof CdmObjectReference
-                  && ((CdmObjectReference) this).getNamedReference() != null) {
-            // create a fresh context
-            final CdmAttributeContext oldContext = (CdmAttributeContext) acpInContext.getUnder()
-                    .getContents()
-                    .get(acpInContext.getUnder().getContents().size() - 1);
-            acpInContext.getUnder()
-                    .getContents()
-                    .removeAt(acpInContext.getUnder().getContents().size() - 1);
-            underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
-
-            CdmAttributeContext newContext =
-                    oldContext.copyAttributeContextTree(
-                            resOpt,
-                            underCtx,
-                            ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet(),
-                            null,
-                            fromMoniker);
-
-            // Since THIS should be a reference to a thing found in a moniker document,
-            // it already has a moniker in the reference.
-            // This function just added that same moniker to everything in the sub-tree
-            // but now this one symbol has too many.
-            // Remove one.
-            String monikerPathAdded = fromMoniker + "/";
-            if (newContext.getDefinition() != null
-                    && newContext.getDefinition().getNamedReference() != null
-                    && newContext.getDefinition().getNamedReference().startsWith(monikerPathAdded)) {
-              // Slice it off the front.
-              newContext
-                      .getDefinition()
-                      .setNamedReference(
-                              newContext
-                                      .getDefinition()
-                                      .getNamedReference()
-                                      .substring(monikerPathAdded.length()));
-            }
-          }
+          // get the 'underCtx' of the attribute set from the acp that is wired into
+          // the target tree
+          underCtx = rasbCache.getResolvedAttributeSet().getAttributeContext() != null
+                  ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
+                  : null;
         }
       }
       if (this.circularReference) {
         resOpt.inCircularReference = false;
       }
-    } else {
-      // cache found. if we are building a context, then fix what we got instead of making a new one
-      if (acpInContext != null) {
-        // make the new context
-        underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
+    }
+    else {
+      // get the 'underCtx' of the attribute set from the cache. The one stored there was build with a different
+      // acp and is wired into the fake placeholder. so now build a new underCtx wired into the output tree but with
+      // copies of all cached children
+      underCtx = rasbCache.getResolvedAttributeSet().getAttributeContext() != null
+              ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
+              : null;
+      //underCtx.validateLineage(resOpt); // debugging
+    }
 
-        //    TODO-BQ: 2019-08-16 Refactor.
-        ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet()
-                .getAttributeContext()
-            .copyAttributeContextTree(
-                resOpt,
-                underCtx,
-                ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet(),
-                null,
-                fromMoniker);
+    if (rasbCache != null) {
+      // either just built something or got from cache
+      // either way, same deal: copy resolved attributes and copy the context tree associated with it
+      // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
+      // 2. deep copy the tree.
+
+      // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
+      rasbResult = new ResolvedAttributeSetBuilder();
+      rasbResult.setResolvedAttributeSet(((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet().copy());
+
+      // 2. deep copy the tree and map the context references.
+      if (underCtx != null) { // null context? means there is no tree, probably 0 attributes came out
+        if (underCtx.associateTreeCopyWithAttributes(resOpt, rasbResult.getResolvedAttributeSet()) == false) {
+          return null;
+        }
       }
     }
 
@@ -543,13 +524,26 @@ public abstract class CdmObjectBase implements CdmObject {
     // merge child document set with current
     currDocRefSet.merge(resOpt.getSymbolRefSet());
     resOpt.setSymbolRefSet(currDocRefSet);
-    if (rasbCache instanceof ResolvedAttributeSetBuilder) {
-      this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-      return ((ResolvedAttributeSetBuilder) rasbCache).getResolvedAttributeSet();
-    }
 
     this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-    return null;
+    return rasbResult != null ? rasbResult.getResolvedAttributeSet() : null;
+  }
+
+  private static Object ProtectParameterValues(ResolveOptions resOpt, Object val) {
+    if (val != null) {
+      // the value might be a contant entity object, need to protect the original
+      CdmConstantEntityDefinition cEnt = null;
+      if (val instanceof CdmEntityReference) {
+        cEnt = (CdmConstantEntityDefinition) ((CdmEntityReference) val).getExplicitReference();
+      }
+      if (cEnt != null) {
+        // copy the constant entity AND the reference that holds it
+        cEnt = (CdmConstantEntityDefinition) cEnt.copy(resOpt);
+        val = ((CdmEntityReference)val).copy(resOpt);
+        ((CdmEntityReference)val).setExplicitReference(cEnt);
+      }
+    }
+    return val;
   }
 
   /**

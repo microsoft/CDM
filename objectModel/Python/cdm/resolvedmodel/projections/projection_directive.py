@@ -59,6 +59,9 @@ class ProjectionDirective:
         #  Is structured
         self._is_structured = res_opt.directives.has('structured') == True if res_opt.directives else False  # type: bool
 
+        #  Is virtual
+        self._is_virtual = res_opt.directives.has('virtual') == True if res_opt.directives else False  # type: bool
+
         # Has maximum depth override flag
         self._has_no_maximum_depth = res_opt.directives.has('noMaxDepth') == True if res_opt.directives else False  # type: bool
 

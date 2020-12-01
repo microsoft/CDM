@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmConstantEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmParameterDefinition;
@@ -22,7 +23,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
 import org.apache.commons.lang3.ObjectUtils;
+import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 /**
  * @deprecated This class is extremely likely to be removed in the public interface, and not meant
@@ -77,8 +80,8 @@ public class ParameterValue {
       }
 
       // BUG
-      if (oldEnt == null || (oldEnt.getEntityShape().fetchObjectDefinition(resOpt) != newEnt.getEntityShape()
-              .fetchObjectDefinition(resOpt))) {
+      CdmEntityDefinition entDefShape = null;
+      if (oldEnt == null || ((entDefShape = oldEnt.getEntityShape().fetchObjectDefinition(resOpt)) != newEnt.getEntityShape().fetchObjectDefinition(resOpt))) {
         return nv;
       }
 
@@ -99,28 +102,40 @@ public class ParameterValue {
       // find rows in the new one that are not in the old one. slow, but these are small usually
       final Map<String, List<String>> unionedRows = new LinkedHashMap<>();
 
+      // see if any of the entity atts are the primary key, meaning, the only thing that causes us to merge dups unique.
+      // i know this makes you think about a snake eating its own tail, but fetch the resolved attributes of the constant shape
+      int pkAtt = -1;
+      if (entDefShape != null)
+      {
+        final ResolveOptions resOptShape = new ResolveOptions(entDefShape.getInDocument());
+        final ResolvedAttributeSet resAttsShape = entDefShape.fetchResolvedAttributes(resOptShape);
+        if (resAttsShape != null) {
+          pkAtt = resAttsShape.getSet().indexOf(resAttsShape.getSet().stream().filter(ra -> ra.getResolvedTraits().find(resOptShape, "is.identifiedBy") != null).findFirst());
+        }
+      }
+
       for (int i = 0; i < oldCv.size(); i++) {
         final List<String> row = oldCv.get(i);
-
         final StringBuilder key = new StringBuilder();
-
-        for (final String curr : row) {
-          key.append("::").append(curr);
+        // the entity might have a PK, if so, only look at that values as the key
+        if (pkAtt != -1) {
+          key.append(row.get(pkAtt));
+        } else {
+          row.forEach(s -> key.append(key.length() == 0 ? s : "::" + s));
         }
-
-        unionedRows.put(key.toString().substring(2), row);
+        unionedRows.put(key.toString(), row);
       }
 
       for (int i = 0; i < newCv.size(); i++) {
         final List<String> row = newCv.get(i);
-
         final StringBuilder key = new StringBuilder();
-
-        for (final String curr : row) {
-          key.append("::").append(curr);
+        // the entity might have a PK, if so, only look at that values as the key
+        if (pkAtt != -1) {
+          key.append(row.get(pkAtt));
+        } else {
+          row.forEach(s -> key.append(key.length() == 0 ? s : "::" + s));
         }
-
-        unionedRows.put(key.toString().substring(2), row);
+        unionedRows.put(key.toString(), row);
       }
 
       if (unionedRows.size() == oldCv.size()) {
@@ -136,7 +151,6 @@ public class ParameterValue {
     }
 
     return newValue;
-
   }
 
   private static void sortRows(final List<Map<String, String>> rows) {
@@ -187,7 +201,7 @@ public class ParameterValue {
         final List<Map<String, String>> rows = new ArrayList<>();
         final ResolvedAttributeSet shapeAtts = entShape.fetchResolvedAttributes(resOpt);
 
-        if (shapeAtts != null) {
+        if (shapeAtts != null && shapeAtts.getSet() != null && shapeAtts.getSet().size() > 0) {
           for (final List<String> rowData : entValues) {
             final Map<String, String> row = new TreeMap<>();
 

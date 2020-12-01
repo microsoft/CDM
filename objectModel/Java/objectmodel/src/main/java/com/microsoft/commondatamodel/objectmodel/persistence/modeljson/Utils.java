@@ -14,6 +14,7 @@ import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
+import com.microsoft.commondatamodel.objectmodel.utilities.NameValuePair;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -67,13 +68,16 @@ public class Utils {
       final MetadataObject obj,
       final CdmTraitCollection traits) {
     return CompletableFuture.runAsync(() -> {
-      final List<Annotation> multiTraitAnnotations = new ArrayList<>();
+      final List<NameValuePair> multiTraitAnnotations = new ArrayList<>();
 
       if (obj.getAnnotations() != null) {
 
         for (final Annotation element : obj.getAnnotations()) {
           if (!shouldAnnotationGoIntoASingleTrait(element.getName())) {
-            multiTraitAnnotations.add(element);
+            NameValuePair cdmElement = new NameValuePair();
+            cdmElement.setName(element.getName());
+            cdmElement.setValue(element.getValue());
+            multiTraitAnnotations.add(cdmElement);
           } else {
             final CdmTraitReference innerTrait = ctx.getCorpus()
                     .makeObject(CdmObjectType.TraitRef, convertAnnotationToTrait(element.getName()),
@@ -137,8 +141,11 @@ public class Utils {
               if (annotation instanceof JsonNode) {
                 final JsonNode jAnnotation = (JsonNode) annotation;
                 annotations.add(JMapper.MAP.convertValue(jAnnotation, Annotation.class));
-              } else if (annotation instanceof Annotation) {
-                annotations.add((Annotation) annotation);
+              } else if (annotation instanceof NameValuePair) {
+                Annotation element = new Annotation();
+                element.setName(((NameValuePair)annotation).getName());
+                element.setValue(((NameValuePair)annotation).getValue());
+                annotations.add(element);
               } else {
                 Logger.warning(Utils.class.getSimpleName(), ctx, "Unsupported annotation type.");
               }

@@ -77,6 +77,7 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
       return false;
     }
     if (this.getEntityShape() != null) {
+      this.getEntityShape().setOwner(this);
       if (this.getEntityShape().visit(path + "/entityShape/", preChildren, postChildren)) {
         return true;
       }
@@ -197,7 +198,13 @@ public class CdmConstantEntityDefinition extends CdmObjectDefinitionBase {
 
     copy.setConstantEntityName(this.getConstantEntityName());
     copy.setEntityShape((CdmEntityReference) this.getEntityShape().copy(resOpt));
-    copy.setConstantValues(this.getConstantValues()); // is a deep copy needed?
+    if (this.getConstantValues() != null) {
+      // deep copy the content
+      copy.setConstantValues(new ArrayList<>());
+      for (final List<String> row : this.getConstantValues()) {
+        copy.getConstantValues().add(new ArrayList<>(row));
+      }
+    }
     this.copyDef(resOpt, copy);
     return copy;
   }

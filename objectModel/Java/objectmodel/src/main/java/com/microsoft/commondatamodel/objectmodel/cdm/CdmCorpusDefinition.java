@@ -54,8 +54,9 @@ public class CdmCorpusDefinition {
   private Map<String, List<CdmDocumentDefinition>> symbolDefinitions;
   private Map<String, SymbolSet> definitionReferenceSymbols;
   private Map<String, ResolvedTraitSet> emptyRts;
-
+  private Map<String, CdmTypeAttributeDefinition> knownArtifactAttributes;
   private DocumentLibrary documentLibrary;
+
 
   /**
    * Whether we are currently performing a resolution or not.
@@ -160,7 +161,7 @@ public class CdmCorpusDefinition {
     // Can't get there directly, check the monikers.
     if (null != docFrom.getImportPriorities().getMonikerPriorityMap()) {
       for (final Map.Entry<String, CdmDocumentDefinition> kv : docFrom.getImportPriorities()
-          .getMonikerPriorityMap().entrySet()) {
+              .getMonikerPriorityMap().entrySet()) {
         final String tryMoniker = pathToSymbol(symbol, kv.getValue(), docResultTo);
         if (tryMoniker != null) {
           return String.format("%s/%s", kv.getKey(), tryMoniker);
@@ -722,7 +723,6 @@ public class CdmCorpusDefinition {
               return currDocsResult;
             }
           }
-          resOpt.setFromMoniker(prefix);
           result.setDocBest(tempMoniker);
         } else {
           // moniker not recognized in either doc, fail with grace
@@ -798,8 +798,7 @@ public class CdmCorpusDefinition {
         return null;
       }
 
-      final Map<CdmDocumentDefinition, ImportInfo> importPriority =
-          wrtDoc.getImportPriorities().getImportPriority();
+      final Map<CdmDocumentDefinition, ImportInfo> importPriority = wrtDoc.getImportPriorities().getImportPriority();
 
       if (importPriority.size() == 0) {
         return null;
@@ -1849,6 +1848,11 @@ public class CdmCorpusDefinition {
       final ResolveOptions finalResolveOptions = new ResolveOptions();
       finalResolveOptions.setWrtDoc(null);
       finalResolveOptions.setDirectives(directives);
+      final DepthInfo depthInfo = new DepthInfo();
+      depthInfo.setMaxDepth(null);
+      depthInfo.setCurrentDepth(0);
+      depthInfo.setMaxDepthExceeded(false);
+      finalResolveOptions.depthInfo = depthInfo;
 
       for (final CdmDocumentDefinition doc : this.documentLibrary.listAllDocuments()) {
         doc.indexIfNeededAsync(resOpt, false).join();
@@ -2115,6 +2119,9 @@ public class CdmCorpusDefinition {
     final ResolveContext ctx = (ResolveContext) this.ctx;
     final String corpusPathRoot = currentDoc.getFolderPath() + currentDoc.getName();
     currentDoc.visit(relativePath, (iObject, path) -> {
+      // I can't think of a better time than now to make sure any recently changed or added things have an in doc
+      iObject.setInDocument(currentDoc);
+
       if (path.indexOf("(unspecified)") > 0) {
         return true;
       }
@@ -2825,5 +2832,60 @@ public class CdmCorpusDefinition {
       return tupleList;
     }
     return null;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public CompletableFuture<Boolean> prepareArtifactAttributesAsync()
+  {
+    return CompletableFuture.supplyAsync(() -> {
+      if (this.knownArtifactAttributes == null) {
+        this.knownArtifactAttributes = new LinkedHashMap<>();
+        // see if we can get the value from primitives doc
+        // this might fail, and we do not want the user to know about it.
+        EventCallback oldStatus = this.getCtx().getStatusEvent(); // todo, we should make an easy way for our code to do this and set it back
+        CdmStatusLevel oldLevel = this.getCtx().getReportAtLevel();
+        this.setEventCallback((CdmStatusLevel level, String message) -> { }, CdmStatusLevel.Error);
+
+        CdmEntityDefinition entArt = null;
+        try {
+          entArt = (CdmEntityDefinition)this.fetchObjectAsync("cdm:/primitives.cdm.json/defaultArtifacts").join();
+        } finally {
+          this.setEventCallback(oldStatus, oldLevel);
+        }
+        if (entArt == null) {
+          // fallback to the old ways, just make some
+          CdmTypeAttributeDefinition artAtt = this.makeObject(CdmObjectType.TypeAttributeDef, "count");
+          artAtt.setDataType(this.makeObject(CdmObjectType.DataTypeRef, "integer", true));
+          this.knownArtifactAttributes.put("count", artAtt);
+          artAtt = this.makeObject(CdmObjectType.TypeAttributeDef, "id");
+          artAtt.setDataType(this.makeObject(CdmObjectType.DataTypeRef, "entityId", true));
+          this.knownArtifactAttributes.put("id", artAtt);
+          artAtt = this.makeObject(CdmObjectType.TypeAttributeDef, "type");
+          artAtt.setDataType(this.makeObject(CdmObjectType.DataTypeRef, "entityName", true));
+          this.knownArtifactAttributes.put("type", artAtt);
+        } else {
+          // point to the ones from the file
+          entArt.getAttributes().forEach((att) -> this.knownArtifactAttributes.put(((CdmAttribute) att).getName(), (CdmTypeAttributeDefinition) att));
+        }
+      }
+      return true;
+    });
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   */
+  @Deprecated
+  public CdmTypeAttributeDefinition fetchArtifactAttribute(String name)
+  {
+    if (this.knownArtifactAttributes == null)
+      return null; // this is a usage mistake. never call this before success from the PrepareArtifactAttributesAsync
+
+    return  (CdmTypeAttributeDefinition)this.knownArtifactAttributes.get(name).copy();
   }
 }

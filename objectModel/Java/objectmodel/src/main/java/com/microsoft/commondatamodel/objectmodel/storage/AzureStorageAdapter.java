@@ -150,13 +150,13 @@ public class AzureStorageAdapter extends StorageAdapterBase {
         return context.acquireToken(resource, clientCredentials, null);
     }
 
-    /// <summary>
-    /// Generates a HTTP request message with required headers to work with Azure
-    /// Storage API.
-    /// </summary>
-    /// <param name="httpMethod">Type of HTTP request</param>
-    /// <param name="path">URL of a resource</param>
-    /// <returns>Constructed HTTP request message</returns>
+    /**
+     * Generates a HTTP request message with required headers to work with Azure Storage API.
+     *
+     * @param method Type of HTTP request
+     * @param path URL of a resource
+     * @return Constructed HTTP request message.
+     */
     private HttpRequestBase buildMessage(final String method, final String path) throws InterruptedException, ExecutionException {
         final String fullPath = "https://" + hostname + root + path;
         final HttpRequestBase result;

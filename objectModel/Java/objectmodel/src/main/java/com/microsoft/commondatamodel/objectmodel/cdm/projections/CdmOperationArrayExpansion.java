@@ -177,6 +177,7 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
 
                     // Create a new resolved attribute for the expanded attribute
                     ResolvedAttribute newResAttr = createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, (CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget(), currentPAS.getCurrentResolvedAttribute().getResolvedName());
+                    newResAttr.getAttCtx().addLineage(currentPAS.getCurrentResolvedAttribute().getAttCtx());
 
                     // Create a projection attribute state for the expanded attribute
                     ProjectionAttributeState newPAS = new ProjectionAttributeState(projOutputSet.getCtx());

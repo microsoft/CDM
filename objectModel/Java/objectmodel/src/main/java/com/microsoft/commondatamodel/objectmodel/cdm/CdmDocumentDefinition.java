@@ -19,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -525,6 +526,11 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   }
 
   @Override
+  public String fetchObjectDefinitionName() {
+    return this.name;
+  }
+
+  @Override
   public String getAtCorpusPath() {
     if (this.folder == null) {
       return "NULL:/" + this.name;
@@ -710,9 +716,9 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
           }
         } else {
           Logger.warning(
-            CdmDocumentDefinition.class.getSimpleName(),
-            this.getCtx(),
-            Logger.format("Import document {0} not loaded. This might cause an unexpected output.'", imp.getCorpusPath()));
+                  CdmDocumentDefinition.class.getSimpleName(),
+                  this.getCtx(),
+                  Logger.format("Import document {0} not loaded. This might cause an unexpected output.'", imp.getCorpusPath()));
         }
       }
 
@@ -742,7 +748,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
               .collect(Collectors.toList())) {
             // if the document is imported with moniker in another document do not include it in the priority list of this one.
             // moniker imports are only added to the priority list of the document that directly imports them.
-            if (!priorityMap.containsKey(ip.getKey()) && !ip.getValue().isMoniker()) {
+            if (!priorityMap.containsKey(ip.getKey()) && !ip.getValue().getIsMoniker()) {
               // add doc
               priorityMap.put(ip.getKey(), new ImportInfo(sequence, false));
               sequence++;
@@ -782,9 +788,30 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
             }
           }
         }
+
+        // if the document index is zero, the document being processed is the root of the imports chain.
+        // in this case add the monikered imports to the end of the priorityMap.
+        if (priorityMap.containsKey(this) && priorityMap.get(this).getPriority() == 0) {
+          for (final CdmDocumentDefinition imp : monikerImports) {
+            if (!priorityMap.containsKey(imp)) {
+              priorityMap.put(imp, new ImportInfo(sequence, true));
+              sequence++;
+            }
+          }
+        }
       }
     }
     return sequence;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @return String
+   */
+  @Deprecated
+  public String importPathToDoc(CdmDocumentDefinition docDest) {
+    return internalImportPathToDoc(this, "", docDest, new LinkedHashSet<>());
   }
 
   /**
@@ -878,5 +905,56 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return getCtx().getCorpus().fetchObjectAsync(getAtCorpusPath(), null, true)
         .thenAccept((v) -> {
         });
+  }
+
+  private String internalImportPathToDoc(final CdmDocumentDefinition docCheck, final String path, final CdmDocumentDefinition docDest, final HashSet<CdmDocumentDefinition> avoidLoop) {
+    if (docCheck == docDest) {
+      return "";
+    }
+    if (avoidLoop.contains(docCheck)) {
+      return null;
+    }
+    avoidLoop.add(docCheck);
+    // if the docDest is one of the monikered imports of docCheck, then add the moniker and we are cool
+    if (docCheck.getImportPriorities() != null && docCheck.getImportPriorities().getMonikerPriorityMap() != null
+            && docCheck.getImportPriorities().getMonikerPriorityMap().size() > 0) {
+      for(final Map.Entry<String, CdmDocumentDefinition> monPair : docCheck.getImportPriorities().getMonikerPriorityMap().entrySet()) {
+        if (monPair.getValue() == docDest) {
+          return String.format("%s%s/", path, monPair.getKey());
+        }
+      }
+    }
+    // ok, what if the document can be reached directly from the imports here
+    ImportInfo impInfo = docCheck.getImportPriorities() != null && docCheck.getImportPriorities().getImportPriority() != null ? docCheck.getImportPriorities().getImportPriority().get(docDest) : null;
+
+    if (impInfo != null && !impInfo.getIsMoniker()) {
+      // good enough
+      return path;
+    }
+
+    // still nothing, now we need to check those docs deeper
+    if (docCheck.getImportPriorities() != null && docCheck.getImportPriorities().getMonikerPriorityMap() != null
+            && docCheck.getImportPriorities().getMonikerPriorityMap().size() > 0) {
+
+      for(final Map.Entry<String, CdmDocumentDefinition> monPair : docCheck.getImportPriorities().getMonikerPriorityMap().entrySet()) {
+        if (monPair.getValue() == docDest) {
+          String pathFound = internalImportPathToDoc(monPair.getValue(), String.format("%s%s/", path, monPair.getKey()), docDest, avoidLoop);
+          if (pathFound != null) {
+            return pathFound;
+          }
+        }
+      }
+    }
+    if (docCheck.getImportPriorities() != null && docCheck.getImportPriorities().getImportPriority() != null && docCheck.getImportPriorities().getImportPriority().size() > 0) {
+      for(final Map.Entry<CdmDocumentDefinition, ImportInfo> impInfoPair : docCheck.getImportPriorities().getImportPriority().entrySet()) {
+        if (impInfoPair.getValue().getIsMoniker()) {
+          String pathFound = internalImportPathToDoc(impInfoPair.getKey(), path, docDest, avoidLoop);
+          if (pathFound != null) {
+            return pathFound;
+          }
+        }
+      }
+    }
+    return null;
   }
 }

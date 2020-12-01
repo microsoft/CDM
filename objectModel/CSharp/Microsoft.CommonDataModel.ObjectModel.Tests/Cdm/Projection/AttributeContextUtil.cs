@@ -52,8 +52,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             {
                 for (int i = 0; i < attribContext.Contents.Count; i++)
                 {
-                    string str = "";
-                    if ((attribContext.Contents[0] is CdmAttributeReference))
+                    string str;
+                    if ((attribContext.Contents[i] is CdmAttributeReference))
                     {
                         CdmAttributeReference ar = (CdmAttributeReference)attribContext.Contents[i];
                         str = ar.AtCorpusPath;

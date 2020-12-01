@@ -33,6 +33,7 @@ class PredefinedTokenEnum(IntEnum):
     REFERENCEONLY = 19
     NORMALIZED = 20
     STRUCTURED = 21
+    VIRTUAL = 22
 
-    OPENPAREN = 22
-    CLOSEPAREN = 23
+    OPENPAREN = 23
+    CLOSEPAREN = 24

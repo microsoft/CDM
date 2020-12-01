@@ -14,7 +14,6 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Ent
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.JMapper;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
