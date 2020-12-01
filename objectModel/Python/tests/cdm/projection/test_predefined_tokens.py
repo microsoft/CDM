@@ -15,7 +15,7 @@ class PredefinedTokensUnitTest(unittest.TestCase):
 
     def test_get_predefined_tokens(self):
         tokens = PredefinedTokens._get_predefined_tokens()
-        expected = 'always depth maxDepth noMaxDepth isArray cardinality.minimum cardinality.maximum referenceOnly normalized structured'
+        expected = 'always depth maxDepth noMaxDepth isArray cardinality.minimum cardinality.maximum referenceOnly normalized structured virtual'
         actual = ' '.join(tokens)
         self.assertEqual(expected, actual)
 

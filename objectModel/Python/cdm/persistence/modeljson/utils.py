@@ -7,9 +7,12 @@ from typing import TYPE_CHECKING
 from cdm.enums import CdmObjectType
 from cdm.persistence.cdmfolder import TraitReferencePersistence
 from cdm.utilities import logger
+from cdm.utilities import namevaluepair
 
 from . import ArgumentPersistence, extension_helper
 from .types import CsvFormatSettings
+from cdm.persistence.modeljson.types import Annotation
+from cdm.utilities.namevaluepair import NameValuePair
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentDefinition, CdmCorpusContext, CdmCollection, CdmTraitCollection, CdmTraitReference
@@ -113,7 +116,10 @@ async def process_annotations_from_data(ctx: 'CdmCorpusContext', obj: 'MetadataO
     if obj.get('annotations'):
         for annotation in obj.get('annotations'):
             if not should_annotation_go_into_a_single_trait(annotation.name):
-                multi_trait_annotations.append(annotation)
+                cdm_element = NameValuePair()
+                cdm_element.name = annotation.name
+                cdm_element.value = annotation.value
+                multi_trait_annotations.append(cdm_element)
             else:
                 inner_trait = ctx.corpus.make_object(CdmObjectType.TRAIT_REF, convert_annotation_to_trait(annotation.name))
                 inner_trait.arguments.append(await ArgumentPersistence.from_data(ctx, annotation))
@@ -146,7 +152,12 @@ def process_traits_and_annotations_to_data(ctx: 'CdmCorpusContext', entity_objec
 
         if trait.named_reference == 'is.modelConversion.otherAnnotations':
             for annotation in trait.arguments[0].value:
-                if isinstance(annotation, dict) and annotation.get('name'):
+                if isinstance(annotation, NameValuePair):
+                    element = Annotation()
+                    element.name = annotation.name
+                    element.value = annotation.value
+                    annotations.append(element)
+                elif isinstance(annotation, dict) and annotation.get('name'):
                     annotations.append(annotation)
                 else:
                     logger.warning(_TAG, ctx, 'Unsupported annotation type.')

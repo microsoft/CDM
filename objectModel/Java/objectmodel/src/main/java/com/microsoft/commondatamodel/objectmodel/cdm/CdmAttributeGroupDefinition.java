@@ -6,9 +6,9 @@ package com.microsoft.commondatamodel.objectmodel.cdm;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
@@ -82,9 +82,12 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
     if (preChildren != null && preChildren.invoke(this, path)) {
       return false;
     }
-    if (this.attributeContext != null && this.attributeContext
-        .visit(path + "/attributeContext/", preChildren, postChildren)) {
-      return true;
+    if (this.attributeContext != null) {
+      this.attributeContext.setOwner(this);
+      if (this.attributeContext
+          .visit(path + "/attributeContext/", preChildren, postChildren)) {
+        return true;
+      }
     }
     if (this.getMembers() != null) {
       if (this.members.visitList(path + "/members/", preChildren, postChildren)) {
@@ -244,6 +247,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
   @Deprecated
   public ResolvedAttributeSetBuilder constructResolvedAttributes(final ResolveOptions resOpt, CdmAttributeContext under) {
     final ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
+    final CdmAttributeContext allUnder = under;
     if (under != null) {
       final AttributeContextParameters acpAttGrp = new AttributeContextParameters();
       acpAttGrp.setUnder(under);
@@ -267,10 +271,17 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
           acpAtt.setRegarding(att);
           acpAtt.setIncludeTraits(false);
         }
-        rasb.mergeAttributes(att.fetchResolvedAttributes(resOpt, acpAtt));
+        ResolvedAttributeSet rasFromAtt = att.fetchResolvedAttributes(resOpt, acpAtt);
+        // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
+        // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before
+        // that didn't just pop out of that same named attribute now need to go away.
+        // mark any attributes formerly from this named attribute that don't show again as orphans
+        rasb.getResolvedAttributeSet().markOrphansForRemoval(att.fetchObjectDefinitionName(), rasFromAtt);
+        // now merge
+        rasb.mergeAttributes(rasFromAtt);
       }
     }
-    rasb.getResolvedAttributeSet().setAttributeContext(under);
+    rasb.getResolvedAttributeSet().setAttributeContext(allUnder);  // context must be the one expected from the caller's pov.
 
     // things that need to go away
     rasb.removeRequestedAtts();

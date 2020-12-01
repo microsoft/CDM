@@ -17,7 +17,7 @@ public class ApplierState {
     Integer flexCurrentOrdinal;
     Integer arrayFinalOrdinal;
     Integer arrayInitialOrdinal;
-    Consumer<ApplierContext> array_specializedContext;
+    Consumer<ApplierContext> arraySpecializedContext;
 
     /**
      * @deprecated This function is extremely likely to be removed in the public interface, and not meant
@@ -33,8 +33,44 @@ public class ApplierState {
         copy.flexCurrentOrdinal = flexCurrentOrdinal;
         copy.arrayFinalOrdinal = arrayFinalOrdinal;
         copy.arrayInitialOrdinal = arrayInitialOrdinal;
-        copy.array_specializedContext = array_specializedContext;
+        copy.arraySpecializedContext = arraySpecializedContext;
 
         return copy;
     }
+
+    @Deprecated
+    public boolean getFlexRemove() { return this.flexRemove; }
+
+    @Deprecated
+    public void setFlexRemove(final boolean value) { this.flexRemove = value; }
+
+    @Deprecated
+    public ResolvedAttribute getArrayTemplate() { return this.arrayTemplate; }
+
+    @Deprecated
+    public void setArrayTemplate(final ResolvedAttribute value) { this.arrayTemplate = value; }
+
+    @Deprecated
+    public Integer getFlexCurrentOrdinal() { return this.flexCurrentOrdinal; }
+
+    @Deprecated
+    public void setFlexCurrentOrdinal(final Integer value) { this.flexCurrentOrdinal = value; }
+
+    @Deprecated
+    public Integer getArrayFinalOrdinal() { return this.arrayFinalOrdinal; }
+
+    @Deprecated
+    public void setArrayFinalOrdinal(final Integer value) { this.arrayFinalOrdinal = value; }
+
+    @Deprecated
+    public Integer getArrayInitialOrdinal() { return this.arrayInitialOrdinal; }
+
+    @Deprecated
+    public void setArrayInitialOrdinal(final Integer value) { this.arrayInitialOrdinal = value; }
+
+    @Deprecated
+    public Consumer<ApplierContext> getArraySpecializedContext() { return this.arraySpecializedContext; }
+
+    @Deprecated
+    public void setArraySpecializedContext(final Consumer<ApplierContext> value) { this.arraySpecializedContext = value; }
 }

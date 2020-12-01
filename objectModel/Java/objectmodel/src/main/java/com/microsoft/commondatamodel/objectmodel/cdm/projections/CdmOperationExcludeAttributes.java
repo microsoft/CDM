@@ -139,7 +139,10 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
             if (!topLevelExcludeAttributeNames.containsKey(currentPAS.getCurrentResolvedAttribute().getResolvedName())) {
                 // Create the attribute context parameters and just store it in the builder for now
                 // We will create the attribute contexts at the end
-                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(null, currentPAS, currentPAS.getCurrentResolvedAttribute(), CdmAttributeContextType.AttributeDefinition);
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(null, currentPAS, currentPAS.getCurrentResolvedAttribute(),
+                        CdmAttributeContextType.AttributeDefinition,
+                        currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the included attribute
+                        null); // don't know who will point here yet
 
                 // Create a projection attribute state for the included attribute by creating a copy of the current state
                 // Copy() sets the current state as the previous state for the new one
@@ -155,7 +158,10 @@ public class CdmOperationExcludeAttributes extends CdmOperationBase {
 
                 // Create the attribute context parameters and just store it in the builder for now
                 // We will create the attribute contexts at the end
-                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.getCurrentResolvedAttribute(), CdmAttributeContextType.AttributeDefinition);
+                attrCtxTreeBuilder.createAndStoreAttributeContextParameters(excludeAttributeName, currentPAS, currentPAS.getCurrentResolvedAttribute(),
+                        CdmAttributeContextType.AttributeDefinition,
+                        currentPAS.getCurrentResolvedAttribute().getAttCtx(), // lineage is the included attribute
+                        null);
             }
         }
 

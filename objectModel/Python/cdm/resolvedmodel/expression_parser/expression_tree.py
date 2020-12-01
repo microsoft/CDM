@@ -209,6 +209,8 @@ class ExpressionTree:
                     return input.reference_only
                 elif token == PredefinedTokenEnum.STRUCTURED:
                     return input.structured
+                elif token == PredefinedTokenEnum.VIRTUAL:
+                    return input.is_virtual
                 elif token == PredefinedTokenEnum.ALWAYS:
                     return True
                 else:

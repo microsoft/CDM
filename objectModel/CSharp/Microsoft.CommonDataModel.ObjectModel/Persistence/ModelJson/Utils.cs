@@ -45,15 +45,20 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
 
         internal static async Task ProcessAnnotationsFromData(CdmCorpusContext ctx, MetadataObject obj, CdmTraitCollection traits)
         {
-            var multiTraitAnnotations = new List<Annotation>();
-
+            var multiTraitAnnotations = new List<NameValuePair>();
+            
             if (obj.Annotations != null)
             {
                 foreach (var element in obj.Annotations)
                 {
                     if (!ShouldAnnotationGoIntoASingleTrait(element.Name))
                     {
-                        multiTraitAnnotations.Add(element);
+                        NameValuePair cdmElement = new NameValuePair()
+                        {
+                            Name = element.Name,
+                            Value = element.Value
+                        };
+                        multiTraitAnnotations.Add(cdmElement);
                     }
                     else
                     {
@@ -113,9 +118,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.ModelJson
                         {
                             annotations.Add(jAnnotation.ToObject<Annotation>());
                         }
-                        else if (annotation is Annotation)
+                        else if (annotation is NameValuePair)
                         {
-                            annotations.Add(annotation);
+                            Annotation element = new Annotation()
+                            {
+                                Name = annotation.Name,
+                                Value = annotation.Value
+                            };
+                            annotations.Add(element);
                         }
                         else
                         {

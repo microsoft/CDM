@@ -45,6 +45,7 @@ public final class ProjectionDirective {
     private boolean isReferenceOnly;
     private boolean isNormalized;
     private boolean isStructured;
+    private boolean isVirtual;
 
     public ProjectionDirective(ResolveOptions resOpt, CdmObjectDefinitionBase owner) {
         this(resOpt, owner, null);
@@ -75,6 +76,7 @@ public final class ProjectionDirective {
             this.isReferenceOnly = (resOpt.getDirectives().has("referenceOnly") == true);
             this.isNormalized = (resOpt.getDirectives().has("normalized") == true);
             this.isStructured = (resOpt.getDirectives().has("structured") == true);
+            this.isVirtual = (resOpt.getDirectives().has("virtual") == true);
             this.hasNoMaximumDepth = (resOpt.getDirectives().has("noMaxDepth") == true);
             this.isArray = (resOpt.getDirectives().has("isArray") == true);
         }
@@ -268,5 +270,17 @@ public final class ProjectionDirective {
     @Deprecated
     public boolean getIsStructured() {
         return isStructured;
+    }
+
+    /**
+     * Is structured
+     *
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     * @return Boolean
+     */
+    @Deprecated
+    public boolean getIsVirtual() {
+        return isVirtual;
     }
 }

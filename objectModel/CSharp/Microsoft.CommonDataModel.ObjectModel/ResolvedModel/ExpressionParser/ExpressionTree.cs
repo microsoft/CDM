@@ -309,6 +309,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                             return input.referenceOnly;
                         case PredefinedTokenEnum.STRUCTURED:
                             return input.structured;
+                        case PredefinedTokenEnum.VIRTUAL:
+                            return input.isVirtual;
 
                         case PredefinedTokenEnum.ALWAYS:
                             return true;

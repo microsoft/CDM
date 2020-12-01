@@ -196,6 +196,7 @@ class CdmProjection(CdmObjectDefinition):
                 input.reference_only = proj_directive._is_reference_only
                 input.normalized = proj_directive._is_normalized
                 input.structured = proj_directive._is_structured
+                input.is_virtual = proj_directive._is_virtual
 
                 current_depth = proj_directive._current_depth
                 current_depth += 1

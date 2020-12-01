@@ -14,6 +14,7 @@ import {
 import { CdmJsonType, TraitReference } from '../CdmFolder/types';
 import { processExtensionTraitToObject, traitRefIsExtension } from './ExtensionHelper';
 import { Annotation, AnnotationTraitMapping, CsvFormatSettings, MetadataObject } from './types';
+import { NameValuePair } from '../../Utilities/NameValuePair';
 
 const annotationToTraitMap: Map<string, string> = new Map([['version', 'is.CDM.entityVersion']]);
 
@@ -108,12 +109,15 @@ export function createCsvFormatSettings(csvFormatTrait: CdmTraitReference): CsvF
 
 export async function processAnnotationsFromData(ctx: CdmCorpusContext, object: MetadataObject, traits: CdmTraitCollection)
     : Promise<void> {
-    const multiTraitAnnotations: Annotation[] = [];
+    const multiTraitAnnotations: NameValuePair[] = [];
 
     if (object.annotations !== undefined) {
         for (const annotation of object.annotations) {
             if (!shouldAnnotationGoIntoASingleTrait(annotation.name)) {
-                multiTraitAnnotations.push(annotation);
+                const cdmElement: NameValuePair = new NameValuePair();
+                cdmElement.name = annotation.name;
+                cdmElement.value = annotation.value;
+                multiTraitAnnotations.push(cdmElement);
             } else {
                 const innerTrait: CdmTraitReference =
                     ctx.corpus.MakeObject(cdmObjectType.traitRef, convertAnnotationToTrait(annotation.name));
@@ -162,7 +166,13 @@ export function processTraitsAndAnnotationsToData(
 
         if (trait.namedReference === 'is.modelConversion.otherAnnotations') {
             for (const annotation of (trait.arguments.allItems[0].value as any)) {
-                if (typeof annotation === 'object') {
+                if (annotation instanceof NameValuePair) {
+                    const element: Annotation = new Annotation();
+                    element.name = annotation.name;
+                    element.value = annotation.value;
+                    annotations.push(element);
+                } 
+                else if (typeof annotation === 'object') {
                     annotations.push(annotation);
                 } else {
                     Logger.warning('Utils', ctx, 'Unsupported annotation type.');

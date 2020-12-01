@@ -9,6 +9,17 @@
   "definitions": [
     {
       "entityName": "Resolved_Product_normalized_structured",
+      "exhibitsTraits": [
+        {
+          "traitReference": "has.entitySchemaAbstractionLevel",
+          "arguments": [
+            {
+              "name": "level",
+              "value": "resolved"
+            }
+          ]
+        }
+      ],
       "attributeContext": {
         "type": "entity",
         "name": "Resolved_Product_normalized_structured",
@@ -20,6 +31,25 @@
             "parent": "Resolved_Product_normalized_structured/attributeContext/Resolved_Product_normalized_structured",
             "definition": "resolvedFrom/Product/hasAttributes/ProductColor",
             "contents": [
+              {
+                "type": "generatedSet",
+                "name": "_generatedAttributeSet",
+                "parent": "Resolved_Product_normalized_structured/attributeContext/Resolved_Product_normalized_structured/ProductColor",
+                "contents": [
+                  {
+                    "type": "operationIncludeAttributes",
+                    "name": "operation/index1/operationIncludeAttributes",
+                    "parent": "Resolved_Product_normalized_structured/attributeContext/Resolved_Product_normalized_structured/ProductColor/_generatedAttributeSet",
+                    "contents": [
+                      {
+                        "type": "attributeDefinition",
+                        "name": "RGBColor",
+                        "parent": "Resolved_Product_normalized_structured/attributeContext/Resolved_Product_normalized_structured/ProductColor/_generatedAttributeSet/operation/index1/operationIncludeAttributes"
+                      }
+                    ]
+                  }
+                ]
+              },
               {
                 "type": "projection",
                 "name": "projection",
@@ -118,7 +148,7 @@
         {
           "attributeGroupReference": {
             "attributeGroupName": "RGBColor",
-            "attributeContext": "Resolved_Product_normalized_structured/attributeContext/Resolved_Product_normalized_structured/ProductColor/projection/source/Color/RGBColor",
+            "attributeContext": "Resolved_Product_normalized_structured/attributeContext/Resolved_Product_normalized_structured/ProductColor/_generatedAttributeSet/operation/index1/operationIncludeAttributes/RGBColor",
             "members": [
               {
                 "name": "Red",

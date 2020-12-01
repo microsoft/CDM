@@ -169,7 +169,7 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
 
         if (pasList != null) {
             // update the new foreign key resolved attribute with trait param with reference details
-            ResolvedTrait reqdTrait = newResAttrFK.fetchResolvedTraits().find(projCtx.getProjectionDirective().getResOpt(), "is.linkedEntity.identifier");
+            ResolvedTrait reqdTrait = newResAttrFK.getResolvedTraits().find(projCtx.getProjectionDirective().getResOpt(), "is.linkedEntity.identifier");
             if (reqdTrait != null) {
                 CdmEntityReference traitParamEntRef = ProjectionResolutionCommonUtil.createForeignKeyLinkedEntityIdentifierTraitParameter(projCtx.getProjectionDirective(), projOutputSet.getCtx().getCorpus(), pasList);
                 reqdTrait.getParameterValues().setParameterValue(projCtx.getProjectionDirective().getResOpt(), "entityReferences", traitParamEntRef);

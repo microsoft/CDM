@@ -143,7 +143,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     // find and getCache() the complete set of attributes
     final ResolvedAttributeSetBuilder rasb = new ResolvedAttributeSetBuilder();
     rasb.getResolvedAttributeSet().setAttributeContext(under);
-    CdmObjectDefinition def = this.fetchObjectDefinition(resOpt);
+    final CdmObjectDefinitionBase def = this.fetchObjectDefinition(resOpt);
     if (def != null) {
       AttributeContextParameters acpRef = null;
       if (under != null) {
@@ -154,7 +154,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       }
       ResolvedAttributeSet resAtts = def.fetchResolvedAttributes(resOpt, acpRef);
       if (resAtts != null && resAtts.getSet() != null && resAtts.getSet().size() > 0) {
-        resAtts = resAtts.copy();
+//        resAtts = resAtts.copy(); should not neeed this copy now that we copy from the cache. lets try!
         rasb.mergeAttributes(resAtts);
         rasb.removeRequestedAtts();
       }
@@ -168,12 +168,37 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   */
+  @Override
+  @Deprecated
+  public ResolvedTraitSet fetchResolvedTraits() {
+    return this.fetchResolvedTraits(null);
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
    * @param resOpt - Resolved options
    * @return Resolved Trait Set
    */
   @Deprecated
   @Override
   public ResolvedTraitSet fetchResolvedTraits(ResolveOptions resOpt) {
+    final boolean wasPreviouslyResolving = this.getCtx().getCorpus().isCurrentlyResolving;
+    this.getCtx().getCorpus().isCurrentlyResolving = true;
+    ResolvedTraitSet ret = this._fetchResolvedTraits(resOpt);
+    this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
+    return ret;
+  }
+
+  /**
+   * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * meant to be called externally at all. Please refrain from using it.
+   * @param resOpt - Resolved options
+   * @return Resolved Trait Set
+   */
+  @Deprecated
+  public ResolvedTraitSet _fetchResolvedTraits(ResolveOptions resOpt) {
     if (resOpt == null) {
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
@@ -255,7 +280,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
 
     if (this.getAppliedTraits() != null) {
       for (final CdmTraitReference at : this.getAppliedTraits()) {
-        rtsb.mergeTraits(at.fetchResolvedTraits(resOpt));
+        rtsb.mergeTraits(((CdmTraitReference)at).fetchResolvedTraits(resOpt));
       }
     }
   }
@@ -340,6 +365,29 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     }
 
     return res;
+  }
+
+  // Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed into some final document.
+  @Override
+  @Deprecated
+  public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
+    CdmObjectReferenceBase cdmObjectRef = ((CdmObjectReferenceBase) this.getCtx().getCorpus().makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), "portable", true));
+    cdmObjectRef.setExplicitReference(this.fetchObjectDefinition(resOpt));
+    if (cdmObjectRef.getExplicitReference() == null || (cdmObjectRef.getInDocument() == null && this.getInDocument() == null)) {
+      return null; // not allowed
+    }
+    if (cdmObjectRef.getInDocument() == null) {
+      cdmObjectRef.setInDocument(this.getInDocument()); // if the object has no document, take from the reference
+    }
+    return cdmObjectRef;
+  }
+
+  //Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed into some final document.
+  @Deprecated
+  public void localizePortableReference(ResolveOptions resOpt, String importPath) {
+    String newDeclaredPath = ((CdmObjectBase)this.getExplicitReference()).getDeclaredPath();
+    newDeclaredPath = newDeclaredPath != null && newDeclaredPath.endsWith("/(ref)") == true ? newDeclaredPath.substring(0, newDeclaredPath.length() - 6) : newDeclaredPath;
+    this.setNamedReference(String.format("%s%s", importPath, newDeclaredPath));
   }
 
   @Override
@@ -468,6 +516,7 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       return false;
     }
     if (this.getExplicitReference() != null && Strings.isNullOrEmpty(this.getNamedReference())) {
+      this.getExplicitReference().setOwner(this.getOwner()); // obj is not in collection, so set owner here.
       if (this.getExplicitReference().visit(path, preChildren, postChildren)) {
         return true;
       }

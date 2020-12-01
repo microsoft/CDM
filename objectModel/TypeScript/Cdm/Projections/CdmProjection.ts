@@ -263,6 +263,7 @@ export class CdmProjection extends CdmObjectDefinitionBase {
                 input.referenceOnly = projDirective.isReferenceOnly;
                 input.normalized = projDirective.isNormalized;
                 input.structured = projDirective.isStructured;
+                input.isVirtual = projDirective.isVirtual;
 
                 input.nextDepth = ++projDirective.currentDepth;
                 input.maxDepth = projDirective.maximumDepth;

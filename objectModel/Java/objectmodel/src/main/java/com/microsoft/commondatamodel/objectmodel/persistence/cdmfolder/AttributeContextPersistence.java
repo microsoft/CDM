@@ -6,6 +6,8 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContextReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCollection;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectReference;
@@ -78,6 +80,13 @@ public class AttributeContextPersistence {
       }
     }
 
+    if (obj.getLineage() != null) {
+      attributeContext.setLineage(new CdmCollection<CdmAttributeContextReference>(ctx, attributeContext, CdmObjectType.AttributeContextRef));
+      for (final JsonNode node : obj.getLineage()) {
+        attributeContext.getLineage().add(AttributeContextReferencePersistence.fromData(ctx, node));
+      }
+    }
+
     return attributeContext;
   }
 
@@ -110,6 +119,10 @@ public class AttributeContextPersistence {
 
     if (instance.getContents() != null) {
       result.setContents(Utils.listCopyDataAsArrayNode(instance.getContents(), resOpt, options));
+    }
+
+    if (instance.getLineage() != null) {
+      result.setLineage(Utils.listCopyDataAsArrayNode(instance.getLineage(), resOpt, options));
     }
 
     return result;

@@ -15,7 +15,6 @@ from .trait_reference_persistence import TraitReferencePersistence
 from .type_attribute_persistence import TypeAttributePersistence
 from .types import AttributeGroupReference, CdmJsonType, EntityAttribute, TypeAttribute
 
-
 if TYPE_CHECKING:
     pass
 

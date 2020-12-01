@@ -314,7 +314,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     // renameFormat is not currently supported for type attributes.
     resGuideWithDefault.setRenameFormat(null);
 
-    resGuideWithDefault.updateAttributeDefaults(null);
+    resGuideWithDefault.updateAttributeDefaults(null, this);
     final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
     // from the traits of the datatype, purpose and applied here, see if new attributes get generated
@@ -343,6 +343,8 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
       final CdmAttributeReference replacement = new CdmAttributeReference(this.getCtx(), this.getName(), true);
       replacement.setCtx(this.getCtx());
       replacement.setExplicitReference(this);
+      replacement.setInDocument(this.getInDocument());
+      replacement.setOwner(this);
 
       rtsb.replaceTraitParameterValue(resOpt, "does.elevateAttribute",
               "attribute", "this.attribute", replacement);

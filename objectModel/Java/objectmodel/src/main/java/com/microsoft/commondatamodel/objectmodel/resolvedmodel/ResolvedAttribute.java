@@ -41,16 +41,28 @@ public class ResolvedAttribute {
     this._resolvedName = defaultName;
     this.previousResolvedName = defaultName;
     this.attCtx = attCtx;
+    // if the target is a resolved attribute set, then we are wrapping it. update the lineage of this new ra to point at all members of the set
+    if (target instanceof ResolvedAttributeSet && attCtx != null) {
+      final ResolvedAttributeSet rasSub = (ResolvedAttributeSet)target;
+      if (rasSub.getSet() != null && rasSub.getSet().size() > 0) {
+        rasSub.getSet().forEach((final ResolvedAttribute raSub) ->  {
+          if (raSub.getAttCtx() != null  ) {
+            this.attCtx.addLineage(raSub.getAttCtx());
+          }
+        });
+      }
+    }
   }
 
   public ResolvedAttribute copy() {
     final ResolveOptions resOpt = resolvedTraits.getResOpt(); // use the options from the traits
 
-    final ResolvedAttribute copy = new ResolvedAttribute(resOpt, _target, _resolvedName, attCtx);
+    final ResolvedAttribute copy = new ResolvedAttribute(resOpt, _target, _resolvedName, null);
     copy.updateResolvedName(getResolvedName());
-    copy.setResolvedTraits(fetchResolvedTraits().shallowCopy());
+    copy.setResolvedTraits(getResolvedTraits().shallowCopy());
     copy.insertOrder = insertOrder;
     copy.arc = arc;
+    copy.attCtx = attCtx; // set here instead of constructor to avoid setting lineage for this copy
 
     if (copy.getTarget() instanceof ResolvedAttributeSet) {
         // deep copy when set contains sets. this copies the resolved att set and the context, etc.
@@ -71,17 +83,13 @@ public class ResolvedAttribute {
   }
 
   void completeContext(final ResolveOptions resOpt) {
-    if (attCtx != null && attCtx.getName() == null) {
-      attCtx.setName(_resolvedName);
-      if (_target instanceof CdmAttribute) {
-        attCtx.setDefinition(((CdmAttribute) _target).createSimpleReference(resOpt));
+    if (this.attCtx != null) {
+      if (this.attCtx.getName() == null) {
+        this.attCtx.setName(this._resolvedName);
+        this.attCtx.setAtCorpusPath(this.attCtx.getParent().fetchObjectDefinition(resOpt).getAtCorpusPath() + "/" + this._resolvedName);
       }
-      if (attCtx.getParent().fetchObjectDefinition(resOpt).getAtCorpusPath().endsWith("/") || _resolvedName.startsWith("/")) {
-        attCtx.setAtCorpusPath(
-                attCtx.getParent().fetchObjectDefinition(resOpt).getAtCorpusPath() + _resolvedName);
-      } else {
-        attCtx.setAtCorpusPath(
-                attCtx.getParent().fetchObjectDefinition(resOpt).getAtCorpusPath() + "/" + _resolvedName);
+      if (this.attCtx.getDefinition() == null && _target instanceof CdmAttribute) {
+        attCtx.setDefinition(((CdmAttribute) this.getTarget()).createPortableReference(resOpt));
       }
     }
   }
@@ -196,13 +204,12 @@ public class ResolvedAttribute {
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
-  public ResolvedTraitSet fetchResolvedTraits() {
+  public ResolvedTraitSet getResolvedTraits() {
     return resolvedTraits;
   }
 
   /**
    *
-   * @param resolvedTraits ResolvedTraitSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

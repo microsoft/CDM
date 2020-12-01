@@ -26,7 +26,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         {
             List<string> tokens = PredefinedTokens.GetPredefinedTokens();
 
-            string expected = "always depth maxDepth noMaxDepth isArray cardinality.minimum cardinality.maximum referenceOnly normalized structured";
+            string expected = "always depth maxDepth noMaxDepth isArray cardinality.minimum cardinality.maximum referenceOnly normalized structured virtual";
             string actual = string.Join(" ", tokens.ToArray());
             Assert.AreEqual(expected, actual);
         }

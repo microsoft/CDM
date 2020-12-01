@@ -142,15 +142,19 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
         // Iterate through all the projection attribute states generated from the source's resolved attributes
         // Each projection attribute state contains a resolved attribute that it is corresponding to
         for (ProjectionAttributeState currentPAS : projCtx.getCurrentAttributeStateSet().getStates()) {
-            // Create an attribute set build that owns one resolved attribute
-            ResolvedAttributeSetBuilder attributeRasb = new ResolvedAttributeSetBuilder();
-            attributeRasb.ownOne(currentPAS.getCurrentResolvedAttribute());
+            // Create a copy of the resolved attribute
+            ResolvedAttribute resolvedAttribute = currentPAS.getCurrentResolvedAttribute().copy();
 
-            // Merge the attribute set containing one attribute with the one holding all the attributes
-            rasb.mergeAttributes(attributeRasb.getResolvedAttributeSet());
+            // Add the attribute to the resolved attribute set
+            rasb.getResolvedAttributeSet().merge(resolvedAttribute);
 
             // Add each attribute's attribute context to the resolved attribute set attribute context
-            attrCtxAttrGroup.getContents().add(currentPAS.getCurrentResolvedAttribute().getAttCtx());
+            AttributeContextParameters attrParam = new AttributeContextParameters();
+            attrParam.setUnder(attrCtxAttrGroup);
+            attrParam.setType(CdmAttributeContextType.AttributeDefinition);
+            attrParam.setName(resolvedAttribute.getResolvedName());
+            resolvedAttribute.setAttCtx(CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrParam));
+            resolvedAttribute.getAttCtx().addLineage(currentPAS.getCurrentResolvedAttribute().getAttCtx());
         }
 
         // Create a new resolved attribute that will hold the attribute set containing all the attributes

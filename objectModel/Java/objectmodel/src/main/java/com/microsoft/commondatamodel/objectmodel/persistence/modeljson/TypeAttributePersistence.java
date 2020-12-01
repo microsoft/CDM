@@ -3,7 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.persistence.modeljson;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitDefinition;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTraitReference;
@@ -18,7 +17,6 @@ import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import com.microsoft.commondatamodel.objectmodel.utilities.TraitToPropertyMap;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.concurrent.CompletableFuture;
 
 public class TypeAttributePersistence {

@@ -44,6 +44,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             new Tuple<PredefinedTokenEnum, string, PredefinedType>(PredefinedTokenEnum.REFERENCEONLY, "referenceOnly", PredefinedType.Token),
             new Tuple<PredefinedTokenEnum, string, PredefinedType>(PredefinedTokenEnum.NORMALIZED, "normalized", PredefinedType.Token),
             new Tuple<PredefinedTokenEnum, string, PredefinedType>(PredefinedTokenEnum.STRUCTURED, "structured", PredefinedType.Token),
+            new Tuple<PredefinedTokenEnum, string, PredefinedType>(PredefinedTokenEnum.VIRTUAL, "virtual", PredefinedType.Token),
 
             new Tuple<PredefinedTokenEnum, string, PredefinedType>(PredefinedTokenEnum.OPENPAREN, "(", PredefinedType.OpenParenthesis),
             new Tuple<PredefinedTokenEnum, string, PredefinedType>(PredefinedTokenEnum.CLOSEPAREN, ")", PredefinedType.CloseParenthesis),

@@ -54,7 +54,7 @@ public final class AttributeContextUtil {
         if (attribContext != null && attribContext.getContents() != null && attribContext.getContents().size() > 0) {
             for (int i = 0; i < attribContext.getContents().size(); i++) {
                 String str = "";
-                if ((attribContext.getContents().get(0) instanceof CdmAttributeReference)) {
+                if ((attribContext.getContents().get(i) instanceof CdmAttributeReference)) {
                     CdmAttributeReference ar = (CdmAttributeReference) attribContext.getContents().get(i);
                     str = ar.getAtCorpusPath();
                     bldr.append(str);
@@ -141,17 +141,17 @@ public final class AttributeContextUtil {
 
                 // Actual
                 Path actualStringFilePath = new File(expectedOutputPath.replace("ExpectedOutput", "ActualOutput"), "AttrCtx_" + entityName + ".txt").toPath();
-                String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.getAttributeContext());
-
-                // Test if Actual is Equal to Expected
-                Assert.assertEquals(actualText, expectedText);
 
                 // Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
+                String actualText = attrCtxUtil.getAttributeContextStrings(resolvedEntity, resolvedEntity.getAttributeContext());
                 try (final BufferedWriter actualFileWriter = Files.newBufferedWriter(actualStringFilePath, StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
                     actualFileWriter.write(actualText);
                     actualFileWriter.flush();
                 }
                 resolvedEntity.getInDocument().saveAsAsync("Resolved_" + entityName + ".cdm.json", false).join();
+
+                // Test if Actual is Equal to Expected
+                Assert.assertEquals(actualText.replace("\r\n", "\n"), expectedText.replace("\r\n","\n"));
             } catch (Exception e) {
                 Assert.fail(e.getMessage());
             }

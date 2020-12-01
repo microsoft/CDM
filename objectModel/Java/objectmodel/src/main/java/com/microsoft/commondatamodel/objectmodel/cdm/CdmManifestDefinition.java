@@ -571,6 +571,10 @@ public class CdmManifestDefinition extends CdmDocumentDefinition implements CdmO
 
     // Using the references present in the resolved entities, get an entity.
     // Create an imports doc with all the necessary resolved entity references and then resolve it.
+    // sometimes they might send the docname, that makes sense a bit, don't include the suffix in the name
+    if (newManifestName.toLowerCase().endsWith(".manifest.cdm.json")) {
+      newManifestName = newManifestName.substring(0, newManifestName.length() - ".manifest.cdm.json".length());
+    }
     final CdmManifestDefinition resolvedManifest = new CdmManifestDefinition(this.getCtx(), newManifestName);
 
     // bring over any imports in this document or other bobbles

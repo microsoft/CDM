@@ -33,6 +33,7 @@ export enum PredefinedTokenEnum {
     REFERENCEONLY,
     NORMALIZED,
     STRUCTURED,
+    VIRTUAL,
 
     OPENPAREN,
     CLOSEPAREN

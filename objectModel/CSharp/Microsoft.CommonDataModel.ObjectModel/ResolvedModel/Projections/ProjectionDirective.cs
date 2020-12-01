@@ -103,6 +103,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
         /// </summary>
         internal bool IsStructured { get; private set; }
 
+        /// <summary>
+        /// Is virtual
+        /// </summary>
+        internal bool IsVirtual { get; private set; }
+
         public ProjectionDirective(ResolveOptions resOpt, CdmObjectDefinitionBase owner, CdmObjectReference ownerRef = null)
         {
             this.ResOpt = resOpt;
@@ -131,6 +136,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             this.IsReferenceOnly = (resOpt.Directives?.Has("referenceOnly") == true);
             this.IsNormalized = (resOpt.Directives?.Has("normalized") == true);
             this.IsStructured = (resOpt.Directives?.Has("structured") == true);
+            this.IsVirtual = (resOpt.Directives?.Has("virtual") == true);
             this.HasNoMaximumDepth = (resOpt.Directives?.Has("noMaxDepth") == true);
             this.IsArray = (resOpt.Directives?.Has("isArray") == true);
 

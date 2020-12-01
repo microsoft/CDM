@@ -114,9 +114,11 @@ public class CdmDataTypeDefinition extends CdmObjectDefinitionBase {
       return false;
     }
 
-    if (this.getExtendsDataType() != null && this.getExtendsDataType()
-        .visit(path + "/extendsDataType/", preChildren, postChildren)) {
-      return true;
+    if (this.getExtendsDataType() != null) {
+      this.getExtendsDataType().setOwner(this);
+      if (this.getExtendsDataType().visit(path + "/extendsDataType/", preChildren, postChildren)) {
+        return true;
+      }
     }
 
     if (this.visitDef(path, preChildren, postChildren)) {

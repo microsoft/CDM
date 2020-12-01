@@ -19,3 +19,4 @@ class InputValues:
         self.reference_only = False  # type: bool
         self.normalized = False  # type: bool
         self.structured = False  # type: bool
+        self.is_virtual = False  # type: bool

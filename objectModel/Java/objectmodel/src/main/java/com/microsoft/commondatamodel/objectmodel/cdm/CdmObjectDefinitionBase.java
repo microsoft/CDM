@@ -65,7 +65,6 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     if (resOpt == null) {
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
-    resOpt.setFromMoniker(null);
     return (T) this;
   }
 
@@ -90,6 +89,7 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     for (final CdmTraitReference trait : this.getExhibitsTraits()) {
       copy.getExhibitsTraits().add(trait);
     }
+    copy.setInDocument(this.getInDocument()); // if gets put into a new document, this will change. until, use the source
   }
 
   boolean isDerivedFromDef(final ResolveOptions resOpt, final CdmObjectReference baseCdmObjectReference,
@@ -131,4 +131,15 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
     return getExhibitsTraits() != null
             && exhibitsTraits.visitList(pathFrom + "/exhibitsTraits/", preChildren, postChildren);
   }
+
+  // Creates a 'portable' reference object to this object. portable means there is no symbolic name set until this reference is placed into some final document.
+  @Override
+  @Deprecated
+  public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
+    CdmObjectReferenceBase cdmObjectRef = ((CdmObjectReferenceBase)this.getCtx().getCorpus().makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), "portable", true));
+    cdmObjectRef.setExplicitReference(this);
+    cdmObjectRef.setInDocument(this.getInDocument()); // where it started life
+    return cdmObjectRef;
+  }
+
 }

@@ -265,6 +265,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         referenceOnly = projDirective.IsReferenceOnly,
                         normalized = projDirective.IsNormalized,
                         structured = projDirective.IsStructured,
+                        isVirtual = projDirective.IsVirtual,
 
                         nextDepth = ++projDirective.CurrentDepth,
                         maxDepth = projDirective.MaximumDepth,

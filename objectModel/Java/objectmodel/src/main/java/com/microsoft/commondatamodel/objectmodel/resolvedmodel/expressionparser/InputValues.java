@@ -22,6 +22,7 @@ public class InputValues {
     private Boolean referenceOnly;
     private Boolean normalized;
     private Boolean structured;
+    private Boolean isVirtual;
 
 
     public Integer getNextDepth() {
@@ -94,5 +95,13 @@ public class InputValues {
 
     public void setStructured(final Boolean structured) {
         this.structured = structured;
+    }
+
+    public Boolean getIsVirtual() {
+        return isVirtual;
+    }
+
+    public void setIsVirtual(final Boolean isVirtual) {
+        this.isVirtual = isVirtual;
     }
 }

@@ -72,7 +72,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Explanation = instance.Explanation,
                 RootLocation = instance.RootLocation,
                 GlobPattern = instance.GlobPattern,
-                RegularExpression = instance.RegularExpression.ToString(),
+                RegularExpression = instance.RegularExpression != null ? instance.RegularExpression.ToString() : null,
                 Parameters = instance.Parameters,
                 SpecializedSchema = instance.SpecializedSchema,
                 ExhibitsTraits = CopyDataUtils.ListCopyData(resOpt, instance.ExhibitsTraits, options)

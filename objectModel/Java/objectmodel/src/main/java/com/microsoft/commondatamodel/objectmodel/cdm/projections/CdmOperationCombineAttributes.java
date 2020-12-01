@@ -141,7 +141,7 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
 
         // Get all the leaf level PAS nodes from the tree for each selected attribute and cache to a dictionary
         Map<String, List<ProjectionAttributeState>> leafLevelCombineAttributeNames = new LinkedHashMap();
-        // Also, create a single list of leaf level PAS to add to the 'is.linkedEntity.identifier' trait parameter
+        // Also, create a single list of leaf level PAS
         List<ProjectionAttributeState> leafLevelMergePASList = new ArrayList<ProjectionAttributeState>();
         for (String select : this.select) {
             List<ProjectionAttributeState> leafLevelListForCurrentSelect = ProjectionResolutionCommonUtil.getLeafList(projCtx, select);
@@ -180,20 +180,17 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
 
         if (pasMergeList.size() > 0) {
             CdmTypeAttributeDefinition mergeIntoAttribute = (CdmTypeAttributeDefinition) this.mergeInto;
-            List<String> addTrait = new ArrayList<String>();
-            addTrait.add("is.linkedEntity.identifier");
+            // the merged attribute needs one new place to live, so here it is
+            AttributeContextParameters mergedAttrCtxParam = new AttributeContextParameters();
+            mergedAttrCtxParam.setUnder(attrCtxOpCombineAttrs);
+            mergedAttrCtxParam.setType(CdmAttributeContextType.AttributeDefinition);
+            mergedAttrCtxParam.setName(mergeIntoAttribute.getName());
+            CdmAttributeContext mergedAttrCtx = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), mergedAttrCtxParam);
 
-            // Create new resolved attribute, set the new attribute as target, and apply "is.linkedEntity.identifier" trait
-            ResolvedAttribute raNewMergeInto = createNewResolvedAttribute(projCtx, attrCtxOpCombineAttrs, mergeIntoAttribute, null, addTrait);
+            // Create new resolved attribute, set the new attribute as target
+            ResolvedAttribute raNewMergeInto = createNewResolvedAttribute(projCtx, mergedAttrCtx, mergeIntoAttribute, null);
 
-            // update the new foreign key resolved attribute with trait param with reference details
-            ResolvedTrait reqdTrait = raNewMergeInto.fetchResolvedTraits().find(projCtx.getProjectionDirective().getResOpt(), "is.linkedEntity.identifier");
-            if (reqdTrait != null) {
-                CdmEntityReference traitParamEntRef = ProjectionResolutionCommonUtil.createForeignKeyLinkedEntityIdentifierTraitParameter(projCtx.getProjectionDirective(), projAttrStateSet.getCtx().getCorpus(), leafLevelMergePASList);
-                reqdTrait.getParameterValues().setParameterValue(projCtx.getProjectionDirective().getResOpt(), "entityReferences", traitParamEntRef);
-            }
-
-            // Create new output projection attribute state set for FK and add prevPas as previous state set
+            // Create new output projection attribute state set
             ProjectionAttributeState newMergeIntoPAS = new ProjectionAttributeState(projAttrStateSet.getCtx());
             newMergeIntoPAS.setCurrentResolvedAttribute(raNewMergeInto);
             newMergeIntoPAS.setPreviousStateList(pasMergeList);
@@ -205,7 +202,13 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
                         leafLevelCombineAttributeNames.get(select) != null &&
                         leafLevelCombineAttributeNames.get(select).size() > 0) {
                     for (ProjectionAttributeState leafLevelForSelect : leafLevelCombineAttributeNames.get(select)) {
-                        attrCtxTreeBuilder.createAndStoreAttributeContextParameters(select, leafLevelForSelect, newMergeIntoPAS.getCurrentResolvedAttribute(), CdmAttributeContextType.AttributeDefinition);
+                        attrCtxTreeBuilder.createAndStoreAttributeContextParameters(
+                                select,
+                                leafLevelForSelect,
+                                newMergeIntoPAS.getCurrentResolvedAttribute(),
+                                CdmAttributeContextType.AttributeDefinition,
+                                leafLevelForSelect.getCurrentResolvedAttribute().getAttCtx(), // lineage is the source att
+                                newMergeIntoPAS.getCurrentResolvedAttribute().getAttCtx()); // merge into points back here
                     }
                 }
             }
@@ -214,7 +217,7 @@ public class CdmOperationCombineAttributes extends CdmOperationBase {
         }
 
         // Create all the attribute contexts and construct the tree
-        attrCtxTreeBuilder.constructAttributeContextTree(projCtx, true);
+        attrCtxTreeBuilder.constructAttributeContextTree(projCtx);
 
         return projAttrStateSet;
     }
