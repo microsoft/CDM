@@ -34,7 +34,6 @@ public class CdmStandardsAdapter extends NetworkAdapter {
    */
   public CdmStandardsAdapter() {
     this("/logical");
-    this.httpClient = new CdmHttpClient(STANDARDS_ENDPOINT);
   }
 
   /**
@@ -43,6 +42,7 @@ public class CdmStandardsAdapter extends NetworkAdapter {
    */
   public CdmStandardsAdapter(String root) {
     this.root = root;
+    this.httpClient = new CdmHttpClient(STANDARDS_ENDPOINT);
   }
 
   @Override

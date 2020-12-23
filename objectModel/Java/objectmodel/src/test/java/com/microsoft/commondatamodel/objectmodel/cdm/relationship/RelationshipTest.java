@@ -305,6 +305,55 @@ public class RelationshipTest {
         verifyRelationships(manifest, expectedRels);
   }
 
+  /**
+   * Test that relationships between entities in different namespaces are created correctly
+   */
+  @Test
+  public void testRelationshipToDifferentNamespace()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testRelationshipToDifferentNamespace", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipToDifferentNamespace", null);
+        // entity B will be in a different namespace
+        corpus.getStorage().mount("differentNamespace", new LocalAdapter(TestHelper.getInputFolderPath(TESTS_SUBPATH, "TestRelationshipToDifferentNamespace") + "/differentNamespace"));
+
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+  }
+
+  /**
+   * Test that relationships pointing from a manifest to an entity in a submanifest create correct paths
+   */
+  @Test
+  public void testRelationshipPointingToSubManifest()
+      throws JsonMappingException, JsonProcessingException, IOException, InterruptedException, ExecutionException {
+        final List<E2ERelationship> expectedRels = 
+          JMapper.MAP.readValue(TestHelper.getExpectedOutputFileContent(
+          TESTS_SUBPATH,
+          "testRelationshipPointingToSubManifest", 
+          "expectedRels.json"),
+          new TypeReference<List<E2ERelationship>>() {
+        });
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testRelationshipPointingToSubManifest", null);
+        final CdmManifestDefinition manifest = corpus.<CdmManifestDefinition>fetchObjectAsync("local:/main.manifest.cdm.json").join();
+
+        corpus.calculateEntityGraphAsync(manifest).get();
+        manifest.populateManifestRelationshipsAsync().get();
+
+        // check that each relationship has been created correctly
+        verifyRelationships(manifest, expectedRels);
+  }
+
   private static void verifyRelationships(CdmManifestDefinition manifest, List<E2ERelationship> expectedRelationships) {
     Assert.assertEquals(manifest.getRelationships().size(), expectedRelationships.size());
 

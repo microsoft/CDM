@@ -15,7 +15,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     [TestClass]
     public class ProjectionFKTest
     {
-        private static List<List<string>> restOptsCombinations = new List<List<string>>() {
+        private static List<List<string>> resOptsCombinations = new List<List<string>>() {
             new List<string> { },
             new List<string> { "referenceOnly" },
             new List<string> { "normalized" },
@@ -37,7 +37,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestEntityAttribute";
             string entityName = "SalesEntityAttribute";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -49,7 +49,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestEntityAttributeProj";
             string entityName = "SalesEntityAttribute";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -61,7 +61,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestSourceWithEA";
             string entityName = "SalesSourceWithEA";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -73,7 +73,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestSourceWithEAProj";
             string entityName = "SalesSourceWithEA";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -85,7 +85,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestGroupFK";
             string entityName = "SalesGroupFK";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -97,7 +97,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestGroupFKProj";
             string entityName = "SalesGroupFK";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -109,7 +109,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestNestedFKProj";
             string entityName = "SalesNestedFK";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -121,7 +121,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestPolymorphic";
             string entityName = "PersonPolymorphicSource";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -133,7 +133,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestPolymorphicProj";
             string entityName = "PersonPolymorphicSource";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -145,7 +145,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestPolymorphicFKProj";
             string entityName = "PersonPolymorphicSourceFK";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -157,7 +157,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestArraySource";
             string entityName = "SalesArraySource";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -169,7 +169,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestArraySourceProj";
             string entityName = "SalesArraySource";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -181,7 +181,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestForeignKey";
             string entityName = "SalesForeignKey";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -193,7 +193,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestForeignKeyProj";
             string entityName = "SalesForeignKey";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -205,7 +205,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestForeignKeyAlways";
             string entityName = "SalesForeignKeyAlways";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
@@ -217,10 +217,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             string testName = "TestCompositeKeyProj";
             string entityName = "SalesCompositeKey";
 
-            foreach (List<string> resOpt in restOptsCombinations)
+            foreach (List<string> resOpt in resOptsCombinations)
             {
                 await LoadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
             }
+        }
+
+        /// <summary>
+        /// Test resolving a type attribute with a replace as foreign key operation
+        /// </summary>
+        [TestMethod]
+        public async Task TestTypeAttributeProj()
+        {
+            string testName = "TestTypeAttributeProj";
+            string entityName = "Person";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+
+            foreach (List<string> resOpt in resOptsCombinations)
+            {
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+            }
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+
+            // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+            // Replace as foreign key applied to "address", replace with "addressId"
+            Assert.AreEqual(5, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("addressId", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
         }
 
         private async Task LoadEntityForResolutionOptionAndSave(string testName, string entityName, List<string> resOpts)

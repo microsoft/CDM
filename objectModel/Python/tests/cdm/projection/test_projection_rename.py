@@ -758,3 +758,25 @@ class ProjectionRenameTest(unittest.TestCase):
         self.assertEqual('title', att_group2.members[0].name)
         self.assertEqual('company', att_group2.members[1].name)
         self.assertEqual('tenure', att_group2.members[2].name)
+
+    @async_test
+    async def test_type_attribute_proj(self):
+        """Test resolving a type attribute with a rename attributes operation"""
+        test_name = 'test_type_attribute_proj'
+        entity_name = 'Person'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+
+        for res_opt in self.res_opts_combinations:
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
+
+        entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'referenceOnly' ])
+
+        # Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        # Rename with format "n{a}e{o}w{M}" attributes ["address"]
+        self.assertEqual(5, len(resolved_entity.attributes))
+        self.assertEqual('name', resolved_entity.attributes[0].name)
+        self.assertEqual('age', resolved_entity.attributes[1].name)
+        self.assertEqual('newAddress', resolved_entity.attributes[2].name)
+        self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
+        self.assertEqual('email', resolved_entity.attributes[4].name)

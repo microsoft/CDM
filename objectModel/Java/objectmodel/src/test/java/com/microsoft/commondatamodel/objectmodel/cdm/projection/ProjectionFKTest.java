@@ -4,11 +4,8 @@
 package com.microsoft.commondatamodel.objectmodel.cdm.projection;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.ProjectionTestUtils;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmFolderDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
 import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import org.testng.Assert;
@@ -204,6 +201,32 @@ public class ProjectionFKTest {
         for (List<String> resOpt : resOptsCombinations) {
             loadEntityForResolutionOptionAndSave(testName, entityName, resOpt).join();
         }
+    }
+
+    /**
+     * Test resolving a type attribute with a replace as foreign key operation
+     */
+    @Test
+    public void testTypeAttributeProj() throws InterruptedException {
+        String testName = "testTypeAttributeProj";
+        String entityName = "Person";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+
+        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList("referenceOnly"))).join();
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Replace as foreign key applied to "address", replace with "addressId"
+        Assert.assertEquals(resolvedEntity.getAttributes().size(), 5);
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "name");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "age");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "addressId");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "phoneNumber");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName(), "email");
     }
 
     private CompletableFuture<Void> loadEntityForResolutionOptionAndSave(String testName, String entityName, List<String> resOpts) {

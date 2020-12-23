@@ -294,7 +294,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         Logger.warning(
             CdmDataPartitionPatternDefinition.class.getSimpleName(),
             this.getCtx(),
-            Logger.format("The folder location '{0}' described by a partition pattern does not exist", rootCorpus),
+            Logger.format("Failed to fetch all files in the folder location '{0}' described by a partition pattern. Exception: '{1}'", rootCorpus, e.getMessage()),
             "fileStatusCheckAsync"
         );
       }

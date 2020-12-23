@@ -387,7 +387,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         {
                             for (int i = 0; i < attsPick.Count; i++)
                             {
-                                if (attsPick.AllItems[i].ObjectType == CdmObjectType.EntityAttributeDef)
+                                if (attsPick[i].ObjectType == CdmObjectType.EntityAttributeDef)
                                 {
                                     // a table within a table. as expected with a selectsOne attribute
                                     // since this is by ref, we won't get the atts from the table, but we do need the traits that hold the key
@@ -487,10 +487,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                         string attNamePath = ((CdmObjectReferenceBase)attRef).NamedReference;
                                         string attName = attNamePath.Split('/').Last();                                // path should be absolute and without a namespace
                                         string relativeEntPath = Ctx.Corpus.Storage.CreateAbsoluteCorpusPath(entDef.AtCorpusPath, entDef.InDocument);
-                                        if (relativeEntPath.StartsWith($"{nameSpace}:"))
-                                        {
-                                            relativeEntPath = relativeEntPath.Substring(nameSpace.Length + 1);
-                                        }
                                         entReferences.Add(relativeEntPath);
                                         attReferences.Add(attName);
                                     }

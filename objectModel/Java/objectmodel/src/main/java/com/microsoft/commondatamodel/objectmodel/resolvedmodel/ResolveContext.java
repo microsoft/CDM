@@ -11,7 +11,9 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.utilities.EventCallback;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveContextScope;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+import com.microsoft.commondatamodel.objectmodel.utilities.logger.EventList;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Stack;
@@ -27,6 +29,8 @@ public class ResolveContext implements CdmCorpusContext {
   private String relativePath;
   private CdmStatusLevel reportAtLevel;
   private EventCallback statusEvent;
+  private EventList events;
+  private String correlationId;
 
   public ResolveContext(final CdmCorpusDefinition corpus) {
     this(corpus, null);
@@ -41,6 +45,7 @@ public class ResolveContext implements CdmCorpusContext {
     this.statusEvent = statusEvent;
     this.cache = new LinkedHashMap<>();
     this.corpus = corpus;
+    this.events = new EventList();
   }
 
   @Override
@@ -70,6 +75,21 @@ public class ResolveContext implements CdmCorpusContext {
 
   @Override
   public void setStatusEvent(final EventCallback value) { this.statusEvent = value; }
+
+  @Override
+  public EventList getEvents() {
+    return events;
+  }
+
+  @Override
+  public String getCorrelationId() {
+    return correlationId;
+  }
+
+  @Override
+  public void setCorrelationId(String correlationId) {
+    this.correlationId = correlationId;
+  }
 
   public void pushScope(CdmTraitDefinition currentTrait) {
     if (this.scopeStack == null) {

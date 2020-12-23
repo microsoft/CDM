@@ -28,6 +28,11 @@ public class EntityAttributePersistence {
         ctx.getCorpus().makeObject(CdmObjectType.EntityAttributeDef,
             obj.get("name").asText());
 
+
+    entityAttribute.setExplanation(Utils.propertyFromDataToString(obj.get("explanation")));
+    entityAttribute.updateDescription(Utils.propertyFromDataToString(obj.get("description")));
+    entityAttribute.updateDisplayName(Utils.propertyFromDataToString(obj.get("displayName")));
+
     if (obj.get("cardinality") != null) {
       String minCardinality = null;
       if (obj.get("cardinality").get("minimum") != null) {
@@ -60,13 +65,6 @@ public class EntityAttributePersistence {
         entityAttribute.getCardinality().setMaximum(maxCardinality);
       }
     }
-
-    if (obj.has("explanation")) {
-      entityAttribute.setExplanation(obj.get("explanation").asText());
-    }
-
-    entityAttribute.updateDescription(Utils.propertyFromDataToString(obj.get("description")));
-    entityAttribute.updateDisplayName(Utils.propertyFromDataToString(obj.get("displayName")));
 
     if (obj.has("isPolymorphicSource")) {
       entityAttribute.setIsPolymorphicSource(obj.get("isPolymorphicSource").asBoolean());
@@ -119,8 +117,7 @@ public class EntityAttributePersistence {
           .collect(Collectors.toList()),
       resOpt,
       options));
-    result.setResolutionGuidance(
-            JMapper.MAP.valueToTree(Utils.jsonForm(instance.getResolutionGuidance(), resOpt, options)));
+    result.setResolutionGuidance(Utils.jsonForm(instance.getResolutionGuidance(), resOpt, options));
     return result;
   }
 }

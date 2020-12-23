@@ -18,10 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     using Newtonsoft.Json;
     using System.Security.Cryptography;
     using Newtonsoft.Json.Linq;
-    using System.Diagnostics;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System.ComponentModel;
-    using System.IO;
 
     public class ADLSAdapter : NetworkAdapter
     {
@@ -90,6 +87,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         public TokenProvider TokenProvider { get; set; }
 
         /// <summary>
+        /// Maximum number of items to be returned by the directory list API.
+        /// If omitted or greater than 5,000, the response will include up to 5,000 items.
+        /// </summary>
+        public int HttpMaxResults = 5000;
+
+        /// <summary>
         /// The map from corpus path to adapter path.
         /// </summary>
         private readonly IDictionary<string, string> adapterPaths = new Dictionary<string, string>();
@@ -144,6 +147,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The MS version key, used during shared key auth.
         /// </summary>
         private const string HttpXmsVersion = "x-ms-version";
+
+        /// <summary>
+        /// The MS continuation token key, used when the number of files to list is more than HttpMaxResults.
+        /// </summary>
+        private const string HttpXmsContinuation = "x-ms-continuation";
 
         internal const string Type = "adls";
 
@@ -305,27 +313,19 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
                 var httpRequest = await this.BuildRequest(url, HttpMethod.Head);
 
-                try
+                using (var cdmResponse = await base.ExecuteRequest(httpRequest))
                 {
-                    using (var cdmResponse = await base.ExecuteRequest(httpRequest))
+                    if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
                     {
-                        if (cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                        var lastTime = cdmResponse.Content.Headers.LastModified;
+                        if (this.IsCacheEnabled && lastTime.HasValue)
                         {
-                            var lastTime = cdmResponse.Content.Headers.LastModified;
-                            if (this.IsCacheEnabled && lastTime.HasValue)
-                            {
-                                this.fileModifiedTimeCache[corpusPath] = lastTime.Value;
-                            }
-                            return lastTime;
+                            this.fileModifiedTimeCache[corpusPath] = lastTime.Value;
                         }
+                        return lastTime;
                     }
                 }
-                catch (HttpRequestException ex)
-                {
-                    // We don't have standard logger here, so use one from system diagnostics
-                    Debug.WriteLine($"ADLS file not found, skipping last modified time calculation for it. Exception: {ex}");
-                }
-                
+
                 return null;
             }
         }
@@ -347,46 +347,63 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 directory = directory.Substring(1);
             }
 
-            var request = await this.BuildRequest($"{url}?directory={directory}&recursive=True&resource=filesystem", HttpMethod.Get);
+            List<string> result = new List<string>();
+            string continuationToken = null;
 
-
-            using (var cdmResponse = await base.ExecuteRequest(request))
+            do
             {
-                if (!cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
+                CdmHttpRequest request;
+
+                if (continuationToken == null)
                 {
-                    return null;
+                    request = await this.BuildRequest($"{url}?directory={directory}&maxResults={this.HttpMaxResults}&recursive=True&resource=filesystem", HttpMethod.Get);
+                }
+                else
+                {
+                    // The number of paths returned with each invocation is limited. When a continuation token is returned in the response,
+                    // it must be specified in a subsequent invocation of the list operation to continue listing the paths.
+                    request = await this.BuildRequest($"{url}?continuation={Uri.EscapeDataString(continuationToken)}&directory={directory}&maxResults={this.HttpMaxResults}&recursive=True&resource=filesystem", HttpMethod.Get);
                 }
 
-                string json = await cdmResponse.Content.ReadAsStringAsync();
-                JObject jObject1 = JObject.Parse(json);
-
-                JArray jArray = JArray.FromObject(jObject1.GetValue("paths"));
-                List<string> result = new List<string>();
-
-                foreach (JObject jObject in jArray.Children<JObject>())
+                using (var cdmResponse = await base.ExecuteRequest(request))
                 {
-                    jObject.TryGetValue("isDirectory", StringComparison.OrdinalIgnoreCase, out JToken isDirectory);
-                    if (isDirectory == null || !isDirectory.ToObject<bool>())
+                    if (!cdmResponse.StatusCode.Equals(HttpStatusCode.OK))
                     {
-                        jObject.TryGetValue("name", StringComparison.OrdinalIgnoreCase, out JToken name);
+                        return null;
+                    }
 
-                        string nameWithoutSubPath = this.unescapedRootSubPath.Length > 0 && name.ToString().StartsWith(this.unescapedRootSubPath) ?
-                            name.ToString().Substring(this.unescapedRootSubPath.Length + 1) : name.ToString();
+                    continuationToken = null;
+                    cdmResponse.ResponseHeaders.TryGetValue(HttpXmsContinuation, out continuationToken);
 
-                        string path = this.FormatCorpusPath(nameWithoutSubPath);
-                        result.Add(path);
+                    string json = await cdmResponse.Content.ReadAsStringAsync();
+                    JObject jObject1 = JObject.Parse(json);
+                    JArray jArray = JArray.FromObject(jObject1.GetValue("paths"));
 
-                        jObject.TryGetValue("lastModified", StringComparison.OrdinalIgnoreCase, out JToken lastModifiedTime);
-
-                        if (this.IsCacheEnabled && DateTimeOffset.TryParse(lastModifiedTime.ToString(), out DateTimeOffset offset))
+                    foreach (JObject jObject in jArray.Children<JObject>())
+                    {
+                        jObject.TryGetValue("isDirectory", StringComparison.OrdinalIgnoreCase, out JToken isDirectory);
+                        if (isDirectory == null || !isDirectory.ToObject<bool>())
                         {
-                            fileModifiedTimeCache[path] = offset;
+                            jObject.TryGetValue("name", StringComparison.OrdinalIgnoreCase, out JToken name);
+
+                            string nameWithoutSubPath = this.unescapedRootSubPath.Length > 0 && name.ToString().StartsWith(this.unescapedRootSubPath) ?
+                                name.ToString().Substring(this.unescapedRootSubPath.Length + 1) : name.ToString();
+
+                            string path = this.FormatCorpusPath(nameWithoutSubPath);
+                            result.Add(path);
+
+                            jObject.TryGetValue("lastModified", StringComparison.OrdinalIgnoreCase, out JToken lastModifiedTime);
+
+                            if (this.IsCacheEnabled && DateTimeOffset.TryParse(lastModifiedTime.ToString(), out DateTimeOffset offset))
+                            {
+                                fileModifiedTimeCache[path] = offset;
+                            }
                         }
                     }
                 }
-                
-                return result;
-            }
+            } while (!string.IsNullOrWhiteSpace(continuationToken));
+
+            return result;
         }
 
         /// <inheritdoc />
@@ -541,7 +558,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 foreach (var parameter in queryParameters)
                 {
                     string[] keyValuePair = parameter.Split('=');
-                    builder.Append($"\n{keyValuePair[0]}:{Uri.UnescapeDataString(keyValuePair[1])}");
+                    builder.Append($"\n{keyValuePair[0].ToLower()}:{Uri.UnescapeDataString(keyValuePair[1])}");
                 }
             }
 

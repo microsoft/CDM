@@ -32,6 +32,10 @@ public class ResourceAdapter extends StorageAdapterBase {
 
             final InputStream resourcePath = ResourceAdapter.class.getResourceAsStream(corpusPath);
 
+            if (resourcePath == null) {
+                throw new StorageAdapterException("There is no resource found for " + corpusPath);
+            }
+
             // Read the file from the resource path line by line.
             try (final BufferedReader br = new BufferedReader(new InputStreamReader(resourcePath))) {
                 final StringBuilder result = new StringBuilder();

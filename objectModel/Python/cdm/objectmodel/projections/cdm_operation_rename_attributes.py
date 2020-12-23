@@ -119,11 +119,11 @@ class CdmOperationRenameAttributes(CdmOperationBase):
                     res_attr_new = self._create_new_resolved_attribute(proj_ctx, None, current_PAS._current_resolved_attribute.target, new_attribute_name)  # type: ResolvedAttribute
 
                     # Get the attribute name the way it appears in the applyTo list
-                    applyToName = top_level_rename_attribute_names[current_PAS._current_resolved_attribute.resolved_name]
+                    apply_to_name = top_level_rename_attribute_names[current_PAS._current_resolved_attribute.resolved_name]
 
                     # Create the attribute context parameters and just store it in the builder for now
                     # We will create the attribute contexts at the end
-                    attr_ctx_tree_builder._create_and_store_attribute_context_parameters(applyToName, current_PAS, res_attr_new, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                    attr_ctx_tree_builder._create_and_store_attribute_context_parameters(apply_to_name, current_PAS, res_attr_new, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
 
                     # Create a projection attribute state for the renamed attribute by creating a copy of the current state
                     # Copy() sets the current state as the previous state for the new one

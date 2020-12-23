@@ -39,7 +39,8 @@ map_type_name_to_enum = {
     'operationRenameAttributes': CdmAttributeContextType.OPERATION_RENAME_ATTRIBUTES,
     'operationReplaceAsForeignKey': CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY,
     'operationIncludeAttributes': CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES,
-    'operationAddAttributeGroup': CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP
+    'operationAddAttributeGroup': CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP,
+    'unknown': CdmAttributeContextType.UNKNOWN
 }
 
 map_enum_to_type_name = {
@@ -65,7 +66,8 @@ map_enum_to_type_name = {
     CdmAttributeContextType.OPERATION_RENAME_ATTRIBUTES: 'operationRenameAttributes',
     CdmAttributeContextType.OPERATION_REPLACE_AS_FOREIGN_KEY: 'operationReplaceAsForeignKey',
     CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES: 'operationIncludeAttributes',
-    CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP: 'operationAddAttributeGroup'
+    CdmAttributeContextType.OPERATION_ADD_ATTRIBUTE_GROUP: 'operationAddAttributeGroup',
+    CdmAttributeContextType.UNKNOWN: 'unknown'
 }
 
 

@@ -60,6 +60,10 @@ public class StorageManager {
     }
 
     if (adapter != null) {
+      if (adapter instanceof StorageAdapterBase) {
+        ((StorageAdapterBase) adapter).setCtx(this.corpus.getCtx());
+      }
+
       this.namespaceAdapters.put(nameSpace, adapter);
       final CdmFolderDefinition fd = new CdmFolderDefinition(this.corpus.getCtx(), "");
       fd.setCorpus(this.corpus);
@@ -306,7 +310,7 @@ public class StorageManager {
 
   public String createAbsoluteCorpusPath(final String objectPath, final CdmObject obj) {
     if (StringUtils.isNullOrTrimEmpty(objectPath)) {
-      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The object path cannot null or empty.", "createAbsoluteCorpusPath");
+      Logger.error(StorageManager.class.getSimpleName(), this.corpus.getCtx(), "The object path cannot be null or empty.", "createAbsoluteCorpusPath");
       return null;
     }
 
@@ -453,6 +457,7 @@ public class StorageManager {
   }
 
   /**
+   * @return Integer
    * Maximum number of documents read concurrently when loading imports.
    */
   public Integer getMaxConcurrentReads() {
@@ -460,6 +465,7 @@ public class StorageManager {
   }
 
   /**
+   * @param maxConcurrentReads Integer
    * Maximum number of documents read concurrently when loading imports.
    */
   public void setMaxConcurrentReads(Integer maxConcurrentReads) {

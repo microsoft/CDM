@@ -13,9 +13,18 @@ class StorageAdapterBase:
 
     def __init__(self):
         self.location_hint = None  # type: Optional[str]
-
+        self._ctx = None # type: CdmCorpusContext 
+    
         # --- internal ---
         self._active_cache_context = set() # type: Set[CacheContext] 
+
+    @property
+    def ctx(self) -> str:
+        return self._ctx
+
+    @ctx.setter
+    def ctx(self, value: str):
+        self._ctx = value
 
     @property
     def location_hint(self) -> str:

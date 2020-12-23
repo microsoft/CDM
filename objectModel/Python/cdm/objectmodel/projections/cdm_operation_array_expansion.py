@@ -5,6 +5,7 @@ from typing import Optional, TYPE_CHECKING
 
 from cdm.enums import CdmObjectType, CdmOperationType, CdmAttributeContextType
 from cdm.objectmodel import CdmAttributeContext
+from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.utilities import logger, Errors, AttributeContextParameters
 
@@ -117,6 +118,11 @@ class CdmOperationArrayExpansion(CdmOperationBase):
                     attr_ctx_expanded_attr_param._type = CdmAttributeContextType.ATTRIBUTE_DEFINITION
                     attr_ctx_expanded_attr_param._name = '{}@{}'.format(current_PAS._current_resolved_attribute.resolved_name, i)
                     attr_ctx_expanded_attr = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_expanded_attr_param)
+
+                    if isinstance(current_PAS._current_resolved_attribute.target, ResolvedAttributeSet):
+                        logger.error(self._TAG, self.ctx, 'Array expansion operation does not support attribute groups.')
+                        proj_attr_states_from_rounds.clear()
+                        break
 
                     # Create a new resolved attribute for the expanded attribute
                     new_res_attr = self._create_new_resolved_attribute(proj_ctx, attr_ctx_expanded_attr, current_PAS._current_resolved_attribute.target, current_PAS._current_resolved_attribute.resolved_name)

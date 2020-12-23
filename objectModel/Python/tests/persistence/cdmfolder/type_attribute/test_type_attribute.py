@@ -74,6 +74,7 @@ class TypeAttributeTest(unittest.TestCase):
         argument_value = is_identified_by2.arguments[0].value  # type: CdmAttributeReference
         self.assertEqual('TeamMembership/(resolvedAttributes)/teamMembershipId', argument_value.named_reference)
 
+    @async_test
     async def test_reading_is_primary_key_constructed_from_purpose(self):
         test_input_path = TestHelper.get_input_folder_path(self.tests_subpath, 'test_reading_is_primary_key_constructed_from_purpose')
         corpus = CdmCorpusDefinition()

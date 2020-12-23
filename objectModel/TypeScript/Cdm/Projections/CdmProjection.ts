@@ -12,7 +12,6 @@ import {
     CdmObjectDefinitionBase,
     cdmObjectType,
     CdmOperationCollection,
-    ConditionExpression,
     Errors,
     Logger,
     ProjectionAttributeState,
@@ -54,7 +53,18 @@ export class CdmProjection extends CdmObjectDefinitionBase {
     /**
      * Property of a projection that holds the source of the operation
      */
-    public source: CdmEntityReference;
+    private _source: CdmEntityReference;
+
+    public get source(): CdmEntityReference {
+        return this._source;
+    }
+
+    public set source(source: CdmEntityReference) {
+        if (source) {
+            source.owner = this;
+        }
+        this._source = source;
+    }
 
     /**
      * Projection constructor
@@ -102,7 +112,22 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         const missingFields: string[] = [];
 
         if (!this.source) {
-            missingFields.push('source');
+            const rootOwner: CdmObject = this.getRootOwner();
+            if (rootOwner.objectType !== cdmObjectType.typeAttributeDef) {
+                // If the projection is used in an entity attribute or an extends entity
+                missingFields.push('source');
+            }
+        } else if (!this.source.explicitReference || this.source.explicitReference.objectType !== cdmObjectType.projectionDef) {
+            // If reached the inner most projection
+            const rootOwner: CdmObject = this.getRootOwner();
+            if (rootOwner.objectType == cdmObjectType.typeAttributeDef) {
+                // If the projection is used in a type attribute
+                Logger.error(
+                    this.TAG,
+                    this.ctx, 'Source can only be another projection in a type attribute.',
+                    this.validate.name
+                );
+            }
         }
 
         if (missingFields.length > 0) {
@@ -185,19 +210,13 @@ export class CdmProjection extends CdmObjectDefinitionBase {
      * - Process operations
      * @internal
      */
-    public constructProjectionContext(projDirective: ProjectionDirective, attrCtx: CdmAttributeContext): ProjectionContext {
+    public constructProjectionContext(projDirective: ProjectionDirective, attrCtx: CdmAttributeContext, ras: ResolvedAttributeSet = undefined): ProjectionContext {
         let projContext: ProjectionContext;
+        const condition: string = this.condition ? this.condition : '(true)';
 
-        if (!this.condition) {
-            // if no condition is provided, get default condition and persist
-            this.condition = ConditionExpression.getDefaultConditionExpression(this.operations, this.owner);
-        }
         // create an expression tree based on the condition
         const tree: ExpressionTree = new ExpressionTree();
-        this.conditionExpressionTreeRoot = tree.constructExpressionTree(this.condition);
-        if (!this.conditionExpressionTreeRoot) {
-            Logger.info(this.TAG, this.ctx, 'Optional expression missing. Implicit expression will automatically apply.', this.constructProjectionContext.name);
-        }
+        this.conditionExpressionTreeRoot = tree.constructExpressionTree(condition);
 
         if (attrCtx) {
             // Add projection to context tree
@@ -219,36 +238,45 @@ export class CdmProjection extends CdmObjectDefinitionBase {
             };
             const acSource: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpSource);
 
-            if (this.source.fetchObjectDefinition<CdmObjectDefinition>(projDirective.resOpt).objectType === cdmObjectType.projectionDef) {
-                // A Projection
+            // Initialize the projection context
+            const ctx: CdmCorpusContext = (projDirective.owner?.ctx);
 
-                projContext = (this.source.explicitReference as CdmProjection).constructProjectionContext(projDirective, acSource);
-            } else {
-                // An Entity Reference
+            if (this.source) {
+                const source: CdmObjectDefinition = this.source.fetchObjectDefinition<CdmObjectDefinition>(projDirective.resOpt);
+                if (source.objectType === cdmObjectType.projectionDef) {
+                    // A Projection
 
-                const acpSourceProjection: AttributeContextParameters = {
-                    under: acSource,
-                    type: cdmAttributeContextType.entity,
-                    name: this.source.namedReference ?? this.source.explicitReference.getName(),
-                    regarding: this.source,
-                    includeTraits: false
-                };
-                const ras: ResolvedAttributeSet = this.source.fetchResolvedAttributes(projDirective.resOpt, acpSourceProjection);
+                    projContext = (this.source.explicitReference as CdmProjection).constructProjectionContext(projDirective, acSource, ras);
+                } else {
+                    // An Entity Reference
 
-                // Initialize the projection context
+                    const acpSourceProjection: AttributeContextParameters = {
+                        under: acSource,
+                        type: cdmAttributeContextType.entity,
+                        name: this.source.namedReference ?? this.source.explicitReference.getName(),
+                        regarding: this.source,
+                        includeTraits: false
+                    };
+                    
+                    ras = this.source.fetchResolvedAttributes(projDirective.resOpt, acpSourceProjection);
 
-                const ctx: CdmCorpusContext = (projDirective.owner?.ctx);
+                    // If polymorphic keep original source as previous state
+                    let polySourceSet: Map<string, ProjectionAttributeState[]> = null;
+                    if (projDirective.isSourcePolymorphic) {
+                        polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, acpSourceProjection);
+                    }
 
-                let pasSet: ProjectionAttributeStateSet;
+                    // Now initialize projection attribute state
+                    const pasSet: ProjectionAttributeStateSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, projDirective.isSourcePolymorphic, polySourceSet);
 
-                // if polymorphic keep original source as previous state
-                let polySourceSet: Map<string, ProjectionAttributeState[]> = null;
-                if (projDirective.isSourcePolymorphic) {
-                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, acpSourceProjection);
+                    projContext = new ProjectionContext(projDirective, ras.attributeContext);
+                    projContext.currentAttributeStateSet = pasSet;
                 }
+            } else {
+                // A type attribute
 
-                // now initialize projection attribute state
-                pasSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, projDirective.isSourcePolymorphic, polySourceSet);
+                // Initialize projection attribute state
+                const pasSet: ProjectionAttributeStateSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras);
 
                 projContext = new ProjectionContext(projDirective, ras.attributeContext);
                 projContext.currentAttributeStateSet = pasSet;
@@ -324,5 +352,18 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         }
 
         return resolvedAttributeSet;
+    }
+
+    private getRootOwner(): CdmObject {
+        let rootOwner: CdmObject = this;
+        do {
+            rootOwner = rootOwner.owner;
+            // A projection can be inside an entity reference, so take the owner again to get the projection.
+            if (rootOwner && rootOwner.owner && rootOwner.owner.objectType === cdmObjectType.projectionDef) {
+                rootOwner = rootOwner.owner;
+            }
+        } while (rootOwner && rootOwner.objectType === cdmObjectType.projectionDef);
+
+        return rootOwner;
     }
 }

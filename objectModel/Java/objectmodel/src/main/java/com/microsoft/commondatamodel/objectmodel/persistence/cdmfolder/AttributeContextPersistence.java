@@ -177,7 +177,7 @@ public class AttributeContextPersistence {
       case "operationAddAttributeGroup":
         return CdmAttributeContextType.OperationAddAttributeGroup;
       default:
-        return null;
+        return CdmAttributeContextType.Unknown;
     }
   }
 

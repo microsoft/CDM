@@ -7,12 +7,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.ResolvedModel;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using System.Collections.Generic;
+    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
+    using System;
     using System.Collections.Concurrent;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using System;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
 
     internal class ImportPriorities
     {
@@ -60,6 +60,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal ImportPriorities ImportPriorities;
         internal bool NeedsIndexing;
         internal bool IsDirty = true;
+        /// <summary>
+        /// The maximum json semantic version supported by this ObjectModel version.
+        /// </summary>
+        public static string CurrentJsonSchemaSemanticVersion = "1.1.0";
 
         [Obsolete("Only for internal use")]
         public string FolderPath { get; set; }
@@ -83,7 +87,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             this.InDocument = this;
             this.ObjectType = CdmObjectType.DocumentDef;
             this.Name = name;
-            this.JsonSchemaSemanticVersion = "1.0.0";
+            this.JsonSchemaSemanticVersion = CurrentJsonSchemaSemanticVersion;
             this.DocumentVersion = null;
             this.NeedsIndexing = true;
             this.IsDirty = true;
@@ -429,27 +433,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// </summary>
         public async Task<bool> SaveAsAsync(string newName, bool saveReferenced = false, CopyOptions options = null)
         {
-            if (options == null)
+            using (Logger.EnterScope(nameof(CdmDocumentDefinition), Ctx, nameof(SaveAsAsync)))
             {
-                options = new CopyOptions();
-            }
+                if (options == null)
+                {
+                    options = new CopyOptions();
+                }
 
-            ResolveOptions resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
-            if (!await this.IndexIfNeeded(resOpt))
-            {
-                Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to index document prior to save '{this.Name}'", nameof(SaveAsAsync));
-                return false;
-            }
+                ResolveOptions resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
+                if (!await this.IndexIfNeeded(resOpt))
+                {
+                    Logger.Error(nameof(CdmDocumentDefinition), (ResolveContext)this.Ctx, $"Failed to index document prior to save '{this.Name}'", nameof(SaveAsAsync));
+                    return false;
+                }
 
-            // if save to the same document name, then we are no longer 'dirty'
-            if (newName == this.Name)
-                this.IsDirty = false;
+                // if save to the same document name, then we are no longer 'dirty'
+                if (newName == this.Name)
+                    this.IsDirty = false;
 
-            if (await this.Ctx.Corpus.Persistence.SaveDocumentAsAsync(this, options, newName, saveReferenced) == false)
-            {
-                return false;
+                if (await this.Ctx.Corpus.Persistence.SaveDocumentAsAsync(this, options, newName, saveReferenced) == false)
+                {
+                    return false;
+                }
+                return true;
             }
-            return true;
         }
 
         /// <summary>

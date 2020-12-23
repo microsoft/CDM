@@ -1177,69 +1177,93 @@ public class CdmCorpusDefinition {
       final ResolveOptions resOpt,
       final boolean forceReload) {
 
-    final ResolveOptions finalResOpt = resOpt != null ? resOpt : new ResolveOptions();
+    try (Logger.LoggerScope logScope = Logger.enterScope(CdmCorpusDefinition.class.getSimpleName(), ctx, "fetchObjectAsync")) {
+      final ResolveOptions finalResOpt = resOpt != null ? resOpt : new ResolveOptions();
 
-    final String absolutePath = this.storage.createAbsoluteCorpusPath(objectPath, cdmObject);
+      // convert the object path to the absolute corpus path.
+      final String absolutePath = this.storage.createAbsoluteCorpusPath(objectPath, cdmObject);
 
-    String documentPath = absolutePath;
-    int documentNameIndex = absolutePath.lastIndexOf(CdmConstants.CDM_EXTENSION);
+      String documentPath = absolutePath;
+      int documentNameIndex = absolutePath.lastIndexOf(CdmConstants.CDM_EXTENSION);
 
-    if (documentNameIndex != -1) {
-      // entity path has to have at least one slash with the entity name at the end
-      documentNameIndex += CdmConstants.CDM_EXTENSION.length();
-      documentPath = absolutePath.substring(0, documentNameIndex);
-    }
+      if (documentNameIndex != -1) {
+        // entity path has to have at least one slash with the entity name at the end
+        documentNameIndex += CdmConstants.CDM_EXTENSION.length();
+        documentPath = absolutePath.substring(0, documentNameIndex);
+      }
 
-    Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("request object: {0}", objectPath), "fetchObjectAsync");
-    final CdmContainerDefinition newObj = this.loadFolderOrDocumentAsync(documentPath, forceReload).join();
+      Logger.debug(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("request object: {0}", objectPath), "fetchObjectAsync");
+      final CdmContainerDefinition newObj = this.loadFolderOrDocumentAsync(documentPath, forceReload).join();
 
-    if (newObj != null) {
-      // get imports and index each document that is loaded
-      if (newObj instanceof CdmDocumentDefinition) {
-        if (!((CdmDocumentDefinition) newObj).indexIfNeededAsync(finalResOpt, false).join()) {
-          return null;
+      if (newObj != null) {
+        // get imports and index each document that is loaded
+        if (newObj instanceof CdmDocumentDefinition) {
+          if (!((CdmDocumentDefinition) newObj).indexIfNeededAsync(finalResOpt, false).join()) {
+            return null;
+          }
+          if (!((CdmDocumentDefinition) newObj).isValid) {
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("The requested path: {0} involves a document that failed validation", objectPath), "fetchObjectAsync");
+            return null;
+          }
         }
-        if (!((CdmDocumentDefinition)newObj).isValid) {
-          Logger.error(CdmCorpusDefinition.class.getSimpleName(), this.ctx, Logger.format("The requested path: {0} involves a document that failed validation", objectPath), "fetchObjectAsync");
-          return null;
+
+        if (Objects.equals(documentPath, absolutePath)) {
+          return CompletableFuture.completedFuture((T) newObj);
         }
+
+        if (documentNameIndex == -1) {
+          return CompletableFuture.completedFuture(null);
+        }
+
+        // trim off the document path to get the object path in the doc
+        final String remainingObjectPath = absolutePath.substring(documentNameIndex + 1);
+
+        final CdmObject result = ((CdmDocumentDefinition) newObj).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
+        if (null == result) {
+          Logger.error(
+                  CdmCorpusDefinition.class.getSimpleName(),
+                  this.ctx,
+                  Logger.format("Could not find symbol '{0}' in document[{1}]", remainingObjectPath, newObj.getAtCorpusPath()),
+                  "fetchObjectAsync"
+          );
+        }
+
+        return CompletableFuture.completedFuture((T) result);
       }
-
-      if (Objects.equals(documentPath, absolutePath)) {
-        return CompletableFuture.completedFuture((T)newObj);
-      }
-
-      if (documentNameIndex == -1) {
-        return CompletableFuture.completedFuture(null);
-      }
-
-      // trim off the document path to get the object path in the doc
-      final String remainingObjectPath = absolutePath.substring(documentNameIndex + 1);
-
-      final CdmObject result = ((CdmDocumentDefinition) newObj).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
-      if (null == result) {
-        Logger.error(
-                CdmCorpusDefinition.class.getSimpleName(),
-                this.ctx,
-                Logger.format("Could not find symbol '{0}' in document[{1}]", remainingObjectPath, newObj.getAtCorpusPath()),
-                "fetchObjectAsync"
-        );
-      }
-
-      return CompletableFuture.completedFuture((T)result);
     }
 
     return CompletableFuture.completedFuture(null);
   }
 
+  /**
+   * Sets event callback function that will receive SDK's logs emitted at the CdmStatusLevel.Info or higher.
+   * @param status the callback
+   */
   public void setEventCallback(EventCallback status) {
-    setEventCallback(status, CdmStatusLevel.Info);
+    setEventCallback(status, CdmStatusLevel.Info, null);
   }
 
+  /**
+   * Sets event callback function that will receive SDK's logs emitted at the given level or higher.
+   * @param status the callback
+   * @param reportAtLevel messages at this or higher level will only be reported
+   */
   public void setEventCallback(EventCallback status, CdmStatusLevel reportAtLevel) {
+    setEventCallback(status, reportAtLevel, null);
+  }
+
+  /**
+   * Sets event callback function that will receive SDK's logs emitted at the given level or higer.
+   * If correlation ID is provided, each message will have the ID attached.
+   * @param status the callback
+   * @param reportAtLevel messages at this or higher level will only be reported
+   * @param correlationId optional correlation ID to attach to messages
+   */
+  public void setEventCallback(EventCallback status, CdmStatusLevel reportAtLevel, String correlationId) {
     ResolveContext ctx = (ResolveContext) this.ctx;
     ctx.setStatusEvent(status);
     ctx.setReportAtLevel(reportAtLevel);
+    ctx.setCorrelationId(correlationId);
   }
 
   private CompletableFuture<Void> visitManifestTreeAsync(
@@ -1737,7 +1761,7 @@ public class CdmCorpusDefinition {
           List<List<String>> fkArgValues = this.getToAttributes(attFromFk, resolvedResOpt);
 
           for (List<String> constEnt : fkArgValues) {
-            String absolutePath = this.getStorage().createAbsoluteCorpusPath(constEnt.get(0), toEntity);
+            String absolutePath = this.getStorage().createAbsoluteCorpusPath(constEnt.get(0), attFromFk);
             toAttList.add(new ImmutablePair<String, String>(absolutePath, constEnt.get(1)));
           }
         }
@@ -2227,7 +2251,7 @@ public class CdmCorpusDefinition {
 
             if (null == resNew) {
               String message = Logger.format(
-                  "Unable to resolve the reference: '{0}' to a known object, folderPath: '{1}', path: '{2}'",
+                  "Unable to resolve the reference '{0}' to a known object",
                   objectRef.getNamedReference(),
                   currentDoc.getFolderPath(),
                   path
@@ -2657,15 +2681,26 @@ public class CdmCorpusDefinition {
             Logger.format("Adapter not found for the Cdm object by ID {0}.", currObject.getId()),
             "computeLastModifiedTimeFromObjectAsync"
         );
-        return null;
+        return CompletableFuture.completedFuture(null);
       }
       // Remove namespace from path
       final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(currObject.getAtCorpusPath());
       if (pathTuple == null) {
         Logger.error(CdmCorpusDefinition.class.getSimpleName(), this.ctx, "The object's AtCorpusPath should not be null or empty.", "computeLastModifiedTimeFromObjectAsync");
+        return CompletableFuture.completedFuture(null);
+      }
+      try {
+        return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
+      } catch (Exception e) {
+        Logger.error(
+                CdmCorpusDefinition.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Failed to compute last modified time for '{0}'. Exception: '{1}'", pathTuple.getRight(), e.getMessage()),
+                "computeLastModifiedTimeFromObjectAsync"
+        );
+        
         return null;
       }
-      return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
     } else {
       return computeLastModifiedTimeFromObjectAsync(currObject.getInDocument());
     }
@@ -2690,7 +2725,7 @@ public class CdmCorpusDefinition {
     final Pair<String, String> pathTuple = StorageUtils.splitNamespacePath(corpusPath);
     if (pathTuple == null) {
       Logger.error(CdmCorpusDefinition.class.getSimpleName(), this.ctx, "The object path cannot be null or empty.", "computeLastModifiedTimeFromPartitionPathAsync");
-      return null;
+      return CompletableFuture.completedFuture(null);
     }
     final String nameSpace = pathTuple.getLeft();
 
@@ -2706,7 +2741,16 @@ public class CdmCorpusDefinition {
         );
         return CompletableFuture.completedFuture(null);
       }
-      return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
+      try {
+        return adapter.computeLastModifiedTimeAsync(pathTuple.getRight());
+      } catch (Exception e) {
+        Logger.error(
+                CdmCorpusDefinition.class.getSimpleName(),
+                this.ctx,
+                Logger.format("Failed to compute last modified time for '{0}'. Exception: '{1}'", pathTuple.getRight(), e.getMessage()),
+                "computeLastModifiedTimeFromPartitionPathAsync"
+        );
+      }
     }
 
     return CompletableFuture.completedFuture(null);
@@ -2835,6 +2879,7 @@ public class CdmCorpusDefinition {
   }
 
   /**
+   * @return CompletableFuture of Boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -2877,6 +2922,8 @@ public class CdmCorpusDefinition {
   }
 
   /**
+   * @param name String
+   * @return Cdm Type Attribute Definition
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

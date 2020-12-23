@@ -79,6 +79,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             typeAttribute.MaximumValue = Utils.PropertyFromDataToString(obj["maximumValue"]);
             typeAttribute.MinimumValue = Utils.PropertyFromDataToString(obj["minimumValue"]);
             typeAttribute.DefaultValue = obj["defaultValue"];
+            typeAttribute.Projection = ProjectionPersistence.FromData(ctx, obj["projection"]);
 
             var dataFormat = Utils.PropertyFromDataToString(obj["dataFormat"]);
             if (dataFormat != null)

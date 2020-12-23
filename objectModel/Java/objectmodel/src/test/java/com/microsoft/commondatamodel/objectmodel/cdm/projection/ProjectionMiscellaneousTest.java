@@ -47,46 +47,6 @@ public class ProjectionMiscellaneousTest {
             .toString();
 
     /**
-     * Test case scenario for Bug #25 from the projections internal bug bash
-     * Reference Link: https://commondatamodel.visualstudio.com/CDM/_workitems/edit/25
-     */
-    @Test
-    public void testMissingConditionInJson() throws InterruptedException {
-        String testName = "testMissingConditionInJson";
-
-        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
-        corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-            Assert.fail(message);
-        }, CdmStatusLevel.Warning);
-
-        CdmManifestDefinition manifest = (CdmManifestDefinition) corpus.fetchObjectAsync("default.manifest.cdm.json").join();
-
-        String entityName = "SalesNestedFK";
-        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName, manifest).join();
-        Assert.assertNotNull(entity);
-
-        ResolveOptions resOpt = new ResolveOptions(entity.getInDocument());
-        // where, resOptsCombinations[1] == "referenceOnly"
-        resOpt.setDirectives(new AttributeResolutionDirectiveSet(resOptsCombinations.get(1)));
-
-        CdmFolderDefinition resolvedFolder = corpus.getStorage().fetchRootFolder("output");
-
-        Map<String, Boolean> wasInfoMessageReceived = new HashMap<>();
-        wasInfoMessageReceived.put("infoMessageReceived", false);
-
-        corpus.setEventCallback((CdmStatusLevel level, String message) -> {
-            if (StringUtils.equalsWithIgnoreCase("CdmProjection | Optional expression missing. Implicit expression will automatically apply. | ConstructProjectionContext", message)) {
-                wasInfoMessageReceived.put("infoMessageReceived", true);
-            }
-        }, CdmStatusLevel.Info);
-
-        CdmEntityDefinition resolvedEntity = entity.createResolvedEntityAsync("Resolved_" + entityName + ".cdm.json", resOpt, resolvedFolder).join();
-        Assert.assertNotNull(resolvedEntity);
-
-        Assert.assertTrue(wasInfoMessageReceived.get("infoMessageReceived"));
-    }
-
-    /**
      * Test case scenario for Bug #24 from the projections internal bug bash
      * Reference Link: https://commondatamodel.visualstudio.com/CDM/_workitems/edit/24
      */

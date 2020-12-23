@@ -1,9 +1,11 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+import { CdmCorpusContext } from 'Cdm/CdmCorpusContext';
 import * as http from 'http';
 import * as https from '../../Storage/request';
 import { StorageAdapterConfigCallback } from '../../Storage/StorageAdapterConfigCallback';
+import { Logger } from '../Logging/Logger';
 import { CdmHttpRequest } from './CdmHttpRequest';
 import { CdmHttpResponse } from './CdmHttpResponse';
 import { HttpRequestCallback } from './HttpRequestCallback';
@@ -77,13 +79,14 @@ export class CdmHttpClient {
      */
     public async SendAsync(
         cdmRequest: CdmHttpRequest,
-        callback?: StorageAdapterConfigCallback): Promise<CdmHttpResponse> {
+        callback?: StorageAdapterConfigCallback,
+        ctx?: CdmCorpusContext): Promise<CdmHttpResponse> {
         // Merge headers first.
         this.headers.forEach((value: string, key: string) => {
             cdmRequest.headers.set(key, value);
         });
 
-        return this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback), 'Maximum timeout exceeded.');
+        return this.raceAsyncTaskAgainstTimeout(cdmRequest.maximumTimeout, this.SendAsyncHelper(cdmRequest, callback, ctx), 'Maximum timeout exceeded.');
     }
 
     /**
@@ -95,7 +98,8 @@ export class CdmHttpClient {
      */
     private async SendAsyncHelper(
         cdmRequest: CdmHttpRequest,
-        callback?: StorageAdapterConfigCallback): Promise<CdmHttpResponse> {
+        callback?: StorageAdapterConfigCallback,
+        ctx?: CdmCorpusContext): Promise<CdmHttpResponse> {
         return new Promise<CdmHttpResponse>(async (resolve, reject) => {
             let fullUrl: string;
 
@@ -126,10 +130,32 @@ export class CdmHttpClient {
                 let response: CdmHttpResponse;
 
                 try {
+                    const startTime = new Date();
+                    if (ctx != null) {
+                        Logger.info(
+                            CdmHttpClient.name,
+                            ctx,
+                            `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, retry number: ${retryNumber}.`,
+                            'SendAsyncHelper'
+                        );
+                    }
+
                     response = await this.raceAsyncTaskAgainstTimeout(
                         cdmRequest.timeout,
                         this.httpHandler(fullUrl, cdmRequest.method, cdmRequest.content, outgoingHeaders),
-                            'Request timeout.');
+                            'Request timeout.',
+                            ctx,
+                            `Request ${cdmRequest.requestId} timeout after ${cdmRequest.timeout/1000} s.`,);
+
+                    if (ctx != null) {
+                        const endTime = new Date();
+                        Logger.info(
+                            CdmHttpClient.name,
+                            ctx,
+                            `Response for request ${cdmRequest.requestId} received, elapsed time: ${endTime.valueOf() - startTime.valueOf()} ms.`,
+                            'SendAsyncHelper'
+                        );
+                    }
                 } catch (err) {
                     hasFailed = true;
 
@@ -187,10 +213,18 @@ export class CdmHttpClient {
      * @param {Promise} promise The promise that is competing against the timeout promise.
      * @return {Promise} which one the race.
      */
-    private async raceAsyncTaskAgainstTimeout(ms: number, promise: Promise<CdmHttpResponse>, errorMessage: string): Promise<CdmHttpResponse> {
+    private async raceAsyncTaskAgainstTimeout(ms: number, promise: Promise<CdmHttpResponse>, errorMessage: string, ctx?: CdmCorpusContext, infoMessage?: string): Promise<CdmHttpResponse> {
         let timeout;
         const timeoutPromise = new Promise<CdmHttpResponse>((resolve, reject) => {
             timeout = setTimeout(() => {
+                if (ctx != null && infoMessage != null) {
+                    Logger.info(
+                        CdmHttpClient.name,
+                        ctx,
+                        infoMessage,
+                        'raceAsyncTaskAgainstTimeout'
+                    );
+                }
                 clearTimeout(timeout);
                 reject(errorMessage);
             }, ms);

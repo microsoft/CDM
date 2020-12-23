@@ -1,6 +1,13 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using System.Runtime.CompilerServices;
+
+#if INTERNAL_VSTS
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Versioning" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
+#else
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Versioning")]
+#endif
 namespace Microsoft.CommonDataModel.ObjectModel.Persistence
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;

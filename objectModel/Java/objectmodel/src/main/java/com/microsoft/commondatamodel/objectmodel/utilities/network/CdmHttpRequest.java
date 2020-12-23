@@ -6,6 +6,7 @@ package com.microsoft.commondatamodel.objectmodel.utilities.network;
 import java.time.Duration;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class CdmHttpRequest {
     /**
@@ -33,6 +34,11 @@ public class CdmHttpRequest {
     private String requestedUrl;
 
     /**
+     * The unique id of the request for logging.
+     */
+    private UUID requestId;
+
+    /**
      * The timeout of a single request.
      */
     private Duration timeout;
@@ -58,6 +64,7 @@ public class CdmHttpRequest {
     public CdmHttpRequest(final String url, final int numberOfRetries, final String method) {
         this.headers = new LinkedHashMap<>();
         this.requestedUrl = url;
+        this.requestId = UUID.randomUUID();
         this.numberOfRetries = numberOfRetries;
 
         if (method == null) {
@@ -105,6 +112,14 @@ public class CdmHttpRequest {
 
     public void setRequestedUrl(final String requestedUrl) {
         this.requestedUrl = requestedUrl;
+    }
+
+    public UUID getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(final UUID requestId) {
+        this.requestId = requestId;
     }
 
     public Duration getTimeout() {

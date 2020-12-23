@@ -657,6 +657,7 @@ public class ResolvedAttributeSet extends RefCounted {
   /**
    * Everything in this set now 'belongs' to the specified owner
    * @deprecated This function is extremely likely to be removed in the public interface, and not
+   * @param ownerName String
    * meant to be called externally at all. Please refrain from using it.
    */
   @Deprecated
@@ -670,6 +671,8 @@ public class ResolvedAttributeSet extends RefCounted {
   }
 
   /**
+   * @param ownerName String
+   * @param rasNewOnes ResolvedAttributeSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

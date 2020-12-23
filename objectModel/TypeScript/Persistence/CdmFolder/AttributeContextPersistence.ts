@@ -128,6 +128,8 @@ export class AttributeContextPersistence {
                 return cdmAttributeContextType.operationIncludeAttributes;
             case 'operationAddAttributeGroup':
                 return cdmAttributeContextType.operationAddAttributeGroup;
+            case 'unknown':
+                return cdmAttributeContextType.unknown;
 
             default:
                 return -1;

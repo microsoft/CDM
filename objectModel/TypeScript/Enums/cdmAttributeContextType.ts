@@ -25,5 +25,6 @@ export enum cdmAttributeContextType {
     operationRenameAttributes,
     operationReplaceAsForeignKey,
     operationIncludeAttributes,
-    operationAddAttributeGroup
+    operationAddAttributeGroup,
+    unknown
 }

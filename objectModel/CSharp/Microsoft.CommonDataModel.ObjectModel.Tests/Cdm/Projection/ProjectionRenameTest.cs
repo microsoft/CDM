@@ -910,5 +910,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.AreEqual("company", (attGroup2.Members[1] as CdmTypeAttributeDefinition).Name);
             Assert.AreEqual("tenure", (attGroup2.Members[2] as CdmTypeAttributeDefinition).Name);
         }
+
+        /// <summary>
+        /// Test resolving a type attribute with a rename attributes operation
+        /// </summary>
+        [TestMethod]
+        public async Task TestTypeAttributeProj()
+        {
+            string testName = "TestTypeAttributeProj";
+            string entityName = "Person";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+
+            foreach (List<string> resOpt in resOptsCombinations)
+            {
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+            }
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+
+            // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+            // Rename with format "n{a}e{o}w{M}" attributes ["address"]
+            Assert.AreEqual(5, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("newAddress", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
+        }
     }
 }

@@ -12,6 +12,7 @@ from . import utils
 from .attribute_context_reference_persistence import AttributeContextReferencePersistence
 from .attribute_resolution_guidance_persistence import AttributeResolutionGuidancePersistence
 from .data_type_reference_persistence import DataTypeReferencePersistence
+from .projections.projection_persistence import ProjectionPersistence
 from .purpose_reference_persistence import PurposeReferencePersistence
 from .types import TypeAttribute
 
@@ -70,6 +71,7 @@ class TypeAttributePersistence:
         type_attribute.maximum_value = utils._property_from_data_to_string(data.maximumValue)
         type_attribute.minimum_value = utils._property_from_data_to_string(data.minimumValue)
         type_attribute.default_value = data.defaultValue
+        type_attribute.projection = ProjectionPersistence.from_data(ctx, data.projection)
 
         if data.get('dataFormat') is not None:
             try:

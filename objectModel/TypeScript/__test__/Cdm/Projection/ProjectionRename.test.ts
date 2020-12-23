@@ -1046,4 +1046,35 @@ describe('Cdm/Projection/ProjectionRenameAttributesTest', () => {
         expect((attGroup2.members[2] as CdmTypeAttributeDefinition).name)
             .toEqual('tenure');
     });
+
+    /**
+     * Test resolving a type attribute with a rename attributes operation
+     */
+    it('TestTypeAttributeProj', async () => {
+        const testName: string = 'TestTypeAttributeProj';
+        const entityName: string = 'Person';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+
+        for (const resOpt of resOptsCombinations) {
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+        }
+
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Rename with format "n{a}e{o}w{M}" attributes ["address"]
+        expect(resolvedEntity.attributes.length)
+            .toEqual(5);
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+            .toEqual('name');
+        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+            .toEqual('age');
+        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
+            .toEqual('newAddress');
+        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
+            .toEqual('phoneNumber');
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
+            .toEqual('email');
+    });
 });

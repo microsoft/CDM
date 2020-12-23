@@ -9,7 +9,6 @@ from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.resolvedmodel.expression_parser.expression_tree import ExpressionTree
 from cdm.resolvedmodel.expression_parser.input_values import InputValues
 from cdm.resolvedmodel.expression_parser.node import Node
-from cdm.resolvedmodel.projections.condition_expression import ConditionExpression
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
 from cdm.resolvedmodel.projections.projection_resolution_common_util import ProjectionResolutionCommonUtil
@@ -34,13 +33,13 @@ class CdmProjection(CdmObjectDefinition):
         # Property of a projection that holds a collection of operations
         self.operations = CdmOperationCollection(ctx, self)  # type: CdmOperationCollection
 
-        # Property of a projection that holds the source of the operation
-        self.source = None  # type: CdmEntityReference
-
         # --- internal ---
 
         # Condition expression tree that is built out of a condition expression string
         self._condition_expression_tree_root = None  # type: Node
+
+        # Property of a projection that holds the source of the operation
+        self._source = None  # type: Optional[CdmEntityReference]
 
         self._TAG = CdmProjection.__name__
 
@@ -55,6 +54,16 @@ class CdmProjection(CdmObjectDefinition):
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.PROJECTION_DEF
 
+    @property
+    def source(self) -> Optional['CdmEntityReference']:
+        return self._source
+
+    @source.setter
+    def source(self, value: Optional['CdmEntityReference']) -> None:
+        if value:
+            value.owner = self
+        self._source = value
+
     def is_derived_from(self, base: str, res_opt: Optional['ResolveOptions'] = None) -> bool:
         # Since projections don't support inheritance, return false
         return False
@@ -62,8 +71,17 @@ class CdmProjection(CdmObjectDefinition):
     def validate(self) -> bool:
         missing_fields = []
 
-        if not bool(self.source):
-            missing_fields.append('source')
+        if not self.source:
+            root_owner = self._get_root_owner()
+            if root_owner.object_type != CdmObjectType.TYPE_ATTRIBUTE_DEF:
+                # If the projection is used in an entity attribute or an extends entity
+                missing_fields.append('source')
+        elif not self.source.explicit_reference or self.source.explicit_reference.object_type != CdmObjectType.PROJECTION_DEF:
+            # If reached the inner most projection
+            root_owner = self._get_root_owner()
+            if root_owner.object_type == CdmObjectType.TYPE_ATTRIBUTE_DEF:
+                # If the projection is used in a type attribute
+                logger.error(self._TAG, self.ctx, 'Source can only be another projection in a type attribute.', 'validate')
 
         if len(missing_fields) > 0:
             logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, missing_fields))
@@ -108,7 +126,7 @@ class CdmProjection(CdmObjectDefinition):
     def _fetch_resolved_traits(self, res_opt: Optional['ResolveOptions'] = None) -> 'ResolvedTraitSet':
         return self.source._fetch_resolved_traits(res_opt)
 
-    def _construct_projection_context(self, proj_directive: 'ProjectionDirective', attr_ctx: 'CdmAttributeContext') -> 'ProjectionContext':
+    def _construct_projection_context(self, proj_directive: 'ProjectionDirective', attr_ctx: 'CdmAttributeContext', ras: Optional['ResolvedAttributeSet'] = None) -> 'ProjectionContext':
         """
         A function to construct projection context and populate the resolved attribute set that ExtractResolvedAttributes method can then extract
         This function is the entry point for projection resolution.
@@ -119,15 +137,11 @@ class CdmProjection(CdmObjectDefinition):
         """
         proj_context = None
 
-        if not self.condition:
-            # if no condition is provided, get default condition and persist
-            self.condition = ConditionExpression._get_default_condition_expression(self.operations, self.owner)
+        condition =  self.condition if self.condition  else "(true)"
 
         # create an expression tree based on the condition
         tree = ExpressionTree()
-        self._condition_expression_tree_root = tree._construct_expression_tree(self.condition)
-        if not self._condition_expression_tree_root:
-            logger.info(self._TAG, self.ctx, 'Optional expression missing. Implicit expression will automatically apply.', CdmProjection._construct_projection_context.__name__)
+        self._condition_expression_tree_root = tree._construct_expression_tree(condition)
 
         if attr_ctx:
             # Add projection to context tree
@@ -149,40 +163,53 @@ class CdmProjection(CdmObjectDefinition):
 
             ac_source = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_source)
 
-            if self.source.fetch_object_definition(proj_directive._res_opt).object_type == CdmObjectType.PROJECTION_DEF:
-                # A Projection
+            # Initialize the projection context
+            ctx = proj_directive._owner.ctx if proj_directive._owner else None
 
-                proj_context = self.source.explicit_reference._construct_projection_context(proj_directive, ac_source)
+            if self.source:
+                source = self.source.fetch_object_definition(proj_directive._res_opt)
+                if source.object_type == CdmObjectType.PROJECTION_DEF:
+                    # A Projection
+
+                    proj_context = self.source.explicit_reference._construct_projection_context(proj_directive, ac_source, ras)
+                else:
+                    # An Entity Reference
+
+                    acp_source_projection = AttributeContextParameters()
+                    acp_source_projection._under = ac_source
+                    acp_source_projection._type = CdmAttributeContextType.ENTITY
+                    acp_source_projection._name = self.source.named_reference if self.source.named_reference else self.source.explicit_reference.get_name()
+                    acp_source_projection._regarding = self.source
+                    acp_source_projection._include_traits = False
+
+                    ras = self.source._fetch_resolved_attributes(proj_directive._res_opt, acp_source_projection)
+
+                    # If polymorphic keep original source as previous state
+                    poly_source_set = None
+                    if proj_directive._is_source_polymorphic:
+                        poly_source_set = ProjectionResolutionCommonUtil._get_polymorphic_source_set(proj_directive, ctx, self.source, acp_source_projection)
+
+                    # Now initialize projection attribute state
+                    pas_set = ProjectionResolutionCommonUtil._initialize_projection_attribute_state_set(
+                        proj_directive,
+                        ctx,
+                        ras,
+                        proj_directive._is_source_polymorphic,
+                        poly_source_set
+                    )
+
+                    proj_context = ProjectionContext(proj_directive, ras.attribute_context)
+                    proj_context._current_attribute_state_set = pas_set
             else:
-                # An Entity Reference
+                # A type attribute
 
-                acp_source_projection = AttributeContextParameters()
-                acp_source_projection._under = ac_source
-                acp_source_projection._type = CdmAttributeContextType.ENTITY
-                acp_source_projection._name = self.source.named_reference if self.source.named_reference else self.source.explicit_reference.get_name()
-                acp_source_projection._regarding = self.source
-                acp_source_projection._include_traits = False
-
-                ras = self.source._fetch_resolved_attributes(proj_directive._res_opt, acp_source_projection)
-
-                # Initialize the projection context
-
-                ctx = proj_directive._owner.ctx if proj_directive._owner else None
-
-                pas_set = None
-
-                # if polymorphic keep original source as previous state
-                poly_source_set = None
-                if proj_directive._is_source_polymorphic:
-                    poly_source_set = ProjectionResolutionCommonUtil._get_polymorphic_source_set(proj_directive, ctx, self.source, acp_source_projection)
-
-                # now initialize projection attribute state
+                # Initialize projection attribute state
                 pas_set = ProjectionResolutionCommonUtil._initialize_projection_attribute_state_set(
                     proj_directive,
                     ctx,
                     ras,
-                    proj_directive._is_source_polymorphic,
-                    poly_source_set
+                    is_source_polymorphic=False,
+                    polymorphic_set=None
                 )
 
                 proj_context = ProjectionContext(proj_directive, ras.attribute_context)
@@ -247,3 +274,16 @@ class CdmProjection(CdmObjectDefinition):
             resolved_attribute_set.merge(pas._current_resolved_attribute, pas._current_resolved_attribute.att_ctx)
 
         return resolved_attribute_set
+
+    def _get_root_owner(self) -> 'CdmObject':
+        root_owner = self  # type: CdmObject
+        while True:
+            root_owner = root_owner.owner
+            # A projection can be inside an entity reference, so take the owner again to get the projection.
+            if root_owner and root_owner.owner and root_owner.owner.object_type == CdmObjectType.PROJECTION_DEF:
+                root_owner = root_owner.owner
+            
+            if not root_owner or root_owner.object_type != CdmObjectType.PROJECTION_DEF:
+                break
+        
+        return root_owner

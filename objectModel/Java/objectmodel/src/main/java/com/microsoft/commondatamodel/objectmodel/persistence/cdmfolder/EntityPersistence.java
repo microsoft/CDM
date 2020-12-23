@@ -36,16 +36,12 @@ public class EntityPersistence {
 
     entity.setExtendsEntity(EntityReferencePersistence.fromData(ctx, obj.get("extendsEntity")));
 
+    entity.setExplanation(Utils.propertyFromDataToString(obj.get("explanation")));
+
     entity.setExtendsEntityResolutionGuidance(
         AttributeResolutionGuidancePersistence.fromData(
             ctx,
             obj.get("extendsEntityResolutionGuidance")));
-
-    entity.setExplanation(Utils.getStringFromJson(obj.get("explanation")));
-    entity.setSourceName(Utils.getStringFromJson(obj.get("sourceName")));
-    entity.setDisplayName(Utils.getStringFromJson(obj.get("displayName")));
-    entity.setDescription(Utils.getStringFromJson(obj.get("description")));
-    entity.setVersion(Utils.getStringFromJson(obj.get("version")));
 
     Utils.addListToCdmCollection(
         entity.getExhibitsTraits(),
@@ -61,10 +57,16 @@ public class EntityPersistence {
     Utils.addListToCdmCollection(
         entity.getAttributes(),
         Utils.createAttributeList(ctx, obj.get("hasAttributes"), entity.getEntityName()));
+
+    entity.setSourceName(Utils.propertyFromDataToString(obj.get("sourceName")));
+    entity.setDisplayName(Utils.propertyFromDataToString(obj.get("displayName")));
+    entity.setDescription(Utils.propertyFromDataToString(obj.get("description")));
+    entity.setVersion(Utils.propertyFromDataToString(obj.get("version")));
     entity.setCdmSchemas(obj.has("cdmSchemas")
-        ? null
-        : JMapper.MAP.convertValue(obj.get("cdmSchemas"), new TypeReference<List<String>>() {
+            ? null
+            : JMapper.MAP.convertValue(obj.get("cdmSchemas"), new TypeReference<List<String>>() {
     }));
+
     return entity;
   }
 

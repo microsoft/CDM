@@ -97,6 +97,8 @@ import {
 } from '../Utilities/cdmObjectTypeGuards';
 import { StorageUtils } from '../Utilities/StorageUtils';
 import { VisitCallback } from '../Utilities/VisitCallback';
+import { using } from "using-statement";
+import { enterScope } from '../Utilities/Logging/Logger';
 
 export class CdmCorpusDefinition {
     public get profiler(): ICdmProfiler {
@@ -919,79 +921,83 @@ export class CdmCorpusDefinition {
      * @returns The object obtained from the provided path.
      */
     public async fetchObjectAsync<T>(objectPath: string, obj?: CdmObject, shallowValidationOrResOpt: boolean | resolveOptions | undefined = undefined, forceReload: boolean = false): Promise<T> {
-        let resOpt: resolveOptions;
-        if (typeof (shallowValidationOrResOpt) === 'boolean') {
-            resOpt = new resolveOptions();
-            resOpt.shallowValidation = shallowValidationOrResOpt;
-        } else if (shallowValidationOrResOpt === undefined) {
-            resOpt = new resolveOptions();
-        } else {
-            resOpt = shallowValidationOrResOpt;
-        }
+        return await using(enterScope(CdmCorpusDefinition.name, this.ctx, this.fetchObjectAsync.name), async _ => {
+            let resOpt: resolveOptions;
+            if (typeof (shallowValidationOrResOpt) === 'boolean') {
+                resOpt = new resolveOptions();
+                resOpt.shallowValidation = shallowValidationOrResOpt;
+            } else if (shallowValidationOrResOpt === undefined) {
+                resOpt = new resolveOptions();
+            } else {
+                resOpt = shallowValidationOrResOpt;
+            }
 
-        objectPath = this.storage.createAbsoluteCorpusPath(objectPath, obj);
+            objectPath = this.storage.createAbsoluteCorpusPath(objectPath, obj);
 
-        let documentPath: string = objectPath;
-        let documentNameIndex: number = objectPath.lastIndexOf(this.cdmExtension);
+            let documentPath: string = objectPath;
+            let documentNameIndex: number = objectPath.lastIndexOf(this.cdmExtension);
 
-        if (documentNameIndex !== -1) {
-            // if there is something after the document path, split it into document path and object path.
-            documentNameIndex += this.cdmExtension.length;
-            documentPath = objectPath.slice(0, documentNameIndex);
-        }
+            if (documentNameIndex !== -1) {
+                // if there is something after the document path, split it into document path and object path.
+                documentNameIndex += this.cdmExtension.length;
+                documentPath = objectPath.slice(0, documentNameIndex);
+            }
 
-        Logger.debug(CdmCorpusDefinition.name, this.ctx, `request object: ${objectPath}`, this.fetchObjectAsync.name);
-        const newObj: CdmContainerDefinition = await this.loadFolderOrDocument(documentPath, forceReload);
+            Logger.debug(CdmCorpusDefinition.name, this.ctx, `request object: ${objectPath}`, this.fetchObjectAsync.name);
+            const newObj: CdmContainerDefinition = await this.loadFolderOrDocument(documentPath, forceReload);
 
-        if (newObj) {
-            // get imports and index each document that is loaded
-            if (newObj instanceof CdmDocumentDefinition) {
-                if (!await newObj.indexIfNeeded(resOpt)) {
+            if (newObj) {
+                // get imports and index each document that is loaded
+                if (newObj instanceof CdmDocumentDefinition) {
+                    if (!await newObj.indexIfNeeded(resOpt)) {
+                        return undefined;
+                    }
+                    if (!newObj.isValid) {
+                        Logger.error(
+                            CdmCorpusDefinition.name, this.ctx,
+                            `The requested path: ${objectPath} involves a document that failed validation`,
+                            this.fetchObjectAsync.name);
+
+                        return undefined;
+                    }
+                }
+
+                if (documentPath === objectPath) {
+                    return newObj as unknown as T;
+                }
+
+                if (documentNameIndex === -1) {
+                    // there is no remaining path to be loaded, so return.
                     return undefined;
                 }
-                if (!newObj.isValid) {
+
+                // trim off the document path to get the object path in the doc
+                const remainingObjectPath: string = objectPath.slice(documentNameIndex + 1);
+
+                const result: CdmObject = (newObj as CdmDocumentDefinition).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
+                if (result === undefined) {
                     Logger.error(
-                        CdmCorpusDefinition.name, this.ctx,
-                        `The requested path: ${objectPath} involves a document that failed validation`,
-                        this.fetchObjectAsync.name);
-
-                    return undefined;
+                        CdmCorpusDefinition.name,
+                        this.ctx,
+                        `Could not find symbol '${remainingObjectPath}' in document [${newObj.atCorpusPath}]`,
+                        this.fetchObjectAsync.name
+                    );
                 }
+
+                return result as unknown as T;
             }
-
-            if (documentPath === objectPath) {
-                return newObj as unknown as T;
-            }
-
-            if (documentNameIndex === -1) {
-                // there is no remaining path to be loaded, so return.
-                return undefined;
-            }
-
-            // trim off the document path to get the object path in the doc
-            const remainingObjectPath: string = objectPath.slice(documentNameIndex + 1);
-
-            const result: CdmObject = (newObj as CdmDocumentDefinition).fetchObjectFromDocumentPath(remainingObjectPath, resOpt);
-            if (result === undefined) {
-                Logger.error(
-                    CdmCorpusDefinition.name,
-                    this.ctx,
-                    `Could not find symbol '${remainingObjectPath}' in document [${newObj.atCorpusPath}]`,
-                    this.fetchObjectAsync.name
-                );
-            }
-
-            return result as unknown as T;
-        }
+        });
     }
 
     public setEventCallback(
         status: EventCallback,
-        reportAtLevel: cdmStatusLevel = cdmStatusLevel.info
+        reportAtLevel: cdmStatusLevel = cdmStatusLevel.info,
+        correlationId?: string
     ): void {
         const ctx: resolveContext = this.ctx as resolveContext;
         ctx.statusEvent = status;
         ctx.reportAtLevel = reportAtLevel;
+        ctx.correlationId = correlationId;
     }
 
     /**
@@ -1300,7 +1306,7 @@ export class CdmCorpusDefinition {
                                 currentDoc.folderPath + ctx.relativePath
                             );
                         } else {
-                            Logger.info(CdmCorpusDefinition.name, ctx, `    resolved '${foundDesc}'`, ctx.relativePath);
+                            Logger.info(CdmCorpusDefinition.name, ctx, `resolved '${foundDesc}'`, ctx.relativePath);
                         }
                     }
                 }
@@ -1509,7 +1515,7 @@ export class CdmCorpusDefinition {
      * @param currObject A CDM object
      */
     public async getLastModifiedTimeAsyncFromObject(currObject: CdmObject): Promise<Date> {
-        if ((currObject as CdmContainerDefinition).namespace) {
+        if ("namespace" in currObject) {
             const adapter: StorageAdapter = this.storage.fetchAdapter((currObject as CdmContainerDefinition).namespace);
 
             if (adapter === undefined) {
@@ -1523,14 +1529,24 @@ export class CdmCorpusDefinition {
                 return undefined;
             }
             // Remove namespace from path
-            const pathTuple: [string, string] = StorageUtils.splitNamespacePath(currObject.atCorpusPath);
+            const pathTuple: [string, string] = StorageUtils.splitNamespacePath((currObject as CdmContainerDefinition).atCorpusPath);
             if (!pathTuple) {
                 Logger.error(CdmCorpusDefinition.name, this.ctx, 'The object\'s AtCorpusPath should not be null or empty.', this.getLastModifiedTimeAsyncFromObject.name);
 
                 return undefined;
             }
 
-            return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
+            try {
+                return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
+            } catch (e) {
+                Logger.error(
+                    CdmCorpusDefinition.name,
+                    this.ctx,
+                    `Failed to compute last modified time for partition file ${pathTuple[1]}. Exception: ${(e as Error).toString()}`,
+                    this.getLastModifiedTimeAsyncFromObject.name
+                );
+                return null;
+            }
         } else {
             return this.getLastModifiedTimeAsyncFromObject(currObject.inDocument);
         }
@@ -1564,9 +1580,19 @@ export class CdmCorpusDefinition {
 
                 return undefined;
             }
-
-            return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
+            
+            try {
+                return adapter.computeLastModifiedTimeAsync(pathTuple[1]);
+            } catch (e) {
+                Logger.error(
+                    CdmCorpusDefinition.name,
+                    this.ctx,
+                    `Failed to compute last modified time for partition file ${pathTuple[1]}. Exception: ${(e as Error).toString()}`,
+                    this.getLastModifiedTimeFromPartitionPath.name
+                );
+            }
         }
+        return null;
     }
 
     /**

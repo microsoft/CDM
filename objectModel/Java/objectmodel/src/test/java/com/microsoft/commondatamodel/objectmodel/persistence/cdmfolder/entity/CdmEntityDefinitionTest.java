@@ -18,7 +18,6 @@ import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.Att
 import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
 import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 
 import java.io.File;

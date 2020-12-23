@@ -89,6 +89,7 @@ export class TypeAttributePersistence {
         typeAttribute.maximumLength = utils.propertyFromDataToInt(object.maximumLength);
         typeAttribute.maximumValue = utils.propertyFromDataToString(object.maximumValue);
         typeAttribute.minimumValue = utils.propertyFromDataToString(object.minimumValue);
+        typeAttribute.projection = CdmFolder.ProjectionPersistence.fromData(ctx, object.projection)
 
         if (object.dataFormat !== undefined) {
             typeAttribute.dataFormat = TypeAttributePersistence.dataTypeFromData(object.dataFormat);

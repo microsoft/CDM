@@ -186,6 +186,9 @@ export class CdmEntityAttributeDefinition extends CdmAttribute {
             if (preChildren && preChildren(this, path)) {
                 return false;
             }
+            if (this.entity) {
+                this.entity.owner = this;
+            }
             if (this.entity.visit(`${path}/entity/`, preChildren, postChildren)) {
                 return true;
             }

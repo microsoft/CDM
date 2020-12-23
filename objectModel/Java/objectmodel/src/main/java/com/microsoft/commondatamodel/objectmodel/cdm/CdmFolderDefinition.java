@@ -276,6 +276,9 @@ public class CdmFolderDefinition extends CdmObjectDefinitionBase implements CdmC
   }
 
   /**
+   * @param path String 
+   * @param makeFolder boolean
+   * @return CompletableFuture of CdmFolderDefinition
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

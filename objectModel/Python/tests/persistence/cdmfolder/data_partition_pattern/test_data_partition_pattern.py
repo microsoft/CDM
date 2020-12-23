@@ -4,7 +4,7 @@
 import os
 import unittest
 
-from cdm.enums import CdmObjectType
+from cdm.enums import CdmObjectType, CdmStatusLevel
 from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition
 from cdm.persistence.cdmfolder import ManifestPersistence
 from cdm.persistence.cdmfolder.types import ManifestContent
@@ -63,4 +63,39 @@ class DataPartitionPatternTest(unittest.TestCase):
         self.assertEqual(pattern_data2.rootLocation, 'test location2')
         self.assertEqual(pattern_data2.globPattern, '/*.csv')
 
-    
+    @async_test
+    async def test_file_status_check_on_null_location(self):
+        """
+        Verifies that performing file status check on manifest with a partition with
+        null location is gracefully handled.
+        """
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'test_file_status_check_on_null_location')
+
+        def callback(status_level: 'CdmStatusLevel', message: str):
+            self.assertEqual(status_level, CdmStatusLevel.ERROR, 'Error level message should have been reported')
+            self.assertTrue(
+                (message == 'StorageManager | The object path cannot be null or empty. | create_absolute_corpus_path') or \
+                (message == 'CdmCorpusDefinition | The object path cannot be null or empty. | _fetch_last_modified_time_from_partition_path_async'),
+                "Unexpected error message received"
+            )
+
+        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
+
+        # Create manifest
+        manifest = corpus.make_object(CdmObjectType.MANIFEST_DEF, 'TestModel')
+        corpus.storage.fetch_root_folder('local').documents.append(manifest)
+
+        # Create entity
+        ent_doc = corpus.storage.fetch_root_folder('local').documents.append('MyEntityDoc.cdm.json')
+
+        ent_def = corpus.make_object(CdmObjectType.ENTITY_DEF, 'MyEntity')
+        ent_doc.definitions.append(ent_def)
+
+        ent_decl = manifest.entities.append(ent_def)
+
+        # Create partition
+        part = corpus.make_object(CdmObjectType.DATA_PARTITION_DEF, 'MyPartition')
+        ent_decl.data_partitions.append(part)
+
+        # This should not throw exception
+        await manifest.file_status_check_async()

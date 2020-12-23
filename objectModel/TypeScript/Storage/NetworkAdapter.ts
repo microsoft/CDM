@@ -87,7 +87,7 @@ export abstract class NetworkAdapter extends StorageAdapterBase {
 
     protected async executeRequest(httpRequest: CdmHttpRequest): Promise<CdmHttpResponse> {
         try {
-            const res: CdmHttpResponse = await this.httpClient.SendAsync(httpRequest, this.waitTimeCallback.bind(this));
+            const res: CdmHttpResponse = await this.httpClient.SendAsync(httpRequest, this.waitTimeCallback.bind(this), this.ctx);
 
             if (res === undefined) {
                 throw new Error('The result of a network adapter request is undefined.');

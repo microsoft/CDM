@@ -226,7 +226,7 @@ public abstract class CdmObjectBase implements CdmObject {
     if (this.getInDocument() == null) {
       return "NULL:/NULL/" + this.declaredPath;
     } else {
-      return this.getInDocument().getAtCorpusPath() + "/" + this.declaredPath;
+      return this.getInDocument().getAtCorpusPath() + "/" + (this.declaredPath != null ? this.declaredPath : "");
     }
   }
 
@@ -362,6 +362,8 @@ public abstract class CdmObjectBase implements CdmObject {
     return this.fetchObjectFromCache(resOpt, null);
   }
   /**
+   * @param resOpt Resolve Options
+   * @param acpInContext Attribute Context Parameters
    * @return Resolved attribute set builder
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.

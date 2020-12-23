@@ -3,6 +3,8 @@
 
 package com.microsoft.commondatamodel.objectmodel.storage;
 
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
+
 import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -17,7 +19,26 @@ import java.util.HashSet;
  */
 public abstract class StorageAdapterBase implements StorageAdapter {
 
+  /**
+   * The CDM corpus context, gives information for the logger.
+   */
+  private CdmCorpusContext ctx;
+
   private String locationHint = "";
+
+  /**
+   * Gets the CDM corpus context.
+   */
+  protected CdmCorpusContext getCtx() {
+    return ctx;
+  }
+
+  /**
+   * Sets the CDM corpus context.
+   */
+  protected void setCtx(final CdmCorpusContext ctx) {
+     this.ctx = ctx;
+  }
 
   /**
    * The location hint, gives a hint to the reader app about the location where the adapter

@@ -103,9 +103,9 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
             proj_directive = ProjectionDirective(res_opt, self, ctx_ent)
             proj_def = ctx_ent_obj_def
-            projCtx = proj_def._construct_projection_context(proj_directive, under)
+            proj_ctx = proj_def._construct_projection_context(proj_directive, under)
 
-            ras = proj_def._extract_resolved_attributes(projCtx)
+            ras = proj_def._extract_resolved_attributes(proj_ctx)
             rasb.ras = ras
         elif not res_opt.in_circular_reference:
             # An Entity Reference
@@ -440,7 +440,9 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
         if pre_children and pre_children(self, path):
             return False
-
+        
+        if self.entity:
+            self.entity.owner = self
         if self.entity.visit('{}/entity/'.format(path), pre_children, post_children):
             return True
 

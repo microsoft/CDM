@@ -255,7 +255,7 @@ class CdmCorpusDefinition:
                                  .format(param_def.get_name(), expected, found_desc),
                                  current_doc.folder_path + ctx._relative_path)
                 else:
-                    logger.info(self._TAG, self.ctx, '    resolved \'{}\''.format(found_desc), ctx._relative_path)
+                    logger.info(self._TAG, self.ctx, 'resolved \'{}\''.format(found_desc), ctx._relative_path)
 
         return replacement
 
@@ -1186,7 +1186,7 @@ class CdmCorpusDefinition:
                         # don't check in this file without both of these comments. handy for debug of failed lookups
                         # res_test = obj.fetch_object_definition(res_opt)
                     else:
-                        logger.info(self._TAG, self.ctx, '    resolved \'{}\''.format(obj.named_reference), current_doc.folder_path + path)
+                        logger.info(self._TAG, self.ctx, 'resolved \'{}\''.format(obj.named_reference), current_doc.folder_path + path)
 
             return False
 
@@ -1242,9 +1242,11 @@ class CdmCorpusDefinition:
 
         current_doc.visit('', pre_visit, post_visit)
 
-    def set_event_callback(self, status: 'EventCallback', report_at_level: 'CdmStatusLevel' = CdmStatusLevel.INFO):
+    def set_event_callback(self, status: 'EventCallback', report_at_level: 'CdmStatusLevel' = CdmStatusLevel.INFO, correlation_id: Optional[str] = None):
+        '''A callback that gets called on an event.'''
         self.ctx.status_event = status
         self.ctx.report_at_level = report_at_level
+        self.ctx.correlation_id = correlation_id
 
     def _set_import_documents(self, doc: 'CdmDocumentDefinition') -> None:
         if not doc.imports:
@@ -1294,7 +1296,12 @@ class CdmCorpusDefinition:
                 logger.error(self._TAG, self.ctx, 'The object\'s AtCorpusPath should not be null or empty.',
                              self._fetch_last_modified_time_from_object_async.__name__)
                 return None
-            return await adapter.compute_last_modified_time_async(path_tuple[1])
+            try:
+                return await adapter.compute_last_modified_time_async(path_tuple[1])
+            except Exception as e:
+                logger.error(self._TAG, self.ctx, 'Failed to compute last modified time for file \'{}\'. Exception: {}'.format(path_tuple[1], e),
+                             self._fetch_last_modified_time_from_object_async.__name__)
+                return None
         else:
             return await self._fetch_last_modified_time_from_object_async(curr_object.in_document)
 
@@ -1313,7 +1320,11 @@ class CdmCorpusDefinition:
                 logger.error(self._TAG, self.ctx, 'Adapter not found for the corpus path \'{}\''.format(
                     corpus_path), self._fetch_last_modified_time_from_partition_path_async.__name__)
                 return None
-            return await adapter.compute_last_modified_time_async(path_tuple[1])
+            try:
+                return await adapter.compute_last_modified_time_async(path_tuple[1])
+            except Exception as e:
+                logger.error(self._TAG, self.ctx, 'Failed to compute last modified time for file \'{}\'. Exception: {}'.format(path_tuple[1], e),
+                             self._fetch_last_modified_time_from_partition_path_async.__name__)
         return None
 
     @staticmethod
@@ -1359,55 +1370,57 @@ class CdmCorpusDefinition:
         return CdmObjectType.ERROR
 
     async def fetch_object_async(self, object_path: str, relative_object: Optional['CdmObject'] = None, shallow_validation: Optional[bool] = False,
-                                 force_reload: Optional[bool] = False, res_opt: Optional['ResolveOptions'] = None) -> 'CdmObject':
+                                 force_reload: Optional[bool] = False, res_opt: Optional['ResolveOptions'] = None) -> Optional['CdmObject']:
         """gets an object by the path from the Corpus."""
         from cdm.persistence import PersistenceLayer
 
-        if res_opt is None:
-            res_opt = ResolveOptions()
+        with logger._enter_scope(self._TAG, self.ctx, self.fetch_object_async.__name__):
 
-        object_path = self.storage.create_absolute_corpus_path(object_path, relative_object)
-        document_path = object_path
-        document_name_index = object_path.rfind(PersistenceLayer.CDM_EXTENSION)
+            if res_opt is None:
+                res_opt = ResolveOptions()
 
-        if document_name_index != -1:
-            # if there is something after the document path, split it into document path and object path.
-            document_name_index += len(PersistenceLayer.CDM_EXTENSION)
-            document_path = object_path[0: document_name_index]
+            object_path = self.storage.create_absolute_corpus_path(object_path, relative_object)
+            document_path = object_path
+            document_name_index = object_path.rfind(PersistenceLayer.CDM_EXTENSION)
 
-        logger.debug(self._TAG, self.ctx, 'request object: {}'.format(object_path), self.fetch_object_async.__name__)
-        obj = await self._load_folder_or_document(document_path, force_reload)
+            if document_name_index != -1:
+                # if there is something after the document path, split it into document path and object path.
+                document_name_index += len(PersistenceLayer.CDM_EXTENSION)
+                document_path = object_path[0: document_name_index]
 
-        if not obj:
-            return
+            logger.debug(self._TAG, self.ctx, 'request object: {}'.format(object_path), self.fetch_object_async.__name__)
+            obj = await self._load_folder_or_document(document_path, force_reload)
 
-        # get imports and index each document that is loaded
-        if isinstance(obj, CdmDocumentDefinition):
-            if res_opt.shallow_validation is None:
-                res_opt.shallow_validation = shallow_validation
-            if not await obj._index_if_needed(res_opt, False):
-                return None
-            if not obj._is_valid:
-                logger.error(self._TAG, self.ctx, 'The requested path: {} involves a document that failed validation'.format(
-                    object_path), self.fetch_object_async.__name__)
+            if not obj:
                 return None
 
-        if document_path == object_path:
-            return obj
+            # get imports and index each document that is loaded
+            if isinstance(obj, CdmDocumentDefinition):
+                if res_opt.shallow_validation is None:
+                    res_opt.shallow_validation = shallow_validation
+                if not await obj._index_if_needed(res_opt, False):
+                    return None
+                if not obj._is_valid:
+                    logger.error(self._TAG, self.ctx, 'The requested path: {} involves a document that failed validation'.format(
+                        object_path), self.fetch_object_async.__name__)
+                    return None
 
-        if document_name_index == -1:
-            # there is no remaining path to be loaded, so return.
-            return
+            if document_path == object_path:
+                return obj
 
-        # trim off the document path to get the object path in the doc
-        remaining_object_path = object_path[document_name_index + 1:]
+            if document_name_index == -1:
+                # there is no remaining path to be loaded, so return.
+                return None
 
-        result = obj._fetch_object_from_document_path(remaining_object_path, res_opt)
-        if not result:
-            logger.error(self._TAG, self.ctx, 'Could not find symbol "{}" in document [{}]'.format(
-                remaining_object_path, obj.at_corpus_path), self.fetch_object_async.__name__)
+            # trim off the document path to get the object path in the doc
+            remaining_object_path = object_path[document_name_index + 1:]
 
-        return result
+            result = obj._fetch_object_from_document_path(remaining_object_path, res_opt)
+            if not result:
+                logger.error(self._TAG, self.ctx, 'Could not find symbol "{}" in document [{}]'.format(
+                    remaining_object_path, obj.at_corpus_path), self.fetch_object_async.__name__)
+
+            return result
 
     def _is_path_manifest_document(self, path: str) -> bool:
         from cdm.persistence import PersistenceLayer

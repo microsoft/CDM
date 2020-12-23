@@ -65,7 +65,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 entity = obj["entityReference"];
             else if (obj["entityReference"]?["entityShape"] != null)
                 entity = ConstantEntityPersistence.FromData(ctx, obj["entityReference"]);
-            else if (obj["source"] != null)
+            else if (obj["source"] != null || obj["operations"] != null)
                 entity = ProjectionPersistence.FromData(ctx, obj);
             else
                 entity = EntityPersistence.FromData(ctx, obj["entityReference"]);

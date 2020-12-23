@@ -23,6 +23,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public CdmAttributeContextReference AttributeContext { get; set; }
 
         /// <summary>
+        /// Gets or sets the type attribute's attribute projection.
+        /// </summary>
+        public CdmProjection Projection { get; set; }
+
+        /// <summary>
         /// Gets whether the type attribute is the primary key.
         /// </summary>
         public bool? IsPrimaryKey
@@ -329,9 +334,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
-            if (this.DataType?.Visit(path + "/dataType/", preChildren, postChildren) == true)
+            if (this.DataType?.Visit($"{path}/dataType/", preChildren, postChildren) == true)
                 return true;
-            if (this.AttributeContext?.Visit(path + "/attributeContext/", preChildren, postChildren) == true)
+            if (this.AttributeContext?.Visit($"{path}/attributeContext/", preChildren, postChildren) == true)
+                return true;
+            if (this.Projection != null) this.Projection.Owner = this;
+            if (this.Projection?.Visit($"{path}/projection/", preChildren, postChildren) == true)
                 return true;
             if (this.VisitAtt(path, preChildren, postChildren))
                 return true;
@@ -395,11 +403,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             resGuideWithDefault.UpdateAttributeDefaults(null, this);
             AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
+            // TODO: remove the resolution guidance if projection is being used
             // from the traits of the datatype, purpose and applied here, see if new attributes get generated
             rasb.ApplyTraits(arc);
             rasb.GenerateApplierAttributes(arc, false); // false = don't apply these traits to added things
             // this may have added symbols to the dependencies, so merge them
             resOpt.SymbolRefSet.Merge(arc.ResOpt.SymbolRefSet);
+
+            if (this.Projection != null)
+            {
+                ProjectionDirective projDirective = new ProjectionDirective(resOpt, this);
+                ProjectionContext projCtx = this.Projection.ConstructProjectionContext(projDirective, under, rasb.ResolvedAttributeSet);
+
+                ResolvedAttributeSet ras = this.Projection.ExtractResolvedAttributes(projCtx, under);
+                rasb.ResolvedAttributeSet = ras;
+            }
 
             return rasb;
         }

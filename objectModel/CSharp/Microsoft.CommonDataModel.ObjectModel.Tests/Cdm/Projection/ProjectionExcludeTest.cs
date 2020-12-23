@@ -771,5 +771,32 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             Assert.AreEqual("phoneNumber", (attGroup.Members[3] as CdmTypeAttributeDefinition).Name, "phoneNumber");
             Assert.AreEqual("email", (attGroup.Members[4] as CdmTypeAttributeDefinition).Name, "email");
         }
+
+        /// <summary>
+        /// Test resolving a type attribute with a exclude attributes operation
+        /// </summary>
+        [TestMethod]
+        public async Task TestTypeAttributeProj()
+        {
+            string testName = "TestTypeAttributeProj";
+            string entityName = "Person";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+
+            foreach (List<string> resOpt in resOptsCombinations)
+            {
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+            }
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+
+            // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+            // Exclude attributes ["address"]
+            Assert.AreEqual(4, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[2] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("email", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
+        }
     }
 }

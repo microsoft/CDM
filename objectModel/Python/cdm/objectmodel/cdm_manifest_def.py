@@ -113,144 +113,146 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
         the manifest. Every instance of the string {n} is replaced with the entity name from the source manifest. Any
         sub-folders described by the pattern should exist in the corpus prior to calling this function.
         """
-
-        if self.entities is None:
-            return None
-
-        if not self.folder:
-            logger.error(
-                self._TAG,
-                self.ctx,
-                'Cannot resolve the manifest \'{}\' because it has not been added to a folder'.format(self.manifest_name),
-                self.create_resolved_manifest_async.__name__
-            )
-            return None
-
-        if new_entity_document_name_format is None:
-            new_entity_document_name_format = '{f}resolved/{n}.cdm.json'
-        elif new_entity_document_name_format == '':  # for back compat
-            new_entity_document_name_format = '{n}.cdm.json'
-        elif '{n}' not in new_entity_document_name_format:  # for back compat
-            new_entity_document_name_format = new_entity_document_name_format + '/{n}.cdm.json'
-
-        source_manifest_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.at_corpus_path, self)
-        source_manifest_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.folder.at_corpus_path, self)
-
-        resolved_manifest_path_split = new_manifest_name.rfind('/') + 1
-        resolved_manifest_folder = None
-        if resolved_manifest_path_split > 0:
-            resolved_manifest_path = new_manifest_name[0:resolved_manifest_path_split]
-            new_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(resolved_manifest_path, self)
-            resolved_manifest_folder = await self.ctx.corpus.fetch_object_async(new_folder_path)  # type: CdmFolderDefinition
-            if resolved_manifest_folder is None:
-                logger.error(self._TAG, self.ctx, 'New folder for manifest not found {}'.format(new_folder_path), self.create_resolved_manifest_async.__name__)
-                return None
-            new_manifest_name = new_manifest_name[resolved_manifest_path_split:]
-        else:
-            resolved_manifest_folder = self.owner
-
-        logger.debug(self._TAG, self.ctx, 'resolving manifest {}'.format(source_manifest_path), self.create_resolved_manifest_async.__name__)
-
-        # using the references present in the resolved entities, get an entity
-        # create an imports doc with all the necessary resolved entity references and then resolve it
-        resolved_manifest = CdmManifestDefinition(self.ctx, new_manifest_name)
-
-        # bring over any imports in this document or other bobbles
-        resolved_manifest.schema = self.schema
-        resolved_manifest.explanation = self.explanation
-        for imp in self.imports:
-            resolved_manifest.imports.append(imp.copy())
-
-        # add the new document to the folder
-        if resolved_manifest_folder.documents.append(resolved_manifest) is None:
-            # when would this happen?
-            return None
-
-        for entity in self.entities:
-            ent_def = await self._get_entity_from_reference(entity, self)
-
-            if not ent_def:
-                logger.error(self._TAG, self.ctx, 'Unable to get entity from reference', self.create_resolved_manifest_async.__name__)
+        with logger._enter_scope(self._TAG, self.ctx, self.create_resolved_manifest_async.__name__):
+            if self.entities is None:
                 return None
 
-            if not ent_def.in_document.folder:
-                logger.error(self._TAG, self.ctx, 'The document containing the entity \'{}\' is not in a folder'.format(
-                    ent_def.entity_name), self.create_resolved_manifest_async.__name__)
+            if not self.folder:
+                logger.error(
+                    self._TAG,
+                    self.ctx,
+                    'Cannot resolve the manifest \'{}\' because it has not been added to a folder'.format(self.manifest_name),
+                    self.create_resolved_manifest_async.__name__
+                )
                 return None
 
-            # get the path from this manifest to the source entity. this will be the {f} replacement value
-            source_entity_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.in_document.folder.at_corpus_path, self)
-            f = ''
-            if source_entity_full_path.startswith(source_manifest_folder_path):
-                f = source_entity_full_path[len(source_manifest_folder_path):]
+            if new_entity_document_name_format is None:
+                new_entity_document_name_format = '{f}resolved/{n}.cdm.json'
+            elif new_entity_document_name_format == '':  # for back compat
+                new_entity_document_name_format = '{n}.cdm.json'
+            elif '{n}' not in new_entity_document_name_format:  # for back compat
+                new_entity_document_name_format = new_entity_document_name_format + '/{n}.cdm.json'
 
-            new_document_full_path = new_entity_document_name_format.replace('{n}', ent_def.entity_name).replace('{f}', f)
-            new_document_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(new_document_full_path, self)
+            source_manifest_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.at_corpus_path, self)
+            source_manifest_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(self.folder.at_corpus_path, self)
 
-            new_document_path_split = new_document_full_path.rfind('/') + 1
-            new_document_path = new_document_full_path[0:new_document_path_split]
-            new_document_name = new_document_full_path[new_document_path_split:]
+            resolved_manifest_path_split = new_manifest_name.rfind('/') + 1
+            resolved_manifest_folder = None
+            if resolved_manifest_path_split > 0:
+                resolved_manifest_path = new_manifest_name[0:resolved_manifest_path_split]
+                new_folder_path = self.ctx.corpus.storage.create_absolute_corpus_path(resolved_manifest_path, self)
+                resolved_manifest_folder = await self.ctx.corpus.fetch_object_async(new_folder_path)  # type: CdmFolderDefinition
+                if resolved_manifest_folder is None:
+                    logger.error(self._TAG, self.ctx, 'New folder for manifest not found {}'.format(new_folder_path), self.create_resolved_manifest_async.__name__)
+                    return None
+                new_manifest_name = new_manifest_name[resolved_manifest_path_split:]
+            else:
+                resolved_manifest_folder = self.owner
 
-            # make sure the new folder exists
-            folder = await self.ctx.corpus.fetch_object_async(new_document_path)  # type: CdmFolderDefinition
-            if not folder:
-                logger.error(self._TAG, self.ctx, 'New folder not found {}'.format(new_document_path), self.create_resolved_manifest_async.__name__)
+            logger.debug(self._TAG, self.ctx, 'resolving manifest {}'.format(source_manifest_path), self.create_resolved_manifest_async.__name__)
+
+            # using the references present in the resolved entities, get an entity
+            # create an imports doc with all the necessary resolved entity references and then resolve it
+            resolved_manifest = CdmManifestDefinition(self.ctx, new_manifest_name)
+
+            # bring over any imports in this document or other bobbles
+            resolved_manifest.schema = self.schema
+            resolved_manifest.explanation = self.explanation
+            for imp in self.imports:
+                resolved_manifest.imports.append(imp.copy())
+
+            # add the new document to the folder
+            if resolved_manifest_folder.documents.append(resolved_manifest) is None:
+                # when would this happen?
                 return None
 
-            # next create the resolved entity.
-            with_directives = directives if directives is not None else self.ctx.corpus.default_resolution_directives
-            res_opt = ResolveOptions(ent_def.in_document, with_directives.copy())
+            for entity in self.entities:
+                ent_def = await self._get_entity_from_reference(entity, self)
 
-            logger.debug(self._TAG, self.ctx, '    resolving entity {} to document {}'.format(source_entity_full_path, new_document_full_path),
-                         self.create_resolved_manifest_async.__name__)
+                if not ent_def:
+                    logger.error(self._TAG, self.ctx, 'Unable to get entity from reference', self.create_resolved_manifest_async.__name__)
+                    return None
 
-            resolved_entity = await ent_def.create_resolved_entity_async(ent_def.entity_name, res_opt, folder, new_document_name)
-            if not resolved_entity:
-                # fail all resolution, if any one entity resolution fails
-                return None
+                if not ent_def.in_document.folder:
+                    logger.error(self._TAG, self.ctx, 'The document containing the entity \'{}\' is not in a folder'.format(
+                        ent_def.entity_name), self.create_resolved_manifest_async.__name__)
+                    return None
 
-            result = entity.copy(res_opt)
-            if result.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
-                relative_entity_path = self.ctx.corpus.storage.create_relative_corpus_path(resolved_entity.at_corpus_path, resolved_manifest)
-                result.entity_path = relative_entity_path or result.at_corpus_path
+                # get the path from this manifest to the source entity. this will be the {f} replacement value
+                source_entity_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.in_document.folder.at_corpus_path, self)
+                f = ''
+                if source_entity_full_path.startswith(source_manifest_folder_path):
+                    f = source_entity_full_path[len(source_manifest_folder_path):]
 
-            resolved_manifest.entities.append(result)
+                new_document_full_path = new_entity_document_name_format.replace('{n}', ent_def.entity_name).replace('{f}', f)
+                new_document_full_path = self.ctx.corpus.storage.create_absolute_corpus_path(new_document_full_path, self)
 
-        logger.debug(self._TAG, self.ctx, '    calculating relationships', self.create_resolved_manifest_async.__name__)
-        # Calculate the entity graph for just this manifest.
-        await self.ctx.corpus.calculate_entity_graph_async(resolved_manifest)
-        # Stick results into the relationships list for the manifest.
-        await resolved_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
+                new_document_path_split = new_document_full_path.rfind('/') + 1
+                new_document_path = new_document_full_path[0:new_document_path_split]
+                new_document_name = new_document_full_path[new_document_path_split:]
 
-        # needed until Matt's changes with collections where I can propigate
-        resolved_manifest._is_dirty = True
-        return resolved_manifest
+                # make sure the new folder exists
+                folder = await self.ctx.corpus.fetch_object_async(new_document_path)  # type: CdmFolderDefinition
+                if not folder:
+                    logger.error(self._TAG, self.ctx, 'New folder not found {}'.format(new_document_path), self.create_resolved_manifest_async.__name__)
+                    return None
+
+                # next create the resolved entity.
+                with_directives = directives if directives is not None else self.ctx.corpus.default_resolution_directives
+                res_opt = ResolveOptions(ent_def.in_document, with_directives.copy())
+
+                logger.debug(self._TAG, self.ctx, '    resolving entity {} to document {}'.format(source_entity_full_path, new_document_full_path),
+                            self.create_resolved_manifest_async.__name__)
+
+                resolved_entity = await ent_def.create_resolved_entity_async(ent_def.entity_name, res_opt, folder, new_document_name)
+                if not resolved_entity:
+                    # fail all resolution, if any one entity resolution fails
+                    return None
+
+                result = entity.copy(res_opt)
+                if result.object_type == CdmObjectType.LOCAL_ENTITY_DECLARATION_DEF:
+                    relative_entity_path = self.ctx.corpus.storage.create_relative_corpus_path(resolved_entity.at_corpus_path, resolved_manifest)
+                    result.entity_path = relative_entity_path or result.at_corpus_path
+
+                resolved_manifest.entities.append(result)
+
+            logger.debug(self._TAG, self.ctx, '    calculating relationships', self.create_resolved_manifest_async.__name__)
+            # Calculate the entity graph for just this manifest.
+            await self.ctx.corpus.calculate_entity_graph_async(resolved_manifest)
+            # Stick results into the relationships list for the manifest.
+            await resolved_manifest.populate_manifest_relationships_async(CdmRelationshipDiscoveryStyle.EXCLUSIVE)
+
+            # needed until Matt's changes with collections where I can propigate
+            resolved_manifest._is_dirty = True
+            return resolved_manifest
 
     async def file_status_check_async(self) -> None:
         """Check the modified time for this object and any children."""
+        with logger._enter_scope(self._TAG, self.ctx, self.file_status_check_async.__name__):
+            adapter = self.ctx.corpus.storage.fetch_adapter(self.in_document.namespace)
+            if adapter:
+                context = adapter.create_file_query_cache_context()
+                try:
+                    modified_time = await self.ctx.corpus._fetch_last_modified_time_from_object_async(self)
 
-        context = self.ctx.corpus.storage.fetch_adapter(self.in_document.namespace).create_file_query_cache_context()
-        try:
-            modified_time = await self.ctx.corpus._fetch_last_modified_time_from_object_async(self)
+                    self.last_file_status_check_time = datetime.now(timezone.utc)
+                    if not self.last_file_modified_time:
+                        self.last_file_modified_time = self._file_system_modified_time
 
-            self.last_file_status_check_time = datetime.now(timezone.utc)
-            if not self.last_file_modified_time:
-                self.last_file_modified_time = self._file_system_modified_time
+                    # Reload the manifest if it has been updated in the file system.
+                    if modified_time and self._file_system_modified_time and modified_time != self._file_system_modified_time:
+                        await self._reload_async()
+                        self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
+                        self._file_system_modified_time = self.last_file_modified_time
+                    
+                    for entity in self.entities:
+                        await entity.file_status_check_async()
 
-            # Reload the manifest if it has been updated in the file system.
-            if modified_time and self._file_system_modified_time and modified_time != self._file_system_modified_time:
-                await self._reload_async()
-                self.last_file_modified_time = time_utils._max_time(modified_time, self.last_file_modified_time)
-                self._file_system_modified_time = self.last_file_modified_time
-            
-            for entity in self.entities:
-                await entity.file_status_check_async()
-
-            for sub_manifest in self.sub_manifests:
-                await sub_manifest.file_status_check_async()
-                
-        finally:
-            context.dispose()
+                    for sub_manifest in self.sub_manifests:
+                        await sub_manifest.file_status_check_async()
+                        
+                finally:
+                    context.dispose()
 
     async def _get_entity_from_reference(self, entity: 'CdmEntityDeclarationDefinition', manifest: 'CdmManifestDefinition') -> 'CdmEntityDefinition':
         entity_path = await self._get_entity_path_from_declaration(entity, cast('CdmObject', manifest))

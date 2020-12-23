@@ -1,13 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import * as fs from 'fs';
-import * as util from 'util';
 import { CdmCorpusDefinition } from '../../../Cdm/CdmCorpusDefinition';
 import { CdmDataPartitionDefinition } from '../../../Cdm/CdmDataPartitionDefinition';
 import { CdmLocalEntityDeclarationDefinition } from '../../../Cdm/CdmLocalEntityDeclarationDefinition';
 import { CdmManifestDefinition } from '../../../Cdm/CdmManifestDefinition';
 import { cdmStatusLevel } from '../../../Cdm/cdmStatusLevel';
+import { cdmObjectType } from '../../../Enums/cdmObjectType';
+import { CdmEntityDefinition } from '../../../internal';
 import { CdmFolder } from '../../../Persistence';
 import { resolveContext } from '../../../Utilities/resolveContext';
 import { testHelper } from '../../testHelper';
@@ -127,7 +127,7 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             JSON.parse(content));
         let errorLogged: number = 0;
         corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            if (message.indexOf('The folder location \'local:/testLocation\' described by a partition pattern does not exist') !== -1) {
+            if (message.indexOf('Failed to fetch all files in the folder location \'local:/testLocation\' described by a partition pattern. Exception:') !== -1) {
                 errorLogged++;
             }
         }, cdmStatusLevel.warning);
@@ -375,4 +375,42 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         done();
     });
+
+    /**
+     *  Verifies that performing file status check on manifest with a partition with
+     * null location is gracefully handled.
+     */
+    it('TestFileStatusCheckOnNullLocation', async () => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestFileStatusCheckOnNullLocation');
+
+        corpus.setEventCallback((level, message) => {
+            if (level != cdmStatusLevel.error) {
+                fail(new Error('Error level message should have been reported'));
+            }
+
+            if (message.indexOf('StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath') == -1 &&
+                message.indexOf('CdmCorpusDefinition | The object path cannot be null or empty. | getLastModifiedTimeFromPartitionPath') == -1) {
+                fail(new Error('Unexpected error message received'));
+            }
+        }, cdmStatusLevel.warning);
+
+        // Create manifest
+        var manifest = corpus.MakeObject<CdmManifestDefinition>(cdmObjectType.manifestDef, 'TestModel');
+        corpus.storage.fetchRootFolder('local').documents.push(manifest);
+
+        // Create entity
+        var entDoc = corpus.storage.fetchRootFolder('local').documents.push('MyEntityDoc.cdm.json');
+
+        var entDef = corpus.MakeObject<CdmEntityDefinition>(cdmObjectType.entityDef, 'MyEntity');
+        entDoc.definitions.push(entDef);
+
+        var entDecl = manifest.entities.push(entDef);
+
+        // Create partition
+        var part = corpus.MakeObject<CdmDataPartitionDefinition>(cdmObjectType.dataPartitionDef, 'MyPartition');
+        entDecl.dataPartitions.push(part);
+
+        // This should not throw exception
+        await manifest.fileStatusCheckAsync();
+    });    
 });

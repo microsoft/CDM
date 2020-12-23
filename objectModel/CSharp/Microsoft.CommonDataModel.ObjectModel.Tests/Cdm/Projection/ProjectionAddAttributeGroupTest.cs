@@ -405,6 +405,36 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         }
 
         /// <summary>
+        /// Test resolving a type attribute with an add attribute group operation
+        /// </summary>
+        [TestMethod]
+        public async Task TestTypeAttributeProj()
+        {
+            string testName = "TestTypeAttributeProj";
+            string entityName = "Person";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+
+            foreach (List<string> resOpt in resOptsCombinations)
+            {
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+            }
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+
+            // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+            // Add attribute group applied to "address"
+            Assert.AreEqual(5, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("age", (resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition).Name);
+            CdmAttributeGroupDefinition attGroupDefinition = this.ValidateAttributeGroup(resolvedEntity.Attributes, "AddressAttributeGroup", 5, 2);
+            Assert.AreEqual("address", (attGroupDefinition.Members[0] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("phoneNumber", (resolvedEntity.Attributes[3] as CdmTypeAttributeDefinition).Name);
+            Assert.AreEqual("email", (resolvedEntity.Attributes[4] as CdmTypeAttributeDefinition).Name);
+        }
+
+
+        /// <summary>
         /// Validates the creation of an attribute group and return its definition
         /// </summary>
         /// <param name="attributes">The collection of attributes.</param>

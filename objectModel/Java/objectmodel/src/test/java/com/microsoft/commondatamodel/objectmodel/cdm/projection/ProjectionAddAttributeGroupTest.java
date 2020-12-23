@@ -390,6 +390,33 @@ public class ProjectionAddAttributeGroupTest {
         Assert.assertEquals("email", ((CdmTypeAttributeDefinition) innerAttGroup.getMembers().get(4)).getName());
     }
 
+    /**
+     * Test resolving a type attribute with an add attribute group operation
+     */
+    @Test
+    public void testTypeAttributeProj() throws InterruptedException {
+        String testName = "testTypeAttributeProj";
+        String entityName = "Person";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<String>(Arrays.asList("referenceOnly"))).join();
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+         // Add attribute group applied to "address"
+        Assert.assertEquals(5, resolvedEntity.getAttributes().getCount());
+        Assert.assertEquals("name", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
+        Assert.assertEquals("age", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName());
+        CdmAttributeGroupDefinition attGroupDefinition = this.validateAttributeGroup(resolvedEntity.getAttributes(), "AddressAttributeGroup", 5, 2);
+        Assert.assertEquals("address", ((CdmTypeAttributeDefinition) attGroupDefinition.getMembers().get(0)).getName());
+        Assert.assertEquals("phoneNumber", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName());
+        Assert.assertEquals("email", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(4)).getName());
+    }
+
     CdmAttributeGroupDefinition validateAttributeGroup(CdmCollection<CdmAttributeItem> attributes, String attributeGroupName) {
         return validateAttributeGroup(attributes, attributeGroupName, 1, 0);
     }

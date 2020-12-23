@@ -6,9 +6,11 @@ using System.Runtime.CompilerServices;
 #if INTERNAL_VSTS
 [assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi" + Microsoft.CommonDataModel.AssemblyRef.ProductPublicKey)]
 [assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Versioning" + Microsoft.CommonDataModel.AssemblyRef.TestPublicKey)]
 #else
 [assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi")]
 [assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Persistence.Odi.Tests")]
+[assembly: InternalsVisibleTo("Microsoft.CommonDataModel.ObjectModel.Versioning")]
 #endif
 namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 {
@@ -457,6 +459,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         break;
                 }
             }
+
+            if (resOpt.SymbolRefToObjects != null && found is CdmObjectDefinitionBase foundDef)
+            {
+                resOpt.SymbolRefToObjects.Add(Tuple.Create(symbolDef, foundDef));
+            }
+
             return found;
         }
 
@@ -971,68 +979,71 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public async Task<T> FetchObjectAsync<T>(string objectPath, CdmObject obj = null, ResolveOptions resOpt = null, bool forceReload = false)
             where T : CdmObject
         {
-            if (resOpt == null)
+            using (Logger.EnterScope(nameof(CdmCorpusDefinition), Ctx, nameof(FetchObjectAsync)))
             {
-                resOpt = new ResolveOptions();
-            }
-
-            // convert the object path to the absolute corpus path.
-            objectPath = this.Storage.CreateAbsoluteCorpusPath(objectPath, obj);
-
-            var documentPath = objectPath;
-            var documentNameIndex = objectPath.LastIndexOf(PersistenceLayer.CdmExtension);
-
-            if (documentNameIndex != -1)
-            {
-                // if there is something after the document path, split it into document path and object path.
-                documentNameIndex += PersistenceLayer.CdmExtension.Count();
-                documentPath = objectPath.Slice(0, documentNameIndex);
-            }
-
-            Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"request object: {objectPath}", nameof(this.FetchObjectAsync));
-            CdmContainerDefinition newObj = await LoadFolderOrDocument(documentPath, forceReload);
-
-            if (newObj != null)
-            {
-                // get imports and index each document that is loaded
-                if (newObj is CdmDocumentDefinition doc)
+                if (resOpt == null)
                 {
-                    if (!await doc.IndexIfNeeded(resOpt))
+                    resOpt = new ResolveOptions();
+                }
+
+                // convert the object path to the absolute corpus path.
+                objectPath = this.Storage.CreateAbsoluteCorpusPath(objectPath, obj);
+
+                var documentPath = objectPath;
+                var documentNameIndex = objectPath.LastIndexOf(PersistenceLayer.CdmExtension);
+
+                if (documentNameIndex != -1)
+                {
+                    // if there is something after the document path, split it into document path and object path.
+                    documentNameIndex += PersistenceLayer.CdmExtension.Count();
+                    documentPath = objectPath.Slice(0, documentNameIndex);
+                }
+
+                Logger.Debug(nameof(CdmCorpusDefinition), this.Ctx, $"request object: {objectPath}", nameof(this.FetchObjectAsync));
+                CdmContainerDefinition newObj = await LoadFolderOrDocument(documentPath, forceReload);
+
+                if (newObj != null)
+                {
+                    // get imports and index each document that is loaded
+                    if (newObj is CdmDocumentDefinition doc)
                     {
+                        if (!await doc.IndexIfNeeded(resOpt))
+                        {
+                            return default;
+                        }
+
+                        if (!doc.IsValid)
+                        {
+                            Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, $"The requested path: {objectPath} involves a document that failed validation", nameof(this.FetchObjectAsync));
+                            return default;
+                        }
+                    }
+
+                    if (documentPath.Equals(objectPath))
+                    {
+                        return (T)newObj;
+                    }
+
+                    if (documentNameIndex == -1)
+                    {
+                        // there is no remaining path to be loaded, so return.
                         return default;
                     }
 
-                    if (!doc.IsValid)
+                    // trim off the document path to get the object path in the doc
+                    var remainingObjectPath = objectPath.Slice(documentNameIndex + 1);
+
+                    var result = ((CdmDocumentDefinition)newObj).FetchObjectFromDocumentPath(remainingObjectPath, resOpt);
+                    if (result == null)
                     {
-                        Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, $"The requested path: {objectPath} involves a document that failed validation", nameof(this.FetchObjectAsync));
-                        return default;
+                        Logger.Error(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, $"Could not find symbol '{objectPath}' in document[{newObj.AtCorpusPath}]", nameof(FetchObjectAsync));
                     }
+
+                    return (T)result;
                 }
 
-                if (documentPath.Equals(objectPath))
-                {
-                    return (T)newObj;
-                }
-
-                if (documentNameIndex == -1)
-                {
-                    // there is no remaining path to be loaded, so return.
-                    return default;
-                }
-
-                // trim off the document path to get the object path in the doc
-                var remainingObjectPath = objectPath.Slice(documentNameIndex + 1);
-
-                var result = ((CdmDocumentDefinition)newObj).FetchObjectFromDocumentPath(remainingObjectPath, resOpt);
-                if (result == null)
-                {
-                    Logger.Error(nameof(CdmCorpusDefinition), (ResolveContext)this.Ctx, $"Could not find symbol '{objectPath}' in document[{newObj.AtCorpusPath}]", nameof(FetchObjectAsync));
-                }
-
-                return (T)result;
+                return default;
             }
-
-            return default;
         }
 
         /// <summary>
@@ -1057,11 +1068,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// A callback that gets called on an event.
         /// </summary>
-        public void SetEventCallback(EventCallback status, CdmStatusLevel reportAtLevel = CdmStatusLevel.Info)
+        /// <param name="status">The callback</param>
+        /// <param name="reportAtLevel">Messages at this or higher level will only be reported</param>
+        /// <param name="correlationId">Optional correlation ID to attach to messages</param>
+        public void SetEventCallback(EventCallback status, CdmStatusLevel reportAtLevel = CdmStatusLevel.Info, string correlationId = null)
         {
             ResolveContext ctx = this.Ctx as ResolveContext;
             ctx.StatusEvent = status;
             ctx.ReportAtLevel = reportAtLevel;
+            ctx.CorrelationId = correlationId;
         }
 
         /// <summary>
@@ -1457,7 +1472,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                         else
                         {
-                            Logger.Info(nameof(CdmCorpusDefinition), ctx, $"    resolved '{foundDesc}'", ctx.RelativePath);
+                            Logger.Info(nameof(CdmCorpusDefinition), ctx, $"resolved '{foundDesc}'", ctx.RelativePath);
                         }
                     }
                 }
@@ -1510,7 +1525,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 }
                                 else
                                 {
-                                    Logger.Info(nameof(CdmCorpusDefinition), ctx, $"    resolved '{reff.NamedReference}'", $"{CurrentDoc.FolderPath}{path}");
+                                    Logger.Info(nameof(CdmCorpusDefinition), ctx, $"resolved '{reff.NamedReference}'", $"{CurrentDoc.FolderPath}{path}");
                                 }
                             }
                             break;
@@ -2081,7 +2096,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, "The object's AtCorpusPath should not be null or empty.", nameof(GetLastModifiedTimeAsyncFromObject));
                     return null;
                 }
-                return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+
+                try
+                {
+                    return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, $"Failed to compute last modified time for partition file {pathTuple.Item2}. Exception: {e.Message}", nameof(GetLastModifiedTimeAsyncFromObject));
+                    return null;
+                }
             }
             else
             {
@@ -2113,7 +2137,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     return null;
                 }
 
-                return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                try
+                {
+                    return await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, $"Failed to compute last modified time for partition file {pathTuple.Item2}. Exception: {e.Message}", nameof(GetLastModifiedTimeAsyncFromObject));
+                }
             }
             return null;
         }

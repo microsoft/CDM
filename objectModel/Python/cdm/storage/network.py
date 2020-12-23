@@ -72,7 +72,7 @@ class NetworkAdapter:
         return request
 
     async def _read(self, request: 'CdmHttpRequest') -> str:
-        result = await self._http_client._send_async(request, self.wait_time_callback)
+        result = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
         if result is None:
             raise Exception('The result of a request is undefined.')

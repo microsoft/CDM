@@ -461,6 +461,38 @@ describe('Cdm/Projection/ProjectionAddAttributeGroupTest', () => {
     });
 
     /**
+     * Test resolving a type attribute with an add attribute group operation
+     */
+    it.skip('testTypeAttributeProj', async () => {
+        const testName: string = 'TestTypeAttributeProj';
+        const entityName: string = 'Person';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+
+        for (const resOpt of resOptsCombinations) {
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+        }
+
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, [ 'referenceOnly' ]);
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Add attribute group applied to "address"
+        expect(resolvedEntity.attributes.length)
+            .toEqual(5);
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+            .toEqual('name');
+        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+            .toEqual('age');
+        const attGroupDefinition: CdmAttributeGroupDefinition = validateAttributeGroup(resolvedEntity.attributes, 'AddressAttributeGroup', 5, 2);
+        expect((attGroupDefinition.members.allItems[0] as CdmTypeAttributeDefinition).name)
+            .toEqual('address');
+        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
+            .toEqual('phoneNumber');
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
+            .toEqual('email');
+    });
+
+    /**
      * Validates the creation of an attribute group and return its definition
      * @param attributes The collection of attributes
      * @param attributeGroupName The attribute group name

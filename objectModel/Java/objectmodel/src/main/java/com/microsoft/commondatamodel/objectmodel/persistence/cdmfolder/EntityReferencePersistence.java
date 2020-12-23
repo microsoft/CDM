@@ -60,7 +60,7 @@ public class EntityReferencePersistence {
             entity = obj.get("entityReference");
         } else if (obj.get("entityReference") != null && obj.get("entityReference").get("entityShape") != null) {
             entity = ConstantEntityPersistence.fromData(ctx, obj.get("entityReference"));
-        } else if (obj.get("source") != null) {
+        } else if (obj.get("source") != null || obj.get("operations") != null) {
             entity = ProjectionPersistence.fromData(ctx, obj);
         } else {
             entity = EntityPersistence.fromData(ctx, obj.get("entityReference"));

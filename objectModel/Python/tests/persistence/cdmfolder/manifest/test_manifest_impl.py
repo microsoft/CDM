@@ -264,7 +264,7 @@ class ManifestImplTest(unittest.TestCase):
         manifest.namespace = 'cdm'
         manifest.folder_path = '../Mnp'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
-        function_parameter2 = function_parameter2.split('|')[2].strip()
+        function_parameter2 = function_parameter2.split('|')[1].strip()
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
         self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)
@@ -273,7 +273,7 @@ class ManifestImplTest(unittest.TestCase):
         manifest.namespace = 'cdm'
         manifest.folder_path = 'Mnp/./Qrs'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
-        function_parameter2 = function_parameter2.split('|')[2].strip()
+        function_parameter2 = function_parameter2.split('|')[1].strip()
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
         self.assertTrue(function_parameter2.find('The path should not contain /./') != -1)
@@ -282,7 +282,7 @@ class ManifestImplTest(unittest.TestCase):
         manifest.namespace = 'cdm'
         manifest.folder_path = 'Mnp/../Qrs'
         corpus.storage.create_absolute_corpus_path('Abc', manifest)
-        function_parameter2 = function_parameter2.split('|')[2].strip()
+        function_parameter2 = function_parameter2.split('|')[1].strip()
         self.assertTrue(function_was_called)
         self.assertEqual(CdmStatusLevel.ERROR, function_parameter1)
         self.assertTrue(function_parameter2.find('The path should not contain ../') != -1)

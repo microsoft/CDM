@@ -29,8 +29,8 @@ public class CdmDataPartitionDefinition extends CdmObjectDefinitionBase implemen
   private TraitToPropertyMap t2pm;
   private String location;
   private boolean inferred;
-
-  CdmDataPartitionDefinition(final CdmCorpusContext ctx, final String name) {
+  
+  public CdmDataPartitionDefinition(final CdmCorpusContext ctx, final String name) {
     super(ctx);
     this.setName(name);
     this.setObjectType(CdmObjectType.DataPartitionDef);

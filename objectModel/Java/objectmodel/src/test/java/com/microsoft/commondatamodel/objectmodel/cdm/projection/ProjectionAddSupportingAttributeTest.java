@@ -256,6 +256,30 @@ public class ProjectionAddSupportingAttributeTest {
     }
 
     /**
+     * Test resolving a type attribute with an add supporting attribute operation
+     */
+    @Test
+    public void testNestedTypeAttributeProj() throws InterruptedException, ExecutionException {
+        String testName = "testNestedTAProj";
+        String entityName = "NewPerson";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
+        }
+
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).get();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList("referenceOnly"))).get();
+
+        // Original set of attributes: ["PersonInfo"]
+        Assert.assertEquals(2, resolvedEntity.getAttributes().size());
+        Assert.assertEquals("name", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
+        CdmTypeAttributeDefinition supportingAttribute = (CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1);
+        Assert.assertEquals("name_display", supportingAttribute.getName());
+        validateInSupportOfAttribute(supportingAttribute, "name", false);
+    }
+
+    /**
      * Test resolving a type attribute using resolution guidance
      */
     @Test
@@ -271,7 +295,31 @@ public class ProjectionAddSupportingAttributeTest {
         CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).get();
         CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList("structured"))).get();
 
-        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Original set of attributes: ["PersonInfo"]
+        Assert.assertEquals(2, resolvedEntity.getAttributes().size());
+        Assert.assertEquals("PersonInfo", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
+        CdmTypeAttributeDefinition supportingAttribute = (CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1);
+        Assert.assertEquals("PersonInfo_display", supportingAttribute.getName());
+        validateInSupportOfAttribute(supportingAttribute, "PersonInfo", false);
+    }
+
+    /**
+     * Test resolving a type attribute with an add supporting attribute operation
+     */
+    @Test
+    public void testTypeAttributeProj() throws InterruptedException, ExecutionException {
+        String testName = "testTypeAttributeProj";
+        String entityName = "NewPerson";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).get();
+        }
+
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).get();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList("referenceOnly"))).get();
+
+        // Original set of attributes: ["PersonInfo"]
         Assert.assertEquals(2, resolvedEntity.getAttributes().size());
         Assert.assertEquals("PersonInfo", ((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName());
         CdmTypeAttributeDefinition supportingAttribute = (CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1);

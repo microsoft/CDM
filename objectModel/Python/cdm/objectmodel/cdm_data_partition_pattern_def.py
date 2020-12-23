@@ -103,8 +103,8 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             file_info_list = await adapter.fetch_all_files_async(path_tuple[1])
         except Exception as e:
             file_info_list = None
-            logger.warning(self._TAG, self.ctx, 'The folder location \'{}\' described by a partition pattern does not exist'.format(
-                root_corpus), self.file_status_check_async.__name__)
+            logger.warning(self._TAG, self.ctx, 'Failed to fetch all files in the folder location \'{}\' described by a partition pattern. Exception: {}'.format(
+                root_corpus, e), self.file_status_check_async.__name__)
 
         if file_info_list is not None:
             # remove root of the search from the beginning of all paths so anything in the root is not found by regex.

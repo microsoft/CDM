@@ -294,6 +294,7 @@ class CdmObjectReference(CdmObject):
             return False
 
         if self.explicit_reference and not self.named_reference:
+            self.explicit_reference.owner = self.owner
             if self.explicit_reference.visit(path, pre_children, post_children):
                 return True
 

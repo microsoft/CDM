@@ -28,17 +28,13 @@ export class ResourceAdapter extends StorageAdapterBase {
     }
 
     public async readAsync(corpusPath: string): Promise<string> {
-        try {
-            const adapterPath: string = this.resourcesPath + corpusPath;
-            const content: string = await readFile(adapterPath, 'utf-8') as string;
-            if (content === undefined || content === '') {
-                throw new Error(`The requested document '${adapterPath}' is empty`);
-            }
-
-            return content;
-        } catch (err) {
-            throw (err);
+        const adapterPath: string = this.resourcesPath + corpusPath;
+        const content: string = await readFile(adapterPath, 'utf-8') as string;
+        if (content === undefined || content === '') {
+            throw new Error(`The requested document '${adapterPath}' is empty`);
         }
+
+        return content;
     }
 
     public createAdapterPath(corpusPath: string): string {

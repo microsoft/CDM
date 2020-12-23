@@ -127,6 +127,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
             if (adapter != null)
             {
+                if (adapter is StorageAdapterBase adapterBase)
+                {
+                    adapterBase.Ctx = this.Ctx;
+                }
+
                 this.NamespaceAdapters[nameSpace] = adapter;
                 CdmFolderDefinition fd = new CdmFolderDefinition(this.Ctx, "");
                 fd.Corpus = this.Corpus as CdmCorpusDefinition;

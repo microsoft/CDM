@@ -209,7 +209,7 @@ public class ResolvedAttribute {
   }
 
   /**
-   *
+   * @param resolvedTraits ResolvedTraitSet
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

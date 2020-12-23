@@ -33,4 +33,5 @@ class TypeAttribute(JObject):
         self.maximumLength = None  # type: int
         self.valueConstrainedToList = None  # type: bool
         self.defaultValue = None  # type: object
+        self.projection = None  # type: Optional[Projection]
         self.resolutionGuidance = None  # type: AttributeResolutionGuidance

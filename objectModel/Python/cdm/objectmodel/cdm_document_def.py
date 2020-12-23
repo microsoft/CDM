@@ -40,6 +40,9 @@ class ImportPriorities:
 
 
 class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
+    # The maximum json semantic version supported by this ObjectModel version.
+    current_json_schema_semantic_version = '1.1.0'
+
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx)
 
@@ -52,7 +55,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         self.schema = None  # type: Optional[str]
 
         # the document json schema semantic version.
-        self.json_schema_semantic_version = '1.0.0'  # type: str
+        self.json_schema_semantic_version = self.current_json_schema_semantic_version  # type: str
         
         # the document version.
         self.document_version = None  # type: Optional[str]
@@ -442,7 +445,7 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         return await self._index_if_needed(res_opt, True)
 
     async def _reload_async(self) -> None:
-        await self.ctx.corpus.fetch_object_async(self.corpus_path, force_reload=True)
+        await self.ctx.corpus.fetch_object_async(self.at_corpus_path, force_reload=True)
 
     async def save_as_async(self, new_name: str, save_referenced: bool = False, options: Optional['CopyOptions'] = None) -> bool:
         """saves the document back through the adapter in the requested format
@@ -450,17 +453,18 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         'model.json' for back compat model, '*.manifest.json' for manifest, '*.json' for cdm defs
         save_referenced (default False) when true will also save any schema defintion documents that are
         linked from the source doc and that have been modified. existing document names are used for those."""
-        options = options if options is not None else CopyOptions()
+        with logger._enter_scope(self._TAG, self.ctx, self.save_as_async.__name__):
+            options = options if options is not None else CopyOptions()
 
-        index_if_needed = await self._index_if_needed(ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives))
-        if not index_if_needed:
-            logger.error(self._TAG, self.ctx, 'Failed to index document prior to save {}.'.format(self.name), self.save_as_async.__name__)
-            return False
+            index_if_needed = await self._index_if_needed(ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives))
+            if not index_if_needed:
+                logger.error(self._TAG, self.ctx, 'Failed to index document prior to save {}.'.format(self.name), self.save_as_async.__name__)
+                return False
 
-        if new_name == self.name:
-            self._is_dirty = False
+            if new_name == self.name:
+                self._is_dirty = False
 
-        return await self.ctx.corpus.persistence._save_document_as_async(self, options, new_name, save_referenced)
+            return await self.ctx.corpus.persistence._save_document_as_async(self, options, new_name, save_referenced)
 
     async def _save_linked_documents_async(self, options: 'CopyOptions') -> bool:
         # the only linked documents would be the imports

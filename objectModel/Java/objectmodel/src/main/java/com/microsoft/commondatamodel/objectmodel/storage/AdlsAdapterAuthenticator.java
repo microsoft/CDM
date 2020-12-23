@@ -8,6 +8,10 @@ import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
 import com.microsoft.commondatamodel.objectmodel.utilities.network.TokenProvider;
+import org.apache.commons.codec.binary.Base64;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -25,9 +29,6 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import org.apache.commons.codec.binary.Base64;
 
 /**
  * It is used for handling authentication items for ADLS requests.
@@ -130,12 +131,13 @@ class AdlsAdapterAuthenticator {
     builder.append(uri.getRawPath());
     // Append canonicalized queries.
     if (!Strings.isNullOrEmpty(uri.getQuery())) {
-      final String queryParameters = uri.getQuery();
+      final String queryParameters = uri.getRawQuery();
       final String[] queryParts = queryParameters.split("&");
       for(final String item : queryParts) {
         final String[] keyValuePair = item.split("=");
+        String queryName = keyValuePair[0].toLowerCase();
         String decodedValue = URLDecoder.decode(keyValuePair[1], "UTF-8");
-        builder.append("\n").append(keyValuePair[0]).append(":").append(decodedValue);
+        builder.append("\n").append(queryName).append(":").append(decodedValue);
       }
     }
 
