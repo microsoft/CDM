@@ -31,5 +31,6 @@ public enum CdmAttributeContextType {
   OperationRenameAttributes,
   OperationReplaceAsForeignKey,
   OperationIncludeAttributes,
-  OperationAddAttributeGroup
+  OperationAddAttributeGroup,
+  Unknown
 }

@@ -41,47 +41,6 @@ describe('Cdm/Projection/ProjectionMiscellaneousTest', () => {
     const testsSubpath: string = 'Cdm/Projection/TestProjectionMiscellaneous';
 
     /**
-     * Test case scenario for Bug #25 from the projections internal bug bash
-     * Reference Link: https://commondatamodel.visualstudio.com/CDM/_workitems/edit/25
-     */
-    it('TestMissingConditionInJson', async () => {
-        const testName: string = 'TestMissingConditionInJson';
-
-        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, testName);
-        corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            fail(message);
-        }, cdmStatusLevel.warning);
-
-        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('default.manifest.cdm.json');
-
-        const entityName: string = 'SalesNestedFK';
-        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`, manifest);
-        expect(entity)
-            .toBeTruthy();
-
-        const resOpt: resolveOptions = new resolveOptions(entity.inDocument);
-        // where, resOptsCombinations[1] == 'referenceOnly'
-        resOpt.directives = new AttributeResolutionDirectiveSet(resOptsCombinations[1]);
-
-        const resolvedFolder: CdmFolderDefinition = corpus.storage.fetchRootFolder('output');
-
-        let wasInfoMessageReceived: boolean = false;
-
-        corpus.setEventCallback((statusLevel: cdmStatusLevel, message: string) => {
-            if (StringUtils.equalsWithIgnoreCase('CdmProjection | Optional expression missing. Implicit expression will automatically apply. | ConstructProjectionContext', message)) {
-                wasInfoMessageReceived = true;
-            }
-        }, cdmStatusLevel.info);
-
-        const resolvedEntity: CdmEntityDefinition = await entity.createResolvedEntityAsync(`Resolved_${entityName}.cdm.json`, resOpt, resolvedFolder);
-        expect(resolvedEntity)
-            .toBeTruthy();
-
-        expect(wasInfoMessageReceived)
-            .toBeTruthy();
-    });
-
-    /**
      * Test case scenario for Bug #24 from the projections internal bug bash
      * Reference Link: https://commondatamodel.visualstudio.com/CDM/_workitems/edit/24
      */

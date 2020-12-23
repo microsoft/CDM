@@ -8,6 +8,7 @@ import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeState;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionAttributeStateSet;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
@@ -174,6 +175,15 @@ public class CdmOperationArrayExpansion extends CdmOperationBase {
                     attrCtxExpandedAttrParam.setType(CdmAttributeContextType.AttributeDefinition);
                     attrCtxExpandedAttrParam.setName(currentPAS.getCurrentResolvedAttribute().getResolvedName() + "@" + i);
                     CdmAttributeContext attrCtxExpandedAttr = CdmAttributeContext.createChildUnder(projCtx.getProjectionDirective().getResOpt(), attrCtxExpandedAttrParam);
+
+                    if (currentPAS.getCurrentResolvedAttribute().getTarget() instanceof ResolvedAttributeSet) {
+                        Logger.error(
+                            TAG,
+                            this.getCtx(), 
+                            "Array expansion operation does not support attribute groups.");
+                        projAttrStatesFromRounds.clear();
+                        break;
+                    }
 
                     // Create a new resolved attribute for the expanded attribute
                     ResolvedAttribute newResAttr = createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, (CdmAttribute) currentPAS.getCurrentResolvedAttribute().getTarget(), currentPAS.getCurrentResolvedAttribute().getResolvedName());

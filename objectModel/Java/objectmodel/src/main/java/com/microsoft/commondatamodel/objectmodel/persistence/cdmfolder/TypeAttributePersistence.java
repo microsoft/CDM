@@ -10,6 +10,7 @@ import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySett
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
+import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projections.ProjectionPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.TypeAttribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.*;
 import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
@@ -88,6 +89,7 @@ public class TypeAttributePersistence {
     typeAttribute.updateMaximumValue(Utils.propertyFromDataToString(obj.get("maximumValue")));
     typeAttribute.updateMinimumValue(Utils.propertyFromDataToString(obj.get("minimumValue")));
     typeAttribute.updateDefaultValue(obj.get("defaultValue"));
+    typeAttribute.setProjection(ProjectionPersistence.fromData(ctx, obj.get("projection")));
 
     final String dataFormat = obj.has("dataFormat") ? obj.get("dataFormat").asText() : null;
     if (dataFormat != null) {

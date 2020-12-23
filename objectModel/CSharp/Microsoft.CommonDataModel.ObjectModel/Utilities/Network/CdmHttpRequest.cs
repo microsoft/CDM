@@ -35,6 +35,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         public string RequestedUrl { get; set; }
 
         /// <summary>
+        /// The unique id of the request for logging.
+        /// </summary>
+        public Guid RequestId { get; private set; }
+
+        /// <summary>
         /// The timeout of a single request.
         /// </summary>
         public TimeSpan? Timeout { get; set; }
@@ -59,6 +64,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
         {
             this.Headers = new Dictionary<string, string>();
             this.RequestedUrl = url;
+            this.RequestId = Guid.NewGuid();
             this.NumberOfRetries = numberOfRetries;
             
             // If not HTTP method is specified, assume GET.

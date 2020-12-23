@@ -34,6 +34,7 @@ public final class ProjectionAttributeStateSet {
     }
 
     /**
+     * @return List of ProjectionAttributeState
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      */
@@ -76,7 +77,8 @@ public final class ProjectionAttributeStateSet {
 
     /**
      * Remove from collection
-     *
+     * @param pas ProjectionAttributeState
+     * @return boolean
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      */
@@ -93,7 +95,8 @@ public final class ProjectionAttributeStateSet {
 
     /**
      * Check if exists in collection
-     *
+     * @param pas ProjectionAttributeState
+     * @return boolean
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      */

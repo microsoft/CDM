@@ -7,6 +7,7 @@ import {
     CdmEntityDefinition,
     CdmFolderDefinition,
     CdmManifestDefinition,
+    CdmTypeAttributeDefinition,
     resolveOptions
 } from '../../../internal';
 import { testHelper } from '../../testHelper';
@@ -172,6 +173,37 @@ describe('Cdm/Projection/ProjectionFKTest', () => {
         for (const resOpt of resOptsCombinations) {
             await loadEntityForResolutionOptionAndSave(testName, entityName, resOpt);
         }
+    });
+
+    /**
+     * Test resolving a type attribute with a replace as foreign key operation
+     */
+    it('TestTypeAttributeProj', async () => {
+        const testName: string = 'TestTypeAttributeProj';
+        const entityName: string = 'Person';
+        const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+
+        for (const resOpt of resOptsCombinations) {
+            await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+        }
+
+        const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
+        const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Replace as foreign key applied to "address", replace with "addressId"
+        expect(resolvedEntity.attributes.length)
+            .toEqual(5);
+        expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+            .toEqual('name');
+        expect((resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition).name)
+            .toEqual('age');
+        expect((resolvedEntity.attributes.allItems[2] as CdmTypeAttributeDefinition).name)
+            .toEqual('addressId');
+        expect((resolvedEntity.attributes.allItems[3] as CdmTypeAttributeDefinition).name)
+            .toEqual('phoneNumber');
+        expect((resolvedEntity.attributes.allItems[4] as CdmTypeAttributeDefinition).name)
+            .toEqual('email');
     });
 
     async function loadEntityForResolutionOptionAndSave(testName: string, entityName: string, resOpts: string[]): Promise<void> {

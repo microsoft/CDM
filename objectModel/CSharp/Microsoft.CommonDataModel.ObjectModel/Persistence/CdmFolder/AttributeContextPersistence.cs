@@ -139,7 +139,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 case "operationAddAttributeGroup":
                     return CdmAttributeContextType.OperationAddAttributeGroup;
                 default:
-                    return null;
+                    return CdmAttributeContextType.Unknown;
             }
         }
 

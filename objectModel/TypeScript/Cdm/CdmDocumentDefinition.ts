@@ -32,6 +32,8 @@ import {
     resolveOptions,
     VisitCallback
 } from '../internal';
+import { using } from "using-statement";
+import { enterScope } from '../Utilities/Logging/Logger';
 
 /**
  * @internal
@@ -125,6 +127,10 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
      * @internal
      */
     public _fileSystemModifiedTime: Date;
+    /**
+     * The maximum json semantic version supported by this ObjectModel version.
+     */
+    public static currentJsonSchemaSemanticVersion = '1.1.0';
 
     constructor(ctx: CdmCorpusContext, name: string, hasImports: boolean = false) {
         super(ctx);
@@ -133,7 +139,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.inDocument = this;
             this.objectType = cdmObjectType.documentDef;
             this.name = name;
-            this.jsonSchemaSemanticVersion = '1.0.0';
+            this.jsonSchemaSemanticVersion = CdmDocumentDefinition.currentJsonSchemaSemanticVersion;
             this.documentVersion = undefined;
             this.needsIndexing = true;
             this.importsIndexed = false;
@@ -141,6 +147,7 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
             this.isDirty = true;
             this.currentlyIndexing = false;
             this.isValid = true;
+            this.namespace = null;
 
             this.clearCaches();
 
@@ -460,30 +467,32 @@ export class CdmDocumentDefinition extends cdmObjectSimple implements CdmDocumen
      * returns false on any failure
      */
     public async saveAsAsync(newName: string, saveReferenced: boolean = false, options?: copyOptions): Promise<boolean> {
-        if (!options) {
-            options = new copyOptions();
-        }
-        const resOpt: resolveOptions = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
-        if (!await this.indexIfNeeded(resOpt)) {
-            Logger.error(
-                CdmDocumentDefinition.name,
-                this.ctx,
-                `Failed to index document prior to save '${this.name}'`,
-                this.saveAsAsync.name
-            );
+        return await using(enterScope(CdmDocumentDefinition.name, this.ctx, this.saveAsAsync.name), async _ => {
+            if (!options) {
+                options = new copyOptions();
+            }
+            const resOpt: resolveOptions = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+            if (!await this.indexIfNeeded(resOpt)) {
+                Logger.error(
+                    CdmDocumentDefinition.name,
+                    this.ctx,
+                    `Failed to index document prior to save '${this.name}'`,
+                    this.saveAsAsync.name
+                );
 
-            return false;
-        }
-        // if save to the same document name, then we are no longer 'dirty'
-        if (newName === this.name) {
-            this.isDirty = false;
-        }
+                return false;
+            }
+            // if save to the same document name, then we are no longer 'dirty'
+            if (newName === this.name) {
+                this.isDirty = false;
+            }
 
-        if (await this.ctx.corpus.persistence.saveDocumentAsAsync(this, options, newName, saveReferenced) === false) {
-            return false;
-        }
+            if (await this.ctx.corpus.persistence.saveDocumentAsAsync(this, options, newName, saveReferenced) === false) {
+                return false;
+            }
 
-        return true;
+            return true;
+        });
     }
 
     public async refreshAsync(resOpt: resolveOptions): Promise<boolean> {

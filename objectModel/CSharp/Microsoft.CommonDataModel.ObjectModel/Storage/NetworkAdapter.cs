@@ -77,7 +77,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
 
         public async Task<CdmHttpResponse> ExecuteRequest(CdmHttpRequest httpRequest)
         {
-            var response = await this.httpClient.SendAsync(httpRequest, this.WaitTimeCallback);
+            var response = await this.httpClient.SendAsync(httpRequest, this.WaitTimeCallback, this.Ctx);
 
             if (response == null)
             {

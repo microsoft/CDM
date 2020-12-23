@@ -1,6 +1,7 @@
 ﻿//Microsoft Corporation.All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
+using Microsoft.CommonDataModel.ObjectModel.Cdm;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,6 +18,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
     /// </summary>
     public abstract class StorageAdapterBase : StorageAdapter
     {
+        /// <summary>
+        /// The CDM corpus context, gives information for the logger.
+        /// </summary>
+        internal CdmCorpusContext Ctx { get; set; }
+
         /// <summary>
         /// The location hint, gives a hint to the reader app about the location where the adapter implementation (Nuget, NPM...) can be obtained.
         /// </summary>

@@ -73,6 +73,7 @@ public class ConcurrentSemaphore {
   }
 
   /**
+   * @return Integer
    * Number of concurrent completable allowed to run at the same time.
    */
   public Integer getPermits() {
@@ -80,6 +81,7 @@ public class ConcurrentSemaphore {
   }
 
   /**
+   * @param permits Integer
    * Number of concurrent completable allowed to run at the same time.
    */
   public void setPermits(Integer permits) {

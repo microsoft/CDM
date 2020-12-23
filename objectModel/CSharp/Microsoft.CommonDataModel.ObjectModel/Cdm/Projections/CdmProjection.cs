@@ -33,7 +33,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Property of a projection that holds the source of the operation
         /// </summary>
-        public CdmEntityReference Source { get; set; }
+        public CdmEntityReference Source { 
+            get => source; 
+            set 
+            {
+                if (value != null)
+                    value.Owner = this;
+                this.source = value;
+            }
+        }
+
+        /// <inheritdoc />
+        private CdmEntityReference source;
 
         /// <summary>
         /// Projection constructor
@@ -86,7 +97,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             List<string> missingFields = new List<string>();
 
             if (this.Source == null)
-                missingFields.Add("Source");
+            {
+                CdmObject rootOwner = GetRootOwner();
+                if (rootOwner.ObjectType != CdmObjectType.TypeAttributeDef)
+                {
+                    // If the projection is used in an entity attribute or an extends entity
+                    missingFields.Add("Source");
+                }
+            }
+            else if (this.Source.ExplicitReference?.ObjectType != CdmObjectType.ProjectionDef)
+            {
+                // If reached the inner most projection
+                CdmObject rootOwner = GetRootOwner();
+                if (rootOwner.ObjectType == CdmObjectType.TypeAttributeDef)
+                {
+                    // If the projection is used in a type attribute
+                    Logger.Error(nameof(CdmProjection), this.Ctx, "Source can only be another projection in a type attribute.", nameof(Validate));
+                }
+            }
 
             if (missingFields.Count > 0)
             {
@@ -164,22 +192,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <param name="projDirective"></param>
         /// <param name="attrCtx"></param>
         /// <returns></returns>
-        internal ProjectionContext ConstructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx)
+        internal ProjectionContext ConstructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx, ResolvedAttributeSet ras = null)
         {
             ProjectionContext projContext = null;
 
-            if (string.IsNullOrWhiteSpace(this.Condition))
-            {
-                // if no condition is provided, get default condition and persist
-                this.Condition = ConditionExpression.GetDefaultConditionExpression(this.Operations, this.Owner);
-            }
-            // create an expression tree based on the condition
+            string condition = string.IsNullOrWhiteSpace(this.Condition) ? "(true)" : this.Condition;
+
+            // Create an expression tree based on the condition
             ExpressionTree tree = new ExpressionTree();
-            this.ConditionExpressionTreeRoot = tree.ConstructExpressionTree(this.Condition);
-            if (this.ConditionExpressionTreeRoot == null)
-            {
-                Logger.Info(nameof(CdmProjection), this.Ctx, $"Optional expression missing. Implicit expression will automatically apply.", nameof(ConstructProjectionContext));
-            }
+            this.ConditionExpressionTreeRoot = tree.ConstructExpressionTree(condition);
+
 
             if (attrCtx != null)
             {
@@ -204,49 +226,64 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 };
                 CdmAttributeContext acSource = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpSource);
 
-                if (this.Source.FetchObjectDefinition<CdmObjectDefinition>(projDirective.ResOpt).ObjectType == CdmObjectType.ProjectionDef)
-                {
-                    // A Projection
+                // Initialize the projection context
+                CdmCorpusContext ctx = projDirective.Owner?.Ctx;
 
-                    projContext = ((CdmProjection)this.Source.ExplicitReference).ConstructProjectionContext(projDirective, acSource);
+                if (this.Source != null)
+                {
+                    CdmObjectDefinitionBase source = this.Source.FetchObjectDefinition<CdmObjectDefinitionBase>(projDirective.ResOpt);
+                    if (source.ObjectType == CdmObjectType.ProjectionDef)
+                    {
+                        // A Projection
+                        CdmProjection projDef = (CdmProjection)source;
+                        projContext = projDef.ConstructProjectionContext(projDirective, acSource, ras);
+                    }
+                    else
+                    {
+                        // An Entity Reference
+
+                        AttributeContextParameters acpSourceProjection = new AttributeContextParameters
+                        {
+                            under = acSource,
+                            type = CdmAttributeContextType.Entity,
+                            Name = this.Source.NamedReference ?? this.Source.ExplicitReference.GetName(),
+                            Regarding = this.Source,
+                            IncludeTraits = false
+                        };
+                        ras = this.Source.FetchResolvedAttributes(projDirective.ResOpt, acpSourceProjection);
+                        // Clean up the context tree, it was left in a bad state on purpose in this call
+                        ras.AttributeContext.FinalizeAttributeContext(projDirective.ResOpt, acSource.AtCorpusPath, this.InDocument, this.InDocument, null, false);
+
+                        // If polymorphic keep original source as previous state
+                        Dictionary<string, List<ProjectionAttributeState>> polySourceSet = null;
+                        if (projDirective.IsSourcePolymorphic)
+                        {
+                            polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras, acpSourceProjection);
+                        }
+
+                        // Now initialize projection attribute state
+                        ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.InitializeProjectionAttributeStateSet(
+                            projDirective,
+                            ctx,
+                            ras,
+                            isSourcePolymorphic: projDirective.IsSourcePolymorphic,
+                            polymorphicSet: polySourceSet);
+
+                        projContext = new ProjectionContext(projDirective, ras.AttributeContext)
+                        {
+                            CurrentAttributeStateSet = pasSet
+                        };
+                    }
                 }
                 else
                 {
-                    // An Entity Reference
+                    // A type attribute
 
-                    AttributeContextParameters acpSourceProjection = new AttributeContextParameters
-                    {
-                        under = acSource,
-                        type = CdmAttributeContextType.Entity,
-                        Name = this.Source.NamedReference ?? this.Source.ExplicitReference.GetName(),
-                        Regarding = this.Source,
-                        IncludeTraits = false
-                    };
-                    ResolvedAttributeSet ras = this.Source.FetchResolvedAttributes(projDirective.ResOpt, acpSourceProjection);
-                    // clean up the context tree, it was left in a bad state on purpose in this call
-                    ras.AttributeContext.FinalizeAttributeContext(projDirective.ResOpt, acSource.AtCorpusPath, this.InDocument, this.InDocument, null, false);
-
-
-                    // Initialize the projection context
-
-                    CdmCorpusContext ctx = projDirective.Owner?.Ctx;
-
-                    ProjectionAttributeStateSet pasSet = null;
-
-                    // if polymorphic keep original source as previous state
-                    Dictionary<string, List<ProjectionAttributeState>> polySourceSet = null;
-                    if (projDirective.IsSourcePolymorphic)
-                    {
-                        polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras, acpSourceProjection);
-                    }
-
-                    // now initialize projection attribute state
-                    pasSet = ProjectionResolutionCommonUtil.InitializeProjectionAttributeStateSet(
+                    // Initialize projection attribute state
+                    ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.InitializeProjectionAttributeStateSet(
                         projDirective,
                         ctx,
-                        ras,
-                        isSourcePolymorphic: projDirective.IsSourcePolymorphic,
-                        polymorphicSet: polySourceSet);
+                        ras);
 
                     projContext = new ProjectionContext(projDirective, ras.AttributeContext)
                     {
@@ -339,6 +376,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             return resolvedAttributeSet;
+        }
+
+        private CdmObject GetRootOwner()
+        {
+            CdmObject rootOwner = this;
+            do
+            {
+                rootOwner = rootOwner.Owner;
+                // A projection can be inside an entity reference, so take the owner again to get the projection.
+                if (rootOwner?.Owner?.ObjectType == CdmObjectType.ProjectionDef)
+                {
+                    rootOwner = rootOwner.Owner;
+                }
+            } while (rootOwner?.ObjectType == CdmObjectType.ProjectionDef);
+            
+            return rootOwner;
         }
     }
 }

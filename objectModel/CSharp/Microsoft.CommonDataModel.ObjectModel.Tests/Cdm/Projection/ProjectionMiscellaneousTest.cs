@@ -34,57 +34,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         private string testsSubpath = Path.Combine("Cdm", "Projection", "ProjectionMiscellaneousTest");
 
         /// <summary>
-        /// Test case scenario for Bug #25 from the projections internal bug bash
-        /// Reference Link: https://commondatamodel.visualstudio.com/CDM/_workitems/edit/25
-        /// </summary>
-        [TestMethod]
-        public void TestMissingConditionInJson()
-        {
-            string testName = "TestMissingConditionInJson";
-
-            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
-            corpus.SetEventCallback(new EventCallback
-            {
-                Invoke = (CdmStatusLevel statusLevel, string message) =>
-                {
-                    Assert.Fail(message);
-                }
-            }, CdmStatusLevel.Warning);
-
-            CdmManifestDefinition manifest = corpus.FetchObjectAsync<CdmManifestDefinition>($"default.manifest.cdm.json").GetAwaiter().GetResult();
-
-            string entityName = "SalesNestedFK";
-            CdmEntityDefinition entity = corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest).GetAwaiter().GetResult();
-            Assert.IsNotNull(entity);
-
-            ResolveOptions resOpt = new ResolveOptions(entity.InDocument)
-            {
-                // where, restOptsCombinations[1] == "referenceOnly"
-                Directives = new AttributeResolutionDirectiveSet(restOptsCombinations[1])
-            };
-
-            CdmFolderDefinition resolvedFolder = corpus.Storage.FetchRootFolder("output");
-
-            bool wasInfoMessageReceived = false;
-
-            corpus.SetEventCallback(new EventCallback
-            {
-                Invoke = (CdmStatusLevel statusLevel, string message) =>
-                {
-                    if (StringUtils.EqualsWithIgnoreCase("CdmProjection | Optional expression missing. Implicit expression will automatically apply. | ConstructProjectionContext", message))
-                    {
-                        wasInfoMessageReceived = true;
-                    }
-                }
-            }, CdmStatusLevel.Info);
-
-            CdmEntityDefinition resolvedEntity = entity.CreateResolvedEntityAsync($"Resolved_{entityName}.cdm.json", resOpt, resolvedFolder).GetAwaiter().GetResult();
-            Assert.IsNotNull(resolvedEntity);
-
-            Assert.IsTrue(wasInfoMessageReceived);
-        }
-
-        /// <summary>
         /// Test case scenario for Bug #24 from the projections internal bug bash
         /// Reference Link: https://commondatamodel.visualstudio.com/CDM/_workitems/edit/24
         /// </summary>
@@ -173,6 +122,101 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             };
 
             Assert.IsTrue(attribute.IsNullable == true);
+        }
+
+        /// <summary>
+        /// Tests if not setting the projection "source" on an entity attribute triggers an error log
+        /// </summary>
+        // TODO: Reactivate once explicitReference sets owner properly.
+        // [TestMethod]
+        public void TestEntityAttributeSource()
+        {
+            CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+            int errorCount = 0;
+            corpus.SetEventCallback(new EventCallback()
+            {
+                Invoke = (level, message) =>
+                {
+                    errorCount++;
+                }
+            }, CdmStatusLevel.Error);
+            CdmProjection projection = new CdmProjection(corpus.Ctx);
+            CdmEntityAttributeDefinition _ = new CdmEntityAttributeDefinition(corpus.Ctx, "attribute")
+            {
+                Entity = new CdmEntityReference(corpus.Ctx, projection, false)
+            };
+
+            // First case, a projection without source.
+            projection.Validate();
+            Assert.AreEqual(1, errorCount);
+            errorCount = 0;
+
+            // Second case, a projection with a nested projection.
+            CdmProjection innerProjection = new CdmProjection(corpus.Ctx);
+            projection.Source = new CdmEntityReference(corpus.Ctx, innerProjection, false);
+            projection.Validate();
+            innerProjection.Validate();
+            Assert.AreEqual(1, errorCount);
+            errorCount = 0;
+
+            // Third case, a projection with an explicit entity definition.
+            innerProjection.Source = new CdmEntityReference(corpus.Ctx, new CdmEntityDefinition(corpus.Ctx, "Entity"), false);
+            projection.Validate();
+            innerProjection.Validate();
+            Assert.AreEqual(0, errorCount);
+
+            // Third case, a projection with a named reference.
+            innerProjection.Source = new CdmEntityReference(corpus.Ctx, "Entity", false);
+            projection.Validate();
+            innerProjection.Validate();
+            Assert.AreEqual(0, errorCount);
+        }
+
+        /// <summary>
+        /// Tests if setting the projection "source" on a type attribute triggers an error log
+        /// </summary>
+        // TODO: Reactivate once explicitReference sets owner properly.
+        // [TestMethod]
+        public void TestTypeAttributeSource()
+        {
+            CdmCorpusDefinition corpus = new CdmCorpusDefinition();
+            int errorCount = 0;
+            corpus.SetEventCallback(new EventCallback()
+            {
+                Invoke = (level, message) =>
+                {
+                    errorCount++;
+                }
+            }, CdmStatusLevel.Error);
+            CdmProjection projection = new CdmProjection(corpus.Ctx);
+            CdmTypeAttributeDefinition _ = new CdmTypeAttributeDefinition(corpus.Ctx, "attribute")
+            {
+                Projection = projection
+            };
+
+            // First case, a projection without source.
+            projection.Validate();
+            Assert.AreEqual(0, errorCount);
+
+            // Second case, a projection with a nested projection.
+            CdmProjection innerProjection = new CdmProjection(corpus.Ctx);
+            projection.Source = new CdmEntityReference(corpus.Ctx, innerProjection, false);
+            projection.Validate();
+            innerProjection.Validate();
+            Assert.AreEqual(0, errorCount);
+
+            // Third case, a projection with an explicit entity definition.
+            innerProjection.Source = new CdmEntityReference(corpus.Ctx, new CdmEntityDefinition(corpus.Ctx, "Entity"), false);
+            projection.Validate();
+            innerProjection.Validate();
+            Assert.AreEqual(1, errorCount);
+            errorCount = 0;
+
+            // Third case, a projection with a named reference.
+            innerProjection.Source = new CdmEntityReference(corpus.Ctx, "Entity", false);
+            projection.Validate();
+            innerProjection.Validate();
+            Assert.AreEqual(1, errorCount);
         }
     }
 }

@@ -165,6 +165,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         };
                         CdmAttributeContext attrCtxExpandedAttr = CdmAttributeContext.CreateChildUnder(projCtx.ProjectionDirective.ResOpt, attrCtxExpandedAttrParam);
 
+                        if (currentPAS.CurrentResolvedAttribute.Target is ResolvedAttributeSet)
+                        {
+                            Logger.Error(TAG, this.Ctx, "Array expansion operation does not support attribute groups.");
+                            projAttrStatesFromRounds.Clear();
+                            break;
+                        }
+
                         // Create a new resolved attribute for the expanded attribute
                         ResolvedAttribute newResAttr = CreateNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.CurrentResolvedAttribute.Target, currentPAS.CurrentResolvedAttribute.ResolvedName);
                         newResAttr.AttCtx.AddLineage(currentPAS.CurrentResolvedAttribute.AttCtx);

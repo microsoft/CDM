@@ -19,6 +19,8 @@ public class ImportInfo {
     private boolean isMoniker;
 
     /**
+     * @param priority int
+     * @param isMoniker boolean 
      * Constructor of the ImportInfo class.
      */
     public ImportInfo(int priority, boolean isMoniker)

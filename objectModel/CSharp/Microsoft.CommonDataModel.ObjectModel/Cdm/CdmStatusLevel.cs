@@ -8,6 +8,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         Info,
         Progress,
         Warning,
-        Error
+        Error,
+        None
     }
 }

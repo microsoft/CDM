@@ -5,6 +5,7 @@ import {
     AttributeResolutionDirectiveSet,
     CdmCollection,
     CdmCorpusContext,
+    CdmObjectDefinition,
     CdmDocumentDefinition,
     CdmE2ERelationship,
     CdmEntityCollection,
@@ -26,6 +27,8 @@ import {
 import { isLocalEntityDeclarationDefinition, isReferencedEntityDeclarationDefinition } from '../Utilities/cdmObjectTypeGuards';
 import { StorageAdapterBase, StorageAdapterCacheContext } from 'Storage/StorageAdapterBase';
 import * as timeUtils from '../Utilities/timeUtils';
+import { using } from "using-statement";
+import { enterScope } from '../Utilities/Logging/Logger';
 
 const rel2CacheKey = (rel: CdmE2ERelationship): string => {
     let nameAndPipe: string = '';
@@ -36,7 +39,7 @@ const rel2CacheKey = (rel: CdmE2ERelationship): string => {
     return `${nameAndPipe}${rel.toEntity}|${rel.toEntityAttribute}|${rel.fromEntity}|${rel.fromEntityAttribute}`;
 };
 
-export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmFileStatus {
+export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmObjectDefinition, CdmFileStatus {
 
     public static get objectType(): cdmObjectType {
         return cdmObjectType.manifestDef;
@@ -158,181 +161,183 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
         newManifestName: string,
         newEntityDocumentNameFormat: string,
         directives?: AttributeResolutionDirectiveSet): Promise<CdmManifestDefinition> {
-        if (!this.entities) {
-            return undefined;
-        }
-
-        if (!this.folder) {
-            Logger.error(
-                CdmManifestDefinition.name,
-                this.ctx,
-                `Cannot resolve the manifest '${this.manifestName}' because it has not been added to a folder`,
-                this.createResolvedManifestAsync.name
-            );
-
-            return undefined;
-        }
-
-        if (newEntityDocumentNameFormat === undefined) {
-            newEntityDocumentNameFormat = '{f}resolved/{n}.cdm.json';
-        } else if (newEntityDocumentNameFormat === '') { // for back compat
-            newEntityDocumentNameFormat = '{n}.cdm.json';
-        } else if (newEntityDocumentNameFormat.search('{n}') === -1) { // for back compat
-            newEntityDocumentNameFormat = `${newEntityDocumentNameFormat}/{n}.cdm.json`;
-        }
-
-        const sourceManifestPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.atCorpusPath, this);
-        const sourceManifestFolderPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.folder.atCorpusPath, this);
-
-        const resolvedManifestPathSplit: number = newManifestName.lastIndexOf('/') + 1;
-        let resolvedManifestFolder: CdmFolderDefinition;
-        if (resolvedManifestPathSplit > 0) {
-            const resolvedManifestPath: string = newManifestName.substring(0, resolvedManifestPathSplit);
-            const newFolderPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(resolvedManifestPath, this);
-            resolvedManifestFolder = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newFolderPath);
-            if (!resolvedManifestFolder) {
-                Logger.error(
-                    CdmManifestDefinition.name,
-                    this.ctx,
-                    `New folder for manifest not found ${newFolderPath}`,
-                    this.createResolvedManifestAsync.name
-                );
-
+        return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.createResolvedManifestAsync.name), async _ => {
+            if (!this.entities) {
                 return undefined;
             }
-            newManifestName = newManifestName.substr(resolvedManifestPathSplit, newManifestName.length - resolvedManifestPathSplit);
-        } else {
-            resolvedManifestFolder = this.owner as CdmFolderDefinition;
-        }
 
-        Logger.debug(
-            'CdmManifestDefinition',
-            this.ctx,
-            `resolving manifest ${this.manifestName}`,
-            this.createResolvedManifestAsync.name
-        );
-
-        // Using the references present in the resolved entities, get an entity
-        // create an imports doc with all the necessary resolved entity references and then resolve it
-        const resolvedManifest: CdmManifestDefinition = new CdmManifestDefinition(this.ctx, newManifestName);
-
-        // bring over any imports in this document or other bobbles
-        resolvedManifest.schema = this.schema;
-        resolvedManifest.explanation = this.explanation;
-        for (const imp of this.imports) {
-            resolvedManifest.imports.push(imp.copy());
-        }
-
-        // add the new document to the folder
-        if (resolvedManifestFolder.documents.push(resolvedManifest) === undefined) {
-            // when would this happen?
-
-            return undefined;
-        }
-
-        for (const entity of this.entities) {
-            const entDef: CdmEntityDefinition = await this.getEntityFromReference(entity, this);
-
-            if (entDef === undefined) {
+            if (!this.folder) {
                 Logger.error(
                     CdmManifestDefinition.name,
                     this.ctx,
-                    `Unable to get entity from reference`,
+                    `Cannot resolve the manifest '${this.manifestName}' because it has not been added to a folder`,
                     this.createResolvedManifestAsync.name
                 );
 
                 return undefined;
             }
 
-            if (!entDef.inDocument.folder) {
-                Logger.error(
-                    CdmManifestDefinition.name,
-                    this.ctx,
-                    `The document containing the entity '${entDef.entityName}' is not in a folder`,
-                    this.createResolvedManifestAsync.name
-                );
-
-                return undefined;
+            if (newEntityDocumentNameFormat == undefined) {
+                newEntityDocumentNameFormat = '{f}resolved/{n}.cdm.json';
+            } else if (newEntityDocumentNameFormat === '') { // for back compat
+                newEntityDocumentNameFormat = '{n}.cdm.json';
+            } else if (newEntityDocumentNameFormat.search('{n}') === -1) { // for back compat
+                newEntityDocumentNameFormat = `${newEntityDocumentNameFormat}/{n}.cdm.json`;
             }
 
-            // get the path from this manifest to the source entity. This will be the {f} replacement value
-            const sourceEntityFullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.inDocument.folder.atCorpusPath, this);
-            let f: string = '';
-            if (sourceEntityFullPath.startsWith(sourceManifestFolderPath)) {
-                f = sourceEntityFullPath.substr(sourceManifestFolderPath.length, sourceEntityFullPath.length - sourceManifestFolderPath.length);
+            const sourceManifestPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.atCorpusPath, this);
+            const sourceManifestFolderPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(this.folder.atCorpusPath, this);
+
+            const resolvedManifestPathSplit: number = newManifestName.lastIndexOf('/') + 1;
+            let resolvedManifestFolder: CdmFolderDefinition;
+            if (resolvedManifestPathSplit > 0) {
+                const resolvedManifestPath: string = newManifestName.substring(0, resolvedManifestPathSplit);
+                const newFolderPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(resolvedManifestPath, this);
+                resolvedManifestFolder = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newFolderPath);
+                if (!resolvedManifestFolder) {
+                    Logger.error(
+                        CdmManifestDefinition.name,
+                        this.ctx,
+                        `New folder for manifest not found ${newFolderPath}`,
+                        this.createResolvedManifestAsync.name
+                    );
+
+                    return undefined;
+                }
+                newManifestName = newManifestName.substr(resolvedManifestPathSplit, newManifestName.length - resolvedManifestPathSplit);
+            } else {
+                resolvedManifestFolder = this.owner as CdmFolderDefinition;
             }
-
-            let newDocumentFullPath: string = newEntityDocumentNameFormat.replace('{n}', entDef.entityName);
-            newDocumentFullPath = newDocumentFullPath.replace('{f}', f);
-            newDocumentFullPath = this.ctx.corpus.storage.createAbsoluteCorpusPath(newDocumentFullPath, this);
-            const newDocumentPathSplit: number = newDocumentFullPath.lastIndexOf('/') + 1;
-            const newDocumentPath: string = newDocumentFullPath.slice(0, newDocumentPathSplit);
-            const newDocumentName: string = newDocumentFullPath.substr(newDocumentPathSplit);
-
-            // make sure the new folder exists
-            const folder: CdmFolderDefinition = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newDocumentPath);
-            if (folder === undefined) {
-                Logger.error(
-                    CdmManifestDefinition.name,
-                    this.ctx,
-                    `new folder not found ${newDocumentPath}`,
-                    this.createResolvedManifestAsync.name
-                );
-
-                return undefined;
-            }
-
-            // Next create the resolved entity
-            const withDirectives: AttributeResolutionDirectiveSet = directives !== undefined ? directives :
-                                                                    this.ctx.corpus.defaultResolutionDirectives;
-            const resOpt: resolveOptions = new resolveOptions(entDef.inDocument, withDirectives?.copy());
 
             Logger.debug(
                 'CdmManifestDefinition',
                 this.ctx,
-                `resolving entity ${sourceEntityFullPath} to document {newDocumentFullPath}`,
+                `resolving manifest ${this.manifestName}`,
                 this.createResolvedManifestAsync.name
             );
 
-            const resolvedEntity: CdmEntityDefinition =
-                await entDef.createResolvedEntityAsync(entDef.entityName, resOpt, folder, newDocumentName);
-            if (resolvedEntity === undefined) {
-                // Fail all resolution, if any one entity resolution fails
+            // Using the references present in the resolved entities, get an entity
+            // create an imports doc with all the necessary resolved entity references and then resolve it
+            const resolvedManifest: CdmManifestDefinition = new CdmManifestDefinition(this.ctx, newManifestName);
+
+            // bring over any imports in this document or other bobbles
+            resolvedManifest.schema = this.schema;
+            resolvedManifest.explanation = this.explanation;
+            for (const imp of this.imports) {
+                resolvedManifest.imports.push(imp.copy());
+            }
+
+            // add the new document to the folder
+            if (resolvedManifestFolder.documents.push(resolvedManifest) === undefined) {
+                // when would this happen?
+
                 return undefined;
             }
 
-            const result: CdmEntityDeclarationDefinition = entity.copy(resOpt) as CdmEntityDeclarationDefinition;
-            if (result.objectType === cdmObjectType.localEntityDeclarationDef) {
-                result.entityPath =
-                    this.ctx.corpus.storage.createRelativeCorpusPath(resolvedEntity.atCorpusPath, resolvedManifest)
-                    || result.atCorpusPath;
+            for (const entity of this.entities) {
+                const entDef: CdmEntityDefinition = await this.getEntityFromReference(entity, this);
+
+                if (entDef === undefined) {
+                    Logger.error(
+                        CdmManifestDefinition.name,
+                        this.ctx,
+                        `Unable to get entity from reference`,
+                        this.createResolvedManifestAsync.name
+                    );
+
+                    return undefined;
+                }
+
+                if (!entDef.inDocument.folder) {
+                    Logger.error(
+                        CdmManifestDefinition.name,
+                        this.ctx,
+                        `The document containing the entity '${entDef.entityName}' is not in a folder`,
+                        this.createResolvedManifestAsync.name
+                    );
+
+                    return undefined;
+                }
+
+                // get the path from this manifest to the source entity. This will be the {f} replacement value
+                const sourceEntityFullPath: string = this.ctx.corpus.storage.createAbsoluteCorpusPath(entDef.inDocument.folder.atCorpusPath, this);
+                let f: string = '';
+                if (sourceEntityFullPath.startsWith(sourceManifestFolderPath)) {
+                    f = sourceEntityFullPath.substr(sourceManifestFolderPath.length, sourceEntityFullPath.length - sourceManifestFolderPath.length);
+                }
+
+                let newDocumentFullPath: string = newEntityDocumentNameFormat.replace('{n}', entDef.entityName);
+                newDocumentFullPath = newDocumentFullPath.replace('{f}', f);
+                newDocumentFullPath = this.ctx.corpus.storage.createAbsoluteCorpusPath(newDocumentFullPath, this);
+                const newDocumentPathSplit: number = newDocumentFullPath.lastIndexOf('/') + 1;
+                const newDocumentPath: string = newDocumentFullPath.slice(0, newDocumentPathSplit);
+                const newDocumentName: string = newDocumentFullPath.substr(newDocumentPathSplit);
+
+                // make sure the new folder exists
+                const folder: CdmFolderDefinition = await this.ctx.corpus.fetchObjectAsync<CdmFolderDefinition>(newDocumentPath);
+                if (folder === undefined) {
+                    Logger.error(
+                        CdmManifestDefinition.name,
+                        this.ctx,
+                        `new folder not found ${newDocumentPath}`,
+                        this.createResolvedManifestAsync.name
+                    );
+
+                    return undefined;
+                }
+
+                // Next create the resolved entity
+                const withDirectives: AttributeResolutionDirectiveSet = directives !== undefined ? directives :
+                                                                        this.ctx.corpus.defaultResolutionDirectives;
+                const resOpt: resolveOptions = new resolveOptions(entDef.inDocument, withDirectives?.copy());
+
+                Logger.debug(
+                    'CdmManifestDefinition',
+                    this.ctx,
+                    `resolving entity ${sourceEntityFullPath} to document {newDocumentFullPath}`,
+                    this.createResolvedManifestAsync.name
+                );
+
+                const resolvedEntity: CdmEntityDefinition =
+                    await entDef.createResolvedEntityAsync(entDef.entityName, resOpt, folder, newDocumentName);
+                if (resolvedEntity === undefined) {
+                    // Fail all resolution, if any one entity resolution fails
+                    return undefined;
+                }
+
+                const result: CdmEntityDeclarationDefinition = entity.copy(resOpt) as CdmEntityDeclarationDefinition;
+                if (result.objectType === cdmObjectType.localEntityDeclarationDef) {
+                    result.entityPath =
+                        this.ctx.corpus.storage.createRelativeCorpusPath(resolvedEntity.atCorpusPath, resolvedManifest)
+                        || result.atCorpusPath;
+                }
+                resolvedManifest.entities.push(result);
             }
-            resolvedManifest.entities.push(result);
-        }
 
-        // add the new document to the folder
-        if (!resolvedManifestFolder.documents.push(resolvedManifest)) {
-            // when would this happen?
-            return undefined;
-        }
+            // add the new document to the folder
+            if (!resolvedManifestFolder.documents.push(resolvedManifest)) {
+                // when would this happen?
+                return undefined;
+            }
 
-        Logger.debug(
-            'CdmManifestDefinition',
-            this.ctx,
-            `calculating relationships`,
-            this.createResolvedManifestAsync.name
-        );
+            Logger.debug(
+                'CdmManifestDefinition',
+                this.ctx,
+                `calculating relationships`,
+                this.createResolvedManifestAsync.name
+            );
 
-        // calculate the entity graph for this manifest and any submanifests
-        await this.ctx.corpus.calculateEntityGraphAsync(resolvedManifest);
-        // stick results into the relationships list for the manifest
-        // only put in relationships that are between the entities that are used in the manifest
-        await resolvedManifest.populateManifestRelationshipsAsync(cdmRelationshipDiscoveryStyle.exclusive);
+            // calculate the entity graph for this manifest and any submanifests
+            await this.ctx.corpus.calculateEntityGraphAsync(resolvedManifest);
+            // stick results into the relationships list for the manifest
+            // only put in relationships that are between the entities that are used in the manifest
+            await resolvedManifest.populateManifestRelationshipsAsync(cdmRelationshipDiscoveryStyle.exclusive);
 
-        // needed until Matt's changes with collections where I can propigate
-        resolvedManifest.isDirty = true;
+            // needed until Matt's changes with collections where I can propigate
+            resolvedManifest.isDirty = true;
 
-        return resolvedManifest as unknown as CdmManifestDefinition;
+            return resolvedManifest as unknown as CdmManifestDefinition;
+        });
     }
 
     public async populateManifestRelationshipsAsync(option: cdmRelationshipDiscoveryStyle = cdmRelationshipDiscoveryStyle.all): Promise<void> {
@@ -449,36 +454,38 @@ export class CdmManifestDefinition extends CdmDocumentDefinition implements CdmF
      * @inheritdoc
      */
     public async fileStatusCheckAsync(): Promise<void> {
-        let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
-        let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
-        try {
-            const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeAsyncFromObject(this);
+        return await using(enterScope(CdmManifestDefinition.name, this.ctx, this.fileStatusCheckAsync.name), async _ => {
+            let adapter: StorageAdapterBase = this.ctx.corpus.storage.fetchAdapter(this.inDocument.namespace) as StorageAdapterBase;
+            let cacheContext: StorageAdapterCacheContext = (adapter != null) ? adapter.createFileQueryCacheContext() : null;
+            try {
+                const modifiedTime: Date = await (this.ctx.corpus).getLastModifiedTimeAsyncFromObject(this);
 
-            this.lastFileStatusCheckTime = new Date();
-            if (!this.lastFileModifiedTime) {
-                this.lastFileModifiedTime = this._fileSystemModifiedTime;
-            }
+                this.lastFileStatusCheckTime = new Date();
+                if (!this.lastFileModifiedTime) {
+                    this.lastFileModifiedTime = this._fileSystemModifiedTime;
+                }
 
-            // reload the manifest if it has been updated in the file system
-            if (modifiedTime && this._fileSystemModifiedTime && modifiedTime.getTime() !== this._fileSystemModifiedTime.getTime()) {
-                await this.reload();
-                this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
-                this._fileSystemModifiedTime = this.lastFileModifiedTime;
-            }
+                // reload the manifest if it has been updated in the file system
+                if (modifiedTime && this._fileSystemModifiedTime && modifiedTime.getTime() !== this._fileSystemModifiedTime.getTime()) {
+                    await this.reload();
+                    this.lastFileModifiedTime = timeUtils.maxTime(modifiedTime, this.lastFileModifiedTime);
+                    this._fileSystemModifiedTime = this.lastFileModifiedTime;
+                }
 
-            for (const entity of this.entities) {
-                await entity.fileStatusCheckAsync();
-            }
+                for (const entity of this.entities) {
+                    await entity.fileStatusCheckAsync();
+                }
 
-            for (const subManifest of this.subManifests) {
-                await subManifest.fileStatusCheckAsync();
+                for (const subManifest of this.subManifests) {
+                    await subManifest.fileStatusCheckAsync();
+                }
             }
-        }
-        finally {
-            if(cacheContext != null) {
-                cacheContext.dispose()
+            finally {
+                if(cacheContext != null) {
+                    cacheContext.dispose()
+                }
             }
-        }
+        });
     }
 
     /**

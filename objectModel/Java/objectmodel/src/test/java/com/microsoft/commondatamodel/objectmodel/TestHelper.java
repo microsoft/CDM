@@ -393,6 +393,15 @@ public class TestHelper {
    *
    * @return {@link CdmCorpusDefinition}
    */
+  public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName) throws InterruptedException {
+    return getLocalCorpus(testSubpath, testName, null);
+  }
+
+    /**
+     * Gets local corpus.
+     *
+     * @return {@link CdmCorpusDefinition}
+     */
   public static CdmCorpusDefinition getLocalCorpus(final String testSubpath, final String testName, String testInputDir) throws InterruptedException {
     testInputDir = (testInputDir != null) ? testInputDir : TestHelper.getInputFolderPath(testSubpath, testName);
 

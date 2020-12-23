@@ -51,6 +51,8 @@ import {
     VisitCallback
 } from '../internal';
 import { isAttributeReference, isEntityAttributeDefinition } from '../Utilities/cdmObjectTypeGuards';
+import { using } from 'using-statement';
+import { enterScope } from '../Utilities/Logging/Logger';
 
 export class CdmEntityDefinition extends CdmObjectDefinitionBase {
     public static get objectType(): cdmObjectType {
@@ -252,6 +254,7 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 return false;
             }
             if (this.extendsEntity) {
+                this.extendsEntity.owner = this;
                 if (this.extendsEntity.visit(`${path}/extendsEntity/`, preChildren, postChildren)) {
                     return true;
                 }
@@ -581,469 +584,471 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
         newDocName?: string): Promise<CdmEntityDefinition> {
         // let bodyCode = () =>
         {
-            if (!resOpt) {
-                resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
-            }
+            return await using(enterScope(CdmEntityDefinition.name, this.ctx, this.createResolvedEntityAsync.name), async _ => {
+                if (!resOpt) {
+                    resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
+                }
 
-            // if the wrtDoc needs to be indexed (like it was just modified) then do that first
-            if (!resOpt.wrtDoc) {
-                Logger.error(
-                    CdmEntityDefinition.name,
-                    this.ctx,
-                    'No WRT document was supplied',
-                    this.createResolvedEntityAsync.name
-                );
+                // if the wrtDoc needs to be indexed (like it was just modified) then do that first
+                if (!resOpt.wrtDoc) {
+                    Logger.error(
+                        CdmEntityDefinition.name,
+                        this.ctx,
+                        'No WRT document was supplied',
+                        this.createResolvedEntityAsync.name
+                    );
 
-                return undefined;
-            }
+                    return undefined;
+                }
 
-            if (!newEntName || newEntName === '') {
-                Logger.error(
-                    CdmEntityDefinition.name,
-                    this.ctx,
-                    'No Entity Name provided',
-                    this.createResolvedEntityAsync.name
-                );
+                if (!newEntName || newEntName === '') {
+                    Logger.error(
+                        CdmEntityDefinition.name,
+                        this.ctx,
+                        'No Entity Name provided',
+                        this.createResolvedEntityAsync.name
+                    );
 
-                return undefined;
-            }
+                    return undefined;
+                }
 
-            if (!folder) {
-                folder = this.inDocument.folder;
-            }
+                if (!folder) {
+                    folder = this.inDocument.folder;
+                }
 
-            const fileName: string = (newDocName === undefined || newDocName === '') ? `${newEntName}.cdm.json` : newDocName;
-            let origDoc: string = this.inDocument.atCorpusPath;
+                const fileName: string = (newDocName === undefined || newDocName === '') ? `${newEntName}.cdm.json` : newDocName;
+                let origDoc: string = this.inDocument.atCorpusPath;
 
-            // Don't overwite the source document
-            const targetAtCorpusPath: string =
-                `${this.ctx.corpus.storage.createAbsoluteCorpusPath(folder.atCorpusPath, folder)}${fileName}`;
-            if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
-                Logger.error(
-                    CdmEntityDefinition.name,
-                    this.ctx as resolveContext,
-                    `attempting to replace source entity's document '${targetAtCorpusPath}'`,
-                    this.createResolvedEntityAsync.name
-                );
+                // Don't overwite the source document
+                const targetAtCorpusPath: string =
+                    `${this.ctx.corpus.storage.createAbsoluteCorpusPath(folder.atCorpusPath, folder)}${fileName}`;
+                if (StringUtils.equalsWithIgnoreCase(targetAtCorpusPath, origDoc)) {
+                    Logger.error(
+                        CdmEntityDefinition.name,
+                        this.ctx as resolveContext,
+                        `attempting to replace source entity's document '${targetAtCorpusPath}'`,
+                        this.createResolvedEntityAsync.name
+                    );
 
-                return undefined;
-            }
+                    return undefined;
+                }
 
-            // if the wrtDoc needs to be indexed (like it was just modified) then do that first
-            if (!await resOpt.wrtDoc.indexIfNeeded(resOpt, true)) {
-                Logger.error(
-                    CdmEntityDefinition.name,
-                    this.ctx,
-                    'Couldn\'t index source document',
-                    this.createResolvedEntityAsync.name
-                );
+                // if the wrtDoc needs to be indexed (like it was just modified) then do that first
+                if (!await resOpt.wrtDoc.indexIfNeeded(resOpt, true)) {
+                    Logger.error(
+                        CdmEntityDefinition.name,
+                        this.ctx,
+                        'Couldn\'t index source document',
+                        this.createResolvedEntityAsync.name
+                    );
 
-                return undefined;
-            }
+                    return undefined;
+                }
 
-            // make the top level attribute context for this entity
-            // for this whole section where we generate the attribute context tree and get resolved attributes
-            // set the flag that keeps all of the parent changes and document dirty from from happening
-            const wasResolving: boolean = this.ctx.corpus.isCurrentlyResolving;
-            this.ctx.corpus.isCurrentlyResolving = true;
-            const entName: string = newEntName;
-            const ctx: resolveContext = this.ctx as resolveContext;
-            let attCtxEnt: CdmAttributeContext = ctx.corpus.MakeObject(cdmObjectType.attributeContextDef, entName, true);
-            attCtxEnt.ctx = ctx;
-            attCtxEnt.inDocument = this.inDocument;
+                // make the top level attribute context for this entity
+                // for this whole section where we generate the attribute context tree and get resolved attributes
+                // set the flag that keeps all of the parent changes and document dirty from from happening
+                const wasResolving: boolean = this.ctx.corpus.isCurrentlyResolving;
+                this.ctx.corpus.isCurrentlyResolving = true;
+                const entName: string = newEntName;
+                const ctx: resolveContext = this.ctx as resolveContext;
+                let attCtxEnt: CdmAttributeContext = ctx.corpus.MakeObject(cdmObjectType.attributeContextDef, entName, true);
+                attCtxEnt.ctx = ctx;
+                attCtxEnt.inDocument = this.inDocument;
 
-            // cheating a bit to put the paths in the right place
-            const acp: AttributeContextParameters = {
-                under: attCtxEnt,
-                type: cdmAttributeContextType.attributeGroup,
-                name: 'attributeContext'
-            };
-            const attCtxAC: CdmAttributeContext = CdmAttributeContext.createChildUnder(resOpt, acp);
-            const acpEnt: AttributeContextParameters = {
-                under: attCtxAC,
-                type: cdmAttributeContextType.entity,
-                name: entName,
-                regarding: ctx.corpus.MakeObject(cdmObjectType.entityRef, this.getName(), true)
-            };
+                // cheating a bit to put the paths in the right place
+                const acp: AttributeContextParameters = {
+                    under: attCtxEnt,
+                    type: cdmAttributeContextType.attributeGroup,
+                    name: 'attributeContext'
+                };
+                const attCtxAC: CdmAttributeContext = CdmAttributeContext.createChildUnder(resOpt, acp);
+                const acpEnt: AttributeContextParameters = {
+                    under: attCtxAC,
+                    type: cdmAttributeContextType.entity,
+                    name: entName,
+                    regarding: ctx.corpus.MakeObject(cdmObjectType.entityRef, this.getName(), true)
+                };
 
-            // use this whenever we need to keep references pointing at things that were already found.
-            // used when 'fixing' references by localizing to a new document
-            const resOptCopy: resolveOptions = resOpt.copy();
-            resOptCopy.saveResolutionsOnCopy = true;
+                // use this whenever we need to keep references pointing at things that were already found.
+                // used when 'fixing' references by localizing to a new document
+                const resOptCopy: resolveOptions = resOpt.copy();
+                resOptCopy.saveResolutionsOnCopy = true;
 
-            // resolve attributes with this context. the end result is that each resolved attribute
-            // points to the level of the context where it was created
-            const ras: ResolvedAttributeSet = this.fetchResolvedAttributes(resOptCopy, acpEnt);
+                // resolve attributes with this context. the end result is that each resolved attribute
+                // points to the level of the context where it was created
+                const ras: ResolvedAttributeSet = this.fetchResolvedAttributes(resOptCopy, acpEnt);
 
-            if (ras === undefined) {
-                this.resolvingAttributes = false;
+                if (ras === undefined) {
+                    this.resolvingAttributes = false;
 
-                return undefined;
-            }
+                    return undefined;
+                }
 
-            // create a new copy of the attribute context for this entity
-            const allAttCtx: Set<CdmAttributeContext> = new Set<CdmAttributeContext>();
-            const newNode: CdmAttributeContext = attCtxEnt.copyNode(resOpt) as CdmAttributeContext;
-            attCtxEnt = attCtxEnt.copyAttributeContextTree(resOpt, newNode, ras, allAttCtx, 'resolvedFrom');
-            const attCtx: CdmAttributeContext = (attCtxEnt.contents.allItems[0] as CdmAttributeContext)
-                .contents.allItems[0] as CdmAttributeContext;
+                // create a new copy of the attribute context for this entity
+                const allAttCtx: Set<CdmAttributeContext> = new Set<CdmAttributeContext>();
+                const newNode: CdmAttributeContext = attCtxEnt.copyNode(resOpt) as CdmAttributeContext;
+                attCtxEnt = attCtxEnt.copyAttributeContextTree(resOpt, newNode, ras, allAttCtx, 'resolvedFrom');
+                const attCtx: CdmAttributeContext = (attCtxEnt.contents.allItems[0] as CdmAttributeContext)
+                    .contents.allItems[0] as CdmAttributeContext;
 
-            this.ctx.corpus.isCurrentlyResolving = wasResolving;
+                this.ctx.corpus.isCurrentlyResolving = wasResolving;
 
-            // make a new document in given folder if provided or the same folder as the source entity
-            folder.documents.remove(fileName);
-            const docRes: CdmDocumentDefinition = folder.documents.push(fileName);
-            // add a import of the source document
-            origDoc = this.ctx.corpus.storage.createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
-            docRes.imports.push(origDoc, 'resolvedFrom');
+                // make a new document in given folder if provided or the same folder as the source entity
+                folder.documents.remove(fileName);
+                const docRes: CdmDocumentDefinition = folder.documents.push(fileName);
+                // add a import of the source document
+                origDoc = this.ctx.corpus.storage.createRelativeCorpusPath(origDoc, docRes); // just in case we missed the prefix
+                docRes.imports.push(origDoc, 'resolvedFrom');
 
-            // make the empty entity
-            let entResolved: CdmEntityDefinition = docRes.definitions.push(entName) as CdmEntityDefinition;
-            // set the context to the copy of the tree. fix the docs on the context nodes
-            entResolved.attributeContext = attCtx;
-            attCtx.visit(
-                `${entName}/attributeContext/`,
-                (iObject: CdmObject, path: string) => {
-                    iObject.inDocument = docRes;
+                // make the empty entity
+                let entResolved: CdmEntityDefinition = docRes.definitions.push(entName) as CdmEntityDefinition;
+                // set the context to the copy of the tree. fix the docs on the context nodes
+                entResolved.attributeContext = attCtx;
+                attCtx.visit(
+                    `${entName}/attributeContext/`,
+                    (iObject: CdmObject, path: string) => {
+                        iObject.inDocument = docRes;
 
-                    return false;
-                },
-                undefined);
+                        return false;
+                    },
+                    undefined);
 
-            // add the traits of the entity
-            const rtsEnt: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
-            rtsEnt.set.forEach((rt: ResolvedTrait) => {
-                const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
-                (entResolved as CdmObjectDefinition).exhibitsTraits.push(traitRef);
-            });
+                // add the traits of the entity
+                const rtsEnt: ResolvedTraitSet = this.fetchResolvedTraits(resOpt);
+                rtsEnt.set.forEach((rt: ResolvedTrait) => {
+                    const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
+                    (entResolved as CdmObjectDefinition).exhibitsTraits.push(traitRef);
+                });
 
-            // the attributes have been named, shaped, etc for this entity so now it is safe to go and
-            // make each attribute context level point at these final versions of attributes
-            const attPath2Order: Map<string, number> = new Map<string, number>();
-            const pointContextAtResolvedAtts: (rasSub: ResolvedAttributeSet, path: string) => void
-                = (rasSub: ResolvedAttributeSet, path: string): void => {
-                    rasSub.set.forEach((ra: ResolvedAttribute) => {
-                        const raCtxInEnt: CdmAttributeContext[] = [];
-                        const raCtxSet: Set<CdmAttributeContext> = rasSub.ra2attCtxSet.get(ra);
-                        // find the correct attCtx for this copy
-                        // iterate over the shortest list
-                        if (allAttCtx.size < raCtxSet.size) {
-                            for (const currAttCtx of allAttCtx) {
-                                if (raCtxSet.has(currAttCtx)) {
-                                    raCtxInEnt.push(currAttCtx);
-                                }
-                            }
-                        } else {
-                            for (const currAttCtx of raCtxSet) {
-                                if (allAttCtx.has(currAttCtx)) {
-                                    raCtxInEnt.push(currAttCtx);
-                                }
-                            }
-                        }
-                        for (const raCtx of raCtxInEnt) {
-                            // there might be more than one explanation for where and attribute came from when things get merges as they do
-                            // this won't work when I add the structured attributes to avoid name collisions
-                            let attRefPath: string = path + ra.resolvedName;
-                            if ((ra.target as CdmAttribute).getObjectType) {
-                                if (!attPath2Order.has(attRefPath)) {
-                                    const attRef: CdmObjectReference = this.ctx.corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true);
-                                    // only need one explanation for this path to the insert order
-                                    attPath2Order.set(attRef.namedReference, ra.insertOrder);
-                                    raCtx.contents.push(attRef);
+                // the attributes have been named, shaped, etc for this entity so now it is safe to go and
+                // make each attribute context level point at these final versions of attributes
+                const attPath2Order: Map<string, number> = new Map<string, number>();
+                const pointContextAtResolvedAtts: (rasSub: ResolvedAttributeSet, path: string) => void
+                    = (rasSub: ResolvedAttributeSet, path: string): void => {
+                        rasSub.set.forEach((ra: ResolvedAttribute) => {
+                            const raCtxInEnt: CdmAttributeContext[] = [];
+                            const raCtxSet: Set<CdmAttributeContext> = rasSub.ra2attCtxSet.get(ra);
+                            // find the correct attCtx for this copy
+                            // iterate over the shortest list
+                            if (allAttCtx.size < raCtxSet.size) {
+                                for (const currAttCtx of allAttCtx) {
+                                    if (raCtxSet.has(currAttCtx)) {
+                                        raCtxInEnt.push(currAttCtx);
+                                    }
                                 }
                             } else {
-                                attRefPath += '/members/';
-                                pointContextAtResolvedAtts(ra.target as ResolvedAttributeSet, attRefPath);
-                            }
-                        }
-                    });
-                };
-
-            pointContextAtResolvedAtts(ras, `${entName}/hasAttributes/`);
-
-            // generated attribute structures may end up with 0 attributes after that. prune them
-            const cleanSubGroup: (subItem: CdmObject, underGenerated: boolean) => boolean =
-                (subItem: CdmObject, underGenerated: boolean) => {
-                    if (isAttributeReference(subItem)) {
-                        return true; // not empty
-                    }
-                    const ac: CdmAttributeContext = subItem as CdmAttributeContext;
-
-                    if (ac.type === cdmAttributeContextType.generatedSet) {
-                        underGenerated = true;
-                    }
-                    if (!ac.contents || ac.contents.length === 0) {
-                        return false; // empty
-                    }
-                    // look at all children, make a set to remove
-                    const toRemove: CdmAttributeContext[] = [];
-                    for (const subSub of ac.contents.allItems) {
-                        if (cleanSubGroup(subSub, underGenerated) === false) {
-                            let potentialTarget = underGenerated;
-                            if (potentialTarget === false) {
-                                // cast is safe because we returned false meaning empty and not an attribute ref
-                                // so is this the set holder itself?
-                                potentialTarget = (subSub as CdmAttributeContext).type === cdmAttributeContextType.generatedSet;
-                            }
-                            if (potentialTarget) {
-                                toRemove.push(subSub as CdmAttributeContext);
-                            }
-                        }
-                    }
-                    for (const toDie of toRemove) {
-                        ac.contents.remove(toDie);
-                    }
-
-                    return ac.contents.length !== 0;
-                };
-            cleanSubGroup(attCtx, false);
-
-            // create an all-up ordering of attributes at the leaves of this tree based on insert order
-            // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted
-            let getOrderNum: (item: CdmObject) => number;
-
-            const orderContents: (under: CdmAttributeContext) => number
-                = (under: CdmAttributeContext): number => {
-                    if (under.lowestOrder === undefined) {
-                        under.lowestOrder = -1; // used for group with nothing but traits
-                        if (under.contents.length === 1) {
-                            under.lowestOrder = getOrderNum(under.contents.allItems[0]);
-                        } else {
-                            under.contents.allItems = under.contents.allItems.sort((l: CdmObject, r: CdmObject): number => {
-                                const lNum: number = getOrderNum(l);
-                                const rNum: number = getOrderNum(r);
-
-                                if (lNum !== -1 && (under.lowestOrder === -1 || lNum < under.lowestOrder)) {
-                                    under.lowestOrder = lNum;
+                                for (const currAttCtx of raCtxSet) {
+                                    if (allAttCtx.has(currAttCtx)) {
+                                        raCtxInEnt.push(currAttCtx);
+                                    }
                                 }
-                                if (rNum !== -1 && (under.lowestOrder === -1 || rNum < under.lowestOrder)) {
-                                    under.lowestOrder = rNum;
+                            }
+                            for (const raCtx of raCtxInEnt) {
+                                // there might be more than one explanation for where and attribute came from when things get merges as they do
+                                // this won't work when I add the structured attributes to avoid name collisions
+                                let attRefPath: string = path + ra.resolvedName;
+                                if ((ra.target as CdmAttribute).getObjectType) {
+                                    if (!attPath2Order.has(attRefPath)) {
+                                        const attRef: CdmObjectReference = this.ctx.corpus.MakeObject(cdmObjectType.attributeRef, attRefPath, true);
+                                        // only need one explanation for this path to the insert order
+                                        attPath2Order.set(attRef.namedReference, ra.insertOrder);
+                                        raCtx.contents.push(attRef);
+                                    }
+                                } else {
+                                    attRefPath += '/members/';
+                                    pointContextAtResolvedAtts(ra.target as ResolvedAttributeSet, attRefPath);
+                                }
+                            }
+                        });
+                    };
+
+                pointContextAtResolvedAtts(ras, `${entName}/hasAttributes/`);
+
+                // generated attribute structures may end up with 0 attributes after that. prune them
+                const cleanSubGroup: (subItem: CdmObject, underGenerated: boolean) => boolean =
+                    (subItem: CdmObject, underGenerated: boolean) => {
+                        if (isAttributeReference(subItem)) {
+                            return true; // not empty
+                        }
+                        const ac: CdmAttributeContext = subItem as CdmAttributeContext;
+
+                        if (ac.type === cdmAttributeContextType.generatedSet) {
+                            underGenerated = true;
+                        }
+                        if (!ac.contents || ac.contents.length === 0) {
+                            return false; // empty
+                        }
+                        // look at all children, make a set to remove
+                        const toRemove: CdmAttributeContext[] = [];
+                        for (const subSub of ac.contents.allItems) {
+                            if (cleanSubGroup(subSub, underGenerated) === false) {
+                                let potentialTarget = underGenerated;
+                                if (potentialTarget === false) {
+                                    // cast is safe because we returned false meaning empty and not an attribute ref
+                                    // so is this the set holder itself?
+                                    potentialTarget = (subSub as CdmAttributeContext).type === cdmAttributeContextType.generatedSet;
+                                }
+                                if (potentialTarget) {
+                                    toRemove.push(subSub as CdmAttributeContext);
+                                }
+                            }
+                        }
+                        for (const toDie of toRemove) {
+                            ac.contents.remove(toDie);
+                        }
+
+                        return ac.contents.length !== 0;
+                    };
+                cleanSubGroup(attCtx, false);
+
+                // create an all-up ordering of attributes at the leaves of this tree based on insert order
+                // sort the attributes in each context by their creation order and mix that with the other sub-contexts that have been sorted
+                let getOrderNum: (item: CdmObject) => number;
+
+                const orderContents: (under: CdmAttributeContext) => number
+                    = (under: CdmAttributeContext): number => {
+                        if (under.lowestOrder === undefined) {
+                            under.lowestOrder = -1; // used for group with nothing but traits
+                            if (under.contents.length === 1) {
+                                under.lowestOrder = getOrderNum(under.contents.allItems[0]);
+                            } else {
+                                under.contents.allItems = under.contents.allItems.sort((l: CdmObject, r: CdmObject): number => {
+                                    const lNum: number = getOrderNum(l);
+                                    const rNum: number = getOrderNum(r);
+
+                                    if (lNum !== -1 && (under.lowestOrder === -1 || lNum < under.lowestOrder)) {
+                                        under.lowestOrder = lNum;
+                                    }
+                                    if (rNum !== -1 && (under.lowestOrder === -1 || rNum < under.lowestOrder)) {
+                                        under.lowestOrder = rNum;
+                                    }
+
+                                    return lNum - rNum;
+                                });
+                            }
+                        }
+
+                        return under.lowestOrder;
+                    };
+
+                getOrderNum = (item: CdmObject): number => {
+                    if (item.getObjectType() === cdmObjectType.attributeContextDef) {
+                        return orderContents(item as CdmAttributeContext);
+                    } else if (isAttributeReference(item)) {
+                        return attPath2Order.get(item.namedReference);
+                    } else {
+                        return -1; // put the mystery item on top.
+                    }
+                };
+                orderContents(attCtx);
+
+                // resolved attributes can gain traits that are applied to an entity when referenced
+                // since these traits are described in the context, it is redundant and messy to list them in the attribute
+                // so, remove them. create and cache a set of names to look for per context
+                // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the
+                // sub-context they come from. Same is true of attribute entities. so do this recursively top down
+                const ctx2traitNames: Map<CdmAttributeContext, Set<string>> = new Map<CdmAttributeContext, Set<string>>();
+                const collectContextTraits: (subAttCtx: CdmAttributeContext, inheritedTraitNames: Set<string>) => void
+                    = (subAttCtx: CdmAttributeContext, inheritedTraitNames: Set<string>): void => {
+                        const traitNamesHere: Set<string> = new Set<string>(inheritedTraitNames);
+                        const traitsHere: CdmTraitCollection = subAttCtx.exhibitsTraits;
+                        if (traitsHere) {
+                            traitsHere.allItems.forEach((tat: CdmTraitReference) => { traitNamesHere.add(tat.namedReference); });
+                        }
+                        ctx2traitNames.set(subAttCtx, traitNamesHere);
+                        for (const cr of subAttCtx.contents.allItems) {
+                            if (cr.getObjectType() === cdmObjectType.attributeContextDef) {
+                                // do this for all types?
+                                collectContextTraits(cr as CdmAttributeContext, traitNamesHere);
+                            }
+                        }
+                    };
+                collectContextTraits(attCtx, new Set<string>());
+
+                // add the attributes, put them in attribute groups if structure needed
+                const resAtt2RefPath: Map<ResolvedAttribute, string> = new Map<ResolvedAttribute, string>();
+                const addAttributes: (rasSub: ResolvedAttributeSet, container: CdmEntityDefinition | CdmAttributeGroupDefinition, path: string) => void
+                    = (rasSub: ResolvedAttributeSet, container: CdmEntityDefinition | CdmAttributeGroupDefinition, path: string): void => {
+                        rasSub.set.forEach((ra: ResolvedAttribute) => {
+                            const attPath: string = path + ra.resolvedName;
+                            // use the path of the context associated with this attribute to find the new context that matches on path
+                            const raCtxSet: Set<CdmAttributeContext> = rasSub.ra2attCtxSet.get(ra);
+                            let raCtx: CdmAttributeContext;
+                            // find the correct attCtx for this copy
+                            // (interate over the shortest list)
+                            if (allAttCtx.size < raCtxSet.size) {
+                                for (const currAttCtx of allAttCtx) {
+                                    if (raCtxSet.has(currAttCtx)) {
+                                        raCtx = currAttCtx;
+                                        break;
+                                    }
+                                }
+                            } else {
+                                for (const currAttCtx of raCtxSet) {
+                                    if (allAttCtx.has(currAttCtx)) {
+                                        raCtx = currAttCtx;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (ra.target instanceof ResolvedAttributeSet) {
+                                // this is a set of attributes.
+                                // make an attribute group to hold them
+                                const attGrp: CdmAttributeGroupDefinition = this.ctx.corpus.MakeObject(
+                                    cdmObjectType.attributeGroupDef, ra.resolvedName);
+                                attGrp.attributeContext = this.ctx.corpus.MakeObject(
+                                    cdmObjectType.attributeContextRef, raCtx.atCorpusPath, true);
+                                // take any traits from the set and make them look like traits exhibited by the group
+                                const avoidSet: Set<string> = ctx2traitNames.get(raCtx);
+                                const rtsAtt: ResolvedTraitSet = ra.resolvedTraits;
+                                rtsAtt.set.forEach((rt: ResolvedTrait) => {
+                                    if (!rt.trait.ugly) { // don't mention your ugly traits
+                                        if (avoidSet && !avoidSet.has(rt.traitName)) { // avoid the ones from the context
+                                            const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
+                                            attGrp.exhibitsTraits.push(traitRef);
+                                        }
+                                    }
+                                });
+
+                                // wrap it in a reference and then recurse with this as the new container
+                                const attGrpRef: CdmAttributeGroupReference = this.ctx.corpus.MakeObject(
+                                    cdmObjectType.attributeGroupRef, undefined);
+                                attGrpRef.explicitReference = attGrp;
+                                container.addAttributeDef(attGrpRef);
+                                // isn't this where ...
+                                addAttributes(ra.target, attGrp, `${attPath}/members/`);
+                            } else {
+                                const att: CdmTypeAttributeDefinition =
+                                    this.ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, ra.resolvedName);
+                                att.attributeContext = this.ctx.corpus.MakeObject(
+                                    cdmObjectType.attributeContextRef, raCtx.atCorpusPath, true);
+                                const avoidSet: Set<string> = ctx2traitNames.get(raCtx);
+                                const rtsAtt: ResolvedTraitSet = ra.resolvedTraits;
+                                rtsAtt.set.forEach((rt: ResolvedTrait) => {
+                                    if (!rt.trait.ugly) { // don't mention your ugly traits
+                                        if (avoidSet && !avoidSet.has(rt.traitName)) { // avoid the ones from the context
+                                            const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
+                                            att.appliedTraits.push(traitRef);
+                                        }
+                                    }
+                                });
+
+                                // none of the dataformat traits have the bit set that will make them turn into a property
+                                // this is intentional so that the format traits make it into the resolved object
+                                // but, we still want a guess as the data format, so get it and set it.
+                                const impliedDataFormat: cdmDataFormat = att.dataFormat;
+                                if (impliedDataFormat !== cdmDataFormat.unknown) {
+                                    att.dataFormat = impliedDataFormat;
                                 }
 
-                                return lNum - rNum;
-                            });
+                                container.addAttributeDef(att);
+                                resAtt2RefPath.set(ra, attPath);
+                            }
+                        });
+                    };
+                addAttributes(ras, entResolved, `${entName}/hasAttributes/`);
+
+                // any resolved traits that hold arguments with attribute refs should get 'fixed' here
+                const replaceTraitAttRef: (tr: CdmTraitReference, entityHint: string, isAttributeContext: boolean) => void
+                    = (tr: CdmTraitReference, entityHint: string): void => {
+                        if (tr.arguments) {
+                            for (const arg of tr.arguments.allItems) {
+                                const v: ArgumentValue =
+                                    arg.unresolvedValue ? arg.unresolvedValue : arg.getValue();
+                                // is this an attribute reference?
+                                if (v
+                                    && (v as CdmObject).getObjectType
+                                    && (v as CdmObject).getObjectType() === cdmObjectType.attributeRef) {
+                                    // only try this if the reference has no path to it (only happens with intra-entity att refs)
+                                    const attRef: CdmAttributeReference = v as CdmAttributeReference;
+                                    if (attRef.namedReference && attRef.namedReference.indexOf('/') === -1) {
+                                        if (!arg.unresolvedValue) {
+                                            arg.unresolvedValue = arg.value;
+                                        }
+                                        // give a promise that can be worked out later.
+                                        // assumption is that the attribute must come from this entity.
+                                        const newAttRef: CdmAttributeReference = this.ctx.corpus.MakeObject(
+                                            cdmObjectType.attributeRef,
+                                            `${entityHint}/(resolvedAttributes)/${attRef.namedReference}`,
+                                            true);
+                                        // inDocument is not propagated during resolution, so set it here
+                                        newAttRef.inDocument = arg.inDocument;
+                                        arg.setValue(newAttRef);
+                                    }
+                                }
+
+                            }
                         }
-                    }
+                    };
 
-                    return under.lowestOrder;
-                };
-
-            getOrderNum = (item: CdmObject): number => {
-                if (item.getObjectType() === cdmObjectType.attributeContextDef) {
-                    return orderContents(item as CdmAttributeContext);
-                } else if (isAttributeReference(item)) {
-                    return attPath2Order.get(item.namedReference);
-                } else {
-                    return -1; // put the mystery item on top.
+                // fix entity traits
+                if (entResolved.exhibitsTraits) {
+                    entResolved.exhibitsTraits.allItems
+                        .forEach((et: CdmTraitReference) => {
+                            replaceTraitAttRef(et, newEntName, false);
+                        });
                 }
-            };
-            orderContents(attCtx);
 
-            // resolved attributes can gain traits that are applied to an entity when referenced
-            // since these traits are described in the context, it is redundant and messy to list them in the attribute
-            // so, remove them. create and cache a set of names to look for per context
-            // there is actually a hierarchy to all attributes from the base entity should have all traits applied independently of the
-            // sub-context they come from. Same is true of attribute entities. so do this recursively top down
-            const ctx2traitNames: Map<CdmAttributeContext, Set<string>> = new Map<CdmAttributeContext, Set<string>>();
-            const collectContextTraits: (subAttCtx: CdmAttributeContext, inheritedTraitNames: Set<string>) => void
-                = (subAttCtx: CdmAttributeContext, inheritedTraitNames: Set<string>): void => {
-                    const traitNamesHere: Set<string> = new Set<string>(inheritedTraitNames);
-                    const traitsHere: CdmTraitCollection = subAttCtx.exhibitsTraits;
-                    if (traitsHere) {
-                        traitsHere.allItems.forEach((tat: CdmTraitReference) => { traitNamesHere.add(tat.namedReference); });
-                    }
-                    ctx2traitNames.set(subAttCtx, traitNamesHere);
-                    for (const cr of subAttCtx.contents.allItems) {
-                        if (cr.getObjectType() === cdmObjectType.attributeContextDef) {
-                            // do this for all types?
-                            collectContextTraits(cr as CdmAttributeContext, traitNamesHere);
+                // fix context traits
+                const fixContextTraits: (subAttCtx: CdmAttributeContext, entityHint: string) => void
+                    = (subAttCtx: CdmAttributeContext, entityHint: string): void => {
+                        const traitsHere: CdmTraitCollection = subAttCtx.exhibitsTraits;
+                        if (traitsHere) {
+                            traitsHere.allItems.forEach((tr: CdmTraitReference) => { replaceTraitAttRef(tr, entityHint, true); });
                         }
-                    }
-                };
-            collectContextTraits(attCtx, new Set<string>());
-
-            // add the attributes, put them in attribute groups if structure needed
-            const resAtt2RefPath: Map<ResolvedAttribute, string> = new Map<ResolvedAttribute, string>();
-            const addAttributes: (rasSub: ResolvedAttributeSet, container: CdmEntityDefinition | CdmAttributeGroupDefinition, path: string) => void
-                = (rasSub: ResolvedAttributeSet, container: CdmEntityDefinition | CdmAttributeGroupDefinition, path: string): void => {
-                    rasSub.set.forEach((ra: ResolvedAttribute) => {
-                        const attPath: string = path + ra.resolvedName;
-                        // use the path of the context associated with this attribute to find the new context that matches on path
-                        const raCtxSet: Set<CdmAttributeContext> = rasSub.ra2attCtxSet.get(ra);
-                        let raCtx: CdmAttributeContext;
-                        // find the correct attCtx for this copy
-                        // (interate over the shortest list)
-                        if (allAttCtx.size < raCtxSet.size) {
-                            for (const currAttCtx of allAttCtx) {
-                                if (raCtxSet.has(currAttCtx)) {
-                                    raCtx = currAttCtx;
-                                    break;
+                        for (const cr of subAttCtx.contents.allItems) {
+                            if (cr.getObjectType() === cdmObjectType.attributeContextDef) {
+                                // if this is a new entity context, get the name to pass along
+                                const subSubAttCtx: CdmAttributeContext = cr as CdmAttributeContext;
+                                let subEntityHint: string = entityHint;
+                                if (subSubAttCtx.type === cdmAttributeContextType.entity) {
+                                    subEntityHint = subSubAttCtx.definition.namedReference;
                                 }
-                            }
-                        } else {
-                            for (const currAttCtx of raCtxSet) {
-                                if (allAttCtx.has(currAttCtx)) {
-                                    raCtx = currAttCtx;
-                                    break;
-                                }
+                                // do this for all types
+                                fixContextTraits(subSubAttCtx, subEntityHint);
                             }
                         }
-
-                        if (ra.target instanceof ResolvedAttributeSet) {
-                            // this is a set of attributes.
-                            // make an attribute group to hold them
-                            const attGrp: CdmAttributeGroupDefinition = this.ctx.corpus.MakeObject(
-                                cdmObjectType.attributeGroupDef, ra.resolvedName);
-                            attGrp.attributeContext = this.ctx.corpus.MakeObject(
-                                cdmObjectType.attributeContextRef, raCtx.atCorpusPath, true);
-                            // take any traits from the set and make them look like traits exhibited by the group
-                            const avoidSet: Set<string> = ctx2traitNames.get(raCtx);
-                            const rtsAtt: ResolvedTraitSet = ra.resolvedTraits;
-                            rtsAtt.set.forEach((rt: ResolvedTrait) => {
-                                if (!rt.trait.ugly) { // don't mention your ugly traits
-                                    if (avoidSet && !avoidSet.has(rt.traitName)) { // avoid the ones from the context
-                                        const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
-                                        attGrp.exhibitsTraits.push(traitRef);
-                                    }
-                                }
-                            });
-
-                            // wrap it in a reference and then recurse with this as the new container
-                            const attGrpRef: CdmAttributeGroupReference = this.ctx.corpus.MakeObject(
-                                cdmObjectType.attributeGroupRef, undefined);
-                            attGrpRef.explicitReference = attGrp;
-                            container.addAttributeDef(attGrpRef);
-                            // isn't this where ...
-                            addAttributes(ra.target, attGrp, `${attPath}/members/`);
-                        } else {
-                            const att: CdmTypeAttributeDefinition =
-                                this.ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, ra.resolvedName);
-                            att.attributeContext = this.ctx.corpus.MakeObject(
-                                cdmObjectType.attributeContextRef, raCtx.atCorpusPath, true);
-                            const avoidSet: Set<string> = ctx2traitNames.get(raCtx);
-                            const rtsAtt: ResolvedTraitSet = ra.resolvedTraits;
-                            rtsAtt.set.forEach((rt: ResolvedTrait) => {
-                                if (!rt.trait.ugly) { // don't mention your ugly traits
-                                    if (avoidSet && !avoidSet.has(rt.traitName)) { // avoid the ones from the context
-                                        const traitRef: CdmTraitReference = CdmObjectBase.resolvedTraitToTraitRef(resOptCopy, rt);
-                                        att.appliedTraits.push(traitRef);
-                                    }
-                                }
-                            });
-
-                            // none of the dataformat traits have the bit set that will make them turn into a property
-                            // this is intentional so that the format traits make it into the resolved object
-                            // but, we still want a guess as the data format, so get it and set it.
-                            const impliedDataFormat: cdmDataFormat = att.dataFormat;
-                            if (impliedDataFormat !== cdmDataFormat.unknown) {
-                                att.dataFormat = impliedDataFormat;
-                            }
-
-                            container.addAttributeDef(att);
-                            resAtt2RefPath.set(ra, attPath);
+                    };
+                fixContextTraits(attCtx, newEntName);
+                // and the attribute traits
+                const entAtts: CdmCollection<CdmAttributeItem> = entResolved.attributes;
+                if (entAtts) {
+                    for (const attribute of entAtts.allItems) {
+                        const attTraits: CdmTraitCollection = attribute.appliedTraits;
+                        if (attTraits) {
+                            attTraits.allItems.forEach((tr: CdmTraitReference) => { replaceTraitAttRef(tr, newEntName, false); });
                         }
-                    });
-                };
-            addAttributes(ras, entResolved, `${entName}/hasAttributes/`);
-
-            // any resolved traits that hold arguments with attribute refs should get 'fixed' here
-            const replaceTraitAttRef: (tr: CdmTraitReference, entityHint: string, isAttributeContext: boolean) => void
-                = (tr: CdmTraitReference, entityHint: string): void => {
-                    if (tr.arguments) {
-                        for (const arg of tr.arguments.allItems) {
-                            const v: ArgumentValue =
-                                arg.unresolvedValue ? arg.unresolvedValue : arg.getValue();
-                            // is this an attribute reference?
-                            if (v
-                                && (v as CdmObject).getObjectType
-                                && (v as CdmObject).getObjectType() === cdmObjectType.attributeRef) {
-                                // only try this if the reference has no path to it (only happens with intra-entity att refs)
-                                const attRef: CdmAttributeReference = v as CdmAttributeReference;
-                                if (attRef.namedReference && attRef.namedReference.indexOf('/') === -1) {
-                                    if (!arg.unresolvedValue) {
-                                        arg.unresolvedValue = arg.value;
-                                    }
-                                    // give a promise that can be worked out later.
-                                    // assumption is that the attribute must come from this entity.
-                                    const newAttRef: CdmAttributeReference = this.ctx.corpus.MakeObject(
-                                        cdmObjectType.attributeRef,
-                                        `${entityHint}/(resolvedAttributes)/${attRef.namedReference}`,
-                                        true);
-                                    // inDocument is not propagated during resolution, so set it here
-                                    newAttRef.inDocument = arg.inDocument;
-                                    arg.setValue(newAttRef);
-                                }
-                            }
-
-                        }
-                    }
-                };
-
-            // fix entity traits
-            if (entResolved.exhibitsTraits) {
-                entResolved.exhibitsTraits.allItems
-                    .forEach((et: CdmTraitReference) => {
-                        replaceTraitAttRef(et, newEntName, false);
-                    });
-            }
-
-            // fix context traits
-            const fixContextTraits: (subAttCtx: CdmAttributeContext, entityHint: string) => void
-                = (subAttCtx: CdmAttributeContext, entityHint: string): void => {
-                    const traitsHere: CdmTraitCollection = subAttCtx.exhibitsTraits;
-                    if (traitsHere) {
-                        traitsHere.allItems.forEach((tr: CdmTraitReference) => { replaceTraitAttRef(tr, entityHint, true); });
-                    }
-                    for (const cr of subAttCtx.contents.allItems) {
-                        if (cr.getObjectType() === cdmObjectType.attributeContextDef) {
-                            // if this is a new entity context, get the name to pass along
-                            const subSubAttCtx: CdmAttributeContext = cr as CdmAttributeContext;
-                            let subEntityHint: string = entityHint;
-                            if (subSubAttCtx.type === cdmAttributeContextType.entity) {
-                                subEntityHint = subSubAttCtx.definition.namedReference;
-                            }
-                            // do this for all types
-                            fixContextTraits(subSubAttCtx, subEntityHint);
-                        }
-                    }
-                };
-            fixContextTraits(attCtx, newEntName);
-            // and the attribute traits
-            const entAtts: CdmCollection<CdmAttributeItem> = entResolved.attributes;
-            if (entAtts) {
-                for (const attribute of entAtts.allItems) {
-                    const attTraits: CdmTraitCollection = attribute.appliedTraits;
-                    if (attTraits) {
-                        attTraits.allItems.forEach((tr: CdmTraitReference) => { replaceTraitAttRef(tr, newEntName, false); });
                     }
                 }
-            }
 
-            // we are about to put this content created in the context of various documents (like references to attributes from base entities, etc.)
-            // into one specific document. all of the borrowed refs need to work. so, re-write all string references to work from this new document
-            // the catch-22 is that the new document needs these fixes done before it can be used to make these fixes.
-            // the fix needs to happen in the middle of the refresh
-            // trigger the document to refresh current content into the resolved OM
-            (attCtx).parent = undefined; // remove the fake parent that made the paths work
-            const resOptNew: resolveOptions = resOpt.copy();
-            resOptNew.wrtDoc = docRes;
-            resOptNew.localizeReferencesFor = docRes;
-            if (!await docRes.refreshAsync(resOptNew)) {
-                Logger.error(
-                    CdmEntityDefinition.name,
-                    this.ctx,
-                    'Failed to index the resolved document.',
-                    this.createResolvedEntityAsync.name
-                );
+                // we are about to put this content created in the context of various documents (like references to attributes from base entities, etc.)
+                // into one specific document. all of the borrowed refs need to work. so, re-write all string references to work from this new document
+                // the catch-22 is that the new document needs these fixes done before it can be used to make these fixes.
+                // the fix needs to happen in the middle of the refresh
+                // trigger the document to refresh current content into the resolved OM
+                (attCtx).parent = undefined; // remove the fake parent that made the paths work
+                const resOptNew: resolveOptions = resOpt.copy();
+                resOptNew.wrtDoc = docRes;
+                resOptNew.localizeReferencesFor = docRes;
+                if (!await docRes.refreshAsync(resOptNew)) {
+                    Logger.error(
+                        CdmEntityDefinition.name,
+                        this.ctx,
+                        'Failed to index the resolved document.',
+                        this.createResolvedEntityAsync.name
+                    );
 
-                return undefined;
-            }
-            // get a fresh ref
-            entResolved = docRes.fetchObjectFromDocumentPath(entName, resOptNew) as CdmEntityDefinition;
+                    return undefined;
+                }
+                // get a fresh ref
+                entResolved = docRes.fetchObjectFromDocumentPath(entName, resOptNew) as CdmEntityDefinition;
 
-            this.ctx.corpus.resEntMap.set(this.atCorpusPath, entResolved.atCorpusPath);
+                this.ctx.corpus.resEntMap.set(this.atCorpusPath, entResolved.atCorpusPath);
 
-            return entResolved;
+                return entResolved;
+            });
         }
         // return p.measure(bodyCode);
     }

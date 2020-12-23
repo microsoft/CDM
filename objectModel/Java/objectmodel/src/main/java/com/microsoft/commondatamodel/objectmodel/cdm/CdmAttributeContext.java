@@ -45,7 +45,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
     // This will get overwritten when parent set.
     this.setAtCorpusPath(name);
-    this.contents = new CdmCollection<>(this.getCtx(), this.getOwner(), this.getObjectType());
+    this.contents = new CdmCollection<>(this.getCtx(), this, this.getObjectType());
   }
 
   public final CdmAttributeContextType getType() {
@@ -228,6 +228,8 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   /**
    * Clears any existing lineage and sets it to the provided context reference (or a reference to the context object
    * is one is given instead)
+   * @param objLineage CdmObject lineage
+   * @return CdmAttribute Context Reference
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -362,6 +364,9 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
   /**
    * Add to the lineage array the provided context reference (or a reference to the context object is one is given instead)
+   * @param objLineage CdmObject
+   * @param validate boolean
+   * @return CdmAttribute Context Reference
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -418,6 +423,10 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   }
 
   /**
+   * @param resOpt ResolveOptions
+   * @param ctx CdmCorpusContext
+   * @param acpUsed AttributeContextParameters
+   * @return Cdm Attribute Context
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -438,6 +447,9 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   }
 
   /**
+   * @param resOpt ResolveOptions
+   * @param acpUsed AttributeContextParameters
+   * @return Cdm Attribute Context
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -455,6 +467,9 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
 
 
   /**
+   * @param resOpt ResolveOptions
+   * @param ras ResolvedAttributeSet
+   * @return boolean
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -478,6 +493,12 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   }
 
   /**
+   * @param resOpt ResolveOptions
+   * @param pathStart String
+   * @param docHome CdmDocumentDefinition
+   * @param docFrom CdmDocumentDefinition
+   * @param monikerForDocFrom String
+   * @return boolean 
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */
@@ -487,6 +508,13 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
   }
 
   /**
+   * @param resOpt ResolveOptions
+   * @param pathStart String
+   * @param docHome CdmDocumentDefinition
+   * @param docFrom CdmDocumentDefinition
+   * @param monikerForDocFrom String
+   * @param finished boolean
+   * @return boolean 
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
    */

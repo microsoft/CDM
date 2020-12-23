@@ -4,6 +4,7 @@
 namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
+    using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Storage;
@@ -123,7 +124,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             {
                 Invoke = (CdmStatusLevel statusLevel, string message) =>
                 {
-                    if (message.Contains("The folder location 'local:/testLocation' described by a partition pattern does not exist"))
+                    if (message.Contains("Failed to fetch all files in the folder location 'local:/testLocation' described by a partition pattern. Exception:"))
                     {
                         errorLogged++;
                     }
@@ -300,6 +301,44 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.DataPartitionPattern
             // matching this file means the glob pattern was (correctly) used
             Assert.AreEqual(globAndRegex.DataPartitions[0].Location, "/partitions/testfile.csv");
 
+        }
+
+        /// <summary>
+        /// Verifies that performing file status check on manifest with a partition with
+        /// null location is gracefully handled.
+        /// </summary>
+        [TestMethod]
+        public async Task TestFileStatusCheckOnNullLocation() {
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestFileStatusCheckOnNullLocation");
+            corpus.SetEventCallback(new EventCallback {
+                Invoke = (CdmStatusLevel statusLevel, string message) =>
+                {
+                    Assert.AreEqual(statusLevel, CdmStatusLevel.Error, "Error level message should have been reported");
+                    Assert.IsTrue(
+                        message == "StorageManager | The object path cannot be null or empty. | CreateAbsoluteCorpusPath" ||
+                        message == "CdmCorpusDefinition | The object path cannot be null or empty. | GetLastModifiedTimeAsyncFromPartitionPath",
+                       "Unexpected error message received");
+                }
+            }, CdmStatusLevel.Warning);
+
+            // Create manifest
+            var manifest = corpus.MakeObject<CdmManifestDefinition>(CdmObjectType.ManifestDef, "TestModel");
+            corpus.Storage.FetchRootFolder("local").Documents.Add(manifest);
+
+            // Create entity
+            var entDoc = corpus.Storage.FetchRootFolder("local").Documents.Add("MyEntityDoc.cdm.json");
+
+            var entDef = corpus.MakeObject<CdmEntityDefinition>(CdmObjectType.EntityDef, "MyEntity");
+            entDoc.Definitions.Add(entDef);
+
+            var entDecl = manifest.Entities.Add(entDef);
+
+            // Create partition
+            var part = corpus.MakeObject<CdmDataPartitionDefinition>(CdmObjectType.DataPartitionDef, "MyPartition");
+            entDecl.DataPartitions.Add(part);
+
+            // This should not throw exception
+            await manifest.FileStatusCheckAsync();
         }
     }
 }

@@ -281,7 +281,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
 
                 self.assertEqual(mock_urlopen.call_args[0][0].method, 'GET')
                 self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=dir1/dir2&recursive=True&resource=filesystem')
+                                 'https://dummy.dfs.core.windows.net/fs?directory=dir1/dir2&maxResults=5000&recursive=True&resource=filesystem')
                 #[SuppressMessage("Microsoft.Security", "CS002:SecretInNextLine", Justification="Dummy token used for testing")]
                 self.assertEqual(mock_urlopen.call_args[0][0].headers, {'Authorization': 'Bearer dummyBearerToken'})
                 self.assertEqual(all_files, ['/dir1/dir2/file1.json', '/dir1/dir2/file2.json'])  # Verify data.
@@ -291,7 +291,7 @@ class AdlsStorageAdapterTestCase(unittest.TestCase):
                 all_files = await adapter.fetch_all_files_async('/')
 
                 self.assertEqual(mock_urlopen.call_args[0][0].full_url,
-                                 'https://dummy.dfs.core.windows.net/fs?directory=&recursive=True&resource=filesystem')
+                                 'https://dummy.dfs.core.windows.net/fs?directory=&maxResults=5000&recursive=True&resource=filesystem')
 
     def test_config_and_update_config_without_secret(self):
         """

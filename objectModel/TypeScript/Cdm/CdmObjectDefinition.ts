@@ -3,8 +3,7 @@
 
 import {
     CdmObject,
-    CdmTraitCollection,
-    resolveOptions
+    CdmTraitCollection
 } from '../internal';
 
 export interface CdmObjectDefinition extends CdmObject {

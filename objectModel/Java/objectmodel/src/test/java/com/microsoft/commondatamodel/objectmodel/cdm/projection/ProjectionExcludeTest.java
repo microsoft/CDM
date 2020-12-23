@@ -743,4 +743,29 @@ public class ProjectionExcludeTest {
         Assert.assertEquals(((CdmTypeAttributeDefinition) attGroup.getMembers().get(3)).getName(), "phoneNumber");
         Assert.assertEquals(((CdmTypeAttributeDefinition) attGroup.getMembers().get(4)).getName(), "email");
     }
+
+    /**
+     * Test resolving a type attribute with a exclude attributes operation
+     */
+    @Test
+    public void testTypeAttributeProj() throws InterruptedException {
+        String testName = "testTypeAttributeProj";
+        String entityName = "Person";
+        CdmCorpusDefinition corpus = ProjectionTestUtils.getCorpus(testName, TESTS_SUBPATH);
+
+        for (List<String> resOpt : resOptsCombinations) {
+            ProjectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, TESTS_SUBPATH, entityName, resOpt).join();
+        }
+
+        CdmEntityDefinition entity = (CdmEntityDefinition) corpus.fetchObjectAsync("local:/" + entityName + ".cdm.json/" + entityName).join();
+        CdmEntityDefinition resolvedEntity = ProjectionTestUtils.getResolvedEntity(corpus, entity, new ArrayList<>(Arrays.asList("referenceOnly"))).join();
+
+        // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        // Exclude attributes ["address"]
+        Assert.assertEquals(resolvedEntity.getAttributes().size(), 4);
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(0)).getName(), "name");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(1)).getName(), "age");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(2)).getName(), "phoneNumber");
+        Assert.assertEquals(((CdmTypeAttributeDefinition) resolvedEntity.getAttributes().get(3)).getName(), "email");
+    }
 }

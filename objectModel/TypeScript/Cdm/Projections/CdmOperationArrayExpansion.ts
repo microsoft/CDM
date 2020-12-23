@@ -17,6 +17,7 @@ import {
     ProjectionAttributeStateSet,
     ProjectionContext,
     ResolvedAttribute,
+    ResolvedAttributeSet,
     resolveOptions,
     VisitCallback
 } from '../../internal';
@@ -128,7 +129,7 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
 
         // Expansion steps start at round 0
         let round: number = 0;
-        const projAttrStatesFromRounds: ProjectionAttributeState[] = [];
+        let projAttrStatesFromRounds: ProjectionAttributeState[] = [];
 
         // Ordinal validation
         if (this.startOrdinal > this.endOrdinal) {
@@ -168,6 +169,12 @@ export class CdmOperationArrayExpansion extends CdmOperationBase {
                         name: `${currentPAS.currentResolvedAttribute.resolvedName}@${i}`
                     };
                     const attrCtxExpandedAttr: CdmAttributeContext = CdmAttributeContext.createChildUnder(projCtx.projectionDirective.resOpt, attrCtxExpandedAttrParam);
+
+                    if (currentPAS.currentResolvedAttribute.target instanceof ResolvedAttributeSet) {
+                        Logger.error(this.TAG, this.ctx, 'Array expansion operation does not support attribute groups.');
+                        projAttrStatesFromRounds = [];
+                        break;
+                    }
 
                     // Create a new resolved attribute for the expanded attribute
                     const newResAttr: ResolvedAttribute = CdmOperationBase.createNewResolvedAttribute(projCtx, attrCtxExpandedAttr, currentPAS.currentResolvedAttribute.target as CdmAttribute, currentPAS.currentResolvedAttribute.resolvedName);

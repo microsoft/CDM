@@ -348,6 +348,7 @@ export abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
                 return false;
             }
             if (this.explicitReference && !this.namedReference) {
+                this.explicitReference.owner = this.owner;
                 if (this.explicitReference.visit(path, preChildren, postChildren)) {
                     return true;
                 }

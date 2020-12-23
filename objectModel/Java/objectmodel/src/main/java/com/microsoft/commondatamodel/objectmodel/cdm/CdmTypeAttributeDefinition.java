@@ -7,15 +7,13 @@ import java.util.ArrayList;
 
 import com.google.common.base.Strings;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmProjection;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmDataFormat;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmPropertyName;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.AttributeResolutionContext;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttribute;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSetBuilder;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntityReferenceSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedTraitSetBuilder;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.*;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionContext;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.projections.ProjectionDirective;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.Errors;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
@@ -27,6 +25,8 @@ import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 public class CdmTypeAttributeDefinition extends CdmAttribute {
   private CdmDataTypeReference dataType;
   private CdmAttributeContextReference attributeContext;
+
+  private CdmProjection projection;
   private TraitToPropertyMap t2pm;
 
   public CdmTypeAttributeDefinition(final CdmCorpusContext ctx, final String name) {
@@ -41,6 +41,14 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
 
   public void setAttributeContext(final CdmAttributeContextReference value) {
     this.attributeContext = value;
+  }
+
+  public CdmProjection getProjection() {
+    return projection;
+  }
+
+  public void setProjection(CdmProjection projection) {
+    this.projection = projection;
   }
 
   public CdmDataFormat fetchDataFormat() {
@@ -230,6 +238,15 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
             .visit(path + "/attributeContext/", preChildren, postChildren)) {
       return true;
     }
+
+    if (this.getProjection() != null) {
+      this.getProjection().setOwner(this);
+    }
+    if (this.getProjection() != null
+            && this.getProjection()
+            .visit(path + "/projection/", preChildren, postChildren)) {
+      return true;
+    }
     if (this.visitAtt(path, preChildren, postChildren)) {
       return true;
     }
@@ -317,11 +334,20 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     resGuideWithDefault.updateAttributeDefaults(null, this);
     final AttributeResolutionContext arc = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
+    // TODO: remove the resolution guidance if projection is being used
     // from the traits of the datatype, purpose and applied here, see if new attributes get generated
     rasb.applyTraits(arc);
     rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
     // this may have added symbols to the dependencies, so merge them
     resOpt.getSymbolRefSet().merge(arc.getResOpt().getSymbolRefSet());
+
+    if (this.getProjection() != null) {
+      ProjectionDirective projDirective = new ProjectionDirective(resOpt, this);
+      ProjectionContext projCtx = this.getProjection().constructProjectionContext(projDirective, under, rasb.getResolvedAttributeSet());
+
+      ResolvedAttributeSet ras = this.getProjection().extractResolvedAttributes(projCtx, under);
+      rasb.setResolvedAttributeSet(ras);
+    }
 
     return rasb;
   }

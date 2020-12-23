@@ -7,7 +7,7 @@ import json
 import os
 from typing import List, Optional, Tuple, Set, TYPE_CHECKING
 
-from cdm.storage import CdmStandardsAdapter, LocalAdapter, ResourceAdapter
+from cdm.storage import CdmStandardsAdapter, LocalAdapter, ResourceAdapter, StorageAdapterBase
 from cdm.utilities import logger, StorageUtils
 
 if TYPE_CHECKING:
@@ -170,7 +170,7 @@ class StorageManager:
         """Takes a corpus path (relative or absolute) and creates a valid absolute
         path with namespace"""
         if not object_path:
-            logger.error(self._TAG, self._ctx, 'The namespace cannot be null or empty.', StorageManager.create_absolute_corpus_path.__name__)
+            logger.error(self._TAG, self._ctx, 'The object path cannot be null or empty.', StorageManager.create_absolute_corpus_path.__name__)
             return None
 
         if self._contains_unsupported_path_format(object_path):
@@ -242,6 +242,8 @@ class StorageManager:
         from cdm.objectmodel import CdmFolderDefinition
 
         if adapter:
+            if isinstance(adapter, StorageAdapterBase):
+                adapter.ctx = self._ctx
             self.namespace_adapters[namespace] = adapter
             fd = CdmFolderDefinition(self._ctx, '')
             fd._corpus = self._corpus

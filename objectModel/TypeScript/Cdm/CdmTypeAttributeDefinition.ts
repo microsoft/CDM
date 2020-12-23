@@ -14,9 +14,13 @@ import {
     CdmDataTypeReference,
     CdmObject,
     cdmObjectType,
+    CdmProjection,
     Errors,
     Logger,
+    ProjectionContext,
+    ProjectionDirective,
     ResolvedAttribute,
+    ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
     ResolvedEntityReferenceSet,
     ResolvedTraitSet,
@@ -108,6 +112,7 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
 
     public dataType: CdmDataTypeReference;
     public attributeContext?: CdmAttributeContextReference;
+    public projection?: CdmProjection;
 
     private readonly traitToPropertyMap: traitToPropertyMap;
 
@@ -258,6 +263,12 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
                     return true;
                 }
             }
+            if (this.projection) {
+                this.projection.owner = this;
+                if (this.projection.visit(`${path}/projection/`, preChildren, postChildren)) {
+                    return true;
+                }
+            }
             if (this.visitAtt(path, preChildren, postChildren)) {
                 return true;
             }
@@ -336,11 +347,20 @@ export class CdmTypeAttributeDefinition extends CdmAttribute {
             resGuideWithDefault.updateAttributeDefaults(undefined);
             const arc: AttributeResolutionContext = new AttributeResolutionContext(resOpt, resGuideWithDefault, rts);
 
+            // TODO: remove the resolution guidance if projection is being used
             // from the traits of the datatype, purpose and applied here, see if new attributes get generated
             rasb.applyTraits(arc);
             rasb.generateApplierAttributes(arc, false); // false = don't apply these traits to added things
             // this may have added symbols to the dependencies, so merge them
             resOpt.symbolRefSet.merge(arc.resOpt.symbolRefSet);
+
+            if (this.projection) {
+                const projDirective: ProjectionDirective = new ProjectionDirective(resOpt, this);
+                const projCtx: ProjectionContext = this.projection.constructProjectionContext(projDirective, under, rasb.ras);
+
+                const ras: ResolvedAttributeSet = this.projection.extractResolvedAttributes(projCtx);
+                rasb.ras = ras;
+            }
 
             return rasb;
         }

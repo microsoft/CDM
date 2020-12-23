@@ -12,6 +12,7 @@ import {
     resolveContextScope,
     resolveOptions
 } from '../internal';
+import { EventList } from './Logging/EventList';
 
 export class resolveContext implements CdmCorpusContext {
     /**
@@ -24,6 +25,8 @@ export class resolveContext implements CdmCorpusContext {
     public currentScope: resolveContextScope;
     public reportAtLevel: cdmStatusLevel;
     public statusEvent: EventCallback;
+    public events: EventList;
+    public correlationId: string;
     public currentDoc?: CdmDocumentDefinition;
     /**
      * @internal
@@ -35,9 +38,10 @@ export class resolveContext implements CdmCorpusContext {
      */
     public cache: Map<string, any>;
     public corpus: CdmCorpusDefinition;
-    constructor(corpus: CdmCorpusDefinition, statusRpt?: EventCallback, reportAtLevel?: cdmStatusLevel) {
+    constructor(corpus: CdmCorpusDefinition, statusEvent?: EventCallback, reportAtLevel?: cdmStatusLevel) {
         this.reportAtLevel = reportAtLevel !== undefined ? reportAtLevel : cdmStatusLevel.info;
-        this.statusEvent = statusRpt;
+        this.statusEvent = statusEvent;
+        this.events = new EventList();
         this.cache = new Map<string, any>();
         this.corpus = corpus;
     }

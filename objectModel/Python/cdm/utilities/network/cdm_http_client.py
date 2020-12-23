@@ -4,15 +4,17 @@
 import asyncio
 import urllib
 import urllib.parse
-from typing import TYPE_CHECKING
+from datetime import datetime
+from typing import Optional, TYPE_CHECKING
 
 from cdm.utilities.network.cdm_http_response import CdmHttpResponse
 from cdm.utilities.network.cdm_number_of_retries_exceeded_exception import CdmNumberOfRetriesExceededException
 from cdm.utilities.network.cdm_timed_out_exception import CdmTimedOutException
+from cdm.utilities import ResolveOptions, logger
 
 if TYPE_CHECKING:
     from cdm.utilities.network.cdm_http_request import CdmHttpRequest
-
+    from cdm.objectmodel import CdmCorpusContext
 
 class CdmHttpClient:
     """
@@ -28,7 +30,7 @@ class CdmHttpClient:
         self.headers = {}  # type : Dict[str, str]
         self._api_endpoint = api_endpoint  # type : str
 
-    async def _send_async(self, cdm_request: 'CdmHttpRequest', callback=None) -> 'CdmHttpResponse':
+    async def _send_async(self, cdm_request: 'CdmHttpRequest', callback=None, ctx: Optional['CdmCorpusContext'] = None) -> 'CdmHttpResponse':
         """
         Sends a CDM request with the retry logic.
         :param cdm_request: The CDM Http request.
@@ -42,9 +44,9 @@ class CdmHttpClient:
             cdm_request.headers[key] = self.headers[key]
 
         # TODO: Figure out how to set maximum timeout on the whole method.
-        return await self._send_async_helper(cdm_request, callback)
+        return await self._send_async_helper(cdm_request, callback, ctx)
 
-    async def _send_async_helper(self, cdm_request: 'CdmHttpRequest', callback=None) -> 'CdmHttpResponse':
+    async def _send_async_helper(self, cdm_request: 'CdmHttpRequest', callback=None, ctx: Optional['CdmCorpusContext'] = None) -> 'CdmHttpResponse':
         """
         Sends a CDM request with the retry logic helper function.
         :param cdm_request: The CDM Http request.
@@ -83,9 +85,15 @@ class CdmHttpClient:
             has_failed = False  # type: bool
 
             try:
+                start_time = datetime.now()
+                if ctx is not None:
+                    logger.info(self.__class__.__name__, ctx, 'Sending request: {}, request type: {}, retry number: {}.'.format(cdm_request.request_id, request.method, retry_number), self._send_async_helper)
                 # Send the request and convert timeout to seconds from milliseconds.
                 with urllib.request.urlopen(request, timeout=cdm_request.timeout / 1000) as response:  # type: http.client.HTTPResponse
                     if response is not None:
+                        end_time = datetime.now()
+                        if ctx is not None:
+                            logger.info(self.__class__.__name__, ctx, 'Reponse for request {} received with elapsed time: {} ms.'.format(cdm_request.request_id, (end_time - start_time).total_seconds() * 1000.0), self._send_async_helper)
                         cdm_response = CdmHttpResponse()
                         encoded_content = response.read()
 
@@ -109,6 +117,8 @@ class CdmHttpClient:
                         raise CdmNumberOfRetriesExceededException(exception)
                     else:
                         if exception.args and exception.args[0].args and exception.args[0].args[0] == 'timed out':
+                            if ctx is not None:
+                                logger.info(self.__class__.__name__, ctx, 'Request {} timeout after {} s.'.format(cdm_request.request_id, cdm_request.timeout/1000), self._send_async_helper)
                             raise CdmTimedOutException('Request timeout.')
                         else:
                             raise exception

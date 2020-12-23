@@ -17,6 +17,7 @@ import { CdmStandardsAdapter } from './CdmStandardsAdapter';
 import { RemoteAdapter } from './RemoteAdapter';
 import { ResourceAdapter } from './ResourceAdapter';
 import { configObjectType, StorageAdapter } from './StorageAdapter';
+import { StorageAdapterBase } from './StorageAdapterBase';
 
 export class StorageManager {
     /**
@@ -88,6 +89,9 @@ export class StorageManager {
         }
 
         if (adapter) {
+            if (adapter instanceof (StorageAdapterBase)) {
+                (adapter as StorageAdapterBase).ctx = this.ctx;
+            }
             this.namespaceAdapters.set(namespace, adapter);
             const fd: CdmFolderDefinition = new CdmFolderDefinition(this.ctx, '');
             fd.corpus = this.corpus;

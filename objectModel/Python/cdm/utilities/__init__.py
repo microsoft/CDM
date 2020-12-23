@@ -27,6 +27,8 @@ from .symbol_set import SymbolSet
 from .trait_to_property_map import TraitToPropertyMap
 from .visit_callback import VisitCallback
 from .logging import logger
+from .logging.logger import _LoggerScope
+from .logging import event_list
 from .errors import Errors
 from .storage_utils import StorageUtils
 
@@ -50,6 +52,8 @@ __all__ = [
     'JObject',
     'lang_utils',
     'logger',
+    '_LoggerScope',
+    'event_list',
     'primitive_appliers',
     'RefCounted',
     'ResolveContextScope',

@@ -34,7 +34,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -42,6 +41,9 @@ public class AdlsAdapter extends NetworkAdapter {
   protected static final Duration ADLS_DEFAULT_TIMEOUT = Duration.ofMillis(5000);
   static final String TYPE = "adls";
   private final static Logger LOGGER = LoggerFactory.getLogger(AdlsAdapter.class);
+
+  // The MS continuation header key, used when building request url.
+  private final static String HTTP_XMS_CONTINUATION = "x-ms-continuation";
 
   private String root;
   private String hostname;
@@ -76,6 +78,12 @@ public class AdlsAdapter extends NetworkAdapter {
    * e.g. "folder1/folder%202"
    */
   private String escapedRootSubPath = "";
+
+  /**
+   * Maximum number of items to be returned by the directory list API.
+   * If omitted or greater than 5,000, the response will include up to 5,000 items.
+   */
+  private int httpMaxResults = 5000;
 
   private Map<String, OffsetDateTime> fileModifiedTimeCache = new LinkedHashMap<String, OffsetDateTime>();
 
@@ -231,24 +239,18 @@ public class AdlsAdapter extends NetworkAdapter {
       else{
         final String url = this.createAdapterPath(corpusPath);
 
-        try {
-          final CdmHttpRequest request = this.buildRequest(url, "HEAD");
-          CdmHttpResponse cdmResponse = executeRequest(request).join();
+        final CdmHttpRequest request = this.buildRequest(url, "HEAD");
+        CdmHttpResponse cdmResponse = executeRequest(request).join();
 
-          if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
-            OffsetDateTime lastTime = 
-              DateUtils.parseDate(cdmResponse.getResponseHeaders().get("Last-Modified"))
-                  .toInstant()
-                  .atOffset(ZoneOffset.UTC);
-              if(this.getIsCacheEnabled()) {
-                this.fileModifiedTimeCache.put(corpusPath, lastTime);
-              }
-              return lastTime;
-          }
-        // We're capturing CompletionException as this is of interest to us, it wraps any exception created inside
-        // the body of the executeRequest method.
-        } catch (CompletionException ex) {
-          LOGGER.debug("ADLS file not found, skipping last modified time calculation for it.", ex.getCause());
+        if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
+          OffsetDateTime lastTime = 
+            DateUtils.parseDate(cdmResponse.getResponseHeaders().get("Last-Modified"))
+                .toInstant()
+                .atOffset(ZoneOffset.UTC);
+            if(this.getIsCacheEnabled()) {
+              this.fileModifiedTimeCache.put(corpusPath, lastTime);
+            }
+            return lastTime;
         }
         
         return null;
@@ -276,51 +278,73 @@ public class AdlsAdapter extends NetworkAdapter {
       if (directory.startsWith("/")) {
           directory = directory.substring(1);
       }
-      
-      final CdmHttpRequest request =
-          this.buildRequest(
-              url + "?directory=" + directory + "&recursive=True&resource=filesystem",
-              "GET");
-      final CdmHttpResponse cdmResponse = executeRequest(request).join();
 
-      if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
-        final String json = cdmResponse.getContent();
-        final JsonNode jObject1;
-        try {
-          jObject1 = JMapper.MAP.readTree(json);
+      List<String> result = new ArrayList<>();
+      String continuationToken = null;
 
-          final JsonNode paths = jObject1.get("paths");
+      do {
+        CdmHttpRequest request;
 
-          List<String> result = new ArrayList<>();
-          for (final JsonNode path : paths) {
-            final JsonNode isDirectory = path.get("isDirectory");
-            if (isDirectory == null || !isDirectory.asBoolean()) {
-              if (path.has("name")) {
-                String name = path.get("name").asText();
-                String nameWithoutSubPath = this.unescapedRootSubPath.length() > 0 && name.startsWith(this.unescapedRootSubPath)
-                    ? name.substring(this.unescapedRootSubPath.length() + 1)
-                    : name;
-                String filepath = this.formatCorpusPath(nameWithoutSubPath);
-                result.add(filepath);
+        if (continuationToken == null) {
+          request = this.buildRequest(
+                  url + "?directory=" + directory + "&maxResults=" + this.httpMaxResults + "&recursive=True&resource=filesystem",
+                  "GET");
+        } else {
+          String escapedContinuationToken;
+          try {
+            escapedContinuationToken = URLEncoder.encode(continuationToken, "UTF8");
+          } catch (UnsupportedEncodingException e) {
+            LOGGER.error("Unable to encode continuationToken '" + continuationToken + "' for the request.");
+            return result;
+          }
 
-                OffsetDateTime lastTime = DateUtils.parseDate(path.get("lastModified").asText())
-                  .toInstant()
-                  .atOffset(ZoneOffset.UTC);
+          request = this.buildRequest(
+                    url + "?continuation=" + escapedContinuationToken + "&directory=" + directory + "&maxResults=" + this.httpMaxResults + "&recursive=True&resource=filesystem",
+                    "GET");
+        }
 
-                if(this.getIsCacheEnabled()) {
-                  this.fileModifiedTimeCache.put(filepath, lastTime);
+        final CdmHttpResponse cdmResponse = executeRequest(request).join();
+
+        if (cdmResponse.getStatusCode() == HttpURLConnection.HTTP_OK) {
+          continuationToken = cdmResponse.getResponseHeaders().containsKey(HTTP_XMS_CONTINUATION) ?
+                  cdmResponse.getResponseHeaders().get(HTTP_XMS_CONTINUATION): null;
+
+          final String json = cdmResponse.getContent();
+          final JsonNode jObject1;
+          try {
+            jObject1 = JMapper.MAP.readTree(json);
+
+            final JsonNode paths = jObject1.get("paths");
+
+            for (final JsonNode path : paths) {
+              final JsonNode isDirectory = path.get("isDirectory");
+              if (isDirectory == null || !isDirectory.asBoolean()) {
+                if (path.has("name")) {
+                  String name = path.get("name").asText();
+                  String nameWithoutSubPath = this.unescapedRootSubPath.length() > 0 && name.startsWith(this.unescapedRootSubPath)
+                          ? name.substring(this.unescapedRootSubPath.length() + 1)
+                          : name;
+                  String filepath = this.formatCorpusPath(nameWithoutSubPath);
+                  result.add(filepath);
+
+                  OffsetDateTime lastTime = DateUtils.parseDate(path.get("lastModified").asText())
+                          .toInstant()
+                          .atOffset(ZoneOffset.UTC);
+
+                  if(this.getIsCacheEnabled()) {
+                    this.fileModifiedTimeCache.put(filepath, lastTime);
+                  }
                 }
               }
             }
+          } catch (JsonProcessingException e) {
+            LOGGER.error("Unable to parse response content from request.");
+            return null;
           }
-          return result;
-        } catch (JsonProcessingException e) {
-          LOGGER.error("Unable to parse response content from request.");
-          return null;
         }
-      }
+      } while(!StringUtils.isNullOrTrimEmpty(continuationToken));
 
-      return null;
+      return result;
     });
   }
 
@@ -590,5 +614,13 @@ public class AdlsAdapter extends NetworkAdapter {
 
   public void setTokenProvider(TokenProvider tokenProvider) {
     this.adlsAdapterAuthenticator.setTokenProvider(tokenProvider);
+  }
+
+  public int getHttpMaxResults() {
+    return this.httpMaxResults;
+  }
+
+  public void setHttpMaxResults(int value) {
+    this.httpMaxResults = value;
   }
 }

@@ -30,45 +30,6 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
     tests_subpath = os.path.join('Cdm', 'Projection', 'TestProjectionMiscellaneous')
 
     @async_test
-    async def test_missing_condition_in_json(self):
-        """
-        Test case scenario for Bug #25 from the projections internal bug bash
-        Reference Link: https:#commondatamodel.visualstudio.com/CDM/_workitems/edit/25
-        """
-        test_name = 'test_missing_condition_in_json'
-
-        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)
-
-        def callback(level, message):
-            self.fail(message)
-        corpus.set_event_callback(callback, CdmStatusLevel.WARNING)
-
-        manifest = await corpus.fetch_object_async('default.manifest.cdm.json')
-
-        entity_name = 'SalesNestedFK'
-        entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name), manifest)
-        self.assertIsNotNone(entity)
-
-        res_opt = ResolveOptions(entity.in_document)
-        # where, res_opts_combinations[1] == 'referenceOnly'
-        res_opt.directives = AttributeResolutionDirectiveSet(self.res_opts_combinations[1])
-
-        resolved_folder = corpus.storage.fetch_root_folder('output')
-
-        was_info_message_received = {}
-        was_info_message_received['infoMessagedReceived'] = False
-
-        def callback_2(level, message):
-            if 'CdmProjection | Optional expression missing. Implicit expression will automatically apply. | _construct_projection_context' in message:
-                was_info_message_received['infoMessagedReceived'] = True
-        corpus.set_event_callback(callback_2, CdmStatusLevel.INFO)
-
-        resolved_entity = await entity.create_resolved_entity_async('Resolved_{}.cdm.json'.format(entity_name), res_opt, resolved_folder)
-        self.assertIsNotNone(resolved_entity)
-
-        self.assertTrue(was_info_message_received['infoMessagedReceived'])
-
-    @async_test
     async def test_invalid_operation_type(self):
         """
         Test case scenario for Bug #24 from the projections internal bug bash

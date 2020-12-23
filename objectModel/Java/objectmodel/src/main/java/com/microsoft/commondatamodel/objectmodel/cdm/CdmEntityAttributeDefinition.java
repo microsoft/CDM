@@ -679,9 +679,6 @@ public class CdmEntityAttributeDefinition extends CdmAttribute {
             .getCorpus()
             .getStorage()
             .createAbsoluteCorpusPath(entDef.getAtCorpusPath(), entDef.getInDocument());
-        if (relativeEntPath.startsWith(nameSpace + ":")) {
-          relativeEntPath = relativeEntPath.substring(nameSpace.length() + 1);
-        }
         entReferences.add(relativeEntPath);
         attReferences.add(attName);
       }

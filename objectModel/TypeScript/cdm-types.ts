@@ -44,6 +44,7 @@ export {
     cdmStatusLevel,
     consoleSpewCatcher,
     cdmDataFormat,
+    importsLoadStrategy,
     spewCatcher,
     stringSpewCatcher,
     cdmAttributeContextType,

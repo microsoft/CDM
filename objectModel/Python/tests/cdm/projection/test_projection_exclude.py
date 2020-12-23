@@ -638,3 +638,24 @@ class ProjectionExcludeTest(unittest.TestCase):
         self.assertEqual('address', att_group.members[2].name)
         self.assertEqual('phoneNumber', att_group.members[3].name)
         self.assertEqual('email', att_group.members[4].name)
+
+    @async_test
+    async def test_type_attribute_proj(self):
+        """Test resolving a type attribute with a exclude attributes operation"""
+        test_name = 'test_type_attribute_proj'
+        entity_name = 'Person'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)
+
+        for res_opt in self.res_opts_combinations:
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
+
+        entity = await corpus.fetch_object_async('local:/{}.cdm.json/{}'.format(entity_name, entity_name))
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ 'referenceOnly' ])
+
+        # Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+        # Exclude attributes ["address"]
+        self.assertEqual(4, len(resolved_entity.attributes))
+        self.assertEqual('name', resolved_entity.attributes[0].name)
+        self.assertEqual('age', resolved_entity.attributes[1].name)
+        self.assertEqual('phoneNumber', resolved_entity.attributes[2].name)
+        self.assertEqual('email', resolved_entity.attributes[3].name)

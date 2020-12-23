@@ -56,7 +56,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     this.setInDocument(this);
     this.setObjectType(CdmObjectType.DocumentDef);
     this.name = name;
-    this.jsonSchemaSemanticVersion = "1.0.0";
+    this.jsonSchemaSemanticVersion = getCurrentJsonSchemaSemanticVersion();
     this.documentVersion = null;
     this.needsIndexing = true;
     this.isDirty = true;
@@ -132,6 +132,13 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   @Deprecated
   public void setNamespace(final String namespace) {
     this.namespace = namespace;
+  }
+
+  /**
+   * The maximum json semantic version supported by this ObjectModel version.
+   */
+  public static String getCurrentJsonSchemaSemanticVersion() {
+    return "1.1.0";
   }
 
   @Deprecated
@@ -451,36 +458,46 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
     return saveAsAsync(newName, false);
   }
 
-  public CompletableFuture<Boolean> saveAsAsync(
-      final String newName,
-      final boolean saveReferenced) {
+  public CompletableFuture<Boolean> saveAsAsync(final String newName, final boolean saveReferenced) {
     return saveAsAsync(newName, saveReferenced, new CopyOptions());
   }
 
-  public CompletableFuture<Boolean> saveAsAsync(
-      final String newName,
-      final boolean saveReferenced,
-      CopyOptions options) {
-    if (options == null) {
-      options = new CopyOptions();
-    }
+  /**
+   * Saves the document back through the adapter in the requested format.
+   * Format is specified via document name/extension based on conventions:
+   * 'model.json' for the back compatible model, '*.manifest.cdm.json' for manifest, '*.folio.cdm.json' for folio, *.cdm.json' for CDM definitions.
+   * saveReferenced (default false) when true will also save any schema defintion documents that are
+   * linked from the source doc and that have been modified. existing document names are used for those.
+   * Returns false on any failure.
+   * @param newName the new name
+   * @param saveReferenced the save referenced flag
+   * @param options the copy options
+   * @return true if save succeeded, false otherwise
+   */
+  public CompletableFuture<Boolean> saveAsAsync(final String newName, final boolean saveReferenced, CopyOptions options) {
+    try (Logger.LoggerScope logScope = Logger.enterScope(CdmDocumentDefinition.class.getSimpleName(), getCtx(), "saveAsAsync")) {
+      if (options == null) {
+        options = new CopyOptions();
+      }
 
-    final ResolveOptions resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
-    
-    if (!this.indexIfNeededAsync(resOpt, false).join()) {
-      Logger.error(
-          CdmDocumentDefinition.class.getSimpleName(),
-          this.getCtx(),
-          Logger.format("Failed to index document prior to save '{0}'", this.getName()),
-          "saveAsAsync"
-      );
-      return CompletableFuture.completedFuture(false);
-    }
+      final ResolveOptions resOpt = new ResolveOptions(this, getCtx().getCorpus().getDefaultResolutionDirectives());
 
-    if (newName.equals(this.getName())) {
-      this.isDirty = false;
+      if (!this.indexIfNeededAsync(resOpt, false).join()) {
+        Logger.error(
+                CdmDocumentDefinition.class.getSimpleName(),
+                getCtx(),
+                Logger.format("Failed to index document prior to save '{0}'", this.getName()),
+                "saveAsAsync"
+        );
+        return CompletableFuture.completedFuture(false);
+      }
+
+      if (newName.equals(this.getName())) {
+        this.isDirty = false;
+      }
+
+      return this.getCtx().getCorpus().getPersistence().saveDocumentAsAsync(this, newName, saveReferenced, options);
     }
-    return this.getCtx().getCorpus().getPersistence().saveDocumentAsAsync(this, newName, saveReferenced, options);
   }
 
   CdmObject fetchObjectFromDocumentPath(final String objectPath, final ResolveOptions resOpt) {
@@ -807,6 +824,7 @@ public class CdmDocumentDefinition extends CdmObjectSimple implements CdmContain
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not
    * meant to be called externally at all. Please refrain from using it.
+   * @param docDest CdmDocumentDefinition
    * @return String
    */
   @Deprecated

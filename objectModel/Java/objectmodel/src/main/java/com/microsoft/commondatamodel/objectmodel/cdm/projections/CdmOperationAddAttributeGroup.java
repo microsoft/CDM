@@ -42,6 +42,7 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
 
     /**
      * Name given to the attribute group that will be created
+     * @return String
      */
     public String getAttributeGroupName() {
         return attributeGroupName;
@@ -49,6 +50,7 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
 
     /**
      * Name given to the attribute group that will be created
+     * @param attributeGroupName String
      */
     public void setAttributeGroupName(String attributeGroupName) {
         this.attributeGroupName = attributeGroupName;

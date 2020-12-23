@@ -95,7 +95,8 @@ public class ProjectionAttributeContextTreeBuilder {
      * @param found The projection attribute state that contains the "found" attribute
      * @param resAttrFromAction The resolved attribute that resulted from the action
      * @param attrCtxType The attribute context type to give the "action" attribute context parameter
-     *
+     * @param lineageOut CdmAttributeContext
+     * @param lineageIn CdmAttributeContext
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      */

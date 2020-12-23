@@ -101,7 +101,7 @@ public abstract class NetworkAdapter extends StorageAdapterBase {
   CompletableFuture<CdmHttpResponse> executeRequest(final CdmHttpRequest request) {
     return CompletableFuture.supplyAsync(() -> {
       try {
-        final CdmHttpResponse response = this.httpClient.sendAsync(request, this.waitTimeCallback).get();
+        final CdmHttpResponse response = this.httpClient.sendAsync(request, this.waitTimeCallback, this.getCtx()).get();
         if (response == null) {
           return null;
         }

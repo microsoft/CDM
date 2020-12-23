@@ -296,6 +296,32 @@ it('testCombineOpsProj', async () => {
   });
 
   /**
+   * Test resolving a type attribute with a nested add supporting attribute operation
+   */
+  it('TestNestedTypeAttributeProj', async () => {
+    const testName: string = 'testNestedTAProj';
+    const entityName: string = 'NewPerson';
+    const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+
+    for (const resOpt of resOptsCombinations) {
+      await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+    }
+
+    const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
+    const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['referenceOnly']);
+
+    // Original set of attributes: ["PersonInfo"]
+    expect(resolvedEntity.attributes.length)
+      .toEqual(2);
+    expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+      .toEqual('name');
+    const supportingAttribute: CdmTypeAttributeDefinition = resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition;
+    expect(supportingAttribute.name)
+      .toEqual('name_display');
+    validateInSupportOfAttribute(supportingAttribute, 'name', false);
+  });
+
+  /**
    * Test resolving a type attribute using resolution guidance
    */
   it('testTypeAttribute', async () => {
@@ -310,7 +336,33 @@ it('testCombineOpsProj', async () => {
     const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
     const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['structured']);
 
-    // Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
+    // Original set of attributes: ["PersonInfo"]
+    expect(resolvedEntity.attributes.length)
+      .toEqual(2);
+    expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)
+      .toEqual('PersonInfo');
+    const supportingAttribute: CdmTypeAttributeDefinition = resolvedEntity.attributes.allItems[1] as CdmTypeAttributeDefinition;
+    expect(supportingAttribute.name)
+      .toEqual('PersonInfo_display');
+    validateInSupportOfAttribute(supportingAttribute, 'PersonInfo', false);
+  });
+
+  /**
+   * Test resolving a type attribute with a nested add supporting attribute operation
+   */
+  it('testTypeAttributeProj', async () => {
+    const testName: string = 'testTypeAttributeProj';
+    const entityName: string = 'NewPerson';
+    const corpus: CdmCorpusDefinition = projectionTestUtils.getCorpus(testName, testsSubpath);
+
+    for (const resOpt of resOptsCombinations) {
+      await projectionTestUtils.loadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+    }
+
+    const entity: CdmEntityDefinition = await corpus.fetchObjectAsync<CdmEntityDefinition>(`local:/${entityName}.cdm.json/${entityName}`);
+    const resolvedEntity: CdmEntityDefinition = await projectionTestUtils.getResolvedEntity(corpus, entity, ['structured']);
+
+    // Original set of attributes: ["PersonInfo"]
     expect(resolvedEntity.attributes.length)
       .toEqual(2);
     expect((resolvedEntity.attributes.allItems[0] as CdmTypeAttributeDefinition).name)

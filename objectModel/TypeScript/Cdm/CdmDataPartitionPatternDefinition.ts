@@ -228,7 +228,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
             // get a list of all corpusPaths under the root
             fileInfoList = await adapter.fetchAllFilesAsync(pathTuple[1]);
         } catch (e) {
-            Logger.warning(CdmDataPartitionPatternDefinition.name, this.ctx, `The folder location '${rootCorpus}' described by a partition pattern does not exist`, this.fileStatusCheckAsync.name);
+            Logger.warning(CdmDataPartitionPatternDefinition.name, this.ctx, `Failed to fetch all files in the folder location '${rootCorpus}' described by a partition pattern. Exception: ${e.Message}`, this.fileStatusCheckAsync.name);
         }
 
         if (fileInfoList !== undefined) {

@@ -126,7 +126,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Persistence.CdmFolder
         /// Testing that an empty list in an Attribute Group still exists after persisting
         /// </summary>
         [TestMethod]
-        public async Task TestPersistAttributeGroupDefinition()
+        public void TestPersistAttributeGroupDefinition()
         {
             var corpus = new CdmCorpusDefinition();
             var attGroup = new CdmAttributeGroupDefinition(corpus.Ctx, "attGroup");

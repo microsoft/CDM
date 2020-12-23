@@ -149,7 +149,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         }
 
         /// <summary>
-        /// Test resolving an entity attribute with add supporint attribute operation
+        /// Test resolving an entity attribute with add supporting attribute operation
         /// </summary>
         [TestMethod]
         public async Task TestEntityAttributeProj()
@@ -263,6 +263,33 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
         }
 
         /// <summary>
+        /// Test resolving a type attribute with a nested add supporting attribute operation
+        /// </summary>
+        [TestMethod]
+        public async Task TestNestedTypeAttributeProj()
+        {
+            string testName = "TestNestedTAProj";
+            string entityName = "NewPerson";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+
+            foreach (List<string> resOpt in resOptsCombinations)
+            {
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+            }
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+
+            // Original set of attributes: ["PersonInfo"]
+            Assert.AreEqual(2, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("name", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            CdmTypeAttributeDefinition supportingAttribute = resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition;
+            Assert.AreEqual("name_display", supportingAttribute.Name);
+            ValidateInSupportOfAttribute(supportingAttribute, "name");
+        }
+
+
+        /// <summary>
         /// Test resolving a type attribute using resolution guidance
         /// </summary>
         [TestMethod]
@@ -280,12 +307,38 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm.Projection
             CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
             CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "structured" });
 
-            // Original set of attributes: ["name", "age", "address", "phoneNumber", "email"]
+            // Original set of attributes: ["PersonInfo"]
             Assert.AreEqual(2, resolvedEntity.Attributes.Count);
             Assert.AreEqual("PersonInfo", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
             CdmTypeAttributeDefinition supportingAttribute = resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition;
             Assert.AreEqual("PersonInfo_display", supportingAttribute.Name);
             ValidateInSupportOfAttribute(supportingAttribute, "PersonInfo", false);
+        }
+
+        /// <summary>
+        /// Test resolving a type attribute with an add supporting attribute operation
+        /// </summary>
+        [TestMethod]
+        public async Task TestTypeAttributeProj()
+        {
+            string testName = "TestTypeAttributeProj";
+            string entityName = "NewPerson";
+            CdmCorpusDefinition corpus = ProjectionTestUtils.GetCorpus(testName, testsSubpath);
+
+            foreach (List<string> resOpt in resOptsCombinations)
+            {
+                await ProjectionTestUtils.LoadEntityForResolutionOptionAndSave(corpus, testName, testsSubpath, entityName, resOpt);
+            }
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}");
+            CdmEntityDefinition resolvedEntity = await ProjectionTestUtils.GetResolvedEntity(corpus, entity, new List<string> { "referenceOnly" });
+
+            // Original set of attributes: ["PersonInfo"]
+            Assert.AreEqual(2, resolvedEntity.Attributes.Count);
+            Assert.AreEqual("PersonInfo", (resolvedEntity.Attributes[0] as CdmTypeAttributeDefinition).Name);
+            CdmTypeAttributeDefinition supportingAttribute = resolvedEntity.Attributes[1] as CdmTypeAttributeDefinition;
+            Assert.AreEqual("PersonInfo_display", supportingAttribute.Name);
+            ValidateInSupportOfAttribute(supportingAttribute, "PersonInfo");
         }
 
         /// <summary>

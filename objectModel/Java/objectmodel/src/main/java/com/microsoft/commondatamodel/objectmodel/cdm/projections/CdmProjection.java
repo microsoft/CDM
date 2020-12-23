@@ -3,12 +3,7 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.projections;
 
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityReference;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectBase;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmObjectDefinitionBase;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmAttributeContextType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
@@ -95,6 +90,9 @@ public class CdmProjection extends CdmObjectDefinitionBase {
     }
 
     public void setSource(final CdmEntityReference source) {
+        if (source != null) {
+            source.setOwner(this);
+        }
         this.source = source;
     }
 
@@ -140,8 +138,22 @@ public class CdmProjection extends CdmObjectDefinitionBase {
         ArrayList<String> missingFields = new ArrayList<>();
 
         if (this.source == null) {
-            missingFields.add("source");
+            CdmObject rootOwner = getRootOwner();
+            if (rootOwner.getObjectType() != CdmObjectType.TypeAttributeDef) {
+                // If the projection is used in an entity attribute or an extends entity
+                missingFields.add("source");
+            }
         }
+        else if (this.source.getExplicitReference() == null ||
+                this.source.getExplicitReference().getObjectType() != CdmObjectType.ProjectionDef) {
+            // If reached the inner most projection
+            CdmObject rootOwner = getRootOwner();
+            if (rootOwner.getObjectType() == CdmObjectType.TypeAttributeDef) {
+                // If the projection is used in a type attribute
+                Logger.error(TAG, this.getCtx(), "Source can only be another projection in a type attribute.", "validate");
+            }
+        }
+
         if (missingFields.size() > 0) {
             Logger.error(TAG, this.getCtx(), Errors.validateErrorString(this.getAtCorpusPath(), missingFields));
             return false;
@@ -216,6 +228,15 @@ public class CdmProjection extends CdmObjectDefinitionBase {
     }
 
     /**
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     */
+    @Deprecated
+    public ProjectionContext constructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx) {
+        return constructProjectionContext(projDirective, attrCtx, null);
+    }
+
+    /**
      * A function to construct projection context and populate the resolved attribute set that ExtractResolvedAttributes method can then extract
      * This function is the entry point for projection resolution.
      * This function is expected to do the following 3 things:
@@ -230,19 +251,14 @@ public class CdmProjection extends CdmObjectDefinitionBase {
      * @return ProjectionContext
      */
     @Deprecated
-    public ProjectionContext constructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx) {
+    public ProjectionContext constructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx, ResolvedAttributeSet ras) {
         ProjectionContext projContext = null;
 
-        if (StringUtils.isNullOrTrimEmpty(this.condition)) {
-            // if no condition is provided, get default condition and persist
-            this.condition = ConditionExpression.getDefaultConditionExpression(this.operations, this.getOwner());
-        }
+        final String condition = StringUtils.isNullOrTrimEmpty(this.condition) ? "(true)" : this.condition;
+
         // create an expression tree based on the condition
         ExpressionTree tree = new ExpressionTree();
-        this.conditionExpressionTreeRoot = tree.constructExpressionTree(this.condition);
-        if (this.conditionExpressionTreeRoot == null) {
-            Logger.info(TAG, this.getCtx(), "Optional expression missing. Implicit expression will automatically apply.", "constructProjectionContext");
-        }
+        this.conditionExpressionTreeRoot = tree.constructExpressionTree(condition);
 
         if (attrCtx != null) {
             // Add projection to context tree
@@ -262,37 +278,46 @@ public class CdmProjection extends CdmObjectDefinitionBase {
             acpSource.setIncludeTraits(false);
             CdmAttributeContext acSource = CdmAttributeContext.createChildUnder(projDirective.getResOpt(), acpSource);
 
-            if (this.source.fetchObjectDefinition(projDirective.getResOpt()).getObjectType() == CdmObjectType.ProjectionDef) {
-                // A Projection
+            // Initialize the projection context
+            CdmCorpusContext ctx = (projDirective.getOwner() != null ? projDirective.getOwner().getCtx() : null);
 
-                projContext = ((CdmProjection)this.source.getExplicitReference()).constructProjectionContext(projDirective, acSource);
-            } else {
-                // An Entity Reference
+            if (this.source != null) {
+                CdmObjectDefinition source = this.source.fetchObjectDefinition(projDirective.getResOpt());
+                if (source.getObjectType() == CdmObjectType.ProjectionDef) {
+                    // A Projection
 
-                AttributeContextParameters acpSourceProjection = new AttributeContextParameters();
-                acpSourceProjection.setUnder(acSource);
-                acpSourceProjection.setType(CdmAttributeContextType.Entity);
-                acpSourceProjection.setName(this.source.getNamedReference() != null ? this.source.getNamedReference() : this.source.getExplicitReference().getName());
-                acpSourceProjection.setRegarding(this.source);
-                acpSourceProjection.setIncludeTraits(false);
-                ResolvedAttributeSet ras = this.source.fetchResolvedAttributes(projDirective.getResOpt(), acpSourceProjection);
+                    projContext = ((CdmProjection) this.source.getExplicitReference()).constructProjectionContext(projDirective, acSource, ras);
+                } else {
+                    // An Entity Reference
 
-                // clean up the context tree, it was left in a bad state on purpose in this call
-                ras.getAttributeContext().finalizeAttributeContext(projDirective.getResOpt(), acSource.getAtCorpusPath(), this.getInDocument(), this.getInDocument(), null, false);
-                // Initialize the projection context
+                    AttributeContextParameters acpSourceProjection = new AttributeContextParameters();
+                    acpSourceProjection.setUnder(acSource);
+                    acpSourceProjection.setType(CdmAttributeContextType.Entity);
+                    acpSourceProjection.setName(this.source.getNamedReference() != null ? this.source.getNamedReference() : this.source.getExplicitReference().getName());
+                    acpSourceProjection.setRegarding(this.source);
+                    acpSourceProjection.setIncludeTraits(false);
+                    ras = this.source.fetchResolvedAttributes(projDirective.getResOpt(), acpSourceProjection);
 
-                CdmCorpusContext ctx = (projDirective.getOwner() != null ? projDirective.getOwner().getCtx() : null);
+                    // Clean up the context tree, it was left in a bad state on purpose in this call
+                    ras.getAttributeContext().finalizeAttributeContext(projDirective.getResOpt(), acSource.getAtCorpusPath(), this.getInDocument(), this.getInDocument(), null, false);
 
-                ProjectionAttributeStateSet pasSet = null;
+                    // If polymorphic keep original source as previous state
+                    Map<String, List<ProjectionAttributeState>> polySourceSet = null;
+                    if (projDirective.getIsSourcePolymorphic()) {
+                        polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras, acpSourceProjection);
+                    }
 
-                // if polymorphic keep original source as previous state
-                Map<String, List<ProjectionAttributeState>> polySourceSet = null;
-                if (projDirective.getIsSourcePolymorphic()) {
-                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, ras, acpSourceProjection);
+                    // Now initialize projection attribute state
+                    ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, projDirective.getIsSourcePolymorphic(), polySourceSet);
+
+                    projContext = new ProjectionContext(projDirective, ras.getAttributeContext());
+                    projContext.setCurrentAttributeStateSet(pasSet);
                 }
+            } else {
+                // A type attribute
 
-                // now initialize projection attribute state
-                pasSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, projDirective.getIsSourcePolymorphic(), polySourceSet);
+                // Initialize projection attribute state
+                ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, false, null);
 
                 projContext = new ProjectionContext(projDirective, ras.getAttributeContext());
                 projContext.setCurrentAttributeStateSet(pasSet);
@@ -362,6 +387,7 @@ public class CdmProjection extends CdmObjectDefinitionBase {
      * @deprecated This function is extremely likely to be removed in the public interface, and not
      * meant to be called externally at all. Please refrain from using it.
      * @param projCtx ProjectionContext
+     * @param attCtxUnder CdmAttributeContext
      * @return ResolvedAttributeSet
      */
     @Deprecated
@@ -374,5 +400,19 @@ public class CdmProjection extends CdmObjectDefinitionBase {
         }
 
         return resolvedAttributeSet;
+    }
+
+    private CdmObject getRootOwner() {
+        CdmObject rootOwner = this;
+        do {
+            rootOwner = rootOwner.getOwner();
+            // A projection can be inside an entity reference, so take the owner again to get the projection.
+            if (rootOwner != null && rootOwner.getOwner() != null
+                    && rootOwner.getOwner().getObjectType() == CdmObjectType.ProjectionDef) {
+                rootOwner = rootOwner.getOwner();
+            }
+        } while (rootOwner != null && rootOwner.getObjectType() == CdmObjectType.ProjectionDef);
+
+        return rootOwner;
     }
 }

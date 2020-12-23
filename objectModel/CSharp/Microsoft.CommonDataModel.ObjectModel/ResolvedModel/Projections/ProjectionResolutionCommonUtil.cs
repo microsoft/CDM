@@ -39,9 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                 List<ProjectionAttributeState> prevSet = null;
                 if (isSourcePolymorphic && polymorphicSet != null)
                 {
-                    List<ProjectionAttributeState> polyList = null;
-                    polymorphicSet.TryGetValue(resAttr.ResolvedName, out polyList);
-                    prevSet = polyList;
+                    polymorphicSet.TryGetValue(resAttr.ResolvedName, out prevSet);
                 }
 
                 ProjectionAttributeState projAttrState = new ProjectionAttributeState(ctx)

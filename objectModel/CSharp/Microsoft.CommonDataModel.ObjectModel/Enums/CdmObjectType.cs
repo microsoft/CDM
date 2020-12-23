@@ -92,6 +92,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Enums
         OperationRenameAttributes,
         OperationReplaceAsForeignKey,
         OperationIncludeAttributes,
-        OperationAddAttributeGroup
+        OperationAddAttributeGroup,
+        Unknown
     }
 }

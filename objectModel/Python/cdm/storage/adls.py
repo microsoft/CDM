@@ -30,6 +30,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     """Azure Data Lake Storage Gen2 storage adapter"""
 
     ADLS_DEFAULT_TIMEOUT = 9000
+    HTTP_DEFAULT_MAX_RESULTS = 5000
 
     def __init__(self, hostname: Optional[str] = None, root: Optional[str] = None, **kwargs) -> None:
         super().__init__()
@@ -42,7 +43,9 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._formatted_hostname = None  # type: Optional[str]
         self._http_authorization = 'Authorization'
         self._http_client = CdmHttpClient()  # type: CdmHttpClient
+        self._http_xms_continuation = 'x-ms-continuation'
         self._http_xms_date = 'x-ms-date'
+        self._http_xms_version = 'x-ms-version'
         self._http_xms_version = 'x-ms-version'
         self._resource = "https://storage.azure.com"  # type: Optional[str]
         self._type = 'adls'
@@ -50,6 +53,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._unescaped_root_sub_path = None # type: Optional[str]
         self._escaped_root_sub_path = None # type: Optional[str]
         self._file_modified_time_cache = {}  # type: Dict[str, datetime]
+        self.http_max_results = self.HTTP_DEFAULT_MAX_RESULTS # type: int
         self.timeout = self.ADLS_DEFAULT_TIMEOUT # type: int
 
         if root and hostname:
@@ -105,15 +109,12 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             adapter_path = self.create_adapter_path(corpus_path)
             request = self._build_request(adapter_path, 'HEAD')
 
-            try:
-                cdm_response = await self._http_client._send_async(request, self.wait_time_callback)
-                if cdm_response.status_code == HTTPStatus.OK:
-                    lastTime = dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
-                    if lastTime is not None and self._is_cache_enabled:
-                        self._file_modified_time_cache[corpus_path] = lastTime
-                    return lastTime
-            except Exception:
-                pass
+            cdm_response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
+            if cdm_response.status_code == HTTPStatus.OK:
+                lastTime = dateutil.parser.parse(typing.cast(str, cdm_response.response_headers['Last-Modified']))
+                if lastTime is not None and self._is_cache_enabled:
+                    self._file_modified_time_cache[corpus_path] = lastTime
+                return lastTime
 
             return None
 
@@ -162,28 +163,38 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         if directory.startswith('/'):
             directory = directory[1:]
 
-        request = self._build_request('{}?directory={}&recursive=True&resource=filesystem'.format(url, directory), 'GET')
-        cdm_response = await self._http_client._send_async(request, self.wait_time_callback)
+        continuation_token = None
+        results = []
 
-        if cdm_response.status_code == HTTPStatus.OK:
-            results = []
-            data = json.loads(cdm_response.content)
+        while True:
+            if continuation_token is None:
+                request = self._build_request('{}?directory={}&maxResults={}&recursive=True&resource=filesystem'.format(url, directory, self.http_max_results), 'GET')
+            else:
+                request = self._build_request('{}?continuation={}&directory={}&maxResults={}&recursive=True&resource=filesystem'.format(url, urllib.parse.quote(continuation_token), directory, self.http_max_results), 'GET')
 
-            for path in data['paths']:
-                if 'isDirectory' not in path or path['isDirectory'] != 'true':
-                    name = path['name']  # type: str
-                    name_without_root_sub_path = name[len(self._unescaped_root_sub_path) + 1:] if self._unescaped_root_sub_path and name.startswith(self._unescaped_root_sub_path) else name
+            cdm_response = await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
-                    filepath = self._format_corpus_path(name_without_root_sub_path)
-                    results.append(filepath)
+            if cdm_response.status_code == HTTPStatus.OK:
+                continuation_token =  cdm_response.response_headers.get(self._http_xms_continuation)
+                data = json.loads(cdm_response.content)
 
-                    lastTimeString = path.get('lastModified')
-                    if lastTimeString is not None and self._is_cache_enabled:
-                        self._file_modified_time_cache[filepath] = dateutil.parser.parse(lastTimeString)
+                for path in data['paths']:
+                    if 'isDirectory' not in path or path['isDirectory'] != 'true':
+                        name = path['name']  # type: str
+                        name_without_root_sub_path = name[len(self._unescaped_root_sub_path) + 1:] if self._unescaped_root_sub_path and name.startswith(self._unescaped_root_sub_path) else name
 
-            return results
+                        filepath = self._format_corpus_path(name_without_root_sub_path)
+                        results.append(filepath)
 
-        return None
+                        lastTimeString = path.get('lastModified')
+                        if lastTimeString is not None and self._is_cache_enabled:
+                            self._file_modified_time_cache[filepath] = dateutil.parser.parse(lastTimeString)
+
+            if(continuation_token is None):
+                break
+
+        return results
+
 
     def fetch_config(self) -> str:
         result_config = {'type': self._type}
@@ -252,15 +263,15 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         request = self._build_request(url + '?resource=file', 'PUT')
 
-        await self._http_client._send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
         request = self._build_request(url + '?action=append&position=0', 'PATCH', data, 'application/json; charset=utf-8')
 
-        await self._http_client._send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
         request = self._build_request(url + '?action=flush&position=' + str(len(data)), 'PATCH')
 
-        await self._http_client._send_async(request, self.wait_time_callback)
+        await self._http_client._send_async(request, self.wait_time_callback, self.ctx)
 
     def _apply_shared_key(self, shared_key: str, url: str, method: str, content: Optional[str] = None, content_type: Optional[str] = None):
         headers = OrderedDict()
@@ -303,7 +314,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
             for parameter in query_parameters:
                 key_value_pair = parameter.split('=')
-                builder.append('\n{}:{}'.format(key_value_pair[0], urllib.parse.unquote(key_value_pair[1])))
+                builder.append('\n{}:{}'.format(key_value_pair[0].lower(), urllib.parse.unquote(key_value_pair[1])))
 
         # Hash the payload.
         data_to_hash = ''.join(builder).rstrip()

@@ -24,8 +24,8 @@ export class CdmStandardsAdapter extends NetworkAdapter {
     constructor(root: string = "/logical") {
         super();
 
-        this.httpClient = new CdmHttpClient(this.STANDARDS_ENDPOINT);
         this.root = root;
+        this.httpClient = new CdmHttpClient(this.STANDARDS_ENDPOINT);
     }
 
     /**

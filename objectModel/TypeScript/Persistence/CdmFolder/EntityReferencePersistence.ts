@@ -7,6 +7,7 @@ import {
     CdmCorpusContext,
     CdmEntityDefinition,
     CdmEntityReference,
+    CdmObject,
     cdmObjectType,
     CdmProjection,
     CdmTraitReference,
@@ -37,17 +38,7 @@ export class EntityReferencePersistence extends cdmObjectRefPersistence {
             entity = object;
         } else {
             simpleReference = false;
-            if ('entityReference' in object) {
-                if (typeof (object.entityReference) === 'string') {
-                    entity = object.entityReference;
-                } else if (isConstantEntity(object.entityReference)) {
-                    entity = CdmFolder.ConstantEntityPersistence.fromData(ctx, object.entityReference);
-                } else {
-                    entity = CdmFolder.EntityPersistence.fromData(ctx, object.entityReference);
-                }
-            } else if ('source' in object && object.source) {
-                entity = ProjectionPersistence.fromData(ctx, object);
-            }
+            entity = this.getEntityReference(ctx, object);
         }
 
         const entityReference: CdmEntityReference = ctx.corpus.MakeRef(cdmObjectType.entityRef, entity, simpleReference);
@@ -69,5 +60,22 @@ export class EntityReferencePersistence extends cdmObjectRefPersistence {
         else {
             return cdmObjectRefPersistence.toData(instance, resOpt, options);
         }
+    }
+
+    private static getEntityReference(ctx: CdmCorpusContext, object: any): string | CdmEntityDefinition | CdmConstantEntityDefinition | CdmProjection {
+        let entity: any = undefined;
+        if ('entityReference' in object) {
+            if (typeof (object.entityReference) === 'string') {
+                entity = object.entityReference;
+            } else if (isConstantEntity(object.entityReference)) {
+                entity = CdmFolder.ConstantEntityPersistence.fromData(ctx, object.entityReference);
+            } else {
+                entity = CdmFolder.EntityPersistence.fromData(ctx, object.entityReference);
+            }
+        } else if ('source' in object || 'operations' in object) {
+            entity = ProjectionPersistence.fromData(ctx, object);
+        }
+
+        return entity;
     }
 }

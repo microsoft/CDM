@@ -348,6 +348,29 @@ class ProjectionAddAttributeGroupTest(unittest.TestCase):
         self.assertEqual('phoneNumber', inner_att_group.members[3].name)
         self.assertEqual('email', inner_att_group.members[4].name)
 
+    @unittest.skip
+    @async_test
+    async def test_type_attribute_proj(self):
+        """Test resolving a type attribute with an add attribute group operation"""
+        test_name = 'test_type_attribute_proj'
+        entity_name = 'Person'
+        corpus = ProjectionTestUtils.get_corpus(test_name, self.tests_subpath)  # type: CdmCorpusDefinition
+
+        for res_opt in self.res_opts_combinations:
+            await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
+
+        entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, [ ])
+
+        # Original set of attributes: ['name', 'age', 'address', 'phoneNumber', 'email']
+        self.assertEqual(5, len(resolved_entity.attributes))
+        self.assertEqual('name', resolved_entity.attributes[0].name)
+        self.assertEqual('age', resolved_entity.attributes[1].name)
+        att_group_definition = self.validate_attribute_group(resolved_entity.attributes, 'AddressAttributeGroup', 5, 2)
+        self.assertEqual('address', att_group_definition.members[0].name)
+        self.assertEqual('phoneNumber', resolved_entity.attributes[3].name)
+        self.assertEqual('email', resolved_entity.attributes[4].name)
+
     def validate_attribute_group(self, attributes: 'CdmCollection[CdmAttributeItem]', attribute_group_name: str, \
                                  attributes_size: int = 1, index: int = 0) -> 'CdmAttributeGroupDefinition':
         """Validates the creation of an attribute group and return its definition

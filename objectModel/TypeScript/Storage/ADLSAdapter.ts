@@ -41,6 +41,7 @@ export class ADLSAdapter extends NetworkAdapter {
     public secret: string;
     public sharedKey: string;
     public tokenProvider: TokenProvider;
+    public httpMaxResults: number = 5000;
 
     // The map from corpus path to adapter path.
     private readonly adapterPaths: Map<string, string>; 
@@ -50,6 +51,8 @@ export class ADLSAdapter extends NetworkAdapter {
     private readonly httpXmsDate: string = 'x-ms-date';
     //  The MS version key, used during shared key auth.
     private readonly httpXmsVersion: string = 'x-ms-version';
+    // The MS continuation header key, used when building request url.
+    private readonly httpXmsContinuation: string = 'x-ms-continuation';
 
     private readonly resource: string = 'https://storage.azure.com';
 
@@ -183,26 +186,21 @@ export class ADLSAdapter extends NetworkAdapter {
 
             const request: CdmHttpRequest = await this.buildRequest(url, 'HEAD');
 
-            try {
-                const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
+            const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
 
-                if (cdmResponse.statusCode === 200) {
-                    // http nodejs lib returns lowercase headers.
-                    // tslint:disable-next-line: no-backbone-get-set-outside-model
-                    const lastTimeString: string = cdmResponse.responseHeaders.get('last-modified');
-                    if(lastTimeString)
+            if (cdmResponse.statusCode === 200) {
+                // http nodejs lib returns lowercase headers.
+                // tslint:disable-next-line: no-backbone-get-set-outside-model
+                const lastTimeString: string = cdmResponse.responseHeaders.get('last-modified');
+                if(lastTimeString)
+                {
+                    const lastTime:Date = new Date(lastTimeString);
+                    if(this.isCacheEnabled())
                     {
-                        const lastTime:Date = new Date(lastTimeString);
-                        if(this.isCacheEnabled())
-                        {
-                            this.fileModifiedTimeCache.set(corpusPath, lastTime);
-                        }
-                        return lastTime;
+                        this.fileModifiedTimeCache.set(corpusPath, lastTime);
                     }
+                    return lastTime;
                 }
-            } catch (e) {
-                // We don't have standard logger here, so use one from system diagnostics
-                console.debug(`ADLS file not found, skipping last modified time calculation for it. Exception: ${e}`);
             }
         }
     }
@@ -219,35 +217,48 @@ export class ADLSAdapter extends NetworkAdapter {
             directory = directory.substring(1);
         }
 
-        const request: CdmHttpRequest = await this.buildRequest(`${url}?directory=${directory}&recursive=True&resource=filesystem`, 'GET');
-        const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
+        let continuationToken: string = null;
+        const result: string[] = [];
 
-        if (cdmResponse.statusCode === 200) {
-            const json: string = cdmResponse.content;
-            const jObject1 = JSON.parse(json);
+        do {
+            let request: CdmHttpRequest;
+            if (continuationToken == null) {
+                request = await this.buildRequest(`${url}?directory=${directory}&maxResults=${this.httpMaxResults}&recursive=True&resource=filesystem`, 'GET');
+            } else {
+                request = await this.buildRequest(`${url}?continuation=${encodeURIComponent(continuationToken)}&directory=${directory}&maxResults=${this.httpMaxResults}&recursive=True&resource=filesystem`, 'GET');
+            }
 
-            const jArray = jObject1.paths;
-            const result: string[] = [];
+            const cdmResponse: CdmHttpResponse = await super.executeRequest(request);
+    
+            if (cdmResponse.statusCode === 200) {
 
-            for (const jObject of jArray) {
-                const isDirectory: boolean = jObject.isDirectory;
-                if (isDirectory === undefined || !isDirectory) {
-                    const name: string = jObject.name;
-                    const nameWithoutSubPath: string = this.unescapedRootSubPath.length > 0 && name.startsWith(this.unescapedRootSubPath) ?
-                        name.substring(this.unescapedRootSubPath.length + 1) : name;
+                continuationToken = cdmResponse.responseHeaders.has(this.httpXmsContinuation) ? cdmResponse.responseHeaders.get(this.httpXmsContinuation) : null;
 
-                    const path: string = this.formatCorpusPath(nameWithoutSubPath);
-                    result.push(path);
-
-                    if(jObject.lastModified && this.isCacheEnabled())
-                    {
-                        this.fileModifiedTimeCache.set(path, new Date(jObject.lastModified));
+                const json: string = cdmResponse.content;
+                const jObject1 = JSON.parse(json);
+    
+                const jArray = jObject1.paths;
+    
+                for (const jObject of jArray) {
+                    const isDirectory: boolean = jObject.isDirectory;
+                    if (isDirectory === undefined || !isDirectory) {
+                        const name: string = jObject.name;
+                        const nameWithoutSubPath: string = this.unescapedRootSubPath.length > 0 && name.startsWith(this.unescapedRootSubPath) ?
+                            name.substring(this.unescapedRootSubPath.length + 1) : name;
+    
+                        const path: string = this.formatCorpusPath(nameWithoutSubPath);
+                        result.push(path);
+    
+                        if(jObject.lastModified && this.isCacheEnabled())
+                        {
+                            this.fileModifiedTimeCache.set(path, new Date(jObject.lastModified));
+                        }
                     }
                 }
             }
+        } while (continuationToken != null);
 
-            return result;
-        }
+        return result;
     }
 
     public clearCache(): void {
@@ -376,7 +387,7 @@ export class ADLSAdapter extends NetworkAdapter {
 
             for (const parameter of queryParameters) {
                 const keyValuePair: string[] = parameter.split('=');
-                builder += `\n${keyValuePair[0]}:${decodeURIComponent(keyValuePair[1])}`;
+                builder += `\n${keyValuePair[0].toLowerCase()}:${decodeURIComponent(keyValuePair[1])}`;
             }
         }
 

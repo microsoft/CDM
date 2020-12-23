@@ -213,9 +213,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // get a list of all corpusPaths under the root
                 fileInfoList = await adapter.FetchAllFilesAsync(pathTuple.Item2);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Logger.Warning(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"The folder location '{rootCorpus}' described by a partition pattern does not exist", nameof(FileStatusCheckAsync));
+                Logger.Warning(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Failed to fetch all files in the folder location '{rootCorpus}' described by a partition pattern. Exception: {e.Message}", nameof(FileStatusCheckAsync));
             }
 
             if (fileInfoList != null)
@@ -295,8 +295,15 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                     Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, "The corpus path should not be null or empty.", nameof(FileStatusCheckAsync));
                                     return;
                                 }
-                                DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
-                                (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
+
+                                try
+                                {
+                                    DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
+                                    (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
+                                } catch (Exception e)
+                                {
+                                    Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Failed to compute last modified time for partition file {pathTuple.Item2}. Exception: {e.Message}", nameof(FileStatusCheckAsync));
+                                }
                             }
                         }
                     }

@@ -27,6 +27,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         // Indicates whether we are resolving inside of a circular reference, resolution is different in that case
         internal bool InCircularReference { get; set; }
 
+        /// <summary>
+        /// A set containng the symbols and their definitions. This is currently only used by the versioning tool.
+        /// It will only be populated if initialized before calling the resolution APIs.
+        /// </summary>
+        internal HashSet<Tuple<string, CdmObjectDefinitionBase>> SymbolRefToObjects;
+
         [Obsolete("Please use ImportsLoadStrategy instead.")]
         // when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
         public bool? StrictValidation

@@ -4,13 +4,14 @@
 from typing import Any, cast, Optional, TYPE_CHECKING
 
 from cdm.enums import CdmDataFormat, CdmObjectType
+from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
 from cdm.utilities import ResolveOptions, TraitToPropertyMap, logger, Errors
 
 from .cdm_attribute_def import CdmAttribute
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmCorpusContext, CdmDataTypeReference, CdmObjectReference, \
-    CardinalitySettings
+        CardinalitySettings, CdmProjection
     from cdm.resolvedmodel import ResolvedAttributeSetBuilder, ResolvedEntityReferenceSet
     from cdm.utilities import FriendlyFormatNode, VisitCallback
 
@@ -19,11 +20,14 @@ class CdmTypeAttributeDefinition(CdmAttribute):
     def __init__(self, ctx: 'CdmCorpusContext', name: str) -> None:
         super().__init__(ctx, name)
 
-        # the type attribute context.
+        # the type attribute's context.
         self.attribute_context = None  # type: Optional[CdmObjectReference]
 
-        # the type attribute data type.
+        # the type attribute's data type.
         self.data_type = None  # type: Optional[CdmDataTypeReference]
+
+        # the type attribute's projection.
+        self.projection = None  # type: Optional[CdmProjection]
 
         # --- internal ---
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
@@ -173,11 +177,19 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         res_guide_with_default._update_attribute_defaults(None)
         arc = AttributeResolutionContext(res_opt, res_guide_with_default, rts)
 
+        # TODO: remove the resolution guidance if projection is being used
         # from the traits of the datatype, purpose and applied here, see if new attributes get generated
         rasb.apply_traits(arc)
         rasb.generate_applier_attributes(arc, False)  # false = don't apply these traits to added things
         # this may have added symbols to the dependencies, so merge them
         res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
+
+        if self.projection:
+            proj_directive = ProjectionDirective(res_opt, self)
+            proj_ctx = self.projection._construct_projection_context(proj_directive, under, rasb.ras)
+
+            ras = self.projection._extract_resolved_attributes(proj_ctx)
+            rasb.ras = ras
 
         return rasb
 
@@ -271,6 +283,11 @@ class CdmTypeAttributeDefinition(CdmAttribute):
             return True
 
         if self.attribute_context and self.attribute_context.visit('{}/attributeContext/'.format(path), pre_children, post_children):
+            return True
+
+        if self.projection:
+            self.projection.owner = self
+        if self.projection and self.projection.visit('{}/projection/'.format(path), pre_children, post_children):
             return True
 
         if self._visit_att(path, pre_children, post_children):

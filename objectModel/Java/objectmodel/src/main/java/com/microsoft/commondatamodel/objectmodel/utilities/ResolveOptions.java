@@ -154,6 +154,7 @@ public class ResolveOptions {
   }
 
   /**
+   * @return Boolean
    * @deprecated please use importsLoadStrategy instead.
    */
   @Deprecated
@@ -337,7 +338,7 @@ public class ResolveOptions {
   /**
    * @deprecated This function is extremely likely to be removed in the public interface, and not meant
    * to be called externally at all. Please refrain from using it.
-   * @param mapOldCtxToNewCtx LinkedHashMap<CdmAttributeContext, CdmAttributeContext>
+   * @param mapOldCtxToNewCtx LinkedHashMap of CdmAttributeContext and CdmAttributeContext
    */
   @Deprecated
   public void setMapOldCtxToNewCtx(final HashMap<CdmAttributeContext, CdmAttributeContext> mapOldCtxToNewCtx) {

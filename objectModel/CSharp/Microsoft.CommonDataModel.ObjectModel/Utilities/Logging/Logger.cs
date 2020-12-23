@@ -5,6 +5,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
 {
     using Microsoft.CommonDataModel.ObjectModel.Cdm;
     using System;
+    using System.Collections.Generic;
 
     public class Logger
     {
@@ -111,15 +112,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <param name="tag">The tag, usually the class that is calling the method.</param>
         /// <param name="message">The message.</param>
         /// <param name="path">The path, usually denotes the class and method calling this method.</param>
+        /// <param name="correlationId">Optional correlation ID.</param>
         /// <returns>A formatted string.</returns>
-        private static string FormatMessage(string tag, string message, string path = null)
+        private static string FormatMessage(string tag, string message, string path = null, string correlationId = null)
         {
-            return (path != null) ? $"{tag} | {message} | {path}" :
-                $"{tag} | {message}";
+            return $"{tag} | {message}{(path != null ? " | " + path : "")}{(correlationId != null ? " | " + correlationId : "")}";
         }
 
         /// <summary>
-        /// Log to the specified status level by using the status event on the corpus context (if it exists) or the default status event.
+        /// Log to the specified status level by using the status event on the corpus context (if it exists) or to the default logger.
+        /// The log level, tag, message and path values are also added as part of a new entry to the log recorder.
         /// </summary>
         /// <param name="level">The status level to log to.</param>
         /// <param name="ctx">The CDM corpus context.</param>
@@ -129,10 +131,34 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
         /// <param name="defaultStatusEvent">The default status event (log using the default logger).</param>
         private static void Log(CdmStatusLevel level, CdmCorpusContext ctx, string tag, string message, string path, Action<string> defaultStatusEvent)
         {
+            // Write message to the configured logger
             if (level >= ctx.ReportAtLevel)
             {
-                string formattedMessage = FormatMessage(tag, message, path);
-                if (ctx != null && ctx.StatusEvent != null)
+                // Store a record of the event.
+                // Save some dict init and string formatting cycles by checking
+                // whether the recording is actually enabled.
+                if (ctx.Events.IsRecording)
+                {
+                    var theEvent = new Dictionary<string, string>
+                    {
+                        { "timestamp", TimeUtils.GetFormattedDateString(DateTimeOffset.UtcNow) },
+                        { "level", level.ToString() },
+                        { "tag", tag },
+                        { "message", message },
+                        { "path", path }
+                    };
+
+                    if (ctx.CorrelationId != null)
+                    {
+                        theEvent.Add("correlationId", ctx.CorrelationId);
+                    }
+
+                    ctx.Events.Add(theEvent);
+                }
+
+                string formattedMessage = FormatMessage(tag, message, path, ctx.CorrelationId);
+
+                if (ctx.StatusEvent != null)
                 {
                     ctx.StatusEvent.Invoke(level, formattedMessage);
                 }
@@ -140,6 +166,58 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Logging
                 {
                     defaultStatusEvent(formattedMessage);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Creates a new LoggerScope instance with the provided details of the scope being entered.
+        /// To be used at beginning of functions via resource wrapper 'using (...) { // function body }'.
+        /// </summary>
+        /// <param name="tag">Tag (class name)</param>
+        /// <param name="ctx">Corpus context </param>
+        /// <param name="path">Path (usually method name or document path)</param>
+        /// <returns>LoggerScope instance</returns>
+        internal static IDisposable EnterScope(string tag, CdmCorpusContext ctx, string path)
+        {
+            return new LoggerScope(new TState(tag, ctx, path));
+        }
+
+        /// <summary>
+        /// Helper struct to keep few needed bits of information about the logging scope.
+        /// </summary>
+        private sealed class TState
+        {
+            public string Tag { get; set; }
+            public CdmCorpusContext Ctx { get; set; }
+            public string Path { get; set; }
+
+            public TState(string tag, CdmCorpusContext ctx, string path)
+            {
+                Tag = tag;
+                Ctx = ctx;
+                Path = path;
+            }
+        }
+
+        /// <summary>
+        /// LoggerScope class is responsible for enabling/disabling event recording 
+        /// and will log the scope entry/exit debug events.
+        /// </summary>
+        private sealed class LoggerScope : IDisposable
+        {
+            private readonly TState state;
+
+            public LoggerScope(TState state)
+            {
+                this.state = state;
+                state.Ctx.Events.Enable();
+                Debug(state.Tag, state.Ctx, "Entering scope", state.Path);
+            }
+
+            public void Dispose()
+            {
+                Debug(state.Tag, state.Ctx, "Leaving scope", state.Path);
+                state.Ctx.Events.Disable();
             }
         }
     }

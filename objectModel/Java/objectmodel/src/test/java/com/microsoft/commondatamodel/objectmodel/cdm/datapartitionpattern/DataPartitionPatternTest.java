@@ -8,13 +8,12 @@ import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmDataPartitionDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmLocalEntityDeclarationDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.*;
+import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.ManifestPersistence;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.ManifestContent;
@@ -299,5 +298,43 @@ public class DataPartitionPatternTest {
     Assert.assertEquals(globAndRegex.getDataPartitionPatterns().get(0).getRegularExpression(), "/subFolder/testSubFile.csv");
     Assert.assertEquals(globAndRegex.getDataPartitions().size(), 1);
     Assert.assertEquals(globAndRegex.getDataPartitions().get(0).getLocation(), "/partitions/testfile.csv");
+  }
+
+  /**
+   * Verifies that performing file status check on manifest with a partition with
+   * null location is gracefully handled.
+   *
+   * @throws InterruptedException
+   * @throws ExecutionException
+   */
+  @Test
+  public void testFileStatusCheckOnNullLocation() throws InterruptedException, ExecutionException {
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testFileStatusCheckOnNullLocation");
+    corpus.setEventCallback((level, message) -> {
+      Assert.assertEquals(level, CdmStatusLevel.Error, "Error level message should have been reported");
+      Assert.assertTrue(
+              message.equals("StorageManager | The object path cannot be null or empty. | createAbsoluteCorpusPath") ||
+                      message.equals("CdmCorpusDefinition | The object path cannot be null or empty. | computeLastModifiedTimeFromPartitionPathAsync"),
+              "Unexpected error message received");
+    }, CdmStatusLevel.Warning);
+
+    // Create manifest
+    CdmManifestDefinition manifest = corpus.makeObject(CdmObjectType.ManifestDef, "TestModel");
+    corpus.getStorage().fetchRootFolder("local").getDocuments().add(manifest);
+
+    // Create entity
+    CdmDocumentDefinition entDoc = corpus.getStorage().fetchRootFolder("local").getDocuments().add("MyEntityDoc.cdm.json");
+
+    CdmEntityDefinition entDef = corpus.makeObject(CdmObjectType.EntityDef, "MyEntity");
+    entDoc.getDefinitions().add(entDef);
+
+    CdmEntityDeclarationDefinition entDecl = manifest.getEntities().add(entDef);
+
+    // Create partition
+    CdmDataPartitionDefinition part = corpus.makeObject(CdmObjectType.DataPartitionDef, "MyPartition");
+    entDecl.getDataPartitions().add(part);
+
+    // This should not throw exception
+    manifest.fileStatusCheckAsync().join();
   }
 }
