@@ -1,0 +1,186 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/CommerceCustomers/Main/MCRSmmBusRelationListTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/smmBusRelTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRsmmBusRelTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoCancel",
+          "dataType": "MCRAutoCancel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FTCExempt",
+          "dataType": "MCRFTCExempt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsListDeleted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Deleted from list",
+          "description": ""
+        },
+        {
+          "name": "ListId",
+          "dataType": "MCRSmmListId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MergedParent",
+          "dataType": "smmBusRelAccount",
+          "isNullable": true,
+          "displayName": "Merged parent",
+          "description": ""
+        },
+        {
+          "name": "MergedRoot",
+          "dataType": "smmBusRelAccount",
+          "isNullable": true,
+          "displayName": "Merged root",
+          "description": ""
+        },
+        {
+          "name": "OrigSourceId",
+          "dataType": "MCRCustOrigSourceId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "smmBusRelTable",
+          "dataType": "MCRsmmBusRelTableRefRecId",
+          "description": ""
+        },
+        {
+          "name": "SOAllocPriority",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "MCRSmmBusRelationListTable"
+          },
+          "name": "Relationship_MCRSmmBusRelationListTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelTable"
+          },
+          "name": "Relationship_smmBusRelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelTable"
+          },
+          "name": "Relationship_smmBusRelTable_MergedParentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelTable"
+          },
+          "name": "Relationship_smmBusRelTable_MergedRootRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Prospects"
+    },
+    {
+      "dataTypeName": "MCRAutoCancel",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRFTCExempt",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRSmmListId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmBusRelAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRCustOrigSourceId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "MCRsmmBusRelTableRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

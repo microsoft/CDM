@@ -1,0 +1,265 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjCDSEstimateExpensesImport",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TaskId",
+          "dataType": "guid",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjectId",
+          "dataType": "ProjId",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRate",
+          "dataType": "ExchRate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "TransTxt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Price",
+          "dataType": "PriceCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Quantity",
+          "dataType": "Qty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CurrencyId",
+          "dataType": "ProjSalesCurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "ModelId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransId",
+          "dataType": "ProjCostForecastTransId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BillingType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "TransClassification",
+          "dataType": "ProjCategoryCostId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCategory",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Transaction category",
+          "description": ""
+        },
+        {
+          "name": "EstimateLineId",
+          "dataType": "guid",
+          "displayName": "Estimate line id",
+          "description": ""
+        },
+        {
+          "name": "OriginEstimateLineId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Originating estimate line ID",
+          "description": ""
+        },
+        {
+          "name": "ActivityNumber",
+          "dataType": "smmActivityNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "date",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "date",
+          "isNullable": true,
+          "displayName": "End date",
+          "description": ""
+        },
+        {
+          "name": "ResourceCategoryId",
+          "dataType": "PSASchedRoleId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransactionCategoryId",
+          "dataType": "ProjTransactionCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EstimateExpensesImportId",
+          "dataType": "guid",
+          "isNullable": true,
+          "displayName": "Expense estimates import ID",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project integration table for estimate expenses"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransTxt",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PriceCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Qty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjSalesCurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjCostForecastTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjCategoryCostId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmActivityNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PSASchedRoleId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjTransactionCategoryId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,336 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Transaction/JmgTermReg.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/JmgTimecardTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgIpcActivity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjCategory.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/WrkCtrTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgTimecardTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "JobActive",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Work in process",
+          "description": ""
+        },
+        {
+          "name": "JobFinished",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Job is finished",
+          "description": ""
+        },
+        {
+          "name": "JobId",
+          "dataType": "JmgJobId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobIDAbs",
+          "dataType": "JmgJobIDAbs",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobRef",
+          "dataType": "JmgJobRef",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JourRegType",
+          "dataType": "JmgJourRegType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnCallActivity",
+          "dataType": "JmgIpcActivityIdOnCallNoRegs",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProfileDate",
+          "dataType": "JmgProfileDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjCategory",
+          "dataType": "ProjCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Seconds",
+          "dataType": "JmgSeconds",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartDateTime",
+          "dataType": "JmgDateTime",
+          "isNullable": true,
+          "displayName": "Start time",
+          "description": ""
+        },
+        {
+          "name": "StopDateTime",
+          "dataType": "JmgDateTime",
+          "isNullable": true,
+          "displayName": "End time",
+          "description": ""
+        },
+        {
+          "name": "TermRegStartRecID",
+          "dataType": "JmgTermRegStartRecID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TermRegStopRecID",
+          "dataType": "JmgTermRegStopRecID",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "JmgWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkerPilot",
+          "dataType": "JmgWorkerRecId_JobPilot",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WrkCtrId",
+          "dataType": "WrkCtrId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WrkCtrIdPilot",
+          "dataType": "JmgWrkCtrIdPilot",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "JmgTermReg"
+          },
+          "name": "Relationship_JmgTermReg_startRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgTermReg"
+          },
+          "name": "Relationship_JmgTermReg_stopRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgTimecardTable"
+          },
+          "name": "Relationship_JmgTimecardTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgIpcActivity"
+          },
+          "name": "Relationship_OnCallJmgIpcActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjCategory"
+          },
+          "name": "Relationship_ProjCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_ResourcePilotWrkCtrTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrTable"
+          },
+          "name": "Relationship_ResourceWrkCtrTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Electronic timecard registrations"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgJobIDAbs",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgJobRef",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgJourRegType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgIpcActivityIdOnCallNoRegs",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgProfileDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ProjCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgSeconds",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "JmgDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgTermRegStartRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgTermRegStopRecID",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId_JobPilot",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WrkCtrId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgWrkCtrIdPilot",
+      "extendsDataType": "string"
+    }
+  ]
+}

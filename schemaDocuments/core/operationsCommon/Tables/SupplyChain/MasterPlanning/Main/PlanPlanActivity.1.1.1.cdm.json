@@ -1,0 +1,83 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "Plan.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PlanActivity.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PlanPlanActivity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Plan",
+          "dataType": "PlanRefRecId",
+          "description": ""
+        },
+        {
+          "name": "PlanActivity",
+          "dataType": "PlanActivityRefRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "Plan"
+          },
+          "name": "Relationship_PlanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlanActivity"
+          },
+          "name": "Relationship_PlanActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Plan activity relationships"
+    },
+    {
+      "dataTypeName": "PlanRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PlanActivityRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

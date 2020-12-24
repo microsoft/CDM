@@ -1,0 +1,162 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DataFeedsEntityCatalog.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "BusinessEventsEndpoint.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DataFeedsDefinition",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DataFeedName",
+          "dataType": "DataFeedsName",
+          "description": ""
+        },
+        {
+          "name": "DataFeedDefinitionId",
+          "dataType": "DataFeedsId",
+          "description": ""
+        },
+        {
+          "name": "DataEntityId",
+          "dataType": "DataFeedsDataEntityId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MonitoredTableId",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BusinessEventsEndpoint",
+          "dataType": "BusinessEventsEndpointRecId",
+          "description": ""
+        },
+        {
+          "name": "LegalEntity",
+          "dataType": "DataFeedsLegalEntity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OperationType",
+          "dataType": "DataFeedsOperationType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Enabled",
+          "dataType": "DataFeedsEnabled",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HandlerClassId",
+          "dataType": "ClassId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MonitoredFields",
+          "dataType": "DataFeedsMonitoredFields",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DataFeedsEntityCatalog"
+          },
+          "name": "Relationship_DataFeedsEntityCatalogRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "BusinessEventsEndpoint"
+          },
+          "name": "Relationship_BusinessEventsEndpointRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Data feeds definition"
+    },
+    {
+      "dataTypeName": "DataFeedsName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataFeedsId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataFeedsDataEntityId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "BusinessEventsEndpointRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DataFeedsLegalEntity",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DataFeedsOperationType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DataFeedsEnabled",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ClassId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DataFeedsMonitoredFields",
+      "extendsDataType": "binary"
+    }
+  ]
+}

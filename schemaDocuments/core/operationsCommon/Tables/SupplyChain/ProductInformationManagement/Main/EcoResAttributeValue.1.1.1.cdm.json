@@ -1,0 +1,101 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "EcoResAttribute.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResInstanceValue.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "EcoResValue.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EcoResAttributeValue",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Attribute",
+          "dataType": "RefRecId",
+          "displayName": "Attribute",
+          "description": ""
+        },
+        {
+          "name": "InstanceValue",
+          "dataType": "RefRecId",
+          "displayName": "Instance value",
+          "description": ""
+        },
+        {
+          "name": "Value",
+          "dataType": "RefRecId",
+          "displayName": "Value",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttribute"
+          },
+          "name": "Relationship_AttributeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResInstanceValue"
+          },
+          "name": "Relationship_InstanceValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResValue"
+          },
+          "name": "Relationship_ValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Attribute values"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

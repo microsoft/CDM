@@ -1,0 +1,199 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Transaction/TaxWithholdTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxWithholdTransExtensionTH",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingCurExpenseAmount",
+          "dataType": "TaxWithholdAccountingCurExpenseAmt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AccountingCurUpdatedWithholdBaseAmt",
+          "dataType": "TaxWithholdBase",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Updated base for withholding tax in accounting currency",
+          "description": ""
+        },
+        {
+          "name": "ExpenseLedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HideInReports",
+          "dataType": "TaxWithholdTransHideInReports",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceCurExpenseAmount",
+          "dataType": "TaxWithholdInvoiceCurExpenseAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceCurUpdatedWithholdBaseAmount",
+          "dataType": "TaxWithholdBaseCur",
+          "isNullable": true,
+          "displayName": "Updated base for withholding tax in invoice currency",
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalTrans",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiptNumber",
+          "dataType": "TaxWithholdReceiptNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdTrans",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TransCurExpenseAmount",
+          "dataType": "TaxWithholdTransCurExpenseAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_ExpenseLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdTrans"
+          },
+          "name": "Relationship_TaxWithholdTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Withholding tax transaction for Thailand"
+    },
+    {
+      "dataTypeName": "TaxWithholdAccountingCurExpenseAmt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxWithholdBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdTransHideInReports",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxWithholdInvoiceCurExpenseAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxWithholdBaseCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxWithholdReceiptNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdTransCurExpenseAmount",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

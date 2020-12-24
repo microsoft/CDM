@@ -1,0 +1,141 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/ExchangeRateType.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "Ledger.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerExtensionIN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustomsExportExchangeRateType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Customs export exchange rate type",
+          "description": ""
+        },
+        {
+          "name": "CustomsImportExchangeRateType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Customs import exchange rate type",
+          "description": ""
+        },
+        {
+          "name": "Ledger",
+          "dataType": "LedgerRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TDSImportExchangeRateType",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "TDS import exchange rate type",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_CustomsExportExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_CustomsImportExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Ledger"
+          },
+          "name": "Relationship_LedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateType"
+          },
+          "name": "Relationship_TDSImportExchangeRateTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger India extension"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "CatalogProduct.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategory.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResCategoryHierarchy.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CatalogProductCategory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CatalogProduct",
+          "dataType": "CatalogProductId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Category",
+          "dataType": "EcoResCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryHierarchy",
+          "dataType": "EcoResCategoryHierarchyId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IncludeExcludeType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "CatalogProduct"
+          },
+          "name": "Relationship_CatalogProductRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategory"
+          },
+          "name": "Relationship_EcoResCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResCategoryHierarchy"
+          },
+          "name": "Relationship_EcoResCategoryHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Catalog product category"
+    },
+    {
+      "dataTypeName": "CatalogProductId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResCategoryId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EcoResCategoryHierarchyId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

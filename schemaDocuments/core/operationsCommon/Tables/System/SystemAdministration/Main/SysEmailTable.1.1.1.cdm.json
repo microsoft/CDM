@@ -1,0 +1,151 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/BatchGroup.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysEmailTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BatchGroupId",
+          "dataType": "BatchGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultLanguage",
+          "dataType": "LanguageId",
+          "isNullable": true,
+          "displayName": "Default language code",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "SysEmailDescriptionType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EmailId",
+          "dataType": "SysEmailId",
+          "description": ""
+        },
+        {
+          "name": "Priority",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Priority",
+          "description": ""
+        },
+        {
+          "name": "SenderAddr",
+          "dataType": "SysEmailAddress",
+          "displayName": "Sender email",
+          "description": ""
+        },
+        {
+          "name": "SenderName",
+          "dataType": "EmailProfileName",
+          "displayName": "Sender name",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BatchGroup"
+          },
+          "name": "Relationship_BatchGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Emails"
+    },
+    {
+      "dataTypeName": "BatchGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailDescriptionType",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysEmailAddress",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EmailProfileName",
+      "extendsDataType": "string"
+    }
+  ]
+}

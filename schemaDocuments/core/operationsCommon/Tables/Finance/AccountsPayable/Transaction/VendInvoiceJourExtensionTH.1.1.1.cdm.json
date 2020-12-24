@@ -1,0 +1,165 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "VendInvoiceJour.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsPostalAddress.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Transaction/ReasonTableRef.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "VendInvoiceJourExtensionTH",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InvoiceDate",
+          "dataType": "TaxUnrealizedPurchInvoiceDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InvoiceReceiptDate",
+          "dataType": "TaxUnrealizedPurchInvoiceReceiptDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RealVendName",
+          "dataType": "TaxUnrealizedPurchRealVendName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxInvoiceReceiptDate",
+          "dataType": "TaxUnrealizedPurchTaxInvoiceRcptDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendInvoiceJour",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InvoicePostalAddress",
+          "dataType": "LogisticsPostalAddressRecId",
+          "isNullable": true,
+          "displayName": "Invoice address",
+          "description": ""
+        },
+        {
+          "name": "ReasonTableRef",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "VendInvoiceJour"
+          },
+          "name": "Relationship_VendInvoiceJourRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsPostalAddress"
+          },
+          "name": "Relationship_InvoicePostalAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTableRef"
+          },
+          "name": "Relationship_ReasonTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Vendor invoice journal for Thailand"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedPurchInvoiceDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedPurchInvoiceReceiptDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedPurchRealVendName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxUnrealizedPurchTaxInvoiceRcptDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LogisticsPostalAddressRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

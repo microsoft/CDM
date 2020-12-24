@@ -1,0 +1,92 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailCatalogEntity.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Miscellaneous/RetailCatalogPriceGroup.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCatalogPriceGroupEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CatalogNumber",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "PriceDiscGroup",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceGroupId",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "PriceGroupLegalEntity",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "Catalog",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCatalogEntity"
+          },
+          "name": "Relationship_CatalogNumberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailCatalogPriceGroup"
+          },
+          "name": "BackingTable_RetailCatalogPriceGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Catalog price groups"
+    }
+  ]
+}

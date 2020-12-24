@@ -1,0 +1,218 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PlSADTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExchRate",
+          "dataType": "ExchRate",
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Posted",
+          "description": ""
+        },
+        {
+          "name": "SADDate",
+          "dataType": "PlSADDate",
+          "description": ""
+        },
+        {
+          "name": "SADDutyVend",
+          "dataType": "PlSADDutyVend",
+          "description": ""
+        },
+        {
+          "name": "SADMiscCharg",
+          "dataType": "PlSADMiscCharg",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SADNumber",
+          "dataType": "PlSADNumber",
+          "description": ""
+        },
+        {
+          "name": "SADNumberCode",
+          "dataType": "PlSADNumberCode",
+          "description": ""
+        },
+        {
+          "name": "SADTransAmount",
+          "dataType": "PlSADTransAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "description": ""
+        },
+        {
+          "name": "VATDueDate",
+          "dataType": "VatDueDate_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Voucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "SAD documents table"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ExchRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlSADDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PlSADDutyVend",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlSADMiscCharg",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlSADNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlSADNumberCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PlSADTransAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VatDueDate_W",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

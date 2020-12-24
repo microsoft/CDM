@@ -1,0 +1,163 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetDepreciationProfile.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetDepProfileChange_JP",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DepreciationProfile",
+          "dataType": "AssetDepreciationProfileId",
+          "description": ""
+        },
+        {
+          "name": "IsUseEquallyDividedFormula",
+          "dataType": "AssetDepUseEquallyDividedFormula_JP",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LifeTime",
+          "dataType": "AssetLifeTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceLife",
+          "dataType": "AssetServiceLife",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceTableId",
+          "dataType": "RefTableId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDate",
+          "isNullable": true,
+          "displayName": "End date",
+          "description": ""
+        },
+        {
+          "name": "NetBookValue",
+          "dataType": "AssetNetBookValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetDepreciationProfile"
+          },
+          "name": "Relationship_AssetDepreciationProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset depreciation profile change"
+    },
+    {
+      "dataTypeName": "AssetDepreciationProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetDepUseEquallyDividedFormula_JP",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetLifeTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "AssetServiceLife",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetNetBookValue",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

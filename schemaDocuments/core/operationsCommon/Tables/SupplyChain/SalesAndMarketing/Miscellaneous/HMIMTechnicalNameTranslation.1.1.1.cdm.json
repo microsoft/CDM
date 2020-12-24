@@ -1,0 +1,94 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Main/HMIMTechnicalName.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "HMIMTechnicalNameTranslation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "TechnicalDescription",
+          "dataType": "Description255",
+          "isNullable": true,
+          "displayName": "Technical name",
+          "description": ""
+        },
+        {
+          "name": "LanguageId",
+          "dataType": "HMIMLanguageId",
+          "description": ""
+        },
+        {
+          "name": "TechNameRecId",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "HMIMTechnicalName"
+          },
+          "name": "Relationship_HMIMTechnicalNameRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Technical name translation"
+    },
+    {
+      "dataTypeName": "Description255",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HMIMLanguageId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

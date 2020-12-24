@@ -1,0 +1,288 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Group/ProjExpPolicyGroups.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjInvoiceTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/ProfessionalServices/ProjectManagementAndAccounting/Main/ProjTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvCostType.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjExpPolicies",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AllowableAmount",
+          "dataType": "AmountCur",
+          "displayName": "Allowable amount",
+          "description": ""
+        },
+        {
+          "name": "City",
+          "dataType": "AddressCity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostType",
+          "dataType": "TrvCostTypeEDT",
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndDate",
+          "dataType": "TrvUtcDateTime",
+          "isNullable": true,
+          "displayName": "End date",
+          "description": ""
+        },
+        {
+          "name": "ExchangeCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "ExpPerUnit",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MaximumAmount",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Maximum amount",
+          "description": ""
+        },
+        {
+          "name": "MaximumPercent",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Maximum percent",
+          "description": ""
+        },
+        {
+          "name": "PolicyEmplGroupId",
+          "dataType": "ProjExpPolicyGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PolicyType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ProjId",
+          "dataType": "ProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProjInvoiceProjId",
+          "dataType": "ProjInvoiceProjId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReceiptMin",
+          "dataType": "AmountCur",
+          "isNullable": true,
+          "displayName": "Receipt minimum",
+          "description": ""
+        },
+        {
+          "name": "ReceiptRequired",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Receipt required",
+          "description": ""
+        },
+        {
+          "name": "StartDate",
+          "dataType": "TrvUtcDateTime",
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "ProjWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjExpPolicyGroups"
+          },
+          "name": "Relationship_ProjExpPolicyGroupsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjInvoiceTable"
+          },
+          "name": "Relationship_ProjInvoiceTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProjTable"
+          },
+          "name": "Relationship_ProjTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvCostType"
+          },
+          "name": "Relationship_TrvCostTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Project expense policies"
+    },
+    {
+      "dataTypeName": "AmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AddressCity",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvCostTypeEDT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TrvUtcDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjExpPolicyGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjInvoiceProjId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

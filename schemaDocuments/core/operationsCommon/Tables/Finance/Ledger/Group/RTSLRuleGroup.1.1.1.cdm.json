@@ -1,0 +1,249 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RTSLCurrencyRuleGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RTSLDimensionRuleGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Framework/NumberSequenceTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTSLRuleGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ToCompanyId",
+          "dataType": "RTSLToCompanyId",
+          "description": ""
+        },
+        {
+          "name": "DefaultCurrencyRuleGroupId",
+          "dataType": "RTSLCurrencyRuleGroupId",
+          "isNullable": true,
+          "displayName": "Default currency group",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimensionRuleGroupId",
+          "dataType": "RTSLDimensionRuleGroupId",
+          "isNullable": true,
+          "displayName": "Default dimension group",
+          "description": ""
+        },
+        {
+          "name": "DefaultLedgerPriority",
+          "dataType": "Priority",
+          "isNullable": true,
+          "displayName": "Default priorities",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiffLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisbalanceLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FileName",
+          "dataType": "Filename",
+          "isNullable": true,
+          "displayName": "Export file name",
+          "description": ""
+        },
+        {
+          "name": "LedgerDiffErrorLevel",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Check translation difference",
+          "description": ""
+        },
+        {
+          "name": "LedgerDisbalanceErrorLevel",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Check imbalance",
+          "description": ""
+        },
+        {
+          "name": "LedgerUseVoucherSeries",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "New ledger vouchers",
+          "description": ""
+        },
+        {
+          "name": "LedgerVoucherSeries",
+          "dataType": "RTSLLedgerVoucherSequenceCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RuleGroupId",
+          "dataType": "RTSLRuleGroupId",
+          "description": ""
+        },
+        {
+          "name": "UseExportFile",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Translate to a file?",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLCurrencyRuleGroup"
+          },
+          "name": "Relationship_CurrencyRuleGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationDiffRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_DimensionAttributeValueCombinationDisbRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLDimensionRuleGroup"
+          },
+          "name": "Relationship_DimensionRuleGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "NumberSequenceTable"
+          },
+          "name": "Relationship_LedgerVoucherSeriesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Translation rule groups"
+    },
+    {
+      "dataTypeName": "RTSLToCompanyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLCurrencyRuleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLDimensionRuleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Priority",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Filename",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLLedgerVoucherSequenceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLRuleGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}

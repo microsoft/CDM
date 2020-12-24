@@ -1,0 +1,143 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/VehicleModelTable_W.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TransportationDocument.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TransportationVehicle",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Driver",
+          "dataType": "VehicleDriver",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DriverName",
+          "dataType": "DriverName_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Model",
+          "dataType": "VehicleModelRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlateNumber",
+          "dataType": "VehiclePlateNum_W",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TrailerNumber",
+          "dataType": "VehicleTrailerNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportationDocument",
+          "dataType": "TransportationDocumentRecId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "VehicleModelTable_W"
+          },
+          "name": "Relationship_ModelRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TransportationDocument"
+          },
+          "name": "Relationship_TransportationDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transportation vehicle"
+    },
+    {
+      "dataTypeName": "VehicleDriver",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DriverName_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VehicleModelRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "VehiclePlateNum_W",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "VehicleTrailerNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransportationDocumentRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

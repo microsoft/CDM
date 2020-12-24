@@ -1,0 +1,297 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/HSNCodeTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Main/ServiceAccountingCodeTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxDocumentRowTransaction.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxRegistrationNumbers_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxDocumentExtension_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxDocumentRowTransaction_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustomsExportOrder",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Export order",
+          "description": ""
+        },
+        {
+          "name": "CustomsImportOrder",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Import order",
+          "description": ""
+        },
+        {
+          "name": "ECommerceOperatorGSTIN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "GSTIN of the E-Commerce operator",
+          "description": ""
+        },
+        {
+          "name": "HSNCode",
+          "dataType": "HSNCode_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsProvisionalAssessment",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Provisional assessment",
+          "description": ""
+        },
+        {
+          "name": "ITCCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PartyRegistrationNumber",
+          "dataType": "TaxRegistrationNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefPartyRegistrationNumber",
+          "dataType": "TaxRegistrationNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefRegistrationNumber",
+          "dataType": "TaxRegistrationNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RegistrationNumber",
+          "dataType": "TaxRegistrationNumber_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SAC",
+          "dataType": "SAC_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDocumentExtension",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxDocumentRowTransactionRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransCategory",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsInterState",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VendGSTCompositionScheme",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WithIGSTPayment_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "With tax payment",
+          "description": ""
+        },
+        {
+          "name": "NonGST",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Non-GST",
+          "description": ""
+        },
+        {
+          "name": "ECommerceSale_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "E-Commerce sales",
+          "description": ""
+        },
+        {
+          "name": "ECommerceOperator_IN",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "displayName": "E-Commerce operator",
+          "description": ""
+        },
+        {
+          "name": "WouldYouClaimRefund_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Would you claim refund",
+          "description": ""
+        },
+        {
+          "name": "TaxGSTEPZCode_IN",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "HSNCodeTable_IN"
+          },
+          "name": "Relationship_HSNCodeTable_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ServiceAccountingCodeTable_IN"
+          },
+          "name": "Relationship_ServiceAccountingCodeTable_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxDocumentRowTransaction"
+          },
+          "name": "Relationship_TaxDocumentRowTransactionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_ECommerceOperatorGSTINRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxDocumentExtension_IN"
+          },
+          "name": "Relationship_TaxDocumentExtension_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transaction line for India"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "HSNCode_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRegistrationNumber_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SAC_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    }
+  ]
+}

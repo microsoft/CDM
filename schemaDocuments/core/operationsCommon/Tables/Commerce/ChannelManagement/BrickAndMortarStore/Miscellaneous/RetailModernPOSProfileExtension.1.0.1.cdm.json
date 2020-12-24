@@ -1,0 +1,140 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Miscellaneous/RetailChannelDatabaseProfiles.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailModernPOSProfile.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailModernPOSProfileExtension",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ConnectionStringServerName",
+          "dataType": "RetailMachineMachineName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Name",
+          "description": ""
+        },
+        {
+          "name": "offlineDbInstance",
+          "dataType": "RetailOfflineDbInstance",
+          "isNullable": true,
+          "displayName": "Database server instance",
+          "description": ""
+        },
+        {
+          "name": "offlineDbName",
+          "dataType": "RetailOfflineDbName",
+          "isNullable": true,
+          "displayName": "Database name",
+          "description": ""
+        },
+        {
+          "name": "OfflineDbProvisionCredentialId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Offline provisioning user",
+          "description": ""
+        },
+        {
+          "name": "OfflineUserCredentials",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Offline user",
+          "description": ""
+        },
+        {
+          "name": "RetailChannelDatabaseProfiles",
+          "dataType": "RefRecId",
+          "displayName": "Channel database profile",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailChannelDatabaseProfiles"
+          },
+          "name": "Relationship_RetailChannelDatabaseProfilesRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailModernPOSProfile"
+          },
+          "name": "Relationship_RetailModernPOSProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "RetailModernPOSProfile"
+    },
+    {
+      "dataTypeName": "RetailMachineMachineName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailOfflineDbInstance",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailOfflineDbName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

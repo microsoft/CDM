@@ -1,0 +1,291 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValue.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalEstablishment_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBContribAssetTable_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetAcquisitionDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Acquisition date",
+          "description": ""
+        },
+        {
+          "name": "AssetAppropriationMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetCreditGroup",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetCreditPurpose",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetName",
+          "dataType": "AssetName",
+          "description": ""
+        },
+        {
+          "name": "AssetOrigin",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetTable",
+          "dataType": "AssetId",
+          "description": ""
+        },
+        {
+          "name": "COFINSAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "COFINS amount",
+          "description": ""
+        },
+        {
+          "name": "COFINSTaxationCode",
+          "dataType": "TaxationCode_BR",
+          "isNullable": true,
+          "displayName": "COFINS taxation code",
+          "description": ""
+        },
+        {
+          "name": "COFINSTaxBaseAmount",
+          "dataType": "TaxableBaseAmount_BR",
+          "isNullable": true,
+          "displayName": "COFINS base amount",
+          "description": ""
+        },
+        {
+          "name": "ContribAssetId",
+          "dataType": "FBContribAssetId_BR",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishmentDataArea",
+          "dataType": "SelectableDataArea",
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishment_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Installments",
+          "dataType": "ICMSCreditInstallments_BR",
+          "isNullable": true,
+          "displayName": "Total installments",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "LedgerDimensionDefaultAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PISAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "displayName": "PIS amount",
+          "description": ""
+        },
+        {
+          "name": "PISTaxationCode",
+          "dataType": "TaxationCode_BR",
+          "isNullable": true,
+          "displayName": "PIS taxation code",
+          "description": ""
+        },
+        {
+          "name": "PISTaxBaseAmount",
+          "dataType": "TaxableBaseAmount_BR",
+          "isNullable": true,
+          "displayName": "PIS base amount",
+          "description": ""
+        },
+        {
+          "name": "RemainingInstallments",
+          "dataType": "FBCIAPRemainingInstallments_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValue"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishment_BR"
+          },
+          "name": "Relationship_FiscalEstablishment_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_LedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DimensionAttributeValueSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "PIS and COFINS fixed asset"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxationCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxableBaseAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBContribAssetId_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ICMSCreditInstallments_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "LedgerDimensionDefaultAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FBCIAPRemainingInstallments_BR",
+      "extendsDataType": "integer"
+    }
+  ]
+}

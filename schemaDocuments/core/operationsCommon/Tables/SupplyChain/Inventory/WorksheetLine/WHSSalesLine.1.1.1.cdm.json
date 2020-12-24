@@ -1,0 +1,143 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetLine/SalesLine.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSSalesLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "description": ""
+        },
+        {
+          "name": "OnWave",
+          "dataType": "WHSOnWave",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnWaveQty",
+          "dataType": "WHSOnWaveQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PackingQty",
+          "dataType": "WHSPackingQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyLeftToLoad",
+          "dataType": "WHSQtyLeftToLoad",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReleasedQty",
+          "dataType": "WHSReleasedQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesLine"
+          },
+          "name": "Relationship_SalesLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales Line Additional Fields"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSOnWave",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSOnWaveQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSPackingQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSQtyLeftToLoad",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSReleasedQty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,0 +1,196 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchRFQReplyTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchRFQCaseTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "PurchRFQVendPostedGroupQuestionAnswer.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PurchRFQVendPostedQuestionAnswer",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "QuestionNumber",
+          "dataType": "PurchRFQVendQuestionNumber",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQId",
+          "dataType": "PurchRFQId",
+          "description": ""
+        },
+        {
+          "name": "VendQuestion",
+          "dataType": "PurchRFQVendorQuestion",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomerAnswer",
+          "dataType": "PurchRFQCustomerAnswer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuestionSubmittedOn",
+          "dataType": "PurchRFQVendorQuestionSubmittedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AnswerPublishedOn",
+          "dataType": "PurchRFQAnswerPublishedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFQCaseId",
+          "dataType": "PurchRFQCaseId",
+          "description": ""
+        },
+        {
+          "name": "IsAnswerPublishedToVendor",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsDirectResponse",
+          "dataType": "PurchRFQSendDirectResponseToVendor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchRFQVendPostedGroupQuestionAnswerRecId",
+          "dataType": "PurchRFQVendPostedGroupQuestionAnswerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQReplyTable"
+          },
+          "name": "Relationship_PurchRFQReplyTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQCaseTable"
+          },
+          "name": "Relationship_PurchRFQCaseTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchRFQVendPostedGroupQuestionAnswer"
+          },
+          "name": "Relationship_PurchRFQVendPostedGroupQuestionAnswerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Answers posted to vendor questions"
+    },
+    {
+      "dataTypeName": "PurchRFQVendQuestionNumber",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQVendorQuestion",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQCustomerAnswer",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PurchRFQVendorQuestionSubmittedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchRFQAnswerPublishedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PurchRFQCaseId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQSendDirectResponseToVendor",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PurchRFQVendPostedGroupQuestionAnswerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

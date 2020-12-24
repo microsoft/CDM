@@ -1,0 +1,103 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Group/LanguageTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "ProcCategoryPage.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProcCategoryPageTranslation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Description",
+          "dataType": "ProcCategoryPageDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "HtmlText",
+          "dataType": "ProcCategoryPageHtmlTranslation",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LanguageID",
+          "dataType": "LanguageIdAll",
+          "description": ""
+        },
+        {
+          "name": "ProcurementCategoryPage",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "LanguageTable"
+          },
+          "name": "Relationship_LanguageTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProcCategoryPage"
+          },
+          "name": "Relationship_ProcCategoryPageRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Category page translation"
+    },
+    {
+      "dataTypeName": "ProcCategoryPageDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProcCategoryPageHtmlTranslation",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LanguageIdAll",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

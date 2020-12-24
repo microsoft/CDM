@@ -1,0 +1,69 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Miscellaneous/BusinessEventsTable.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "BusinessEventsCatalogSecurity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Event",
+          "dataType": "BusinessEventsId",
+          "description": ""
+        },
+        {
+          "name": "SecurityRole",
+          "dataType": "BusinessEventsCatalogSecurityRole",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BusinessEventsTable"
+          },
+          "name": "Relationship_EventRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Business events catalog security"
+    },
+    {
+      "dataTypeName": "BusinessEventsId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BusinessEventsCatalogSecurityRole",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

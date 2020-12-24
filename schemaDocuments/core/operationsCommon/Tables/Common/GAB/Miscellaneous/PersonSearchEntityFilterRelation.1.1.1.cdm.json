@@ -1,0 +1,120 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "PersonSearchTemplateMetadataTmp.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PersonSearchEntityFilterRelation",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Category",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CategoryFieldType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MetadataTypeId",
+          "dataType": "UtilElementId",
+          "isNullable": true,
+          "displayName": "Metadata type id",
+          "description": ""
+        },
+        {
+          "name": "SourceTable",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "displayName": "Source table",
+          "description": ""
+        },
+        {
+          "name": "SourceField",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "displayName": "Source field",
+          "description": ""
+        },
+        {
+          "name": "FilterValueTable",
+          "dataType": "RefTableId",
+          "isNullable": true,
+          "displayName": "Filter table",
+          "description": ""
+        },
+        {
+          "name": "FilterValueField",
+          "dataType": "RefFieldId",
+          "isNullable": true,
+          "displayName": "Filter field",
+          "description": ""
+        },
+        {
+          "name": "FilterGroup",
+          "dataType": "PersonSearchFilterGroup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "PersonSearchTemplateMetadataTmp"
+          },
+          "name": "Relationship_PersonSearchTemplateMetadataTmpRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Entity filter relationships"
+    },
+    {
+      "dataTypeName": "UtilElementId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefTableId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefFieldId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PersonSearchFilterGroup",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,505 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventLocation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/InventTransOrigin.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/Kanban.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/LeanProductionFlowActivity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/TransactionHeader/SourceDocumentHeader.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/WMSLocation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/WrkCtrResourceGroup.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "KanbanJob",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualEndDateTime",
+          "dataType": "KanbanJobEndDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActualPreparedDateTime",
+          "dataType": "KanbanJobPreparedDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ActualStartDateTime",
+          "dataType": "KanbanJobStartDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDateTime",
+          "dataType": "KanbanJobDueDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Executable",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpectedDateTime",
+          "dataType": "KanbanJobExpectedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "displayName": "Receipt inventory dimension",
+          "description": ""
+        },
+        {
+          "name": "InventLocationDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventLocationId",
+          "dataType": "InventLocationId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Receipt lot ID",
+          "description": ""
+        },
+        {
+          "name": "IssueInventDimDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssueInventDimId",
+          "dataType": "InventDimId",
+          "isNullable": true,
+          "displayName": "Issue inventory dimension",
+          "description": ""
+        },
+        {
+          "name": "IssueInventTransDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IssueInventTransId",
+          "dataType": "InventTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Issue lot ID",
+          "description": ""
+        },
+        {
+          "name": "Kanban",
+          "dataType": "KanbanRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LeanProductionFlowActivity",
+          "dataType": "LeanProductionFlowActivityRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "LeanScheduleGroupColor",
+          "dataType": "LeanScheduleGroupColor",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LeanScheduleGroupName",
+          "dataType": "LeanScheduleGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LeanScheduleItemRatio",
+          "dataType": "LeanThroughputRatio",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PlanActivityName",
+          "dataType": "PlanActivityName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuantityOrdered",
+          "dataType": "KanbanJobQuantity",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuantityReceived",
+          "dataType": "KanbanJobQuantityReceived",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QuantityScrapped",
+          "dataType": "KanbanJobQuantityScrapped",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "KanbanJobSequence",
+          "isReadOnly": true,
+          "displayName": "Sequence",
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "SourceDocumentHeaderRefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WMSLocationDataAreaId",
+          "dataType": "DataAreaId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WMSLocationId",
+          "dataType": "WMSLocationId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkCell",
+          "dataType": "WrkCtrResourceGroupRefRecId",
+          "isNullable": true,
+          "displayName": "Work cell",
+          "description": ""
+        },
+        {
+          "name": "LoadPercent",
+          "dataType": "decimal",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventLocation"
+          },
+          "name": "Relationship_InventLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_IssueInventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_IssueInventTransOriginRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Kanban"
+          },
+          "name": "Relationship_KanbanRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LeanProductionFlowActivity"
+          },
+          "name": "Relationship_LeanProductionFlowActivitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WMSLocation"
+          },
+          "name": "Relationship_WMSLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WrkCtrResourceGroup"
+          },
+          "name": "Relationship_WorkCellRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Kanban jobs"
+    },
+    {
+      "dataTypeName": "KanbanJobEndDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KanbanJobPreparedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "KanbanJobStartDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "KanbanJobDueDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "KanbanJobExpectedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanProductionFlowActivityRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LeanScheduleGroupColor",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LeanScheduleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LeanThroughputRatio",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PlanActivityName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KanbanJobQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "KanbanJobQuantityReceived",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "KanbanJobQuantityScrapped",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "KanbanJobSequence",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SourceDocumentHeaderRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WMSLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WrkCtrResourceGroupRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

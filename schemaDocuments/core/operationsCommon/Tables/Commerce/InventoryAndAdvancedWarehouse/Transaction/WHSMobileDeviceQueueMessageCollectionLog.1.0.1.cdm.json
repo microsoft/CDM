@@ -1,0 +1,100 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/InventoryAndAdvancedWarehouse/Miscellaneous/WHSMobileDeviceQueueMessage.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSMobileDeviceQueueMessageCollectionLog",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ErrorLog",
+          "dataType": "WHSMobileDeviceQueueMessageCollectionErrorLog",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QueueMessageCollectionRecId",
+          "dataType": "WHSMobileDeviceQueueMessageCollectionRecId",
+          "description": ""
+        },
+        {
+          "name": "BatchAffinity",
+          "dataType": "WHSMobileDeviceQueueBatchAffinity",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "WHSMobileDeviceQueueMessage"
+          },
+          "name": "Relationship_WHSMobileDeviceQueueMessageCollectionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Warehouse app message error log"
+    },
+    {
+      "dataTypeName": "WHSMobileDeviceQueueMessageCollectionErrorLog",
+      "extendsDataType": "binary"
+    },
+    {
+      "dataTypeName": "WHSMobileDeviceQueueMessageCollectionRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSMobileDeviceQueueBatchAffinity",
+      "extendsDataType": "guid"
+    }
+  ]
+}

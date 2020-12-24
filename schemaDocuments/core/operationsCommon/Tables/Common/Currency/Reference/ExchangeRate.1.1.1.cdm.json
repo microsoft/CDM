@@ -1,0 +1,92 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/ExchangeRateCurrencyPair.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ExchangeRate",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExchangeRate",
+          "dataType": "CurrencyExchangeRate",
+          "description": ""
+        },
+        {
+          "name": "ExchangeRateCurrencyPair",
+          "dataType": "ExchangeRateCurrencyPairRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValidFrom",
+          "dataType": "ValidFromDate",
+          "isNullable": true,
+          "displayName": "Start date",
+          "description": ""
+        },
+        {
+          "name": "ValidTo",
+          "dataType": "ValidToDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "ExchangeRateCurrencyPair"
+          },
+          "name": "Relationship_ExchangeRateCurrencyPairRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Exchange rate"
+    },
+    {
+      "dataTypeName": "CurrencyExchangeRate",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ExchangeRateCurrencyPairRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ValidFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "ValidToDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

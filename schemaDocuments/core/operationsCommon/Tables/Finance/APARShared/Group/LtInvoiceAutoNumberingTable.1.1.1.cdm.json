@@ -1,0 +1,143 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/System/SystemAdministration/Main/UserGroupInfo.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LtInvoiceAutoNumberingTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AutoNumberingType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ForRetail",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Retail",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAllGroupUser",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "InvoiceUserGroupId",
+          "dataType": "LtInvoiceUserGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LastTransDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last date",
+          "description": ""
+        },
+        {
+          "name": "NumberingCode",
+          "dataType": "LtDocNumberingCode",
+          "description": ""
+        },
+        {
+          "name": "NumberSequenceCode",
+          "dataType": "NumberSequenceCode",
+          "description": ""
+        },
+        {
+          "name": "SalesPurch",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "SearchContinue",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Continue",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "UserGroupInfo"
+          },
+          "name": "Relationship_UserGroupsRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Invoice numbering setup"
+    },
+    {
+      "dataTypeName": "LtInvoiceUserGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LtDocNumberingCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NumberSequenceCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    }
+  ]
+}

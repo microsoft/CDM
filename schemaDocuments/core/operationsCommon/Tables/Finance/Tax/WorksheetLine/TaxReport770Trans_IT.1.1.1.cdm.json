@@ -1,0 +1,288 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/WorksheetHeader/TaxReport770Table_IT.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxWithholdTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Transaction/TaxWithholdTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxReport770Trans_IT",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Excluded",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Excluded",
+          "description": ""
+        },
+        {
+          "name": "ExemptedAmount",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Exempted amount",
+          "description": ""
+        },
+        {
+          "name": "InterestAmount",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Interest amount",
+          "description": ""
+        },
+        {
+          "name": "Month",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NotTaxableByTreaty",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Not taxable by treaty",
+          "description": ""
+        },
+        {
+          "name": "NotTaxableExpenses",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Expense reimbursement amount",
+          "description": ""
+        },
+        {
+          "name": "Overpayment",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Overpayment",
+          "description": ""
+        },
+        {
+          "name": "PaidAmount",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Paid amount",
+          "description": ""
+        },
+        {
+          "name": "Prepayment",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Prepayment journal voucher",
+          "description": ""
+        },
+        {
+          "name": "RecoveredCredits",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Recovered credits",
+          "description": ""
+        },
+        {
+          "name": "ReportId",
+          "dataType": "TaxReport770Id_IT",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdAmount",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Withhold tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdCode",
+          "dataType": "TaxWithholdCode",
+          "displayName": "Tax code",
+          "description": ""
+        },
+        {
+          "name": "TaxWithholdTransRefRecId",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Withholding tax transaction ID reference",
+          "description": ""
+        },
+        {
+          "name": "Total",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Total amount",
+          "description": ""
+        },
+        {
+          "name": "TransDate",
+          "dataType": "TransDate",
+          "displayName": "Payment date",
+          "description": ""
+        },
+        {
+          "name": "VendAccount",
+          "dataType": "VendAccount",
+          "description": ""
+        },
+        {
+          "name": "WithholdAsDeposit",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Withhold amount as deposit",
+          "description": ""
+        },
+        {
+          "name": "WithholdBaseAmount",
+          "dataType": "TaxWithholdBase",
+          "isNullable": true,
+          "displayName": "Base amount",
+          "description": ""
+        },
+        {
+          "name": "WithholdSuspended",
+          "dataType": "TaxWithholdAmount",
+          "isNullable": true,
+          "displayName": "Suspended withholding amount",
+          "description": ""
+        },
+        {
+          "name": "Year",
+          "dataType": "Year",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxReport770Table_IT"
+          },
+          "name": "Relationship_TaxReport770TableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdTable"
+          },
+          "name": "Relationship_TaxWithholdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxWithholdTrans"
+          },
+          "name": "Relationship_TaxWithholdTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Withholding transaction - Modello 770"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxWithholdAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxReport770Id_IT",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "VendAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxWithholdBase",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Year",
+      "extendsDataType": "integer"
+    }
+  ]
+}

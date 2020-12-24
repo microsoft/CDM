@@ -1,0 +1,465 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Main/PmfFormulaCoBy.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "ProdJournalBOM.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Group/ReqPlanSched.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PmfProdCoBy",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BackorderStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "BurdenType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CalcDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Estimated date",
+          "description": ""
+        },
+        {
+          "name": "CoByQty",
+          "dataType": "PmfCoByQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CoByQtySerie",
+          "dataType": "PmfCoByQtySerie",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CoByRefRecId",
+          "dataType": "PmfCoByRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostAllocation",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostAllocationPct",
+          "dataType": "PmfCostAllocationPct",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EndConsump",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Finished picking",
+          "description": ""
+        },
+        {
+          "name": "FinishedDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Reported as finished date",
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefId",
+          "dataType": "InventRefId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefTransId",
+          "dataType": "InventRefTransId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventRefType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransId",
+          "dataType": "InventTransIdBase",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "OverheadAmt",
+          "dataType": "PmfOverheadAmt",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWInventCalc",
+          "dataType": "PdsCWInventQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "CW estimated",
+          "description": ""
+        },
+        {
+          "name": "PdsCWInventStup",
+          "dataType": "PdsCWInventQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "CW started",
+          "description": ""
+        },
+        {
+          "name": "PdsCWQty",
+          "dataType": "PdsCWInventQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PdsCWRemainPhysical",
+          "dataType": "PdsCWInventQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "CW remaining",
+          "description": ""
+        },
+        {
+          "name": "ProdId",
+          "dataType": "ProdId",
+          "displayName": "Batch order",
+          "description": ""
+        },
+        {
+          "name": "ProductType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "QtyCoByCalc",
+          "dataType": "PmfCoByQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Estimated qty",
+          "description": ""
+        },
+        {
+          "name": "QtyCoByStUp",
+          "dataType": "PmfCoByQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Started qty",
+          "description": ""
+        },
+        {
+          "name": "RealDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Ended date",
+          "description": ""
+        },
+        {
+          "name": "RemainCoByPhysical",
+          "dataType": "UnitQty",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Remaining quantity",
+          "description": ""
+        },
+        {
+          "name": "ReqPlanIdSched",
+          "dataType": "ReqPlanIdSched",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReqPOId",
+          "dataType": "ReqPOId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundUp",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundUpQty",
+          "dataType": "PmfRoundUpQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StUpDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Started date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PmfFormulaCoBy"
+          },
+          "name": "Relationship_PmfFormulaCoByRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdJournalBOM"
+          },
+          "name": "Relationship_ProdJournalBOMRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRefRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReqPlanSched"
+          },
+          "name": "Relationship_ReqPlanSchedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Production co-by products"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PmfCoByQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PmfCoByQtySerie",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PmfCoByRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PmfCostAllocationPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventRefTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransIdBase",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PmfOverheadAmt",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PdsCWInventQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProdId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UnitQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ReqPlanIdSched",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ReqPOId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PmfRoundUpQty",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailConnDatabaseProfile.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailConnSchedulerJobTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Miscellaneous/RetailConnSchedule.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailCDXUploadSession",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CheckSum",
+          "dataType": "RetailCDXCheckSum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataStore",
+          "dataType": "RetailCDXDataStoreRefRecId",
+          "description": ""
+        },
+        {
+          "name": "DateCreated",
+          "dataType": "RetailCDXDateCreated",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateUploaded",
+          "dataType": "RetailCDXDateUploaded",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FileSize",
+          "dataType": "RetailCDXFileSize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "JobId",
+          "dataType": "RetailConnJobId",
+          "description": ""
+        },
+        {
+          "name": "Message",
+          "dataType": "RetailCDXMonDataSyncMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Rerun",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RerunFor",
+          "dataType": "RetailCDXSessionNumber",
+          "isNullable": true,
+          "displayName": "Rerun for",
+          "description": ""
+        },
+        {
+          "name": "RowsAffected",
+          "dataType": "RetailCDXRowsAffected",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Schedule",
+          "dataType": "RetailCDXScheduleRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TryCount",
+          "dataType": "RetailCDXTryCount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UploadPath",
+          "dataType": "RetailCDXPacketFilePath",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UploadSessionId",
+          "dataType": "RetailCDXSessionNumber",
+          "description": ""
+        },
+        {
+          "name": "LocalUploadSessionId",
+          "dataType": "RetailCdxLocalUploadSessionId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataGroup",
+          "dataType": "RetailCDXDataGroupRefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnDatabaseProfile"
+          },
+          "name": "Relationship_DataStoreRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnSchedulerJobTable"
+          },
+          "name": "Relationship_JobNumberRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailConnSchedule"
+          },
+          "name": "Relationship_RetailConnScheduleRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Upload sessions"
+    },
+    {
+      "dataTypeName": "RetailCDXCheckSum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCDXDataStoreRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXDateCreated",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailCDXDateUploaded",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailCDXFileSize",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailConnJobId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCDXMonDataSyncMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCDXSessionNumber",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXRowsAffected",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailCDXScheduleRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXTryCount",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RetailCDXPacketFilePath",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailCdxLocalUploadSessionId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailCDXDataGroupRefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

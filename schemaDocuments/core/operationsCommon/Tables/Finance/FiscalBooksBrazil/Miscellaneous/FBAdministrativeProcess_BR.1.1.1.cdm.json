@@ -1,0 +1,110 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Group/LogisticsAddressCity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBAdministrativeProcess_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Author",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "JudiciarySectionCity",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "City of the judicial section",
+          "description": ""
+        },
+        {
+          "name": "JudiciarySectionCode",
+          "dataType": "FBJudiciarySectionCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProcessNumber",
+          "dataType": "FBAdministrativeProcessNumber_BR",
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsAddressCity"
+          },
+          "name": "Relationship_LogisticsAddressCityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Administrative and judicial processes"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FBJudiciarySectionCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBAdministrativeProcessNumber_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

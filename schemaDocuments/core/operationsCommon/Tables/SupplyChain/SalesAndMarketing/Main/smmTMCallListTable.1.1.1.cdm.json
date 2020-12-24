@@ -1,0 +1,311 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "ContactPerson.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/DirPartyTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "smmBusRelTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/smmLeadTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "smmOpportunityTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmQuotationCompetitorGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmTMCallListGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/smmTMReasonGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "smmTMCallListTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CallActualDateTime",
+          "dataType": "smmTMCallActualDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CallActualDuration",
+          "dataType": "smmTMCallActualDuration",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CallActualWorker",
+          "dataType": "smmWorker",
+          "isNullable": true,
+          "displayName": "Executed by",
+          "description": ""
+        },
+        {
+          "name": "CallbackActivityId",
+          "dataType": "smmActivityId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CallListId",
+          "dataType": "smmTMCallListID",
+          "description": ""
+        },
+        {
+          "name": "CallPlannedDateTime",
+          "dataType": "smmTMCallPlannedDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CallRespWorker",
+          "dataType": "smmTMCallResponsibleWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CallStatus",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContactPersonId",
+          "dataType": "smmContactPersonId",
+          "description": ""
+        },
+        {
+          "name": "KMVirtualNetworkAnswerTableId",
+          "dataType": "KMVirtualNetworkAnswerTableId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Party",
+          "dataType": "DirPartyRecId",
+          "description": ""
+        },
+        {
+          "name": "ReasonId",
+          "dataType": "smmTMReasonId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ContactPerson"
+          },
+          "name": "Relationship_ContactPersonRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DirPartyTable"
+          },
+          "name": "Relationship_DirPartyTable_FKRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmBusRelTable"
+          },
+          "name": "Relationship_smmBusRelTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmLeadTable"
+          },
+          "name": "Relationship_smmLeadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmOpportunityTable"
+          },
+          "name": "Relationship_smmOpportunityTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmQuotationCompetitorGroup"
+          },
+          "name": "Relationship_smmQuotationCompetitorGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmTMCallListGroup"
+          },
+          "name": "Relationship_smmTMCallListGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "smmTMReasonGroup"
+          },
+          "name": "Relationship_smmTMReasonGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Call lists"
+    },
+    {
+      "dataTypeName": "smmTMCallActualDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "smmTMCallActualDuration",
+      "extendsDataType": "time"
+    },
+    {
+      "dataTypeName": "smmWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmActivityId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmTMCallListID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "smmTMCallPlannedDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "smmTMCallResponsibleWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmContactPersonId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "KMVirtualNetworkAnswerTableId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DirPartyRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "smmTMReasonId",
+      "extendsDataType": "string"
+    }
+  ]
+}

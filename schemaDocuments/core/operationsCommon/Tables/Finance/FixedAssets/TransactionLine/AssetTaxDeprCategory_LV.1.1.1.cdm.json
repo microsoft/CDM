@@ -1,0 +1,206 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetBookTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/TransactionHeader/AssetTaxDepr_LV.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetTaxDeprCategory_LV",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Acquired",
+          "dataType": "AssetAcquisitionValue",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetTaxDeprRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "CalcFrom",
+          "dataType": "AssetNetBookValue",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Adjusted value",
+          "description": ""
+        },
+        {
+          "name": "CategoryId",
+          "dataType": "LvAssetCategoryId",
+          "description": ""
+        },
+        {
+          "name": "Coefficient",
+          "dataType": "AssetTaxDepreciationCoefficient",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Depreciation",
+          "dataType": "AssetDepreciation",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Disposed",
+          "dataType": "AssetAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Disposal amount",
+          "description": ""
+        },
+        {
+          "name": "EndBalance",
+          "dataType": "AssetAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "End balance",
+          "description": ""
+        },
+        {
+          "name": "Percent",
+          "dataType": "AssetDepreciationPercentage",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StartBalance",
+          "dataType": "AssetAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Start balance",
+          "description": ""
+        },
+        {
+          "name": "SummarizeCategory",
+          "dataType": "LvAssetTaxCategoryTogether",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValueChange",
+          "dataType": "AssetAmount",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Total adjustments",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetBookTable"
+          },
+          "name": "Relationship_AssetBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTaxDepr_LV"
+          },
+          "name": "Relationship_AssetTaxDepr_LVRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Tax depreciation details for category"
+    },
+    {
+      "dataTypeName": "AssetAcquisitionValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetNetBookValue",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LvAssetCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetTaxDepreciationCoefficient",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetDepreciation",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "AssetDepreciationPercentage",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "LvAssetTaxCategoryTogether",
+      "extendsDataType": "integer"
+    }
+  ]
+}

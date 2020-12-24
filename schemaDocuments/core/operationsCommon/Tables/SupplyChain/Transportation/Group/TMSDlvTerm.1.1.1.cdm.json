@@ -1,0 +1,104 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/Group/DlvTerm.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSDlvTerm",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AddChargeToRetailOrderPolicy",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Add transportation charges to retail sales orders",
+          "description": ""
+        },
+        {
+          "name": "COD",
+          "dataType": "TMSCOD",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DlvTerm",
+          "dataType": "DlvTermId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TransferChargesToOrder",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Add transportation charges to orders",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DlvTerm"
+          },
+          "name": "Relationship_DlvTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Terms of delivery related to transportation management"
+    },
+    {
+      "dataTypeName": "TMSCOD",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DlvTermId",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProjLineProperty",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CostMarkup",
+          "dataType": "ProjMarkupPct",
+          "isNullable": true,
+          "displayName": "Cost percentage",
+          "description": ""
+        },
+        {
+          "name": "isEfficiency",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Efficient hours",
+          "description": ""
+        },
+        {
+          "name": "LinePropertyId",
+          "dataType": "ProjLinePropertyId",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "ProjLinePropertyName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NormBillable",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Add to norm hours - billable rate",
+          "description": ""
+        },
+        {
+          "name": "NormEfficiency",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Add to norm hours - efficient rate",
+          "description": ""
+        },
+        {
+          "name": "OnInvoice",
+          "dataType": "ProjInvoiceZeroSalesPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnQuotation",
+          "dataType": "ProjQuotationZeroSalesPrice",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SalesMarkup",
+          "dataType": "ProjMarkupPct",
+          "isNullable": true,
+          "displayName": "Sales percentage",
+          "description": ""
+        },
+        {
+          "name": "ToBeAccrued",
+          "dataType": "ProjAccruable",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToBeCapitalize",
+          "dataType": "ProjCapitalize",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToBeInvoiced",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Chargeable",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Line property"
+    },
+    {
+      "dataTypeName": "ProjMarkupPct",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProjLinePropertyId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjLinePropertyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ProjInvoiceZeroSalesPrice",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjQuotationZeroSalesPrice",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjAccruable",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ProjCapitalize",
+      "extendsDataType": "integer"
+    }
+  ]
+}

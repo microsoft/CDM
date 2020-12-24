@@ -1,0 +1,91 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/InventModelGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TradeNonStockedConversionLog.1.1.1.cdm.json",
+      "moniker": "base_TradeNonStockedConversionLog"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TradeNonStockedConversionChangeLog",
+      "extendsEntity": "base_TradeNonStockedConversionLog/TradeNonStockedConversionLog",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChangeType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ConvertedDateTime",
+          "dataType": "TradeNonStockedConversionDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginalItemModelGroupDataAreaId",
+          "dataType": "DataAreaId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OriginalItemModelGroupId",
+          "dataType": "TradeNonStockedOriginalItemModelGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "InventModelGroup"
+          },
+          "name": "Relationship_InventModelGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Conversion change log for products not stocked"
+    },
+    {
+      "dataTypeName": "TradeNonStockedConversionDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DataAreaId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TradeNonStockedOriginalItemModelGroupId",
+      "extendsDataType": "string"
+    }
+  ]
+}
