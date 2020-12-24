@@ -1,0 +1,459 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/BOMCostGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueCombination.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/MasterPlanning/Main/PlanReference.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "ProdTableJour.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/WorksheetHeader/ProdTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetLine/PurchLine.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ProdIndirectTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Amount",
+          "dataType": "CostAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Basis",
+          "dataType": "CostAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Calculated",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Cost accounted",
+          "description": ""
+        },
+        {
+          "name": "Canceled",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Canceled",
+          "description": ""
+        },
+        {
+          "name": "Code",
+          "dataType": "CostSheetNodeCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CostGroupId",
+          "dataType": "CostGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DateCalc",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Financial date",
+          "description": ""
+        },
+        {
+          "name": "DateEstimation",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Physical date",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDefaultDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EstimatedIndirectAbsorpLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EstimIndirectAbsorpOffsetLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IndirectAbsorptionLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IndirectAbsorptionOffsetLedgerDimension",
+          "dataType": "LedgerDimensionAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "openProdOrder",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Posted",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Posted",
+          "description": ""
+        },
+        {
+          "name": "PostingEstimatedIndirectAbsorption",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Estimated indirect cost absorbed",
+          "description": ""
+        },
+        {
+          "name": "PostingEstimatedIndirectAbsorptionOffset",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Estimated cost of indirect cost consumed, WIP",
+          "description": ""
+        },
+        {
+          "name": "PostingIndirectAbsorption",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Indirect cost absorbed",
+          "description": ""
+        },
+        {
+          "name": "PostingIndirectAbsorptionOffset",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Cost of indirect cost consumed, WIP",
+          "description": ""
+        },
+        {
+          "name": "RateSubtype",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "StornoPhysical_RU",
+          "dataType": "Storno_RU",
+          "isNullable": true,
+          "displayName": "Storno (physical)",
+          "description": ""
+        },
+        {
+          "name": "SurchargeSubtype",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransRefId",
+          "dataType": "CostTransRefId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "TransRefType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "Type",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Type",
+          "description": ""
+        },
+        {
+          "name": "UnitBasedSubtype",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VoucherCalc",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "displayName": "Financial voucher",
+          "description": ""
+        },
+        {
+          "name": "VoucherEstimation",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "displayName": "Physical voucher",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMCostGroup"
+          },
+          "name": "Relationship_BOMCostGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_EstimatedIndirectAbsorpLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_EstimIndirectAbsorpOffsetLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_IndirectAbsorptionLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueCombination"
+          },
+          "name": "Relationship_IndirectAbsorptionOffsetLedgerDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PlanReference"
+          },
+          "name": "Relationship_PlanReferenceRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTableJour"
+          },
+          "name": "Relationship_ProdJournalHistoricalCostRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTableJour"
+          },
+          "name": "Relationship_ProdJournalIndirectCostRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTable"
+          },
+          "name": "Relationship_ProdTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchLine"
+          },
+          "name": "Relationship_PurchLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTableJour"
+          },
+          "name": "Relationship_ProdJournalReceiptRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTableJour"
+          },
+          "name": "Relationship_ProdJournalRouteCardRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTableJour"
+          },
+          "name": "Relationship_ProdJournalBurdenCostRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ProdTableJour"
+          },
+          "name": "Relationship_ProdJournalMaterialConsumptionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Indirect cost transactions"
+    },
+    {
+      "dataTypeName": "CostAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostSheetNodeCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "LedgerDefaultDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerDimensionAccount",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Storno_RU",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CostTransRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

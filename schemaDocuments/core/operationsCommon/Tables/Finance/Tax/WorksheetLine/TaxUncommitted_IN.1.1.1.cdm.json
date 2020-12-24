@@ -1,0 +1,280 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxRegistrationNumbers_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxUncommitted.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxUncommitted_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AbatementAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ClaimPercentage",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Claim percentage",
+          "description": ""
+        },
+        {
+          "name": "CustomsDuty",
+          "dataType": "CustomsAmount_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximAuthorizationId",
+          "dataType": "EximAuthorizationId_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximBalanceTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximBalanceTaxAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximBalanceTaxCorrectedAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximBalanceTaxCorrectedAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximDEPBAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximDEPBAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximIncentiveScheme",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximTaxAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximTaxAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximTaxCorrectedAmount",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EximTaxCorrectedAmountCur",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FormulaID",
+          "dataType": "ID_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsScrapQtyLine_IN",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LoadOnInventoryTax",
+          "dataType": "TaxAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MainVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServiceTaxReverseChargePercentage",
+          "dataType": "ServiceTaxRevPercentage_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ServTaxRevChargeOriginAmountCur_IN",
+          "dataType": "TaxRegulationAmountCur",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceRegulateAmountCustoms",
+          "dataType": "TaxAmount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxRegistrationNumberTable_IN",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Registration number",
+          "description": ""
+        },
+        {
+          "name": "TaxUncommitted",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistrationNumbers_IN"
+          },
+          "name": "Relationship_TaxRegistrationNumberTable_INRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxUncommitted"
+          },
+          "name": "Relationship_TaxUncommittedRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Uncommitted sales tax"
+    },
+    {
+      "dataTypeName": "TaxAmount",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustomsAmount_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EximAuthorizationId_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ID_IN",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ServiceTaxRevPercentage_IN",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxRegulationAmountCur",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

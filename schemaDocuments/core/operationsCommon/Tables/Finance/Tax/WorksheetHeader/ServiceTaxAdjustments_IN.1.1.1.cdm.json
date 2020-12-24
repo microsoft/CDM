@@ -1,0 +1,158 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/APARShared/Main/ServiceCodeTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Main/TaxComponentTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ServiceTaxAdjustments_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AmtAdjustedFrmOtherTaxMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Other tax settled",
+          "description": ""
+        },
+        {
+          "name": "BalanceAmtMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Balance tax",
+          "description": ""
+        },
+        {
+          "name": "PayableAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Tax payable amount",
+          "description": ""
+        },
+        {
+          "name": "RecoverableAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Tax recoverable settled",
+          "description": ""
+        },
+        {
+          "name": "Selected",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Mark",
+          "description": ""
+        },
+        {
+          "name": "ServiceCodeTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Service code",
+          "description": ""
+        },
+        {
+          "name": "TaxComponentTable",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "displayName": "Tax component",
+          "description": ""
+        },
+        {
+          "name": "TaxPaymentVoucher",
+          "dataType": "Voucher",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "ServiceCodeTable_IN"
+          },
+          "name": "Relationship_ServiceCodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxComponentTable_IN"
+          },
+          "name": "Relationship_TaxComponentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Service tax transactions"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Voucher",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,201 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Parameter/AssetLedger.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetLocation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Main/AssetTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetLending",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActualReturn",
+          "dataType": "AssetLendingActualReturn",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AssetId",
+          "dataType": "AssetId",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "LedgerDimensionValueSet",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExpectedReturn",
+          "dataType": "AssetLendingExpectedReturn",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LendingDate",
+          "dataType": "AssetLendingDate",
+          "description": ""
+        },
+        {
+          "name": "LocationId",
+          "dataType": "AssetLocationId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "AssetPostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "AssetLendingWorker",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkerDescription_RU",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Leaseholder",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetLedger"
+          },
+          "name": "Relationship_AssetLedgerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetLocation"
+          },
+          "name": "Relationship_AssetLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed assets on loan"
+    },
+    {
+      "dataTypeName": "AssetLendingActualReturn",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LedgerDimensionValueSet",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetLendingExpectedReturn",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetLendingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "AssetLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetPostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AssetLendingWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    }
+  ]
+}

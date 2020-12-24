@@ -1,0 +1,205 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/FinancialDimensions/DimensionSetEntity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/FinancialDimensions/DimensionCombinationEntity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/LedgerAllocation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "LedgerAllocationEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "SourceAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromMainAccountRecId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromMainAccountLedgerChartOfAccountsRecId",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "MainAccountId",
+          "dataType": "string",
+          "displayName": "Source Main account",
+          "description": ""
+        },
+        {
+          "name": "LineNumber",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AllocationPercentage",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceSelectionCriteria",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceSelectionCriteriaDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Source selection criteria",
+          "description": ""
+        },
+        {
+          "name": "SourceSelectionCriteriaDimensions",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceSelectionCriteriaDimensionsDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Source financial dimension values",
+          "description": ""
+        },
+        {
+          "name": "DestinationAccount",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestinationAccountDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Destination Main account",
+          "description": ""
+        },
+        {
+          "name": "DestinationKeepSourceDimensions",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestinationKeepSourceDimensionsDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Destination keep source financial dimensions",
+          "description": ""
+        },
+        {
+          "name": "DestinationDimensions",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DestinationDimensionsDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Destination financial dimension values",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionSetEntity"
+          },
+          "name": "Relationship_SourceSelectionCriteriaDimensionsDimensionSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionSetEntity"
+          },
+          "name": "Relationship_DestinationDimensionsDimensionSetRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_DestinationAccountCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerAllocation"
+          },
+          "name": "BackingTable_LedgerAllocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Ledger allocation for main accounts"
+    }
+  ]
+}

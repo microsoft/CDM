@@ -1,0 +1,194 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "AssetTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FixedAssets/Group/AssetLocation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/OMOperatingUnit.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "AssetInternalTransferHistory",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AssetId",
+          "dataType": "AssetId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDepartment",
+          "dataType": "OMDepartmentRecId",
+          "isNullable": true,
+          "displayName": "From department",
+          "description": ""
+        },
+        {
+          "name": "FromLocation",
+          "dataType": "AssetLocationId",
+          "isNullable": true,
+          "displayName": "From location",
+          "description": ""
+        },
+        {
+          "name": "FromWorkerResponsible",
+          "dataType": "HcmResponsibleRecId",
+          "isNullable": true,
+          "displayName": "From responsible",
+          "description": ""
+        },
+        {
+          "name": "ToDepartment",
+          "dataType": "OMDepartmentRecId",
+          "isNullable": true,
+          "displayName": "To department",
+          "description": ""
+        },
+        {
+          "name": "ToLocation",
+          "dataType": "AssetLocationId",
+          "isNullable": true,
+          "displayName": "To location",
+          "description": ""
+        },
+        {
+          "name": "ToWorkerResponsible",
+          "dataType": "HcmResponsibleRecId",
+          "isNullable": true,
+          "displayName": "To responsible",
+          "description": ""
+        },
+        {
+          "name": "TransferDate",
+          "dataType": "TransferDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "AssetTable"
+          },
+          "name": "Relationship_AssetTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetLocation"
+          },
+          "name": "Relationship_FromAssetLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMOperatingUnit"
+          },
+          "name": "Relationship_FromOMOperatingUnitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "AssetLocation"
+          },
+          "name": "Relationship_ToAssetLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "OMOperatingUnit"
+          },
+          "name": "Relationship_ToOMOperatingUnitRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fixed asset internal transfer history"
+    },
+    {
+      "dataTypeName": "AssetId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "OMDepartmentRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "AssetLocationId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "HcmResponsibleRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransferDate",
+      "extendsDataType": "date"
+    }
+  ]
+}

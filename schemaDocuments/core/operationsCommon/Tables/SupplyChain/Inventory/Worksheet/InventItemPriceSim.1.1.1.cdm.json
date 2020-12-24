@@ -1,0 +1,248 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/BOMCalcTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Group/CostingVersion.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "InventItemPriceSim",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FromDate",
+          "dataType": "CostingVersionFromDate",
+          "description": ""
+        },
+        {
+          "name": "InventDimId",
+          "dataType": "InventDimId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "Markup",
+          "dataType": "CostAmountNonMonetary",
+          "isNullable": true,
+          "displayName": "Price charges",
+          "description": ""
+        },
+        {
+          "name": "MarkupSecCur_RU",
+          "dataType": "InventPriceMarkupSecCur_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Price",
+          "dataType": "CostPriceNonMonetary",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceAllocateMarkup",
+          "dataType": "PriceAllocateMarkup",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceCalcId",
+          "dataType": "PriceCalcId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceQty",
+          "dataType": "InventPriceMarkupQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceSecCur_RU",
+          "dataType": "CostPriceSecCur_RU",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PriceUnit",
+          "dataType": "InventPriceUnitQty",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "UnitID",
+          "dataType": "UnitOfMeasureSymbol",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "VersionId",
+          "dataType": "CostingVersionId",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "BOMCalcTable"
+          },
+          "name": "Relationship_BOMCalcTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CostingVersion"
+          },
+          "name": "Relationship_CostingVersionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Pending item prices"
+    },
+    {
+      "dataTypeName": "CostingVersionFromDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "InventDimId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostAmountNonMonetary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventPriceMarkupSecCur_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostPriceNonMonetary",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "PriceAllocateMarkup",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "PriceCalcId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventPriceMarkupQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CostPriceSecCur_RU",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventPriceUnitQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "UnitOfMeasureSymbol",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CostingVersionId",
+      "extendsDataType": "string"
+    }
+  ]
+}

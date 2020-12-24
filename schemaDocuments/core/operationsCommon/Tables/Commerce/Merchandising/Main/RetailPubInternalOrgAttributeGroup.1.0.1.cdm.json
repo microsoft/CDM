@@ -1,0 +1,120 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/EcoResAttributeGroup.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailInternalOrganization.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/Main/RetailInternalOrgAttributeGroup.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailPubInternalOrgAttributeGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AttributeGroup",
+          "dataType": "EcoResAttributeGroupRefRecId",
+          "description": ""
+        },
+        {
+          "name": "InternalOrganization",
+          "dataType": "RetailInternalOrgRefRecId",
+          "description": ""
+        },
+        {
+          "name": "Modifier",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "Origin",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "OriginRecVersion",
+          "dataType": "RetailOriginRecVersion",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "EcoResAttributeGroup"
+          },
+          "name": "Relationship_AttributeGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInternalOrganization"
+          },
+          "name": "Relationship_InternalOrganizationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInternalOrgAttributeGroup"
+          },
+          "name": "Relationship_InternalOrgAttributeGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Internal organization attribute group"
+    },
+    {
+      "dataTypeName": "EcoResAttributeGroupRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailInternalOrgRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailOriginRecVersion",
+      "extendsDataType": "integer"
+    }
+  ]
+}

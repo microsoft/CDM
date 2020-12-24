@@ -1,0 +1,92 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "SysTaskRecorderNodeCommandUserAction.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SysTaskRecorderNodeCommandArgument",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Value",
+          "dataType": "SysTaskRecorderNodeCommandArgumentValue",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsReference",
+          "dataType": "SysTaskRecorderNodeIsReference",
+          "isNullable": true,
+          "displayName": "Is reference",
+          "description": ""
+        },
+        {
+          "name": "ArgumentIndex",
+          "dataType": "SysTaskRecorderNodeCommandArgumentIndex",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CommandUserAction",
+          "dataType": "SysTaskRecorderNodeCommandUserActionRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "SysTaskRecorderNodeCommandUserAction"
+          },
+          "name": "Relationship_CommandUserActionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Command argument"
+    },
+    {
+      "dataTypeName": "SysTaskRecorderNodeCommandArgumentValue",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SysTaskRecorderNodeIsReference",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SysTaskRecorderNodeCommandArgumentIndex",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "SysTaskRecorderNodeCommandUserActionRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

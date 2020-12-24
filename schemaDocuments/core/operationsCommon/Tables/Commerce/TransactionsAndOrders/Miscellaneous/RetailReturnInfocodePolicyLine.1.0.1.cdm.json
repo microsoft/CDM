@@ -1,0 +1,94 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/TransactionsAndOrders/Main/RetailInfocodeTable.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailReturnPolicyLine.1.0.1.cdm.json",
+      "moniker": "base_RetailReturnPolicyLine"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailReturnInfocodePolicyLine",
+      "extendsEntity": "base_RetailReturnPolicyLine/RetailReturnPolicyLine",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InfocodeId",
+          "dataType": "RetailInfocodeId",
+          "displayName": "Info code",
+          "description": ""
+        },
+        {
+          "name": "SubcodeId",
+          "dataType": "RetailInformationSubcodeId",
+          "displayName": "Subcode",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RetailInfocodeTable"
+          },
+          "name": "Relationship_RetailInfocodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Map retail info codes with location"
+    },
+    {
+      "dataTypeName": "RetailInfocodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailInformationSubcodeId",
+      "extendsDataType": "string"
+    }
+  ]
+}

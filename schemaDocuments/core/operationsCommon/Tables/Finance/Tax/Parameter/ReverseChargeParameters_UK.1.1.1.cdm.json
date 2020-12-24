@@ -1,0 +1,182 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Group/TaxGroupHeading.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ReverseChargeParameters_UK",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Key",
+          "dataType": "ParametersKey",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RCEnabled",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Enable reverse charge",
+          "description": ""
+        },
+        {
+          "name": "RCInvoiceThreshold",
+          "dataType": "RCInvoiceThreshold_UK",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RCInvoiceThresholdAmount",
+          "dataType": "RCInvoiceThresholdAmount_UK",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RCInvoiceWording",
+          "dataType": "Description",
+          "isNullable": true,
+          "displayName": "Invoice text",
+          "description": ""
+        },
+        {
+          "name": "RCItemLineThreshold",
+          "dataType": "RCItemLineThreshold_UK",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RCName",
+          "dataType": "Name",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RCPhone",
+          "dataType": "Phone",
+          "isNullable": true,
+          "displayName": "Telephone number",
+          "description": ""
+        },
+        {
+          "name": "RCPOSalesTaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "displayName": "Purchase order sales tax group",
+          "description": ""
+        },
+        {
+          "name": "RCSOSalesTaxGroup",
+          "dataType": "TaxGroup",
+          "isNullable": true,
+          "displayName": "Sales order sales tax group",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeading_RCPOSalesTaxGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxGroupHeading"
+          },
+          "name": "Relationship_TaxGroupHeading_RCSOSalesTaxGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Reverse charge parameter"
+    },
+    {
+      "dataTypeName": "ParametersKey",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RCInvoiceThreshold_UK",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RCInvoiceThresholdAmount_UK",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RCItemLineThreshold_UK",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Name",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Phone",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxGroup",
+      "extendsDataType": "string"
+    }
+  ]
+}

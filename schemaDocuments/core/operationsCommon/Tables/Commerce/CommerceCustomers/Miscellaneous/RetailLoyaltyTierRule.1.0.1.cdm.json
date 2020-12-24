@@ -1,0 +1,125 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "RetailLoyaltyRewardPoint.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailLoyaltyTier.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/Group/RetailPeriodCode.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailLoyaltyTierRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LoyaltyTier",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "MinValue",
+          "dataType": "RetailLoyaltyRewardPointAmountQty",
+          "isNullable": true,
+          "displayName": "Minimum issued points",
+          "description": ""
+        },
+        {
+          "name": "PoolRelatedCards",
+          "dataType": "RetailLoyaltyPoolRelatedCards",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RewardPoint",
+          "dataType": "RefRecId",
+          "displayName": "Reward point",
+          "description": ""
+        },
+        {
+          "name": "ValidationDateInterval",
+          "dataType": "DateCode",
+          "displayName": "Evaluation date interval",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailLoyaltyRewardPoint"
+          },
+          "name": "Relationship_RetailLoyaltyRewardPointRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailLoyaltyTier"
+          },
+          "name": "Relationship_RetailLoyaltyTierRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailPeriodCode"
+          },
+          "name": "Relationship_RetailPeriodCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Retail loyalty tier rules"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RetailLoyaltyRewardPointAmountQty",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RetailLoyaltyPoolRelatedCards",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "DateCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

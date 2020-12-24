@@ -1,0 +1,112 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "PayrollAccrual",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccrualId",
+          "dataType": "PayrollAccrualId",
+          "description": ""
+        },
+        {
+          "name": "CanCarryForward",
+          "dataType": "NoYesId",
+          "displayName": "Carry forward balances",
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "Description",
+          "description": ""
+        },
+        {
+          "name": "IsIncludedInAccrual",
+          "dataType": "NoYesId",
+          "displayName": "Accrue on usage",
+          "description": ""
+        },
+        {
+          "name": "StartingDate",
+          "dataType": "PayrollAccrualStartingDate",
+          "description": ""
+        },
+        {
+          "name": "AccrualMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CustomAccrualDate",
+          "dataType": "PayrollAccrualCustomDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Frequency",
+          "dataType": "PayrollCalculationFrequencyRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkerAccrualDateMethod",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        }
+      ],
+      "displayName": "Benefit accrual plan"
+    },
+    {
+      "dataTypeName": "PayrollAccrualId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PayrollAccrualStartingDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PayrollAccrualCustomDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "PayrollCalculationFrequencyRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

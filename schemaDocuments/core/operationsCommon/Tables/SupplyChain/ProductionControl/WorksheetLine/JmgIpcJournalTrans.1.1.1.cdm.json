@@ -1,0 +1,198 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgIpcActivity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductionControl/Reference/JmgIpcCategory.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "JmgIpcJournalTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "JmgDescription",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDateTime",
+          "dataType": "JmgFromDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Hours",
+          "dataType": "JmgHours",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IpcActivityId",
+          "dataType": "JmgIpcActivityId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IpcCategoryId",
+          "dataType": "JmgIpcCategoryId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IPCJournalId",
+          "dataType": "JmgIPCJournalId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ToDateTime",
+          "dataType": "JmgToDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Worker",
+          "dataType": "JmgWorkerRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgIpcActivity"
+          },
+          "name": "Relationship_JmgIpcActivityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "JmgIpcCategory"
+          },
+          "name": "Relationship_JmgIpcCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "IPC journal transactions"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "JmgDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgFromDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgHours",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgIpcActivityId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgIpcCategoryId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "JmgIPCJournalId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "JmgToDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "JmgWorkerRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "MCRRFMDefinition.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "MCRCustRFMScore",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AvgInvoiceAmountMST",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Average invoiced amount",
+          "description": ""
+        },
+        {
+          "name": "CustAccount",
+          "dataType": "CustAccount",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "EffectiveDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Effective date",
+          "description": ""
+        },
+        {
+          "name": "FrequencyScore",
+          "dataType": "MCRScore",
+          "isNullable": true,
+          "displayName": "Frequency score",
+          "description": ""
+        },
+        {
+          "name": "LastOrderDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Last order date",
+          "description": ""
+        },
+        {
+          "name": "MonetaryScore",
+          "dataType": "MCRScore",
+          "isNullable": true,
+          "displayName": "Monetary score",
+          "description": ""
+        },
+        {
+          "name": "OrderFrequency",
+          "dataType": "Counter",
+          "isNullable": true,
+          "displayName": "Order frequency",
+          "description": ""
+        },
+        {
+          "name": "RecencyScore",
+          "dataType": "MCRScore",
+          "isNullable": true,
+          "displayName": "Recency score",
+          "description": ""
+        },
+        {
+          "name": "RFMComposite",
+          "dataType": "MCRRFMComposite",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RFMDefinitionName",
+          "dataType": "MCRRFMDefinitionName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "MCRRFMDefinition"
+          },
+          "name": "Relationship_MCRRFMDefinitionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "RFM score"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CustAccount",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "MCRScore",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "Counter",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRRFMComposite",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "MCRRFMDefinitionName",
+      "extendsDataType": "string"
+    }
+  ]
+}

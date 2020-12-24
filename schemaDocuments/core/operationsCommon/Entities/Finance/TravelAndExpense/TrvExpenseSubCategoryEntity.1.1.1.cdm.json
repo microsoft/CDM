@@ -1,0 +1,152 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Entities/Finance/FinancialDimensions/DimensionCombinationEntity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TrvSharedSubCategoryEntity.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Reference/TrvExpSubCategory.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TrvExpenseSubCategoryEntity",
+      "extendsEntity": "base_DataEntityView/DataEntityView",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ExpenseCategory",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DisplayOrder",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Display order",
+          "description": ""
+        },
+        {
+          "name": "IsInactive",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Inactive",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimension",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Account",
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroup",
+          "dataType": "string",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxItemGroupIfBilledToEmployee",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Alternate item sales tax group",
+          "description": ""
+        },
+        {
+          "name": "TrvSharedSubCategory",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Expense subcategory name",
+          "description": ""
+        },
+        {
+          "name": "SharedSubCategoryName",
+          "dataType": "string",
+          "description": ""
+        },
+        {
+          "name": "LedgerDimensionDisplayValue",
+          "dataType": "string",
+          "isNullable": true,
+          "displayName": "Account",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionCombinationEntity"
+          },
+          "name": "Relationship_LedgerDimensionCombinationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvSharedSubCategoryEntity"
+          },
+          "name": "Relationship_SharedSubCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TrvExpSubCategory"
+          },
+          "name": "BackingTable_TrvExpSubCategoryRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PrimaryCompanyContextRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Expense subcategory"
+    }
+  ]
+}

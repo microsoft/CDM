@@ -1,0 +1,813 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Main/BankAccountTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Main/CustBankAccount.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CustPaymModeTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/CustPaymModeSpec.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Group/CustLedger.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsReceivable/Transaction/CustTransOpen.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FinancialDimensions/Main/DimensionAttributeValueSet.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Expense/Main/EmployeeTable_RU.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "CFMPaymentRequestPaymentOrder.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCashFlowManagement/Group/CFMPaymentPriority.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCashFlowManagement/Group/CFMPaymentRequestType.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchAgreementHeader.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProcurementAndSourcing/WorksheetHeader/PurchTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RCash/Main/RCashTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Group/ReasonTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/SalesAndMarketing/WorksheetHeader/SalesAgreementHeader.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendBankAccount.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Vendor/Main/VendTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/VendPaymModeSpec.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Group/VendLedger.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountsPayable/Transaction/VendTransOpen.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "CFMPaymentRequestTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountNum",
+          "dataType": "CFMAccountNum",
+          "description": ""
+        },
+        {
+          "name": "AccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "AgreementID",
+          "dataType": "Num",
+          "isNullable": true,
+          "displayName": "Agreement registration number",
+          "description": ""
+        },
+        {
+          "name": "ApprovedBy",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Approver",
+          "description": ""
+        },
+        {
+          "name": "ApprovedDate",
+          "dataType": "ApprovedDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Approval date",
+          "description": ""
+        },
+        {
+          "name": "BankPurposeText",
+          "dataType": "BankCentralBankPurposeText",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "CompletedDate",
+          "dataType": "TransDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Closing date",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "DeblockingDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Unblocking date",
+          "description": ""
+        },
+        {
+          "name": "DefaultDimension",
+          "dataType": "DimensionDefault",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DueDate",
+          "dataType": "DueDate",
+          "description": ""
+        },
+        {
+          "name": "HeaderRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Initiator",
+          "dataType": "CFMPaymentRequestInitiator",
+          "description": ""
+        },
+        {
+          "name": "InvoiceAccountNum",
+          "dataType": "CFMInvoiceAccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnHold",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "On hold",
+          "description": ""
+        },
+        {
+          "name": "OnHoldInitiator",
+          "dataType": "CFMPaymentRequestUpdateWorker",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OnHoldReasonCode",
+          "dataType": "ReasonCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Outdated",
+          "dataType": "NoYesId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Outdated",
+          "description": ""
+        },
+        {
+          "name": "PaymentAccountNum",
+          "dataType": "CFMPaymentAccountNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentAccountType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentCurrency",
+          "dataType": "CurrencyCode",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Payment currency",
+          "description": ""
+        },
+        {
+          "name": "PaymentDataAreaId",
+          "dataType": "SelectableDataArea",
+          "isReadOnly": true,
+          "displayName": "Treasury company",
+          "description": ""
+        },
+        {
+          "name": "PaymentDate",
+          "dataType": "TransDate",
+          "isNullable": true,
+          "displayName": "Payment date",
+          "description": ""
+        },
+        {
+          "name": "PaymentDocumentNum",
+          "dataType": "DocumentNum",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentOrder",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentPriority",
+          "dataType": "CFMPaymentPriorityRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentRequestId",
+          "dataType": "CFMPaymentRequestId",
+          "description": ""
+        },
+        {
+          "name": "PaymentRequestType",
+          "dataType": "CFMPaymentRequestTypeRef",
+          "description": ""
+        },
+        {
+          "name": "PaymMode",
+          "dataType": "PaymMode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymSpec",
+          "dataType": "PaymSpec",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PostingProfile",
+          "dataType": "PostingProfile",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Prepayment",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Prepayment",
+          "description": ""
+        },
+        {
+          "name": "RecepientBankAccountId",
+          "dataType": "BankAccountID",
+          "isNullable": true,
+          "displayName": "Account of recipient",
+          "description": ""
+        },
+        {
+          "name": "SourceDataAreaId",
+          "dataType": "SelectableDataArea",
+          "isReadOnly": true,
+          "displayName": "Payment request company",
+          "description": ""
+        },
+        {
+          "name": "SourceRefRecId",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceType",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkflowStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Notes",
+          "dataType": "Notes",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "BankAccountTable"
+          },
+          "name": "Relationship_BankAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustBankAccount"
+          },
+          "name": "Relationship_CustBankAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustInvoiceAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustomerRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeTable"
+          },
+          "name": "Relationship_CustPaymModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustPaymModeSpec"
+          },
+          "name": "Relationship_CustPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustLedger"
+          },
+          "name": "Relationship_CustPostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTrans"
+          },
+          "name": "Relationship_CustTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CustTransOpen"
+          },
+          "name": "Relationship_CustTransOpenRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValueSet"
+          },
+          "name": "Relationship_DefaultDimensionRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EmployeeTable_RU"
+          },
+          "name": "Relationship_EmployeeTable_RURelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_PaymentCompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_PaymentCurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestPaymentOrder"
+          },
+          "name": "Relationship_PaymentOrderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentPriority"
+          },
+          "name": "Relationship_PaymentPriorityRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CFMPaymentRequestType"
+          },
+          "name": "Relationship_PaymentRequestTypeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchAgreementHeader"
+          },
+          "name": "Relationship_PurchAgreementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "PurchTable"
+          },
+          "name": "Relationship_PurchTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RCashTable"
+          },
+          "name": "Relationship_RCashRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "ReasonTable"
+          },
+          "name": "Relationship_ReasonTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SalesAgreementHeader"
+          },
+          "name": "Relationship_SalesAgreementRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_SourceCompanyInfoRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendBankAccount"
+          },
+          "name": "Relationship_VendBankAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendInvoiceAccountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTable"
+          },
+          "name": "Relationship_VendorRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeTable"
+          },
+          "name": "Relationship_VendPaymModeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendPaymModeSpec"
+          },
+          "name": "Relationship_VendPaymModeSpecRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendLedger"
+          },
+          "name": "Relationship_VendPostingProfileRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTrans"
+          },
+          "name": "Relationship_VendTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "VendTransOpen"
+          },
+          "name": "Relationship_VendTransOpenRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Payment requests"
+    },
+    {
+      "dataTypeName": "CFMAccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Num",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ApprovedDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "BankCentralBankPurposeText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TransDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DimensionDefault",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DueDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "CFMPaymentRequestInitiator",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CFMInvoiceAccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "CFMPaymentRequestUpdateWorker",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ReasonCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CFMPaymentAccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SelectableDataArea",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CFMPaymentPriorityRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "CFMPaymentRequestId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "CFMPaymentRequestTypeRef",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "PaymMode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymSpec",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PostingProfile",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "BankAccountID",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Notes",
+      "extendsDataType": "string"
+    }
+  ]
+}

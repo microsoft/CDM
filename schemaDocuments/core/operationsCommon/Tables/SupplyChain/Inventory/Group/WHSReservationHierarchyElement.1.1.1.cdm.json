@@ -1,0 +1,78 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "WHSReservationHierarchy.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSReservationHierarchyElement",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "DimensionFieldId",
+          "dataType": "FieldId",
+          "description": ""
+        },
+        {
+          "name": "ReservationHierarchy",
+          "dataType": "RefRecId",
+          "description": ""
+        },
+        {
+          "name": "ReservationHierarchyLevel",
+          "dataType": "WHSReservationHierarchyLevel",
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "WHSReservationHierarchy"
+          },
+          "name": "Relationship_WHSReservationHierarchyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Reservation hierarchy element"
+    },
+    {
+      "dataTypeName": "FieldId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "WHSReservationHierarchyLevel",
+      "extendsDataType": "integer"
+    }
+  ]
+}

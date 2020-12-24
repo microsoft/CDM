@@ -1,0 +1,200 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/GAB/Main/LogisticsLocation.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TMSTransportationStatusMaster.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Transaction/WHSContainerTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSLoadTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSShipmentTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TMSTransportationStatus",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ActivityDateTime",
+          "dataType": "TMSActivityDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Current",
+          "dataType": "TMSCurrent",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ExternalCode",
+          "dataType": "TMSExternalCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Location",
+          "dataType": "LogisticsLocationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Message",
+          "dataType": "TMSMessage",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RefId",
+          "dataType": "TMSRefId",
+          "description": ""
+        },
+        {
+          "name": "TransportRefType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TransportStatusMasterCode",
+          "dataType": "TMSTransportStatusMasterCode",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "LogisticsLocation"
+          },
+          "name": "Relationship_LogisticsLocationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TMSTransportationStatusMaster"
+          },
+          "name": "Relationship_TMSTransportationStatusMasterRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSContainerTable"
+          },
+          "name": "Relationship_WHSContainerTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSLoadTable"
+          },
+          "name": "Relationship_WHSLoadTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSShipmentTable"
+          },
+          "name": "Relationship_WHSShipmentTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Transportation status"
+    },
+    {
+      "dataTypeName": "TMSActivityDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TMSCurrent",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TMSExternalCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LogisticsLocationRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TMSMessage",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSRefId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TMSTransportStatusMasterCode",
+      "extendsDataType": "string"
+    }
+  ]
+}

@@ -1,0 +1,176 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "TaxBook.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxPeriodHead.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxReportPeriod.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxBookStatus",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ChangedPageNo",
+          "dataType": "PageNo",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Changed to",
+          "description": ""
+        },
+        {
+          "name": "FirstPageNo",
+          "dataType": "PageNo",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "First page number",
+          "description": ""
+        },
+        {
+          "name": "FirstPageSummaryNo",
+          "dataType": "PageNo",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FromDate",
+          "dataType": "TaxPeriodDate",
+          "isReadOnly": true,
+          "displayName": "From date",
+          "description": ""
+        },
+        {
+          "name": "LastPageNo",
+          "dataType": "PageNo",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Last page number",
+          "description": ""
+        },
+        {
+          "name": "TaxBook",
+          "dataType": "TaxBookRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBookStatusType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPeriod",
+          "dataType": "TaxPeriod",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ToDate",
+          "dataType": "TaxPeriodDate",
+          "isReadOnly": true,
+          "displayName": "To date",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "TaxBook"
+          },
+          "name": "Relationship_TaxBookRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxPeriodHead"
+          },
+          "name": "Relationship_TaxPeriodHeadRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxReportPeriod"
+          },
+          "name": "Relationship_TaxReportPeriodRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales tax book status"
+    },
+    {
+      "dataTypeName": "PageNo",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxPeriodDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "TaxBookRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TaxPeriod",
+      "extendsDataType": "string"
+    }
+  ]
+}

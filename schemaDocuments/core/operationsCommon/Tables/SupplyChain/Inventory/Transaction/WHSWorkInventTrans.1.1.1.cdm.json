@@ -1,0 +1,315 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventDim.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "InventTransOrigin.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetLine/WHSWorkLine.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/WorksheetHeader/WHSWorkTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "WHSWorkInventTrans",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "InventDimIdFrom",
+          "dataType": "WHSInventDimIdFrom",
+          "description": ""
+        },
+        {
+          "name": "InventDimIdTo",
+          "dataType": "WHSInventDimIdTo",
+          "description": ""
+        },
+        {
+          "name": "InventQtyRemain",
+          "dataType": "InventQtyRemain",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransIdFrom",
+          "dataType": "WHSInventTransIdFrom",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransIdParent",
+          "dataType": "InventTransId",
+          "description": ""
+        },
+        {
+          "name": "InventTransIdTo",
+          "dataType": "WHSInventTransIdTo",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "LineNum",
+          "dataType": "LineNum",
+          "description": ""
+        },
+        {
+          "name": "Qty",
+          "dataType": "ProductQuantity",
+          "description": ""
+        },
+        {
+          "name": "TransDateTime",
+          "dataType": "TransDateTime",
+          "description": ""
+        },
+        {
+          "name": "WorkHasReservation",
+          "dataType": "WHSWorkHasReservation",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "WorkId",
+          "dataType": "WHSWorkId",
+          "description": ""
+        },
+        {
+          "name": "TransactionWeight",
+          "dataType": "WHSTransWeight",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemainingTransactionWeight",
+          "dataType": "WHSTransWeightRemain",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InventTransOriginIdSupply",
+          "dataType": "InventTransOriginIdMarked",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimFromRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventDim"
+          },
+          "name": "Relationship_InventDimToRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginFromRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginParentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginToRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkLine"
+          },
+          "name": "Relationship_WHSWorkLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "WHSWorkTable"
+          },
+          "name": "Relationship_WHSWorkTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTransOrigin"
+          },
+          "name": "Relationship_InventTransOriginIdSupplyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Work inventory transactions"
+    },
+    {
+      "dataTypeName": "WHSInventDimIdFrom",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSInventDimIdTo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventQtyRemain",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSInventTransIdFrom",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "InventTransId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSInventTransIdTo",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "LineNum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ProductQuantity",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "WHSWorkHasReservation",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "WHSWorkId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "WHSTransWeight",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "WHSTransWeightRemain",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InventTransOriginIdMarked",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

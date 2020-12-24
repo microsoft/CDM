@@ -1,0 +1,195 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Bank/Group/PaymTerm.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "TaxAuthorityAddress.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Tax/Miscellaneous/TaxRegistration.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "TaxPeriodHead",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "LaterReg_HU",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Transfer",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "Description",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PaymentCode",
+          "dataType": "PaymTermId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PeriodUnit",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Period interval unit",
+          "description": ""
+        },
+        {
+          "name": "QtyUnit",
+          "dataType": "Days",
+          "isNullable": true,
+          "displayName": "Period interval duration",
+          "description": ""
+        },
+        {
+          "name": "TaxAuthority",
+          "dataType": "TaxAuthority",
+          "description": ""
+        },
+        {
+          "name": "TaxCode",
+          "dataType": "TaxCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxPeriod",
+          "dataType": "TaxPeriod",
+          "description": ""
+        },
+        {
+          "name": "UseBatch",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Use batch processing for sales tax settlement",
+          "description": ""
+        },
+        {
+          "name": "TaxID",
+          "dataType": "TaxRegistrationRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "NotGenerateOffsetTaxTrans",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Prevent generating offset tax transactions",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "PaymTerm"
+          },
+          "name": "Relationship_PaymTermRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxAuthorityAddress"
+          },
+          "name": "Relationship_TaxAuthorityAddressRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "TaxRegistration"
+          },
+          "name": "Relationship_TaxRegistrationRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Sales tax period description"
+    },
+    {
+      "dataTypeName": "Description",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PaymTermId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Days",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "TaxAuthority",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxPeriod",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRegistrationRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

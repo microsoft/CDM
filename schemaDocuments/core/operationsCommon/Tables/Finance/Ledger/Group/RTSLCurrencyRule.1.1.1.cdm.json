@@ -1,0 +1,234 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Currency/Group/Currency.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RTSLCurrencyIndex.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RTSLCurrencyRuleGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "RTSLRuleGroup.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RTSLCurrencyRule",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CurrencyAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Amount (cur)",
+          "description": ""
+        },
+        {
+          "name": "CurrencyCode",
+          "dataType": "CurrencyCode",
+          "description": ""
+        },
+        {
+          "name": "CurrencyIndexId",
+          "dataType": "RTSLCurrencyIndexId",
+          "isNullable": true,
+          "displayName": "Inflation (cur)",
+          "description": ""
+        },
+        {
+          "name": "CurrencyRuleGroupId",
+          "dataType": "RTSLCurrencyRuleGroupId",
+          "description": ""
+        },
+        {
+          "name": "MSTAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Amount (MST)",
+          "description": ""
+        },
+        {
+          "name": "MSTIndexId",
+          "dataType": "RTSLCurrencyIndexId",
+          "isNullable": true,
+          "displayName": "Inflation (MST)",
+          "description": ""
+        },
+        {
+          "name": "RuleGroupId",
+          "dataType": "RTSLRuleGroupId",
+          "description": ""
+        },
+        {
+          "name": "SecondaryAction",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Amount (sec)",
+          "description": ""
+        },
+        {
+          "name": "SecondaryIndexId",
+          "dataType": "RTSLCurrencyIndexId",
+          "isNullable": true,
+          "displayName": "Inflation (sec)",
+          "description": ""
+        },
+        {
+          "name": "ToCompanyId",
+          "dataType": "RTSLToCompanyId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "UseRates",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "Currency"
+          },
+          "name": "Relationship_CurrencyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLCurrencyIndex"
+          },
+          "name": "Relationship_CurrencyIndex1Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLCurrencyIndex"
+          },
+          "name": "Relationship_CurrencyIndex2Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLCurrencyIndex"
+          },
+          "name": "Relationship_CurrencyIndex3Relationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLCurrencyRuleGroup"
+          },
+          "name": "Relationship_CurrencyRuleGroupRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLRuleGroup"
+          },
+          "name": "Relationship_RTSLRuleGroupRuleGroupIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RTSLRuleGroup"
+          },
+          "name": "Relationship_RTSLRuleGroupToCompanyIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Translation currency rules"
+    },
+    {
+      "dataTypeName": "CurrencyCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLCurrencyIndexId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLCurrencyRuleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLRuleGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RTSLToCompanyId",
+      "extendsDataType": "string"
+    }
+  ]
+}

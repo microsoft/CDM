@@ -1,0 +1,179 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/WorksheetLine/EximDEPBSchemesLine_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/Group/EximProductGroupTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EximEntitlementDetails_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CertificateNum",
+          "dataType": "EximLicenseNum_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Certificate number",
+          "description": ""
+        },
+        {
+          "name": "DutyEntitlement",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Duty entitlement",
+          "description": ""
+        },
+        {
+          "name": "EximProductGroupTable",
+          "dataType": "RefRecId",
+          "isReadOnly": true,
+          "displayName": "Product group",
+          "description": ""
+        },
+        {
+          "name": "ImportExpiryDateTime",
+          "dataType": "TransDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Import expiration date/time",
+          "description": ""
+        },
+        {
+          "name": "IssueDateTime",
+          "dataType": "TransDateTime",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Issue date",
+          "description": ""
+        },
+        {
+          "name": "LicenseStatus",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "OrigLicenseNum",
+          "dataType": "EximLicenseNum_IN",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PurchaseValue",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Purchase value",
+          "description": ""
+        },
+        {
+          "name": "SaleValue",
+          "dataType": "AmountMST",
+          "isReadOnly": true,
+          "isNullable": true,
+          "displayName": "Sale value",
+          "description": ""
+        },
+        {
+          "name": "SchemesLineRecId",
+          "dataType": "EximDEPBSchemesLineRecId_IN",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EximDEPBSchemesLine_IN"
+          },
+          "name": "Relationship_EximDEPBSchemesLineRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "EximProductGroupTable_IN"
+          },
+          "name": "Relationship_EximProductGroupTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Entitlement details"
+    },
+    {
+      "dataTypeName": "EximLicenseNum_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "TransDateTime",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "EximDEPBSchemesLineRecId_IN",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

@@ -1,0 +1,214 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Main/RDeferralsBookTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/WorksheetHeader/RDeferralsCountingJournal.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/RDeferrals/Main/RDeferralsTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RDeferralsCountingJournalLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AcquisitionDate",
+          "dataType": "RDeferralsAcquisitionDate",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeferralBookId",
+          "dataType": "RDeferralsBookId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeferralID",
+          "dataType": "RDeferralsId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DeferralsAmount",
+          "dataType": "RDeferralsSum",
+          "isNullable": true,
+          "displayName": "Deferrals amount",
+          "description": ""
+        },
+        {
+          "name": "LifeTime",
+          "dataType": "RDeferralsLifeTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Months",
+          "dataType": "Months",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "RDeferralsName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RDeferralsCountingJournal",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RemainAmount",
+          "dataType": "RDeferralsSum",
+          "isNullable": true,
+          "displayName": "Remaining amount",
+          "description": ""
+        },
+        {
+          "name": "WritingOffAmount",
+          "dataType": "RDeferralsSum",
+          "isNullable": true,
+          "displayName": "Writing off amount",
+          "description": ""
+        },
+        {
+          "name": "WritingOffAmountTotal",
+          "dataType": "RDeferralsSum",
+          "isNullable": true,
+          "displayName": "Writing off amount",
+          "description": ""
+        },
+        {
+          "name": "WritingOffReportYear",
+          "dataType": "RDeferralsSum",
+          "isNullable": true,
+          "displayName": "Writing off (reporting year)",
+          "description": ""
+        },
+        {
+          "name": "WroteOffAmount",
+          "dataType": "RDeferralsSum",
+          "isNullable": true,
+          "displayName": "Wrote off amount",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsBookTable"
+          },
+          "name": "Relationship_RDeferralsBookTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsCountingJournal"
+          },
+          "name": "Relationship_RDeferralsCountingJournalRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RDeferralsTable"
+          },
+          "name": "Relationship_RDeferralsTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Deferrals counting journal line"
+    },
+    {
+      "dataTypeName": "RDeferralsAcquisitionDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RDeferralsBookId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RDeferralsSum",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "RDeferralsLifeTime",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Months",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RDeferralsName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

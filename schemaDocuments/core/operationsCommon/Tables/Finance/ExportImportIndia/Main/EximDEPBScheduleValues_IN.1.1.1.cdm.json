@@ -1,0 +1,177 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/ExportImportIndia/Group/EximDEPBScheduleTable_IN.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EximDEPBScheduleValues_IN",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "ApplyMarketValue",
+          "dataType": "NoYesId",
+          "isNullable": true,
+          "displayName": "Apply present market value",
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "RoundOff",
+          "dataType": "TaxRoundOff",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "RoundOffType",
+          "dataType": "TaxRoundOffType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ScheduleRate",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "DEPB Rate",
+          "description": ""
+        },
+        {
+          "name": "ScheduleRecId",
+          "dataType": "EximDEPBSchedulesRecId_IN",
+          "isReadOnly": true,
+          "displayName": "Product group",
+          "description": ""
+        },
+        {
+          "name": "SerialNum",
+          "dataType": "EximSerialNum_IN",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Unit",
+          "dataType": "SalesUnit",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ValueCap",
+          "dataType": "AmountMST",
+          "isNullable": true,
+          "displayName": "Value cap",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "EximDEPBScheduleTable_IN"
+          },
+          "name": "Relationship_EximDEPBScheduleTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "DEPB Schedule values"
+    },
+    {
+      "dataTypeName": "NoYesId",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxRoundOff",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "TaxRoundOffType",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "EximDEPBSchedulesRecId_IN",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EximSerialNum_IN",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SalesUnit",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "AmountMST",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

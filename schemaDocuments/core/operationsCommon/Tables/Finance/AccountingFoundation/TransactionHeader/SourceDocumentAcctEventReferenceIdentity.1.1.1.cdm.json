@@ -1,0 +1,150 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/Transaction/AccountingEvent.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "SourceDocumentHeader.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "SourceDocumentAcctEventReferenceIdentity",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AccountingEvent",
+          "dataType": "AccountingEventRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDate",
+          "dataType": "DocumentDate",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentDescription",
+          "dataType": "DocumentDescription",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentNumber",
+          "dataType": "DocumentNum",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DocumentText",
+          "dataType": "DocumentText",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PartyName",
+          "dataType": "PartyName",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "PartyNumber",
+          "dataType": "PartyNumber",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "SourceDocumentHeader",
+          "dataType": "SourceDocumentHeaderRecId",
+          "isReadOnly": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "AccountingEvent"
+          },
+          "name": "Relationship_AccountingEventRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "SourceDocumentHeader"
+          },
+          "name": "Relationship_SourceDocumentHeaderRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Source document accounting event reference identity"
+    },
+    {
+      "dataTypeName": "AccountingEventRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DocumentDate",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "DocumentDescription",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "DocumentText",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PartyName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "PartyNumber",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "SourceDocumentHeaderRecId",
+      "extendsDataType": "bigInteger"
+    }
+  ]
+}

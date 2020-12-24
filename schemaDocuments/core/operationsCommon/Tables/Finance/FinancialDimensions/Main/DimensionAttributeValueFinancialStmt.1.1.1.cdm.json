@@ -1,0 +1,149 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "DimensionAttributeValue.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "DimensionAttributeValueFinancialStmt",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "Bold",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Bold",
+          "description": ""
+        },
+        {
+          "name": "Column",
+          "dataType": "Column",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DimensionAttributeValue",
+          "dataType": "RefRecId",
+          "displayName": "Dimension code",
+          "description": ""
+        },
+        {
+          "name": "InvertSign",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Invert sign",
+          "description": ""
+        },
+        {
+          "name": "Italic",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Italics",
+          "description": ""
+        },
+        {
+          "name": "Level",
+          "dataType": "DimSpecLevel",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LineAbove",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Line above",
+          "description": ""
+        },
+        {
+          "name": "LineBelow",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Line below",
+          "description": ""
+        },
+        {
+          "name": "UnderlineAmount",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Underline amount",
+          "description": ""
+        },
+        {
+          "name": "UnderlineText",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Underline text",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "DimensionAttributeValue"
+          },
+          "name": "Relationship_DimensionAttributeValueRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Dimension code financial statement"
+    },
+    {
+      "dataTypeName": "Column",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "DimSpecLevel",
+      "extendsDataType": "integer"
+    }
+  ]
+}

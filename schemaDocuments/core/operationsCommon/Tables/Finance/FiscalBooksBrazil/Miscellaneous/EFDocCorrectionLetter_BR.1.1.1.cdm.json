@@ -1,0 +1,164 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FiscalDocument_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "EFDocCorrectionLetter_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "EventDateTime",
+          "dataType": "DateTimeExecuted",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocument_BR",
+          "dataType": "FiscalDocumentRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ProtocolNumber",
+          "dataType": "EFDocProtocolNumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnCode",
+          "dataType": "EFDocCorrectionLetterReturnCode_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ReturnCodeDescription",
+          "dataType": "EFDocReturnCodeDescription_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Sequence",
+          "dataType": "EFDocCorrectionLetterSequence_BR",
+          "description": ""
+        },
+        {
+          "name": "Status",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "txt",
+          "dataType": "EFDocCorrectionLetterTXT_BR",
+          "description": ""
+        },
+        {
+          "name": "XmlDocReceived",
+          "dataType": "EFDocXML_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "XmlDocSent",
+          "dataType": "EFDocXML_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocument_BR"
+          },
+          "name": "Relationship_FiscalDocument_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Correction letter"
+    },
+    {
+      "dataTypeName": "DateTimeExecuted",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "FiscalDocumentRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "EFDocProtocolNumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EFDocCorrectionLetterReturnCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EFDocReturnCodeDescription_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EFDocCorrectionLetterSequence_BR",
+      "extendsDataType": "integer"
+    },
+    {
+      "dataTypeName": "EFDocCorrectionLetterTXT_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "EFDocXML_BR",
+      "extendsDataType": "string"
+    }
+  ]
+}

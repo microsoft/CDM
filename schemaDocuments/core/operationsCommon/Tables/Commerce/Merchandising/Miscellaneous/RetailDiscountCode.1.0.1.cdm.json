@@ -1,0 +1,112 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/Inventory/Main/InventItemBarcode.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/Merchandising/WorksheetHeader/RetailPeriodicDiscount.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailDiscountCode",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "BarCode",
+          "dataType": "ItemBarCode",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DiscountCode",
+          "dataType": "RetailDiscountCodeId",
+          "description": ""
+        },
+        {
+          "name": "DiscountOfferId",
+          "dataType": "RetailOfferIdEx3",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "InventItemBarcode"
+          },
+          "name": "Relationship_InventItemBarcodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailPeriodicDiscount"
+          },
+          "name": "Relationship_RetailPeriodicDiscountRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Discount code"
+    },
+    {
+      "dataTypeName": "ItemBarCode",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDiscountCodeId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailOfferIdEx3",
+      "extendsDataType": "string"
+    }
+  ]
+}

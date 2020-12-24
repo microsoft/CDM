@@ -1,0 +1,92 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailSalesPricePointGroup",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "PricePointGroupId_DEL",
+          "dataType": "RetailPricePointGroupId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Description",
+          "dataType": "RetailDescriptionEx1",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "GroupId",
+          "dataType": "RetailPricePointGroupId",
+          "description": ""
+        },
+        {
+          "name": "RoundingType",
+          "dataType": "RetailPricePointRoundingType",
+          "isNullable": true,
+          "displayName": "Default rounding",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Price point group"
+    },
+    {
+      "dataTypeName": "RetailPricePointGroupId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDescriptionEx1",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailPricePointRoundingType",
+      "extendsDataType": "integer"
+    }
+  ]
+}

@@ -1,0 +1,163 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalEstablishment_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/SupplyChain/ProductInformationManagement/Main/InventTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "ImportedContentPerItem_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FCINumber",
+          "dataType": "FCINumber_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishment_BR",
+          "dataType": "FiscalEstablishmentRecId_BR",
+          "description": ""
+        },
+        {
+          "name": "ImportedContentPercentage",
+          "dataType": "ImportedContentPercentage_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ImportedPortionAmount",
+          "dataType": "ImportedPortionAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "InterstateOutgoingOperationsAmount",
+          "dataType": "InterstateOutgoingOperationsAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ItemId",
+          "dataType": "ItemId",
+          "description": ""
+        },
+        {
+          "name": "Month",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "TaxationOrigin",
+          "dataType": "integer",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "Year",
+          "dataType": "Year",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishment_BR"
+          },
+          "name": "Relationship_FiscalEstablishment_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "InventTable"
+          },
+          "name": "Relationship_InventTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Imported content for items"
+    },
+    {
+      "dataTypeName": "FCINumber_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FiscalEstablishmentRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "ImportedContentPercentage_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ImportedPortionAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "InterstateOutgoingOperationsAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "ItemId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "Year",
+      "extendsDataType": "integer"
+    }
+  ]
+}

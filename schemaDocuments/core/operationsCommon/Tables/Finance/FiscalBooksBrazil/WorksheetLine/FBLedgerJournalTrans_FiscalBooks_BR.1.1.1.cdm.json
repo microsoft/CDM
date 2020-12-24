@@ -1,0 +1,407 @@
+{
+  "documentVersion": "1.1.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Miscellaneous/FBContribCreditType_BR.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FBFiscalDocumentAdjustmentCodeICMS_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FBGeneralAdjustmentCode_BR.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FiscalDocument_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FiscalDocumentLine_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Transaction/FiscalDocumentTaxTrans_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FiscalEstablishment_BR.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/AccountingFoundation/WorksheetLine/LedgerJournalTrans.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/FiscalBooksBrazil/Main/FBObservationCodeTable_BR.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "FBLedgerJournalTrans_FiscalBooks_BR",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.1.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "AdjustmentType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "ComplementaryDescription",
+          "dataType": "FBAdjustmentDescription_BR",
+          "isNullable": true,
+          "displayName": "Complementary description",
+          "description": ""
+        },
+        {
+          "name": "ContribAssessmentPeriod",
+          "dataType": "FBContribAssessmentPeriod_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ContribCreditBaseSource",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Credit base source",
+          "description": ""
+        },
+        {
+          "name": "ContribTransferredCreditPercentage",
+          "dataType": "Percent",
+          "isNullable": true,
+          "displayName": "Transferred credit percentage",
+          "description": ""
+        },
+        {
+          "name": "DeductionCNPJ",
+          "dataType": "CNPJNum_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FBContribCreditType_BR",
+          "dataType": "FBContribCreditTypeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentAdjustmentCodeICMS",
+          "dataType": "FBFiscalDocumentAdjustmentCodeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentLine_BR",
+          "dataType": "FiscalDocumentLineRecId_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocumentTaxTrans_BR",
+          "dataType": "RefRecId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalDocument_BR",
+          "dataType": "FiscalDocumentRecId_BR",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "FiscalEstablishment_BR",
+          "dataType": "FiscalEstablishmentRecId_BR",
+          "description": ""
+        },
+        {
+          "name": "GeneralAdjustmentCode",
+          "dataType": "FBGeneralAdjustmentCodeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "LedgerJournalTrans",
+          "dataType": "LedgerJournalTransRefRecId",
+          "isReadOnly": true,
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "ObservationCodeTable",
+          "dataType": "FBObservationCodeRecId_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "State",
+          "dataType": "LogisticsAddressStateId",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmount",
+          "dataType": "FBTaxAmount_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAmountOther",
+          "dataType": "FBTaxAmount_BR",
+          "isNullable": true,
+          "displayName": "Other tax amount",
+          "description": ""
+        },
+        {
+          "name": "TaxAdjustmentProcessNum",
+          "dataType": "FBTaxAdjustmentProcessNum_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxAdjustmentSourceType",
+          "dataType": "integer",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxationCode",
+          "dataType": "TaxationCode_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "TaxBaseAmount",
+          "dataType": "FBTaxBaseAmount_BR",
+          "isNullable": true,
+          "displayName": "Base amount",
+          "description": ""
+        },
+        {
+          "name": "TaxType",
+          "dataType": "integer",
+          "description": ""
+        },
+        {
+          "name": "TaxValue",
+          "dataType": "FBTaxValue_BR",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "FBContribCreditType_BR"
+          },
+          "name": "Relationship_FBContribCreditType_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBFiscalDocumentAdjustmentCodeICMS_BR"
+          },
+          "name": "Relationship_FBFiscalDocumentAdjustmentCodeICMSRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBGeneralAdjustmentCode_BR"
+          },
+          "name": "Relationship_FBGeneralAdjustmentCodeRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocument_BR"
+          },
+          "name": "Relationship_FiscalDocumentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentLine_BR"
+          },
+          "name": "Relationship_FiscalDocumentLine_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalDocumentTaxTrans_BR"
+          },
+          "name": "Relationship_FiscalDocumentTaxTrans_BRRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FiscalEstablishment_BR"
+          },
+          "name": "Relationship_FiscalEstablishmentRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "LedgerJournalTrans"
+          },
+          "name": "Relationship_LedgerJournalTransRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "FBObservationCodeTable_BR"
+          },
+          "name": "Relationship_ObservationCodeTableRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Fiscal books journal lines"
+    },
+    {
+      "dataTypeName": "FBAdjustmentDescription_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBContribAssessmentPeriod_BR",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "Percent",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "CNPJNum_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBContribCreditTypeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FBFiscalDocumentAdjustmentCodeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalDocumentLineRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "RefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalDocumentRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FiscalEstablishmentRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FBGeneralAdjustmentCodeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LedgerJournalTransRefRecId",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "FBObservationCodeRecId_BR",
+      "extendsDataType": "bigInteger"
+    },
+    {
+      "dataTypeName": "LogisticsAddressStateId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBTaxAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBTaxAdjustmentProcessNum_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "TaxationCode_BR",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "FBTaxBaseAmount_BR",
+      "extendsDataType": "decimal"
+    },
+    {
+      "dataTypeName": "FBTaxValue_BR",
+      "extendsDataType": "decimal"
+    }
+  ]
+}

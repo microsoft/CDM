@@ -1,0 +1,141 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Common/Customer/Main/CustTable.1.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Finance/Ledger/Main/CompanyInfo.1.1.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailWishListTable",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "CustomerId",
+          "dataType": "AccountNum",
+          "isNullable": true,
+          "displayName": "The customer account number of the customer who created the wish list",
+          "description": ""
+        },
+        {
+          "name": "DeletedDateTime",
+          "dataType": "UTCTimestamp",
+          "isNullable": true,
+          "displayName": "Uses a time stamp to indicate whether or not a wish list has been deleted",
+          "description": ""
+        },
+        {
+          "name": "IsFavorite",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Indicates whether a wish list item is marked as favorite or default",
+          "description": ""
+        },
+        {
+          "name": "IsPrivate",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Indicates if a wish list item is marked as private",
+          "description": ""
+        },
+        {
+          "name": "IsRecurring",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Indicates if a wish list product is marked as recurring",
+          "description": ""
+        },
+        {
+          "name": "Name",
+          "dataType": "RetailWishListName",
+          "isNullable": true,
+          "displayName": "The name of the wish list",
+          "description": ""
+        },
+        {
+          "name": "DueDateTime",
+          "dataType": "RetailDueDateTime",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "name": "IsCollaborative",
+          "dataType": "integer",
+          "isNullable": true,
+          "displayName": "Is collaborative",
+          "description": ""
+        },
+        {
+          "name": "DataAreaId",
+          "dataType": "string",
+          "isReadOnly": true
+        },
+        {
+          "entity": {
+            "entityReference": "CustTable"
+          },
+          "name": "Relationship_CustomerIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "CompanyInfo"
+          },
+          "name": "Relationship_CompanyRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "The table contains customer wish lists"
+    },
+    {
+      "dataTypeName": "AccountNum",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "UTCTimestamp",
+      "extendsDataType": "date"
+    },
+    {
+      "dataTypeName": "RetailWishListName",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailDueDateTime",
+      "extendsDataType": "date"
+    }
+  ]
+}

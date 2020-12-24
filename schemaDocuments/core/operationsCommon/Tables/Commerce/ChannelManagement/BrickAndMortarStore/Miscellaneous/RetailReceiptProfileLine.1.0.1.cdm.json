@@ -1,0 +1,93 @@
+{
+  "documentVersion": "1.0.1",
+  "jsonSchemaSemanticVersion": "1.0.0",
+  "imports": [
+    {
+      "corpusPath": "cdm:/foundations.2.1.1.cdm.json"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Common.1.0.1.cdm.json",
+      "moniker": "base_Common"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/DataEntityView.1.0.1.cdm.json",
+      "moniker": "base_DataEntityView"
+    },
+    {
+      "corpusPath": "/core/operationsCommon/Tables/Commerce/ChannelManagement/BrickAndMortarStore/Parameter/RetailFormLayout.1.0.1.cdm.json"
+    },
+    {
+      "corpusPath": "RetailReceiptProfile.1.0.1.cdm.json"
+    }
+  ],
+  "definitions": [
+    {
+      "entityName": "RetailReceiptProfileLine",
+      "extendsEntity": "base_Common/Common",
+      "exhibitsTraits": [
+        {
+          "traitReference": "is.CDM.entityVersion",
+          "arguments": [
+            {
+              "name": "versionNumber",
+              "value": "1.0.1"
+            }
+          ]
+        }
+      ],
+      "hasAttributes": [
+        {
+          "name": "FormLayoutId",
+          "dataType": "RetailFormLayoutId",
+          "description": ""
+        },
+        {
+          "name": "ProfileId",
+          "dataType": "RetailReceiptProfileId",
+          "description": ""
+        },
+        {
+          "name": "ReceiptType",
+          "dataType": "RetailReceiptType",
+          "isNullable": true,
+          "description": ""
+        },
+        {
+          "entity": {
+            "entityReference": "RetailFormLayout"
+          },
+          "name": "Relationship_LayoutIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        },
+        {
+          "entity": {
+            "entityReference": "RetailReceiptProfile"
+          },
+          "name": "Relationship_ProfileIdRelationship",
+          "resolutionGuidance": {
+            "entityByReference": {
+              "allowReference": true
+            }
+          }
+        }
+      ],
+      "displayName": "Receipt profile line"
+    },
+    {
+      "dataTypeName": "RetailFormLayoutId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReceiptProfileId",
+      "extendsDataType": "string"
+    },
+    {
+      "dataTypeName": "RetailReceiptType",
+      "extendsDataType": "integer"
+    }
+  ]
+}
