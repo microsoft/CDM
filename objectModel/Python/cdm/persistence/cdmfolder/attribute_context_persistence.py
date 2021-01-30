@@ -4,7 +4,7 @@
 from typing import Optional
 
 from cdm.enums import CdmObjectType, CdmAttributeContextType
-from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext
+from cdm.objectmodel import CdmCorpusContext, CdmAttributeContext, CdmCollection
 from cdm.persistence import PersistenceLayer
 from cdm.utilities import CopyOptions, ResolveOptions, copy_data_utils
 
@@ -112,6 +112,13 @@ class AttributeContextPersistence:
                 else:
                     attribute_context.contents.append(AttributeContextPersistence.from_data(ctx, elem))
 
+        if data.get('lineage'):
+            if attribute_context.lineage is None:
+                attribute_context.lineage = CdmCollection(ctx, attribute_context, CdmObjectType.ATTRIBUTE_CONTEXT_REF)
+
+            for elem in data.lineage:
+                attribute_context.lineage.append(AttributeContextReferencePersistence.from_data(ctx, elem))
+
         return attribute_context
 
     @staticmethod
@@ -124,9 +131,12 @@ class AttributeContextPersistence:
         result.name = instance.name
         result.type = map_enum_to_type_name[instance.type]
         result.parent = AttributeContextReferencePersistence.to_data(instance.parent, res_opt, options) if instance.parent is not None else None
-        result.definition = PersistenceLayer.to_data(instance.definition, res_opt, options, PersistenceLayer.CDM_FOLDER) if instance.definition is not None else None
+        definition = PersistenceLayer.to_data(instance.definition, res_opt, options,
+                                              PersistenceLayer.CDM_FOLDER) if instance.definition is not None else None
+        result.definition = definition if isinstance(definition, str) else None
         # I know the trait collection names look wrong. but I wanted to use the def baseclass
         result.appliedTraits = copy_data_utils._array_copy_data(res_opt, exhibits_traits, options)
         result.contents = copy_data_utils._array_copy_data(res_opt, instance.contents, options)
+        result.lineage = copy_data_utils._array_copy_data(res_opt, instance.lineage, options)
 
         return result

@@ -4,6 +4,7 @@
 import {
     AttributeResolutionDirectiveSet,
     CdmDocumentDefinition,
+    CdmEntityDefinition,
     CdmObject,
     CdmObjectBase,
     DepthInfo,
@@ -18,6 +19,7 @@ export class resolveOptions {
     public importsLoadStrategy: importsLoadStrategy = importsLoadStrategy.lazyLoad; // defines at which point the Object Model will try to load the imported documents.
     public resolvedAttributeLimit?: number = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail
     public maxOrdinalForArrayExpansion: number = 20; // the maximum value for the end ordinal in an ArrayExpansion operation
+    public maxDepth: number = 2; // the maximum depth that entity attributes will be resolved before giving up
 
     /**
      * @internal
@@ -57,6 +59,11 @@ export class resolveOptions {
     public fromMoniker?: string; // moniker that was found on the ref
 
     /**
+     * @internal
+     */
+    public currentlyResolvingEntities: Set<CdmEntityDefinition>; // moniker that was found on the ref
+
+    /**
      * @deprecated please use importsLoadStrategy instead.
      * when enabled, all the imports will be loaded and the references checked otherwise will be delayed until the symbols are required.
      */
@@ -89,6 +96,11 @@ export class resolveOptions {
     public inCircularReference: boolean;
 
     public constructor(parameter?: CdmDocumentDefinition | CdmObject, directives?: AttributeResolutionDirectiveSet) {
+        this.symbolRefSet = new SymbolSet();
+        this.depthInfo = new DepthInfo();
+        this.inCircularReference = false;
+        this.currentlyResolvingEntities = new Set();
+
         if (!parameter) {
             return;
         }
@@ -111,14 +123,6 @@ export class resolveOptions {
             directivesSet.add('referenceOnly');
             this.directives = new AttributeResolutionDirectiveSet(directivesSet);
         }
-        this.symbolRefSet = new SymbolSet();
-
-        this.depthInfo = {
-            maxDepth: undefined,
-            currentDepth: 0,
-            maxDepthExceeded: false
-        };
-        this.inCircularReference = false;
     }
 
     /**
@@ -141,21 +145,17 @@ export class resolveOptions {
     public copy(): resolveOptions {
         const resOptCopy: resolveOptions = new resolveOptions();
         resOptCopy.wrtDoc = this.wrtDoc;
-        if (this.depthInfo) {
-            resOptCopy.depthInfo = {
-                currentDepth: this.depthInfo.currentDepth,
-                maxDepth: this.depthInfo.maxDepth,
-                maxDepthExceeded: this.depthInfo.maxDepthExceeded
-            };
-        }
-        if (this.directives) {
-            resOptCopy.directives = this.directives.copy();
-        }
+        resOptCopy.depthInfo = this.depthInfo.copy();
         resOptCopy.inCircularReference = this.inCircularReference;
         resOptCopy.localizeReferencesFor = this.localizeReferencesFor;
         resOptCopy.indexingDoc = this.indexingDoc;
         resOptCopy.shallowValidation = this.shallowValidation;
         resOptCopy.resolvedAttributeLimit = this.resolvedAttributeLimit;
+        resOptCopy.currentlyResolvingEntities = new Set(this.currentlyResolvingEntities);
+
+        if (this.directives) {
+            resOptCopy.directives = this.directives.copy();
+        }
 
         return resOptCopy;
     }

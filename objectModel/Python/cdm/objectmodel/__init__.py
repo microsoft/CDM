@@ -78,6 +78,7 @@ __all__ = [
     'CdmConstantEntityDefinition',
     'CdmContainerDefinition',
     'CdmCorpusDefinition',
+    'CdmCorpusContext',
     'CdmDataPartitionDefinition',
     'CdmDataPartitionPatternDefinition',
     'CdmDataTypeDefinition',

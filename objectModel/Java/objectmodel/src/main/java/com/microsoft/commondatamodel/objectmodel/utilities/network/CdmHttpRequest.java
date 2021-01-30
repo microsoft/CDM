@@ -148,4 +148,22 @@ public class CdmHttpRequest {
     public void setNumberOfRetries(final int numberOfRetries) {
         this.numberOfRetries = numberOfRetries;
     }
+
+    /**
+     * Strips sas token parameter 'sig'. 
+     * @return The requested url with the value of 'sig' replaced with 'REMOVED'.
+     * @deprecated This function is extremely likely to be removed in the public interface, and not
+     * meant to be called externally at all. Please refrain from using it.
+     */
+    @Deprecated
+    public String stripSasSig () {
+        int sigStartIndex = this.requestedUrl.indexOf("sig=");
+        if (sigStartIndex == -1) {
+            return this.requestedUrl;
+        }
+
+        int sigEndIndex = this.requestedUrl.indexOf("&", sigStartIndex + 1);
+        sigEndIndex = sigEndIndex == -1 ? this.requestedUrl.length() : sigEndIndex;
+        return this.requestedUrl.substring(0, sigStartIndex + 4) + "REMOVED" + this.requestedUrl.substring(sigEndIndex);
+    }
 }

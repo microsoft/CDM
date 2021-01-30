@@ -60,6 +60,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         private string _hostname;
+        private string _sasToken;
 
         /// <summary>
         /// The tenant.
@@ -80,6 +81,23 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         /// The account/shared key.
         /// </summary>
         public string SharedKey { get; set; }
+
+        /// <summary>
+        /// The SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
+        /// </summary>
+        public string SasToken {
+            get
+            {
+                return _sasToken;
+            }
+            set
+            {
+                // Remove the leading question mark, so we can append this token to URLs that already have it
+                _sasToken = value != null ? 
+                    (value.StartsWith("?") ? value.Substring(1) : value) 
+                    : null;
+            }
+        }
 
         /// <summary>
         /// The user-defined token provider.
@@ -195,6 +213,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             this.Hostname = hostname;
             this.Root = root;
             this.TokenProvider = tokenProvider;
+        }
+
+        /// <summary>
+        /// The ADLS constructor without auth info - the auth configuration is set after the construction.
+        /// <param name="hostname">Host name</param>
+        /// <param name="root">Root location</param>
+        /// </summary>
+        public ADLSAdapter(string hostname, string root) : this()
+        {
+            this.Hostname = hostname;
+            this.Root = root;
         }
 
         /// <inheritdoc />
@@ -483,10 +512,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
                 }
             }
 
-            // Check then for shared key auth.
+            // Check for shared key auth
             if (configJson["sharedKey"] != null)
             {
                 this.SharedKey = configJson["sharedKey"].ToString();
+            }
+
+            // Check for SAS token auth
+            if (configJson["sasToken"] != null)
+            {
+                this.SasToken = configJson["sasToken"].ToString();
             }
 
             if (configJson["locationHint"] != null)
@@ -580,6 +615,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
         }
 
         /// <summary>
+        /// Appends SAS token to the given URL.
+        /// </summary>
+        /// <param name="url">URL to be appended with the SAS token</param>
+        /// <returns>URL with the SAS token appended</returns>
+        private string ApplySasToken(string url)
+        {
+            return $"{url}{(url.Contains("?")? "&" : "?")}{SasToken}";
+        }
+
+        /// <summary>
         /// Generates the required request to work with Azure Storage API.
         /// </summary>
         /// <param name="url">The URL of a resource.</param>
@@ -595,6 +640,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             if (this.SharedKey != null)
             {
                 request = this.SetUpCdmRequest(url, ApplySharedKey(this.SharedKey, url, method, content, contentType), method);
+            }
+            else if (this.SasToken != null)
+            {
+                request = this.SetUpCdmRequest(ApplySasToken(url), method);
             }
             else if (this.Context != null)
             {

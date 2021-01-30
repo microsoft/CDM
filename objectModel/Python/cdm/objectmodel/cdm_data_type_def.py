@@ -73,8 +73,10 @@ class CdmDataTypeDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.extends_data_type and self.extends_data_type.visit('{}/extendsDataType/'.format(path), pre_children, post_children):
-            return True
+        if self.extends_data_type:
+            self.extends_data_type.owner = self
+            if self.extends_data_type.visit('{}/extendsDataType/'.format(path), pre_children, post_children):
+                return True
 
         if self._visit_def(path, pre_children, post_children):
             return True

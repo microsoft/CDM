@@ -48,6 +48,9 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
   }
 
   public void setProjection(CdmProjection projection) {
+    if (projection != null) {
+      projection.setOwner(this);
+    }
     this.projection = projection;
   }
 
@@ -239,9 +242,6 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
       return true;
     }
 
-    if (this.getProjection() != null) {
-      this.getProjection().setOwner(this);
-    }
     if (this.getProjection() != null
             && this.getProjection()
             .visit(path + "/projection/", preChildren, postChildren)) {
@@ -368,7 +368,7 @@ public class CdmTypeAttributeDefinition extends CdmAttribute {
     if (resolvedTraitSet != null && resolvedTraitSet.getHasElevated() != null && resolvedTraitSet.getHasElevated()) {
       final CdmAttributeReference replacement = new CdmAttributeReference(this.getCtx(), this.getName(), true);
       replacement.setCtx(this.getCtx());
-      replacement.setExplicitReference(this);
+      replacement.setExplicitReference((CdmObjectDefinition) this.copy());
       replacement.setInDocument(this.getInDocument());
       replacement.setOwner(this);
 

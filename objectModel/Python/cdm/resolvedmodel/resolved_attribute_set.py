@@ -7,7 +7,7 @@ import re
 
 from cdm.enums import CdmAttributeContextType
 from cdm.resolvedmodel.trait_param_spec import TraitParamSpec
-from cdm.utilities import ApplierContext, AttributeContextParameters, RefCounted
+from cdm.utilities import ApplierContext, AttributeContextParameters, RefCounted, primitive_appliers, ApplierState
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttributeContext, CdmAttributeResolutionGuidanceDefinition, CdmAttribute
@@ -19,11 +19,9 @@ class ResolvedAttributeSet(RefCounted):
     def __init__(self):
         super().__init__()
 
-        self.attctx_to_rattr = OrderedDict()  # type:  Dict[CdmAttributeContext, ResolvedAttribute]
         self.attribute_context = None  # type: CdmAttributeContext
         self.base_trait_to_attributes = None  # type: Optional[Dict[string, Set[ResolvedAttribute]]]
         self.insert_order = 0  # type: int
-        self.rattr_to_attctxset = OrderedDict()  # type: Dict[ResolvedAttribute, List[CdmAttributeContext]]
         self._resolved_name_to_resolved_attribute = OrderedDict()  # type: Dict[string, ResolvedAttribute]
         # we need this instead of checking the size of the set because there may be attributes
         # nested in an attribute group and we need each of those attributes counted here as well
@@ -32,6 +30,9 @@ class ResolvedAttributeSet(RefCounted):
         # resulting set can vary depending on the maxDepth value
         self._depth_traveled = 0 # type: int
         self._set = []  # type: List[ResolvedAttribute]
+        # this maps the the name of an owner (an entity attribute) to a set of the attributes names that were added because of that entAtt
+        # used in the entity attribute code to decide when previous (inherit) attributes from an entAtt with the same name might need to be removed
+        self._attribute_ownership_map = None  # type: Dict[string, Set[string]]
 
     @property
     def size(self) -> int:
@@ -55,16 +56,6 @@ class ResolvedAttributeSet(RefCounted):
         self.attribute_context = CdmAttributeContext._create_child_under(res_opt, acp)
         return self.attribute_context
 
-    def _cache_attribute_context(self, att_ctx: 'CdmAttributeContext', ra: 'ResolvedAttribute') -> None:
-        if att_ctx is not None and ra is not None:
-            self.attctx_to_rattr[att_ctx] = ra
-
-            # Set collection will take care of adding context to set.
-            if ra not in self.rattr_to_attctxset:
-                self.rattr_to_attctxset[ra] = []
-            if att_ctx not in self.rattr_to_attctxset[ra]:
-                self.rattr_to_attctxset[ra].append(att_ctx)
-
     def _remove_cached_attribute_context(self, att_ctx: 'CdmAttributeContext') -> None:
         if att_ctx is not None:
             old_ra = self.attctx_to_rattr.get(att_ctx)
@@ -74,52 +65,54 @@ class ResolvedAttributeSet(RefCounted):
                 if not self.rattr_to_attctxset[old_ra]:
                     del self.rattr_to_attctxset[old_ra]
 
-    def merge(self, to_merge: 'ResolvedAttribute', att_ctx: 'CdmAttributeContext' = None) -> 'ResolvedAttributeSet':
+    def merge(self, to_merge: 'ResolvedAttribute') -> 'ResolvedAttributeSet':
         ras_result = self
 
         if to_merge is not None:
             # if there is already a resolve attribute present, remove it before adding the new attribute
             if to_merge.resolved_name in ras_result._resolved_name_to_resolved_attribute:
                 existing = ras_result._resolved_name_to_resolved_attribute[to_merge.resolved_name]
+                if existing != to_merge:
+                    if self._ref_cnt > 1 and existing.target != to_merge.target:
+                        ras_result = ras_result.copy()  # copy on write.
+                        existing = ras_result._resolved_name_to_resolved_attribute[to_merge.resolved_name]
+                    else:
+                        ras_result = self
 
-                if self._ref_cnt > 1 and existing.target != to_merge.target:
-                    ras_result = ras_result.copy()  # copy on write.
-                    existing = ras_result._resolved_name_to_resolved_attribute[to_merge.resolved_name]
-                else:
-                    ras_result = self
+                    from cdm.objectmodel import CdmAttribute
+                    if isinstance(existing.target, CdmAttribute):
+                        ras_result._resolved_attribute_count -= existing.target._attribute_count
+                    elif isinstance(existing.target, ResolvedAttributeSet):
+                        ras_result._resolved_attribute_count -= existing.target._resolved_attribute_count
 
-                from cdm.objectmodel import CdmAttribute
-                if isinstance(existing.target, CdmAttribute):
-                    ras_result._resolved_attribute_count -= existing.target._attribute_count
-                elif isinstance(existing.target, ResolvedAttributeSet):
-                    ras_result._resolved_attribute_count -= existing.target._resolved_attribute_count
+                    if isinstance(to_merge.target, CdmAttribute):
+                        ras_result._resolved_attribute_count += to_merge.target._attribute_count
+                    elif isinstance(to_merge.target, ResolvedAttributeSet):
+                        ras_result._resolved_attribute_count += to_merge.target._resolved_attribute_count
 
-                if isinstance(to_merge.target, CdmAttribute):
-                    ras_result._resolved_attribute_count += to_merge.target._attribute_count
-                elif isinstance(to_merge.target, ResolvedAttributeSet):
-                    ras_result._resolved_attribute_count += to_merge.target._resolved_attribute_count
+                    existing.target = to_merge.target  # replace with newest version.
+                    existing.arc = to_merge.arc
+    
+                    # merge a new ra into one with the same name, so make a lineage
+                    # the existing attCtx becomes the new lineage. but the old one needs to stay too... so you get both. it came from both places.
+                    # we need ONE place where this RA can point, so that will be the most recent place with a fixed lineage
+                    # A->C1->C0 gets merged with A'->C2->C3 that turns into A->C2->[(c3), (C1->C0)]. in the more simple case this is just A->C2->C1
+                    if to_merge.att_ctx is not None:
+                        if existing.att_ctx is not None:
+                            to_merge.att_ctx._add_lineage(existing.att_ctx)
+                        existing.att_ctx = to_merge.att_ctx
 
-                existing.target = to_merge.target  # replace with newest version.
-                existing.arc = to_merge.arc
-
-                # Replace old context mappings with mappings to new attribute
-                ras_result._remove_cached_attribute_context(existing.att_ctx)
-                ras_result._cache_attribute_context(att_ctx, existing)
-
-                rts_merge = existing.resolved_traits.merge_set(to_merge.resolved_traits)  # newest one may replace.
-                if rts_merge != existing.resolved_traits:
-                    ras_result = ras_result.copy()  # copy on write.
-                    existing = ras_result._resolved_name_to_resolved_attribute[to_merge.resolved_name]
-                    existing.resolved_traits = rts_merge
+                    rts_merge = existing.resolved_traits.merge_set(to_merge.resolved_traits)  # newest one may replace.
+                    if rts_merge != existing.resolved_traits:
+                        ras_result = ras_result.copy()  # copy on write.
+                        existing = ras_result._resolved_name_to_resolved_attribute[to_merge.resolved_name]
+                        existing.resolved_traits = rts_merge
             else:
                 if self._ref_cnt > 1:
                     ras_result = ras_result.copy()  # copy on write.
                 if ras_result is None:
                     ras_result = self
                 ras_result._resolved_name_to_resolved_attribute[to_merge.resolved_name] = to_merge
-                # don't use the att_ctx on the actual attribute, that's only for doing appliers.
-                if att_ctx is not None:
-                    ras_result._cache_attribute_context(att_ctx, to_merge)
                 ras_result._set.append(to_merge)
                 ras_result._resolved_attribute_count += to_merge._resolved_attribute_count
 
@@ -137,28 +130,6 @@ class ResolvedAttributeSet(RefCounted):
             if ra.resolved_name not in self._resolved_name_to_resolved_attribute:
                 self._resolved_name_to_resolved_attribute[ra.resolved_name] = ra
 
-    def copy_att_ctx_mappings_into(self, rattr_to_attctxset: Dict['ResolvedAttribute', List['CdmAttributeContext']],
-                                   attctx_to_rattr: Dict['CdmAttributeContext', 'ResolvedAttribute'],
-                                   source_ra: 'ResolvedAttribute', new_ra: 'ResolvedAttribute' = None) -> None:
-
-        if self.rattr_to_attctxset:
-            if new_ra is None:
-                new_ra = source_ra
-            # Get the set of attribute contexts for the old resolved attribute.
-            att_ctx_set = self.rattr_to_attctxset[source_ra] if source_ra in self.rattr_to_attctxset else None
-            if att_ctx_set is not None:
-                # Map the new resolved attribute to the old context set.
-                if new_ra in rattr_to_attctxset:
-                    current_set = rattr_to_attctxset[new_ra]
-                    for att_ctx in att_ctx_set:
-                        if att_ctx not in current_set:
-                            current_set.append(att_ctx)
-                else:
-                    rattr_to_attctxset[new_ra] = att_ctx_set
-                # Map the old contexts to the new resolved attributes.
-                for att_ctx in att_ctx_set:
-                    attctx_to_rattr[att_ctx] = new_ra
-
     def merge_set(self, to_merge: 'ResolvedAttributeSet') -> 'ResolvedAttributeSet':
         ras_result = self
         if to_merge is not None:
@@ -168,9 +139,15 @@ class ResolvedAttributeSet(RefCounted):
                 if ras_merged != ras_result:
                     ras_result = ras_merged
                 # get the attribute from the merged set, attributes that were already present were merged, not replaced
-                current_ra = ras_result._resolved_name_to_resolved_attribute[res_att.resolved_name]
-                # copy context here.
-                to_merge.copy_att_ctx_mappings_into(ras_result.rattr_to_attctxset, ras_result.attctx_to_rattr, res_att, current_ra)
+                current_ra = ras_result._resolved_name_to_resolved_attribute.get(res_att.resolved_name, None)
+
+            # merge the ownership map.
+            if to_merge._attribute_ownership_map is not None:
+                if self._attribute_ownership_map is None:
+                    self._attribute_ownership_map = OrderedDict()
+                for key, value in to_merge._attribute_ownership_map.items():
+                    # always take the new one as the right list, not sure if the constructor for dictionary uses this logic or fails
+                    self._attribute_ownership_map[key] = value
 
         return ras_result
 
@@ -185,8 +162,6 @@ class ResolvedAttributeSet(RefCounted):
         ras_result._resolved_name_to_resolved_attribute = ras_applied._resolved_name_to_resolved_attribute
         ras_result.base_trait_to_attributes = None
         ras_result._set = ras_applied._set
-        ras_result.rattr_to_attctxset = ras_applied.rattr_to_attctxset
-        ras_result.attctx_to_rattr = ras_applied.attctx_to_rattr
 
         return ras_result
 
@@ -248,7 +223,7 @@ class ResolvedAttributeSet(RefCounted):
             applied_att_set.attribute_context = CdmAttributeContext._create_child_under(traits.res_opt, acp)
 
         for res_att in self._set:
-            att_ctx_to_merge = None  # Optional[CdmAttributeContext]
+            att_ctx_to_merge = res_att.att_ctx  # start with the current context for the resolved att, if a copy happens this will change
 
             if isinstance(res_att.target, ResolvedAttributeSet):
                 sub_set = cast('ResolvedAttributeSet', res_att.target)
@@ -285,20 +260,18 @@ class ResolvedAttributeSet(RefCounted):
                             # make a copy of the resolved att
                             if making_copy:
                                 res_att = res_att.copy()
+                                att_ctx_to_merge._add_lineage(res_att.att_ctx)
+                                res_att.att_ctx = att_ctx_to_merge
 
                             ctx.res_att_source = res_att
 
                             # modify it
                             trait_action._do_attribute_modify(ctx)
 
-            applied_att_set.merge(res_att, att_ctx_to_merge)
+            applied_att_set.merge(res_att)
 
         applied_att_set.attribute_context = self.attribute_context
 
-        if not making_copy:
-            # didn't copy the attributes or make any new context, so just take the old ones
-            applied_att_set.rattr_to_attctxset = self.rattr_to_attctxset
-            applied_att_set.attctx_to_rattr = self.attctx_to_rattr
         return applied_att_set
 
     def remove_requested_atts(self, marker: Tuple[int, int]) -> 'ResolvedAttributeSet':
@@ -341,7 +314,6 @@ class ResolvedAttributeSet(RefCounted):
             if res_att:
                 # Attribute remains. Are we building a new set?
                 if applied_att_set:
-                    self.copy_att_ctx_mappings_into(applied_att_set.rattr_to_attctxset, applied_att_set.attctx_to_rattr, res_att)
                     applied_att_set.merge(res_att)
                 count_index += 1
             else:
@@ -350,7 +322,6 @@ class ResolvedAttributeSet(RefCounted):
                 if not applied_att_set:
                     applied_att_set = ResolvedAttributeSet()
                     for i_copy in range(i_att):
-                        self.copy_att_ctx_mappings_into(applied_att_set.rattr_to_attctxset, applied_att_set.attctx_to_rattr, self._set[i_copy])
                         applied_att_set.merge(self._set[i_copy])
 
                 # Track deletes under the mark (move the mark up)
@@ -473,12 +444,12 @@ class ResolvedAttributeSet(RefCounted):
 
         for source_ra in self._set:
             copy_ra = source_ra.copy()
-            self.copy_att_ctx_mappings_into(new_rattr_to_attctxset, new_attctx_to_rattr, source_ra, copy_ra)
             copy.merge(copy_ra)
 
-        # Reset mappings to the correct one.
-        copy.rattr_to_attctxset = new_rattr_to_attctxset
-        copy.attctx_to_rattr = new_attctx_to_rattr
+        # copy the ownership map. new map will point at old att lists, but we never update these lists, only make new ones, so all is well
+        if self._attribute_ownership_map is not None:
+            copy._attribute_ownership_map = OrderedDict(self._attribute_ownership_map)
+
         copy._depth_traveled = self._depth_traveled
 
         return copy
@@ -489,3 +460,50 @@ class ResolvedAttributeSet(RefCounted):
             new_set = self._set if not name_sort else sorted(self._set, key=lambda ra: re.sub('[^a-zA-Z0-9.]+', '', ra.resolved_name.casefold()))
             for ra in new_set:
                 ra.spew(res_opt, to, indent, name_sort)
+
+    def _set_attribute_ownership(self, owner_name) -> None:
+        """everything in this set now 'belongs' to the specified owner"""
+        if self._set is not None and len(self._set) > 0:
+            self._attribute_ownership_map = OrderedDict()
+            name_set = set(self._resolved_name_to_resolved_attribute.keys())  # this map should always be up to date, so fair to use as a source of all names
+            self._attribute_ownership_map[owner_name] = name_set
+
+    def mark_orphans_for_removal(self, owner_name: str, ras_new_ones: 'ResolvedAttributeSet') -> None:
+        if self._attribute_ownership_map is None:
+            return
+        if owner_name not in self._attribute_ownership_map:
+            return
+
+        last_set = self._attribute_ownership_map[owner_name]
+        # make a list of all atts from last time with this owner, remove the ones that show up now
+        those_not_repeated = set(last_set)
+        # of course, if none show up, all must go
+        if ras_new_ones is not None and ras_new_ones._set is not None and len(ras_new_ones._set) > 0:
+            for new_one in ras_new_ones._set:
+                if new_one.resolved_name in last_set:
+                    # congrats, you are not doomed
+                    those_not_repeated.remove(new_one.resolved_name)
+        # anyone left must be marked for remove
+        fixed_arcs = set()  # to avoid checking if we need to fix the same thing many times
+        for to_remove in those_not_repeated:
+            ra_doomed = self._resolved_name_to_resolved_attribute[to_remove]
+            if ra_doomed.arc is not None:
+                # to remove these, need to have our special remover thing in the set of actions
+                if ra_doomed.arc not in fixed_arcs:
+                    fixed_arcs.add(ra_doomed.arc)  # not again
+                    if ra_doomed.arc.applier_caps.can_remove:
+                        if primitive_appliers._is_removed_internal not in ra_doomed.arc.actions_remove:
+                            ra_doomed.arc.actions_remove.append(primitive_appliers._is_removed_internal)
+                    else:
+                        ra_doomed.arc.actions_remove.append(primitive_appliers._is_removed_internal)
+                        ra_doomed.arc.applier_caps.can_remove = True
+
+                # mark the att in the state
+                if ra_doomed.applier_state is None:
+                    ra_doomed.applier_state = ApplierState()
+                ra_doomed.applier_state._flex_remove = True
+
+
+
+
+

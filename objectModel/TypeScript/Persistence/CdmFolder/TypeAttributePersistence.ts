@@ -18,6 +18,7 @@ import * as copyDataUtils from '../../Utilities/CopyDataUtils';
 import {
     AttributeResolutionGuidance,
     DataTypeReference,
+    Projection,
     PurposeReference,
     TraitReference,
     TypeAttribute
@@ -110,6 +111,10 @@ export class TypeAttributePersistence {
     }
 
     public static toData(instance: CdmTypeAttributeDefinition, resOpt: resolveOptions, options: copyOptions): TypeAttribute {
+        if (!instance) {
+            return undefined;
+        }
+
         const appliedTraits: CdmTraitReference[] = instance.appliedTraits ?
             instance.appliedTraits.allItems.filter((trait: CdmTraitReference) => !trait.isFromProperty) : undefined;
         const object: TypeAttribute = {
@@ -124,6 +129,9 @@ export class TypeAttributePersistence {
                 ? instance.resolutionGuidance.copyData(resOpt, options) as AttributeResolutionGuidance : undefined,
             attributeContext: instance.attributeContext ? instance.attributeContext.copyData(resOpt, options) as string : undefined
         };
+
+        object.projection = instance.projection ? instance.projection.copyData(resOpt, options) as Projection : undefined;
+
         const isReadOnly: boolean = instance.getProperty('isReadOnly') as boolean;
         object.isReadOnly = isReadOnly ? isReadOnly : undefined;
 

@@ -20,8 +20,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
             {
                 if (value != null)
                 {
-                    if (value is CdmAttribute)
-                        this.ResolvedAttributeCount = value.AttributeCount;
+                    if (value is CdmAttribute attribute)
+                        this.ResolvedAttributeCount = attribute.AttributeCount;
                     else if (value is ResolvedAttributeSet)
                         this.ResolvedAttributeCount = value.ResolvedAttributeCount;
                 }

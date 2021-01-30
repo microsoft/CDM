@@ -33,7 +33,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Property of a projection that holds the source of the operation
         /// </summary>
-        public CdmEntityReference Source { 
+        public CdmEntityReference Source 
+        { 
             get => source; 
             set 
             {
@@ -43,7 +44,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// If true, runs the operations sequentially so each operation receives the result of the previous one
+        /// </summary>
+        public bool? RunSequentially { get; set; }
+
         private CdmEntityReference source;
 
         /// <summary>
@@ -60,8 +65,30 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(nameof(CdmProjection), this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmProjection(this.Ctx);
+            CdmProjection copy;
+            if (host == null)
+            {
+                copy = new CdmProjection(this.Ctx);
+            }
+            else
+            {
+                copy = host as CdmProjection;
+                copy.Ctx = this.Ctx;
+                copy.Operations.Clear();
+            }
+
+            copy.Condition = this.Condition;
+            copy.Source = this.Source?.Copy() as CdmEntityReference;
+
+            foreach (CdmOperationBase operation in this.Operations)
+            {
+                copy.Operations.Add(operation.Copy() as CdmOperationBase);
+            }
+
+            // Don't do anything else after this, as it may cause InDocument to become dirty
+            copy.InDocument = this.InDocument;
+
+            return copy;
         }
 
         /// <inheritdoc />
@@ -194,7 +221,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <returns></returns>
         internal ProjectionContext ConstructProjectionContext(ProjectionDirective projDirective, CdmAttributeContext attrCtx, ResolvedAttributeSet ras = null)
         {
-            ProjectionContext projContext = null;
+            if (attrCtx == null)
+            {
+                return null;
+            }
+
+            if (this.RunSequentially != null)
+            {
+                Logger.Error(nameof(CdmProjection), this.Ctx, "RunSequentially is not supported by this Object Model version.");
+            }
+
+            ProjectionContext projContext;
 
             string condition = string.IsNullOrWhiteSpace(this.Condition) ? "(true)" : this.Condition;
 
@@ -202,157 +239,163 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             ExpressionTree tree = new ExpressionTree();
             this.ConditionExpressionTreeRoot = tree.ConstructExpressionTree(condition);
 
-
-            if (attrCtx != null)
+            // Add projection to context tree
+            AttributeContextParameters acpProj = new AttributeContextParameters
             {
-                // Add projection to context tree
-                AttributeContextParameters acpProj = new AttributeContextParameters
+                under = attrCtx,
+                type = CdmAttributeContextType.Projection,
+                Name = this.FetchObjectDefinitionName(),
+                Regarding = projDirective.OwnerRef,
+                IncludeTraits = false
+            };
+            CdmAttributeContext acProj = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpProj);
+
+            AttributeContextParameters acpSource = new AttributeContextParameters
+            {
+                under = acProj,
+                type = CdmAttributeContextType.Source,
+                Name = "source",
+                Regarding = null,
+                IncludeTraits = false
+            };
+            CdmAttributeContext acSource = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpSource);
+
+            // Initialize the projection context
+            CdmCorpusContext ctx = projDirective.Owner?.Ctx;
+
+            if (this.Source != null)
+            {
+                CdmObjectDefinitionBase source = this.Source.FetchObjectDefinition<CdmObjectDefinitionBase>(projDirective.ResOpt);
+                if (source.ObjectType == CdmObjectType.ProjectionDef)
                 {
-                    under = attrCtx,
-                    type = CdmAttributeContextType.Projection,
-                    Name = this.FetchObjectDefinitionName(),
-                    Regarding = projDirective.OwnerRef,
-                    IncludeTraits = false
-                };
-                CdmAttributeContext acProj = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpProj);
-
-                AttributeContextParameters acpSource = new AttributeContextParameters
-                {
-                    under = acProj,
-                    type = CdmAttributeContextType.Source,
-                    Name = "source",
-                    Regarding = null,
-                    IncludeTraits = false
-                };
-                CdmAttributeContext acSource = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpSource);
-
-                // Initialize the projection context
-                CdmCorpusContext ctx = projDirective.Owner?.Ctx;
-
-                if (this.Source != null)
-                {
-                    CdmObjectDefinitionBase source = this.Source.FetchObjectDefinition<CdmObjectDefinitionBase>(projDirective.ResOpt);
-                    if (source.ObjectType == CdmObjectType.ProjectionDef)
-                    {
-                        // A Projection
-                        CdmProjection projDef = (CdmProjection)source;
-                        projContext = projDef.ConstructProjectionContext(projDirective, acSource, ras);
-                    }
-                    else
-                    {
-                        // An Entity Reference
-
-                        AttributeContextParameters acpSourceProjection = new AttributeContextParameters
-                        {
-                            under = acSource,
-                            type = CdmAttributeContextType.Entity,
-                            Name = this.Source.NamedReference ?? this.Source.ExplicitReference.GetName(),
-                            Regarding = this.Source,
-                            IncludeTraits = false
-                        };
-                        ras = this.Source.FetchResolvedAttributes(projDirective.ResOpt, acpSourceProjection);
-                        // Clean up the context tree, it was left in a bad state on purpose in this call
-                        ras.AttributeContext.FinalizeAttributeContext(projDirective.ResOpt, acSource.AtCorpusPath, this.InDocument, this.InDocument, null, false);
-
-                        // If polymorphic keep original source as previous state
-                        Dictionary<string, List<ProjectionAttributeState>> polySourceSet = null;
-                        if (projDirective.IsSourcePolymorphic)
-                        {
-                            polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras, acpSourceProjection);
-                        }
-
-                        // Now initialize projection attribute state
-                        ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.InitializeProjectionAttributeStateSet(
-                            projDirective,
-                            ctx,
-                            ras,
-                            isSourcePolymorphic: projDirective.IsSourcePolymorphic,
-                            polymorphicSet: polySourceSet);
-
-                        projContext = new ProjectionContext(projDirective, ras.AttributeContext)
-                        {
-                            CurrentAttributeStateSet = pasSet
-                        };
-                    }
+                    // A Projection
+                    CdmProjection projDef = (CdmProjection)source;
+                    projContext = projDef.ConstructProjectionContext(projDirective, acSource, ras);
                 }
                 else
                 {
-                    // A type attribute
+                    // An Entity Reference
 
-                    // Initialize projection attribute state
+                    AttributeContextParameters acpSourceProjection = new AttributeContextParameters
+                    {
+                        under = acSource,
+                        type = CdmAttributeContextType.Entity,
+                        Name = this.Source.NamedReference ?? this.Source.ExplicitReference.GetName(),
+                        Regarding = this.Source,
+                        IncludeTraits = false
+                    };
+                    ras = this.Source.FetchResolvedAttributes(projDirective.ResOpt, acpSourceProjection);
+                    // Clean up the context tree, it was left in a bad state on purpose in this call
+                    ras.AttributeContext.FinalizeAttributeContext(projDirective.ResOpt, acSource.AtCorpusPath, this.InDocument, this.InDocument, null, false);
+
+                    // If polymorphic keep original source as previous state
+                    Dictionary<string, List<ProjectionAttributeState>> polySourceSet = null;
+                    if (projDirective.IsSourcePolymorphic)
+                    {
+                        polySourceSet = ProjectionResolutionCommonUtil.GetPolymorphicSourceSet(projDirective, ctx, this.Source, ras, acpSourceProjection);
+                    }
+
+                    // Now initialize projection attribute state
                     ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.InitializeProjectionAttributeStateSet(
                         projDirective,
                         ctx,
-                        ras);
+                        ras,
+                        isSourcePolymorphic: projDirective.IsSourcePolymorphic,
+                        polymorphicSet: polySourceSet);
 
                     projContext = new ProjectionContext(projDirective, ras.AttributeContext)
                     {
                         CurrentAttributeStateSet = pasSet
                     };
                 }
+            }
+            else
+            {
+                // A type attribute
 
-                bool isConditionValid = false;
-                if (this.ConditionExpressionTreeRoot != null)
+                // Initialize projection attribute state
+                ProjectionAttributeStateSet pasSet = ProjectionResolutionCommonUtil.InitializeProjectionAttributeStateSet(
+                    projDirective,
+                    ctx,
+                    ras);
+
+                projContext = new ProjectionContext(projDirective, ras.AttributeContext)
                 {
-                    InputValues input = new InputValues()
-                    {
-                        noMaxDepth = projDirective.HasNoMaximumDepth,
-                        isArray = projDirective.IsArray,
+                    CurrentAttributeStateSet = pasSet
+                };
+            }
 
-                        referenceOnly = projDirective.IsReferenceOnly,
-                        normalized = projDirective.IsNormalized,
-                        structured = projDirective.IsStructured,
-                        isVirtual = projDirective.IsVirtual,
+            bool isConditionValid = false;
+            if (this.ConditionExpressionTreeRoot != null)
+            {
+                InputValues input = new InputValues()
+                {
+                    noMaxDepth = projDirective.HasNoMaximumDepth,
+                    isArray = projDirective.IsArray,
 
-                        nextDepth = ++projDirective.CurrentDepth,
-                        maxDepth = projDirective.MaximumDepth,
+                    referenceOnly = projDirective.IsReferenceOnly,
+                    normalized = projDirective.IsNormalized,
+                    structured = projDirective.IsStructured,
+                    isVirtual = projDirective.IsVirtual,
 
-                        minCardinality = projDirective.Cardinality?._MinimumNumber,
-                        maxCardinality = projDirective.Cardinality?._MaximumNumber
-                    };
+                    nextDepth = projDirective.ResOpt.DepthInfo.CurrentDepth,
+                    maxDepth = projDirective.MaximumDepth,
 
-                    isConditionValid = ExpressionTree.EvaluateExpressionTree(this.ConditionExpressionTreeRoot, input);
+                    minCardinality = projDirective.Cardinality?._MinimumNumber,
+                    maxCardinality = projDirective.Cardinality?._MaximumNumber
+                };
+
+                isConditionValid = ExpressionTree.EvaluateExpressionTree(this.ConditionExpressionTreeRoot, input);
+            }
+
+            if (isConditionValid && this.Operations != null && this.Operations.Count > 0)
+            {
+                // Just in case new operations were added programmatically, reindex operations
+                for (int i = 0; i < this.Operations.Count; i++)
+                {
+                    this.Operations[i].Index = i + 1;
                 }
 
-                if (isConditionValid && this.Operations != null && this.Operations.Count > 0)
+                // Operation
+
+                AttributeContextParameters acpGenAttrSet = new AttributeContextParameters
                 {
-                    // Just in case new operations were added programmatically, reindex operations
-                    for (int i = 0; i < this.Operations.Count; i++)
+                    under = attrCtx,
+                    type = CdmAttributeContextType.GeneratedSet,
+                    Name = "_generatedAttributeSet"
+                };
+                CdmAttributeContext acGenAttrSet = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpGenAttrSet);
+
+                // Start with an empty list for each projection
+                ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.CurrentAttributeStateSet.Ctx);
+                foreach (CdmOperationBase operation in this.Operations)
+                {
+                    if (operation.Condition != null)
                     {
-                        this.Operations[i].Index = i + 1;
+                        Logger.Error(nameof(CdmProjection), this.Ctx, "Condition on the operation level is not supported by this Object Model version.");
                     }
 
-                    // Operation
-
-                    AttributeContextParameters acpGenAttrSet = new AttributeContextParameters
+                    if (operation.SourceInput != null)
                     {
-                        under = attrCtx,
-                        type = CdmAttributeContextType.GeneratedSet,
-                        Name = "_generatedAttributeSet"
-                    };
-                    CdmAttributeContext acGenAttrSet = CdmAttributeContext.CreateChildUnder(projDirective.ResOpt, acpGenAttrSet);
-
-                    // Start with an empty list for each projection
-                    ProjectionAttributeStateSet pasOperations = new ProjectionAttributeStateSet(projContext.CurrentAttributeStateSet.Ctx);
-                    foreach (CdmOperationBase operation in this.Operations)
-                    {
-                        // Evaluate projections and apply to empty state
-                        ProjectionAttributeStateSet newPasOperations = operation.AppendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
-
-                        // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
-                        if (newPasOperations != null)
-                        {
-                            pasOperations = newPasOperations;
-                        }
+                        Logger.Error(nameof(CdmProjection), this.Ctx, "SourceInput on the projection operation is not supported by this Object Model version.");
                     }
 
-                    // Finally update the current state to the projection context
-                    projContext.CurrentAttributeStateSet = pasOperations;
+                    // Evaluate projections and apply to empty state
+                    ProjectionAttributeStateSet newPasOperations = operation.AppendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
+
+                    // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
+                    if (newPasOperations != null)
+                    {
+                        pasOperations = newPasOperations;
+                    }
                 }
-                else
-                {
-                    // Pass Through - no operations to process
-                }
+
+                // Finally update the current state to the projection context
+                projContext.CurrentAttributeStateSet = pasOperations;
+            }
+            else
+            {
+                // Pass Through - no operations to process
             }
 
             return projContext;

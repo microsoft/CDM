@@ -13,6 +13,7 @@ public class Projection {
     private String condition;
     private List<OperationBase> operations;
     private Object source;
+    private Boolean runSequentially;
 
     public String getExplanation() {
         return explanation;
@@ -44,5 +45,13 @@ public class Projection {
 
     public void setSource(final Object source) {
         this.source = source;
+    }
+
+    public Boolean getRunSequentially() {
+        return runSequentially;
+    }
+
+    public void setRunSequentially(Boolean runSequentially) {
+        this.runSequentially = runSequentially;
     }
 }

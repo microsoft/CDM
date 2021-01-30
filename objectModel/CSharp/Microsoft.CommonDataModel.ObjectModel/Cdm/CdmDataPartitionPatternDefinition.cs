@@ -193,7 +193,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
 
             // make sure the root is a good full corpus path
-            string rootCleaned = this.RootLocation;
+            string rootCleaned = this.RootLocation?.EndsWith("/") == true ? this.RootLocation.Substring(0, this.RootLocation.Length - 1) : this.RootLocation;
             if (rootCleaned == null)
             {
                 rootCleaned = "";
@@ -300,7 +300,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 {
                                     DateTimeOffset? lastModifiedTime = await adapter.ComputeLastModifiedTimeAsync(pathTuple.Item2);
                                     (this.Owner as CdmLocalEntityDeclarationDefinition).CreateDataPartitionFromPattern(locationCorpusPath, this.ExhibitsTraits, args, this.SpecializedSchema, lastModifiedTime);
-                                } catch (Exception e)
+                                }
+                                catch (Exception e)
                                 {
                                     Logger.Error(nameof(CdmDataPartitionPatternDefinition), this.Ctx, $"Failed to compute last modified time for partition file {pathTuple.Item2}. Exception: {e.Message}", nameof(FileStatusCheckAsync));
                                 }
@@ -328,7 +329,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         {
             List<string> newPattern = new List<string>();
 
-            for (int i = 0; i < pattern.Length; i++)
+            // all patterns should start with a slash
+            newPattern.Add("[/\\\\]");
+
+            // if pattern starts with slash, skip the first character. We already added it above
+            for (int i = (pattern[0] == '/' || pattern[0] == '\\' ? 1 : 0); i < pattern.Length; i++)
             {
                 char currChar = pattern[i];
 
@@ -340,7 +345,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         break;
                     case '\\':
                         // convert backslash into slash
-                        newPattern.Add("/");
+                        newPattern.Add("[/\\\\]");
                         break;
                     case '?':
                         // question mark in glob matches any single character

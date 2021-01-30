@@ -373,8 +373,8 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             for imp in reversed_imports:
                 imp_doc = imp._document  # type: CdmDocumentDefinition
 
+                # moniker imports will be added to the end of the priority list later.
                 if imp_doc:
-                    # moniker imports will be added to the end of the priority list later.
                     if not imp.moniker and imp_doc not in priority_map:
                         # add doc
                         priority_map[imp_doc] = ImportInfo(sequence, False)
@@ -438,8 +438,6 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 
         self._declarations_indexed = False
-        self._imports_indexed = False
-        self._import_priorities = None
         self._needs_indexing = True
         self._is_valid = True
         return await self._index_if_needed(res_opt, True)
@@ -479,6 +477,14 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
                         return False
         return True
 
+    def fetch_object_definition(self, res_opt: 'ResolveOptions') -> Optional['CdmObjectDefinition']:
+        if res_opt is None:
+            res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
+        return self
+
+    def fetch_object_definition_name(self) -> Optional[str]:
+        return self.name
+
     def validate(self) -> bool:
         if not bool(self.name):
             logger.error(self._TAG, self.ctx, Errors.validate_error_string(self.at_corpus_path, ['name']))
@@ -505,3 +511,42 @@ class CdmDocumentDefinition(CdmObjectSimple, CdmContainerDefinition):
             return False
 
         self.visit('', None, post_visit)
+
+    def _import_path_to_doc(self, doc_dest: 'CdmDocumentDefinition') -> str:
+        avoid_loop = set()
+
+        def _internal_import_path_to_doc(doc_check: 'CdmDocumentDefinition', path: str) -> str:
+            if doc_check == doc_dest:
+                return ''
+            if doc_check in avoid_loop:
+                return None
+            avoid_loop.add(doc_check)
+            # if the docDest is one of the monikered imports of docCheck, then add the moniker and we are cool
+            if doc_check._import_priorities and doc_check._import_priorities.moniker_priority_map:
+                for key, value in doc_check._import_priorities.moniker_priority_map.items():
+                    if value == doc_dest:
+                        return '{}{}/'.format(path, key)
+            # ok, what if the document can be reached directly from the imports here
+            imp_info =  doc_check._import_priorities.import_priority[doc_check] \
+                if doc_check._import_priorities and doc_check._import_priorities.import_priority else None
+            if imp_info and imp_info.is_moniker is False:
+                # good enough
+                return path
+
+            # still nothing, now we need to check those docs deeper
+            if doc_check._import_priorities and doc_check._import_priorities.moniker_priority_map:
+                for key, value in doc_check._import_priorities.moniker_priority_map:
+                    path_found = _internal_import_path_to_doc(value, '{}{}'.format(path, key))
+                    if path_found:
+                        return path_found
+
+            if doc_check._import_priorities and doc_check._import_priorities.import_priority:
+                for key, value in doc_check._import_priorities.import_priority:
+                    if not value.is_moniker:
+                        path_found = _internal_import_path_to_doc(key, path)
+                        if path_found:
+                            return path_found
+
+            return None
+
+        return _internal_import_path_to_doc(self, '')

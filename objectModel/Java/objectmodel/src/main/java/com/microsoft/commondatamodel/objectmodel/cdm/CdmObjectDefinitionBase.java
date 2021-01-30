@@ -137,8 +137,10 @@ public abstract class CdmObjectDefinitionBase extends CdmObjectBase implements C
   @Deprecated
   public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
     CdmObjectReferenceBase cdmObjectRef = ((CdmObjectReferenceBase)this.getCtx().getCorpus().makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), "portable", true));
-    cdmObjectRef.setExplicitReference(this);
+    cdmObjectRef.setExplicitReference((CdmObjectDefinition) this.copy());
     cdmObjectRef.setInDocument(this.getInDocument()); // where it started life
+    cdmObjectRef.setOwner(this.getOwner());
+
     return cdmObjectRef;
   }
 

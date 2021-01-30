@@ -37,6 +37,20 @@ export class ADLSAdapter extends NetworkAdapter {
         this.formattedHostname = this.formatHostname(this._hostname);
     }
 
+    public get sasToken(): string {
+        return this._sasToken;
+    }
+
+    /**
+     * The SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
+     */
+    public set sasToken(val: string) {
+        // Remove the leading question mark, so we can append this token to URLs that already have it
+        this._sasToken = val != null ? 
+            (val.startsWith('?') ? val.substr(1) : val) 
+            : null;
+    }
+
     public clientId: string;
     public secret: string;
     public sharedKey: string;
@@ -59,6 +73,7 @@ export class ADLSAdapter extends NetworkAdapter {
     private _hostname: string;
     private _root: string;
     private _tenant: string;
+    private _sasToken: string;
     private context: adal.AuthenticationContext;
     private formattedHostname: string = '';
     private rootBlobContainer: string = '';
@@ -75,20 +90,24 @@ export class ADLSAdapter extends NetworkAdapter {
         clientId?: string,
         secret?: string) {
         super();
-        if (hostname && root && tenantOrSharedKeyorTokenProvider) {
-            this.root = root;
+
+        if (hostname && root) {
             this.hostname = hostname;
-            if (typeof tenantOrSharedKeyorTokenProvider === 'string') {
-                if (tenantOrSharedKeyorTokenProvider && !clientId && !secret) {
-                    this.sharedKey = tenantOrSharedKeyorTokenProvider;
-                } else if (tenantOrSharedKeyorTokenProvider && clientId && secret) {
-                    this._tenant = tenantOrSharedKeyorTokenProvider;
-                    this.clientId = clientId;
-                    this.secret = secret;
-                    this.context = new adal.AuthenticationContext(`https://login.windows.net/${this.tenant}`);
+            this.root = root;
+
+            if (tenantOrSharedKeyorTokenProvider) {
+                if (typeof tenantOrSharedKeyorTokenProvider === 'string') {
+                    if (tenantOrSharedKeyorTokenProvider && !clientId && !secret) {
+                        this.sharedKey = tenantOrSharedKeyorTokenProvider;
+                    } else if (tenantOrSharedKeyorTokenProvider && clientId && secret) {
+                        this._tenant = tenantOrSharedKeyorTokenProvider;
+                        this.clientId = clientId;
+                        this.secret = secret;
+                        this.context = new adal.AuthenticationContext(`https://login.windows.net/${this.tenant}`);
+                    }
+                } else {
+                    this.tokenProvider = tenantOrSharedKeyorTokenProvider;
                 }
-            } else {
-                this.tokenProvider = tenantOrSharedKeyorTokenProvider;
             }
         }
 
@@ -328,9 +347,14 @@ export class ADLSAdapter extends NetworkAdapter {
             }
         }
 
-        // Check then for shared key auth.
+        // Check for shared key auth
         if (configJson.sharedKey) {
             this.sharedKey = configJson.sharedKey;
+        }
+
+        // Check for sas token auth
+        if (configJson.sasToken) {
+            this.sasToken = configJson.sasToken;
         }
 
         if (configJson.locationHint) {
@@ -403,12 +427,23 @@ export class ADLSAdapter extends NetworkAdapter {
         return headers;
     }
 
+    /**
+     * Appends SAS token to the given URL.
+     * @param url URL to be appended with the SAS token
+     * @returns URL with the SAS token appended
+     */
+    private applySasToken(url: string): string {
+        return `${url}${url.includes('?')? '&' : '?'}${this.sasToken}`;
+    }
+
     private async buildRequest(url: string, method: string, content?: string, contentType?: string): Promise<CdmHttpRequest> {
         let request: CdmHttpRequest;
 
         // Check whether we support shared key or clientId/secret auth
         if (this.sharedKey) {
             request = this.setUpCdmRequest(url, this.applySharedKey(this.sharedKey, url, method, content, contentType), method);
+        } else if (this.sasToken) {
+            request = this.setUpCdmRequest(this.applySasToken(url), null, method);
         } else if (this.tenant && this.clientId && this.secret) {
             const token: adal.TokenResponse = await this.generateBearerToken();
             request = this.setUpCdmRequest(

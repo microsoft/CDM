@@ -35,7 +35,7 @@ class CdmOperationCombineAttributes(CdmOperationBase):
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationCombineAttributes'] = None) -> 'CdmOperationCombineAttributes':
         copy = CdmOperationCombineAttributes(self.ctx)
-        if self.apply_to is not None:
+        if self.select is not None:
             copy.select = self.select[:]
         if self.merge_into is not None:
             copy.merge_into = self.merge_into.copy(res_opt, host)   # type: CdmTypeAttributeDefinition
@@ -92,8 +92,8 @@ class CdmOperationCombineAttributes(CdmOperationBase):
         attr_ctx_tree_builder = ProjectionAttributeContextTreeBuilder(attr_ctx_op_combine_attrs)
 
         # Get all the leaf level PAS nodes from the tree for each selected attribute and cache to a dictionary
-        leaf_level_combine_attribute_names =  OrderedDict() # OrderedDict[str, ProjectionAttributeState[]]()
-        # Also, create a single list of leaf level PAS to add to the 'is.linkedEntity.identifier' trait parameter
+        leaf_level_combine_attribute_names = OrderedDict() # OrderedDict[str, ProjectionAttributeState[]]()
+        # Also, create a single list of leaf level PAS
         leaf_level_merge_pas_list = []  # type: List[ProjectionAttributeState]
         for select in self.select:
             leaf_level_list_for_current_select = ProjectionResolutionCommonUtil._get_leaf_list(proj_ctx, select)  # type: List[ProjectionAttributeState]
@@ -123,18 +123,19 @@ class CdmOperationCombineAttributes(CdmOperationBase):
 
         if len(pas_merge_list) > 0:
             merge_into_attribute = self.merge_into  # type: CdmTypeAttributeDefinition
-            add_trait = [ 'is.linkedEntity.identifier' ]
 
-            # Create new resolved attribute, set the new attribute as target, and apply 'is.linkedEntity.identifier' trait
-            ra_new_merge_into = self._create_new_resolved_attribute(proj_ctx, attr_ctx_op_combine_attrs, merge_into_attribute, None, add_trait)  # type: ResolvedAttribute
+            # the merged attribute needs one new place to live, so here it is
+            merged_attr_ctx_param = AttributeContextParameters()  # type: AttributeContextParameters
+            merged_attr_ctx_param._under = attr_ctx_op_combine_attrs
+            merged_attr_ctx_param._type = CdmAttributeContextType.ATTRIBUTE_DEFINITION
+            merged_attr_ctx_param._name = merge_into_attribute.get_name()
 
-            # update the new foreign key resolved attribute with trait param with reference details
-            reqd_trait = ra_new_merge_into.resolved_traits.find(proj_ctx._projection_directive._res_opt, 'is.linkedEntity.identifier')  # type: ResolvedTrait
-            if reqd_trait is not None:
-                trait_param_ent_ref = ProjectionResolutionCommonUtil._create_foreign_key_linked_entity_identifier_trait_parameter(proj_ctx._projection_directive, proj_attr_state_set._ctx.corpus, leaf_level_merge_pas_list)  # type: CdmEntityReference
-                reqd_trait.parameter_values.update_parameter_value(proj_ctx._projection_directive._res_opt, 'entityReferences', trait_param_ent_ref)
+            merged_attr_ctx = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, merged_attr_ctx_param)
 
-            # Create new output projection attribute state set for FK and add prevPas as previous state set
+            # Create new resolved attribute, set the new attribute as target
+            ra_new_merge_into = self._create_new_resolved_attribute(proj_ctx, merged_attr_ctx, merge_into_attribute, None)
+
+            # Create new output projection attribute state set
             new_merge_into_pas = ProjectionAttributeState(proj_attr_state_set._ctx)  # type: ProjectionAttributeState
             new_merge_into_pas._current_resolved_attribute = ra_new_merge_into
             new_merge_into_pas._previous_state_list = pas_merge_list
@@ -144,11 +145,15 @@ class CdmOperationCombineAttributes(CdmOperationBase):
             for select in leaf_level_combine_attribute_names.keys():
                 if select in leaf_level_combine_attribute_names and leaf_level_combine_attribute_names[select] is not None and len(leaf_level_combine_attribute_names[select]) > 0:
                     for leaf_level_for_select in leaf_level_combine_attribute_names[select]:
-                        attr_ctx_tree_builder._create_and_store_attribute_context_parameters(select, leaf_level_for_select, new_merge_into_pas._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                        attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                            select, leaf_level_for_select, new_merge_into_pas._current_resolved_attribute,
+                            CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                            leaf_level_for_select._current_resolved_attribute.att_ctx,  # lineage is the source att
+                            new_merge_into_pas._current_resolved_attribute.att_ctx)  # merge into points back here
 
             proj_attr_state_set._add(new_merge_into_pas)
 
         # Create all the attribute contexts and construct the tree
-        attr_ctx_tree_builder._construct_attribute_context_tree(proj_ctx, True)
+        attr_ctx_tree_builder._construct_attribute_context_tree(proj_ctx)
 
         return proj_attr_state_set

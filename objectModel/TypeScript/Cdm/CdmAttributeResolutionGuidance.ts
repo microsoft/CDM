@@ -196,9 +196,6 @@ export class CdmAttributeResolutionGuidance extends cdmObjectSimple implements C
                 if (this.entityByReference.alwaysIncludeForeignKey === undefined) {
                     this.entityByReference.alwaysIncludeForeignKey = false;
                 }
-                if (this.entityByReference.referenceOnlyAfterDepth === undefined) {
-                    this.entityByReference.referenceOnlyAfterDepth = 2;
-                }
                 if (this.entityByReference.foreignKeyAttribute === undefined) {
                     // make up a fk
                     this.entityByReference.foreignKeyAttribute = this.ctx.corpus.MakeObject(cdmObjectType.typeAttributeDef, 'id');

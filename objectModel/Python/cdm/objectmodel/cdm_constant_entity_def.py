@@ -75,7 +75,12 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
             copy.constant_entity_name = self.constant_entity_name
 
         copy.entity_shape = self.entity_shape.copy(res_opt)
-        copy.constant_values = self.constant_values  # is a deep copy needed?
+        if self.constant_values:
+            # deep copy the content
+            copy.constant_values = list()
+            for row in self.constant_values:
+                copy.constant_values.append(list(row))
+
         self._copy_def(res_opt, copy)
 
         return copy
@@ -176,8 +181,10 @@ class CdmConstantEntityDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.entity_shape and self.entity_shape.visit('{}/entityShape/'.format(path), pre_children, post_children):
-            return True
+        if self.entity_shape:
+            self.entity_shape.owner = self
+            if self.entity_shape.visit('{}/entityShape/'.format(path), pre_children, post_children):
+                return True
 
         if post_children and post_children(self, path):
             return True

@@ -5,17 +5,13 @@ package com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.projecti
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusContext;
-import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAddTypeAttribute;
 import com.microsoft.commondatamodel.objectmodel.cdm.CdmTypeAttributeDefinition;
-import com.microsoft.commondatamodel.objectmodel.cdm.projections.OperationTypeConvertor;
+import com.microsoft.commondatamodel.objectmodel.cdm.projections.CdmOperationAddTypeAttribute;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
-import com.microsoft.commondatamodel.objectmodel.enums.CdmOperationType;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.Utils;
 import com.microsoft.commondatamodel.objectmodel.persistence.cdmfolder.types.projections.OperationAddTypeAttribute;
 import com.microsoft.commondatamodel.objectmodel.utilities.CopyOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
-import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
-import com.microsoft.commondatamodel.objectmodel.utilities.logger.Logger;
 
 /**
  * Operation AddTypeAttribute persistence
@@ -26,17 +22,7 @@ public class OperationAddTypeAttributePersistence {
             return null;
         }
 
-        CdmOperationAddTypeAttribute addTypeAttributeOp = ctx.getCorpus().makeObject(CdmObjectType.OperationAddTypeAttributeDef);
-
-        if (obj.get("$type") != null && !StringUtils.equalsWithIgnoreCase(obj.get("$type").asText(), OperationTypeConvertor.operationTypeToString(CdmOperationType.AddTypeAttribute))) {
-            Logger.error(OperationAddTypeAttributePersistence.class.getSimpleName(), ctx, Logger.format("$type {0} is invalid for this operation.", obj.get("$type").asText()));
-        } else {
-            addTypeAttributeOp.setType(CdmOperationType.AddTypeAttribute);
-        }
-
-        if (obj.get("explanation") != null) {
-            addTypeAttributeOp.setExplanation(obj.get("explanation").asText());
-        }
+        CdmOperationAddTypeAttribute addTypeAttributeOp = OperationBasePersistence.fromData(ctx, CdmObjectType.OperationAddTypeAttributeDef, obj);
 
         if (obj.get("typeAttribute") != null) {
             addTypeAttributeOp.setTypeAttribute((CdmTypeAttributeDefinition) Utils.createAttribute(ctx, obj.get("typeAttribute")));
@@ -50,9 +36,7 @@ public class OperationAddTypeAttributePersistence {
             return null;
         }
 
-        OperationAddTypeAttribute obj = new OperationAddTypeAttribute();
-        obj.setType(OperationTypeConvertor.operationTypeToString(CdmOperationType.AddTypeAttribute));
-        obj.setExplanation(instance.getExplanation());
+        OperationAddTypeAttribute obj = OperationBasePersistence.toData(instance, resOpt, options);
         obj.setTypeAttribute(Utils.jsonForm(instance.getTypeAttribute(), resOpt, options));
 
         return obj;

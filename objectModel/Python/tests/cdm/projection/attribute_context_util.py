@@ -102,12 +102,13 @@ class AttributeContextUtil:
 
             # Actual
             actual_file_path = os.path.join(expected_output_path.replace('ExpectedOutput', 'ActualOutput'), 'AttrCtx_{}.txt'.format(entity_name))
-            actual_text = attr_ctx_util.get_attribute_context_strings(resolved_entity, resolved_entity.attribute_context)
+
 
             # Save Actual AttrCtx_*.txt and Resolved_*.cdm.json
-            with open(actual_file_path, 'w') as actual_attr_ctx_file:
-                actual_attr_ctx_file.write(actual_text)
+            actual_text = attr_ctx_util.get_attribute_context_strings(resolved_entity, resolved_entity.attribute_context)
+            actual_attr_ctx_file = open(actual_file_path, "w")
+            actual_attr_ctx_file.write(actual_text)
+            actual_attr_ctx_file.close()
             await resolved_entity.in_document.save_as_async('Resolved_{}.cdm.json'.format(entity_name), False)
-
             # Test if Actual is Equal to Expected
-            test.assertEqual(expected_text, actual_text)
+            test.assertEqual(expected_text.replace('\r\n', '\n'), actual_text.replace('\r\n', '\n'))

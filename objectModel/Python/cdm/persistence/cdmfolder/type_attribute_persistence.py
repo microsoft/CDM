@@ -80,11 +80,13 @@ class TypeAttributePersistence:
                 logger.warning(TypeAttributePersistence.__name__, ctx, 'Couldn\'t find an enum value for {}.'.format(
                     data.dataFormat), TypeAttributePersistence.from_data.__name__)
 
-
         return type_attribute
 
     @staticmethod
     def to_data(instance: CdmTypeAttributeDefinition, res_opt: ResolveOptions, options: CopyOptions) -> TypeAttribute:
+        if instance is None:
+            return None
+
         applied_traits = \
             [trait for trait in instance.applied_traits if not trait.is_from_property] \
             if instance.applied_traits else None
@@ -97,43 +99,44 @@ class TypeAttributePersistence:
         data.appliedTraits = copy_data_utils._array_copy_data(res_opt, applied_traits, options)
         data.resolutionGuidance = AttributeResolutionGuidancePersistence.to_data(
             instance.resolution_guidance, res_opt, options) if instance.resolution_guidance else None
+        data.projection = ProjectionPersistence.to_data(instance.projection, res_opt, options)
         data.attributeContext = AttributeContextReferencePersistence.to_data(
             instance.attribute_context, res_opt, options) if instance.attribute_context else None
 
-        is_read_only = instance._fetch_property('isReadOnly')
+        is_read_only = instance._get_property('isReadOnly')
         if is_read_only:
             data.isReadOnly = is_read_only
 
-        is_nullable = instance._fetch_property('isNullable')
+        is_nullable = instance._get_property('isNullable')
         if is_nullable:
             data.isNullable = is_nullable
 
-        data.sourceName = instance._fetch_property('sourceName')
+        data.sourceName = instance._get_property('sourceName')
 
-        source_ordering = instance._fetch_property('sourceOrdering')
+        source_ordering = instance._get_property('sourceOrdering')
         if source_ordering:
             data.sourceOrdering = source_ordering
 
-        data.displayName = instance._fetch_property('displayName')
-        data.description = instance._fetch_property('description')
+        data.displayName = instance._get_property('displayName')
+        data.description = instance._get_property('description')
 
-        value_constrained_to_list = instance._fetch_property('valueConstrainedToList')
+        value_constrained_to_list = instance._get_property('valueConstrainedToList')
         if value_constrained_to_list:
             data.valueConstrainedToList = value_constrained_to_list
 
-        is_primary_key = instance._fetch_property('isPrimaryKey')
+        is_primary_key = instance._get_property('isPrimaryKey')
         if is_primary_key:
             data.isPrimaryKey = is_primary_key
 
-        data.maximumLength = instance._fetch_property('maximumLength')
-        data.maximumValue = instance._fetch_property('maximumValue')
-        data.minimumValue = instance._fetch_property('minimumValue')
+        data.maximumLength = instance._get_property('maximumLength')
+        data.maximumValue = instance._get_property('maximumValue')
+        data.minimumValue = instance._get_property('minimumValue')
 
-        data_format = instance._fetch_property('dataFormat')
+        data_format = instance._get_property('dataFormat')
         if data_format != CdmDataFormat.UNKNOWN:
             data.dataFormat = data_format.value
 
-        default_value = instance._fetch_property('defaultValue')
+        default_value = instance._get_property('defaultValue')
         if default_value:
             data.defaultValue = default_value
 

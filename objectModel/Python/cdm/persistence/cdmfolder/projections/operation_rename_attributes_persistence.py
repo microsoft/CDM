@@ -4,11 +4,10 @@
 from typing import TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.enums.cdm_operation_type import CdmOperationType, OperationTypeConvertor
-
 from cdm.persistence.cdmfolder.types import OperationRenameAttributes
 from cdm.utilities.logging import logger
-from cdm.utilities.string_utils import StringUtils
+
+from .operation_base_persistence import OperationBasePersistence
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmOperationRenameAttributes
@@ -25,16 +24,9 @@ class OperationRenameAttributesPersistence:
         if not data:
             return None
 
-        rename_attributes_op = ctx.corpus.make_object(CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF)
-
-        if data.type and not StringUtils.equals_with_ignore_case(data.type, OperationTypeConvertor._operation_type_to_string(CdmOperationType.RENAME_ATTRIBUTES)):
-            logger.error(_TAG, ctx, '$type {} is invalid for this operation.'.format(data.type))
-        else:
-            rename_attributes_op.type = CdmOperationType.RENAME_ATTRIBUTES
-
-        if data.explanation:
-            rename_attributes_op.explanation = data.explanation
-
+        rename_attributes_op = OperationBasePersistence.from_data(ctx,
+            CdmObjectType.OPERATION_RENAME_ATTRIBUTES_DEF, data)  # type: CdmOperationRenameAttributes
+        
         rename_attributes_op.rename_format = data.renameFormat
         if isinstance(data.applyTo, str):
             rename_attributes_op.apply_to = [data.applyTo]
@@ -50,9 +42,7 @@ class OperationRenameAttributesPersistence:
         if not instance:
             return None
 
-        obj = OperationRenameAttributes()
-        obj.type = OperationTypeConvertor._operation_type_to_string(CdmOperationType.RENAME_ATTRIBUTES)
-        obj.explanation = instance.explanation
+        obj = OperationBasePersistence.to_data(instance, res_opt, options)  # type: OperationRenameAttributes
         obj.renameFormat = instance.rename_format
         obj.applyTo = instance.apply_to
 

@@ -31,7 +31,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * It is used for handling authentication items for ADLS requests.
+ * AdlsAdapterAuthenticator handles authentication items for ADLS requests.
  */
 class AdlsAdapterAuthenticator {
   private static final String HMAC_SHA256 = "HmacSHA256";
@@ -46,6 +46,7 @@ class AdlsAdapterAuthenticator {
   private String tenant;
   private String clientId;
   private String secret;
+  private String sasToken;
   private AuthenticationResult lastAuthenticationResult;
   private TokenProvider tokenProvider;
 
@@ -76,13 +77,24 @@ class AdlsAdapterAuthenticator {
       throws NoSuchAlgorithmException, InvalidKeyException, URISyntaxException, UnsupportedEncodingException {
     if (sharedKey != null) {
       return buildAuthenticationHeaderWithSharedKey(url, method, content, contentType);
-    } else if (this.tokenProvider != null) {
+    } else if (tokenProvider != null) {
       final Map<String, String> header = new LinkedHashMap<>();
-      header.put("authorization", this.tokenProvider.getToken());
+      header.put("authorization", tokenProvider.getToken());
       return header;
+    } else if (clientId != null) {
+      return buildAuthenticationHeaderWithClientIdAndSecret();
+    } else {
+      throw new StorageAdapterException("Adls adapter is not configured with any auth method");
     }
+  }
 
-    return buildAuthenticationHeaderWithClientIdAndSecret();
+  /**
+   * Appends SAS token to the given URL.
+   * @param url URL to be appended with the SAS token
+   * @return URL with the SAS token appended
+   */
+  String buildSasAuthenticatedUrl(String url) {
+    return url + (url.contains("?") ? "&" : "?") + sasToken;
   }
 
   /**
@@ -228,6 +240,20 @@ class AdlsAdapterAuthenticator {
 
   void setSecret(String secret) {
     this.secret = secret;
+  }
+
+  String getSasToken() {
+    return sasToken;
+  }
+
+  /**
+   * Sets the SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
+   * @param sasToken The SAS token
+   */
+  void setSasToken(String sasToken) {
+    this.sasToken = sasToken != null ?
+            (sasToken.startsWith("?") ? sasToken.substring(1) : sasToken)
+            : null;
   }
 
   TokenProvider getTokenProvider() {

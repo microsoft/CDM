@@ -14,7 +14,6 @@ from tests.common import async_test, TestHelper
 from tests.adls_test_helper import AdlsTestHelper
 from cdm.storage.adls import ADLSAdapter
 from cdm.utilities.network.token_provider import TokenProvider
-from cdm.utilities.string_utils import StringUtils
 from cdm.objectmodel import CdmCorpusDefinition
 
 def IfRunTestsFlagNotSet():

@@ -72,8 +72,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public abstract T FetchObjectDefinition<T>(ResolveOptions resOpt = null) where T : CdmObjectDefinition;
 
-        protected bool resolvingAttributes = false;
-        protected bool circularReference;
 
         /// <inheritdoc />
         public virtual string AtCorpusPath
@@ -199,18 +197,28 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 resOpt = new ResolveOptions(this, this.Ctx.Corpus.DefaultResolutionDirectives);
             }
 
+            bool inCircularReference = false;
+            bool wasInCircularReference = resOpt.InCircularReference;
+            if (this is CdmEntityDefinition entity)
+            {
+                inCircularReference = resOpt.CurrentlyResolvingEntities.Contains(entity);
+                resOpt.CurrentlyResolvingEntities.Add(entity);
+                resOpt.InCircularReference = inCircularReference;
+
+                // uncomment this line as a test to turn off allowing cycles
+                //if (inCircularReference)
+                //{
+                //    return new ResolvedAttributeSet();
+                //}
+            }
 
             const string kind = "rasb";
             ResolveContext ctx = this.Ctx as ResolveContext;
             ResolvedAttributeSetBuilder rasbResult = null;
-            // keep track of the context node that the results of this call would like to use as the parent
-            CdmAttributeContext parentCtxForResult = null;
             ResolvedAttributeSetBuilder rasbCache = this.FetchObjectFromCache(resOpt, acpInContext);
-            CdmAttributeContext underCtx = null;
-            if (acpInContext != null)
-            {
-                parentCtxForResult = acpInContext.under;
-            }
+            CdmAttributeContext underCtx;
+
+            int currentDepth = resOpt.DepthInfo.CurrentDepth;
 
             // store the previous document set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -222,23 +230,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             resOpt.SymbolRefSet = new SymbolSet();
 
             // if using the cache passes the maxDepth, we cannot use it
-            if (rasbCache != null && resOpt.DepthInfo != null && resOpt.DepthInfo.CurrentDepth + rasbCache.ResolvedAttributeSet.DepthTraveled > resOpt.DepthInfo.MaxDepth)
+            if (rasbCache != null && resOpt.DepthInfo.CurrentDepth + rasbCache.ResolvedAttributeSet.DepthTraveled > resOpt.DepthInfo.MaxDepth)
             {
                 rasbCache = null;
             }
 
             if (rasbCache == null)
             {
-                if (this.resolvingAttributes)
-                {
-                    // re-entered this attribute through some kind of self or looping reference.
-                    this.Ctx.Corpus.isCurrentlyResolving = wasPreviouslyResolving;
-                    //return new ResolvedAttributeSet();  // uncomment this line as a test to turn off allowing cycles
-                    resOpt.InCircularReference = true;
-                    this.circularReference = true;
-                }
-                this.resolvingAttributes = true;
-
                 // a new context node is needed for these attributes, 
                 // this tree will go into the cache, so we hang it off a placeholder parent
                 // when it is used from the cache (or now), then this placeholder parent is ignored and the things under it are
@@ -246,8 +244,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 underCtx = CdmAttributeContext.GetUnderContextForCacheContext(resOpt, this.Ctx, acpInContext);
 
                 rasbCache = this.ConstructResolvedAttributes(resOpt, underCtx);
-
-                this.resolvingAttributes = false;
 
                 if (rasbCache != null)
                 {
@@ -268,11 +264,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     // the target tree
                     underCtx = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.AttributeContext?.GetUnderContextFromCacheContext(resOpt, acpInContext);
                 }
-
-                if (this.circularReference)
-                {
-                    resOpt.InCircularReference = false;
-                }
             }
             else
             {
@@ -291,8 +282,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 // 2. deep copy the tree. 
 
                 // 1. deep copy the resolved att set (may have groups) and leave the attCtx pointers set to the old tree
-                rasbResult = new ResolvedAttributeSetBuilder();
-                rasbResult.ResolvedAttributeSet = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.Copy();
+                rasbResult = new ResolvedAttributeSetBuilder
+                {
+                    ResolvedAttributeSet = (rasbCache as ResolvedAttributeSetBuilder).ResolvedAttributeSet.Copy()
+                };
 
                 // 2. deep copy the tree and map the context references. 
                 if (underCtx != null) // null context? means there is no tree, probably 0 attributes came out
@@ -304,17 +297,24 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 }
             }
 
-            DepthInfo currDepthInfo = resOpt.DepthInfo;
-            if (this is CdmEntityAttributeDefinition && currDepthInfo != null)
+            if (this is CdmEntityAttributeDefinition)
             {
-                // if we hit the maxDepth, we are now going back up
-                currDepthInfo.CurrentDepth--;
+                // current depth should now be set to this entity attribute level
+                resOpt.DepthInfo.CurrentDepth = currentDepth;
                 // now at the top of the chain where max depth does not influence the cache
-                if (currDepthInfo.CurrentDepth <= 0)
+                if (currentDepth == 0)
                 {
-                    resOpt.DepthInfo = null;
+                    resOpt.DepthInfo.MaxDepthExceeded = false;
                 }
             }
+            
+            if (!inCircularReference && this.ObjectType == CdmObjectType.EntityDef)
+            {
+                // should be removed from the root level only
+                // if it is in a circular reference keep it there
+                resOpt.CurrentlyResolvingEntities.Remove(this as CdmEntityDefinition);
+            }
+            resOpt.InCircularReference = wasInCircularReference;
 
             // merge child document set with current
             currDocRefSet.Merge(resOpt.SymbolRefSet);

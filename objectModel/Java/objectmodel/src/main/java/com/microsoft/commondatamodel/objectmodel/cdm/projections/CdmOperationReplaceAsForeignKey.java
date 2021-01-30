@@ -35,8 +35,11 @@ public class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "copy");
-        return new CdmOperationReplaceAsForeignKey(this.getCtx());
+        final CdmOperationReplaceAsForeignKey copy = new CdmOperationReplaceAsForeignKey(this.getCtx());
+        copy.setReference(this.getReference());
+        copy.setReplaceWith((CdmTypeAttributeDefinition) this.getReplaceWith().copy());
+
+        return copy;
     }
 
     public String getReference() {

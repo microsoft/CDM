@@ -268,11 +268,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
             CdmDocumentDefinition wrtDoc = resOpt.WrtDoc as CdmDocumentDefinition;
 
-            //var indexTaskResult = wrtDoc.IndexIfNeeded(resOpt, true).GetAwaiter().GetResult();
             var indexTask = Task.Run(async () => await wrtDoc.IndexIfNeeded(resOpt, true));
 
             // if the wrtDoc needs to be indexed (like it was just modified) then do that first
-            //if (!indexTaskResult)
             if (!indexTask.Result)
             {
                 Logger.Error(nameof(CdmEntityDefinition), this.Ctx as ResolveContext, "Couldn't index source document.", nameof(ResolveSymbolReference));
@@ -353,9 +351,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                         }
                         break;
                     case CdmObjectType.EntityRef:
-                        if (found.ObjectType != CdmObjectType.EntityDef && found.ObjectType != CdmObjectType.ProjectionDef)
+                        if (found.ObjectType != CdmObjectType.EntityDef && found.ObjectType != CdmObjectType.ProjectionDef && found.ObjectType != CdmObjectType.ConstantEntityDef)
                         {
-                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type entity or type projection", symbolDef);
+                            Logger.Error(nameof(CdmCorpusDefinition), ctx, "expected type entity or type projection or type constant entity", symbolDef);
                             found = null;
                         }
                         break;
@@ -520,7 +518,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             StringBuilder tagSuffix = new StringBuilder();
             tagSuffix.AppendFormat("-{0}-{1}", kind, thisId);
             tagSuffix.AppendFormat("-({0})", resOpt.Directives != null ? resOpt.Directives.GetTag() : string.Empty);
-            if (resOpt.DepthInfo?.MaxDepthExceeded == true)
+            if (resOpt.DepthInfo.MaxDepthExceeded)
             {
                 DepthInfo currDepthInfo = resOpt.DepthInfo;
                 tagSuffix.AppendFormat("-${0}", currDepthInfo.MaxDepth - currDepthInfo.CurrentDepth);
@@ -1770,7 +1768,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             bool isResolvedEntity,
             CdmAttributeContext generatedAttSetContext = null,
             bool wasProjectionPolymorphic = false,
-            bool wasEntityRef = false,
             List<CdmAttributeReference> fromAtts = null)
         {
             List<CdmE2ERelationship> outRels = new List<CdmE2ERelationship>();
@@ -1802,8 +1799,18 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                                 // Projections
 
                                 isEntityRef = false;
-                                isPolymorphicSource = (toEntity?.Owner?.ObjectType == CdmObjectType.EntityAttributeDef &&
-                                    ((CdmEntityAttributeDefinition)toEntity.Owner).IsPolymorphicSource == true);
+
+                                CdmObject owner = toEntity.Owner?.Owner;
+
+                                if (owner != null)
+                                {
+                                    isPolymorphicSource = (owner.ObjectType == CdmObjectType.EntityAttributeDef &&
+                                        ((CdmEntityAttributeDefinition)owner).IsPolymorphicSource == true);
+                                }
+                                else
+                                {
+                                    Logger.Error(nameof(CdmCorpusDefinition), this.Ctx, "Found object without owner when calculating relationships.");
+                                }
 
                                 // From the top of the projection (or the top most which contains a generatedSet / operations)
                                 // get the attribute names for the foreign key
@@ -1861,7 +1868,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             isResolvedEntity,
                             newGenSet,
                             wasProjectionPolymorphic: wasProjectionPolymorphic,
-                            wasEntityRef: isEntityRef,
                             fromAtts: fromAtts);
                         outRels.AddRange(subOutRels);
 
@@ -2170,14 +2176,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             resOpt = new ResolveOptions
             {
                 WrtDoc = null,
-                Directives = directives,
-                DepthInfo = new DepthInfo
-                {
-                    MaxDepth = null,
-                    CurrentDepth = 0,
-                    MaxDepthExceeded = false
-                }
+                Directives = directives
             };
+            resOpt.DepthInfo.Reset();
 
             foreach (CdmDocumentDefinition doc in this.documentLibrary.ListAllDocuments())
             {

@@ -43,7 +43,7 @@ class EntityPersistence:
         data = LocalEntity()
         data.type = 'LocalEntity'
         data.name = instance.entity_name
-        data.description = instance._fetch_property("description")
+        data.description = instance._get_property("description")
 
         utils.process_traits_and_annotations_to_data(instance.ctx, data, instance.exhibits_traits)
 

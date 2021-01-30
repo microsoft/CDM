@@ -80,6 +80,16 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         self._trait_to_property_map._update_property_value('displayName', val)
 
     @property
+    def projection(self) -> Optional['CdmProjection']:
+        return self._projection
+
+    @projection.setter
+    def projection(self, projection: Optional['CdmProjection']) -> None:
+        if projection:
+            projection.owner = self
+        self._projection = projection
+
+    @property
     def source_ordering(self) -> int:
         return cast(int, self._trait_to_property_map._fetch_property_value('sourceOrdering'))
 
@@ -155,7 +165,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         from .cdm_attribute_resolution_guidance_def import CdmAttributeResolutionGuidanceDefinition
 
         rasb = ResolvedAttributeSetBuilder()
-        rasb.ras.attribute_context = under
+        rasb._resolved_attribute_set.attribute_context = under
 
         # add this attribute to the set
         # make a new one and apply any traits
@@ -174,7 +184,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         # rename_format is not currently supported for type attributes
         res_guide_with_default.rename_format = None
 
-        res_guide_with_default._update_attribute_defaults(None)
+        res_guide_with_default._update_attribute_defaults(None, self)
         arc = AttributeResolutionContext(res_opt, res_guide_with_default, rts)
 
         # TODO: remove the resolution guidance if projection is being used
@@ -186,10 +196,10 @@ class CdmTypeAttributeDefinition(CdmAttribute):
 
         if self.projection:
             proj_directive = ProjectionDirective(res_opt, self)
-            proj_ctx = self.projection._construct_projection_context(proj_directive, under, rasb.ras)
+            proj_ctx = self.projection._construct_projection_context(proj_directive, under, rasb._resolved_attribute_set)
 
-            ras = self.projection._extract_resolved_attributes(proj_ctx)
-            rasb.ras = ras
+            ras = self.projection._extract_resolved_attributes(proj_ctx, under)
+            rasb._resolved_attribute_set = ras
 
         return rasb
 
@@ -210,7 +220,10 @@ class CdmTypeAttributeDefinition(CdmAttribute):
         if rtsb.resolved_trait_set and rtsb.resolved_trait_set.has_elevated:
             replacement = CdmAttributeReference(self.ctx, self.name, True)
             replacement.ctx = self.ctx
-            replacement.explicit_reference = self
+            replacement.explicit_reference = self.copy()
+            replacement.in_document = self.in_document
+            replacement.owner = self
+
             rtsb.replace_trait_parameter_value(res_opt, 'does.elevateAttribute', 'attribute', 'this.attribute', replacement)
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmTypeAttributeDefinition'] = None) -> 'CdmTypeAttributeDefinition':
@@ -235,7 +248,7 @@ class CdmTypeAttributeDefinition(CdmAttribute):
 
         return copy
 
-    def _fetch_property(self, property_name: str) -> Any:
+    def _get_property(self, property_name: str) -> Any:
         """returns the value direclty assigned to a property (ignore value from traits)."""
         return self._trait_to_property_map._fetch_property_value(property_name, True)
 

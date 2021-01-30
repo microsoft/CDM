@@ -135,7 +135,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             manifest.PopulateManifestRelationshipsAsync().GetAwaiter().GetResult();
             string actualRelationshipsString = ListRelationships(corpus, entity, actualOutputFolder, entityName);
 
-            string expectedRelationshipsStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputFolder, $"REL_{entityName}.txt"));
+            string relationshipsFilename = $"REL_{entityName}.txt";
+            File.WriteAllText(Path.Combine(actualOutputFolder, relationshipsFilename), actualRelationshipsString);
+
+            string expectedRelationshipsStringFilePath = Path.GetFullPath(Path.Combine(expectedOutputFolder, relationshipsFilename));
             string expectedRelationshipsString = File.ReadAllText(expectedRelationshipsStringFilePath);
 
             Assert.AreEqual(expectedRelationshipsString, actualRelationshipsString);
@@ -154,7 +157,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             {
                 CdmManifestDefinition savedManifest = corpus.FetchObjectAsync<CdmManifestDefinition>($"output:/{manifestFileName}").GetAwaiter().GetResult();
                 string actualSavedManifestRel = GetRelationshipStrings(savedManifest.Relationships);
-                string expectedSavedManifestRel = File.ReadAllText(Path.Combine(expectedOutputFolder, $"MANIFEST_REL_{entityName}.txt"));
+                string manifestRelationshipsFilename = $"MANIFEST_REL_{entityName}.txt";
+                File.WriteAllText(Path.Combine(actualOutputFolder, manifestRelationshipsFilename), actualSavedManifestRel);
+
+                string expectedSavedManifestRel = File.ReadAllText(Path.Combine(expectedOutputFolder, manifestRelationshipsFilename));
                 Assert.AreEqual(expectedSavedManifestRel, actualSavedManifestRel);
             }
         }

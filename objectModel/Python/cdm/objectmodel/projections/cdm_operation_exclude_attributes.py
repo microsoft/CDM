@@ -94,7 +94,11 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
             if current_PAS._current_resolved_attribute.resolved_name not in top_level_exclude_attribute_names:
                 # Create the attribute context parameters and just store it in the builder for now
                 # We will create the attribute contexts at the end
-                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(None, current_PAS, current_PAS._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                    None, current_PAS, current_PAS._current_resolved_attribute,
+                    CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                    current_PAS._current_resolved_attribute.att_ctx,  # lineage is the included attribute
+                    None)  # don't know who will point here yet
 
                 # Create a projection attribute state for the included attribute by creating a copy of the current state
                 # Copy() sets the current state as the previous state for the new one
@@ -110,7 +114,11 @@ class CdmOperationExcludeAttributes(CdmOperationBase):
 
                 # Create the attribute context parameters and just store it in the builder for now
                 # We will create the attribute contexts at the end
-                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(exclude_attribute_name, current_PAS, current_PAS._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                    exclude_attribute_name, current_PAS, current_PAS._current_resolved_attribute,
+                    CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                    current_PAS._current_resolved_attribute.att_ctx,  # lineage is the included attribute
+                    None)  # don't know who will point here yet, excluded, so... this could be the end for you.
 
         # Create all the attribute contexts and construct the tree
         attr_ctx_tree_builder._construct_attribute_context_tree(proj_ctx)

@@ -7,9 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -24,20 +22,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            CdmOperationExcludeAttributes excludeAttributesOp = ctx.Corpus.MakeObject<CdmOperationExcludeAttributes>(CdmObjectType.OperationExcludeAttributesDef);
-
-            if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(CdmOperationType.ExcludeAttributes)))
-            {
-                Logger.Error(nameof(OperationExcludeAttributesPersistence), ctx, $"$type {(string)obj["$type"]} is invalid for this operation.");
-            }
-            else
-            {
-                excludeAttributesOp.Type = CdmOperationType.ExcludeAttributes;
-            }
-            if (obj["explanation"] != null)
-            {
-                excludeAttributesOp.Explanation = (string)obj["explanation"];
-            }
+            CdmOperationExcludeAttributes excludeAttributesOp = OperationBasePersistence.FromData<CdmOperationExcludeAttributes>(ctx, CdmObjectType.OperationExcludeAttributesDef, obj);
             excludeAttributesOp.ExcludeAttributes = obj["excludeAttributes"]?.ToObject<List<string>>();
 
             return excludeAttributesOp;
@@ -50,12 +35,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            OperationExcludeAttributes obj = new OperationExcludeAttributes
-            {
-                Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.ExcludeAttributes),
-                Explanation = instance.Explanation,
-                ExcludeAttributes = instance.ExcludeAttributes,
-            };
+            OperationExcludeAttributes obj = OperationBasePersistence.ToData<OperationExcludeAttributes>(instance, resOpt, options);
+            obj.ExcludeAttributes = instance.ExcludeAttributes;
 
             return obj;
         }

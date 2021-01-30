@@ -41,6 +41,9 @@ class CdmArgumentDefinition(CdmObjectSimple):
     def object_type(self) -> CdmObjectType:
         return CdmObjectType.ARGUMENT_DEF
 
+    def _get_parameter_def(self) -> 'CdmParameterDefinition':
+        return self._resolved_parameter
+
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmArgumentDefinition'] = None) -> 'CdmArgumentDefinition':
         res_opt = res_opt if res_opt is not None else ResolveOptions(wrt_doc=self, directives=self.ctx.corpus.default_resolution_directives)
 

@@ -32,6 +32,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         private string testsSubpath = Path.Combine("Cdm", "Resolution", "EntityResolution");
 
         /// <summary>
+        /// Tests if the owner of the entity is not changed when calling CreatedResolvedEntityAsync
+        /// </summary>
+        /// <returns></returns>
+        [TestMethod]
+        public async Task TestOwnerNotChanged()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestOwnerNotChanged");
+
+            var entity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/Entity.cdm.json/Entity");
+            var document = await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/Entity.cdm.json");
+
+            Assert.AreEqual(document, entity.Owner);
+
+            await entity.CreateResolvedEntityAsync("res-Entity");
+
+            Assert.AreEqual(document, entity.Owner);
+        }
+
+        /// <summary>
         /// Test whether or not the test corpus can be resolved
         /// The input of this test is a manifest from SchemaDocs, so this test does not need any individual input files.
         /// This test does not check the output. Possibly because the schema docs change often.

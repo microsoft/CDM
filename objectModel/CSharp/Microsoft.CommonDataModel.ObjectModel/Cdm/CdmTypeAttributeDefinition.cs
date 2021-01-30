@@ -25,7 +25,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the type attribute's attribute projection.
         /// </summary>
-        public CdmProjection Projection { get; set; }
+        public CdmProjection Projection
+        {
+            get => this.projection;
+            set
+            {
+                if (value != null)
+                    value.Owner = this;
+                this.projection = value;
+            }
+        }
 
         /// <summary>
         /// Gets whether the type attribute is the primary key.
@@ -224,6 +233,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         }
 
         private TraitToPropertyMap TraitToPropertyMap { get; }
+        private CdmProjection projection;
 
         /// <summary>
         /// Constructs a CdmTypeAttributeDefinition.
@@ -338,7 +348,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 return true;
             if (this.AttributeContext?.Visit($"{path}/attributeContext/", preChildren, postChildren) == true)
                 return true;
-            if (this.Projection != null) this.Projection.Owner = this;
             if (this.Projection?.Visit($"{path}/projection/", preChildren, postChildren) == true)
                 return true;
             if (this.VisitAtt(path, preChildren, postChildren))
@@ -365,7 +374,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 CdmAttributeReference replacement = new CdmAttributeReference(this.Ctx, this.Name, true)
                 {
                     Ctx = this.Ctx,
-                    ExplicitReference = this,
+                    ExplicitReference = this.Copy() as CdmObjectDefinition,
                     InDocument = this.InDocument,
                     Owner = this,
                 };

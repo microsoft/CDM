@@ -123,7 +123,11 @@ class CdmOperationRenameAttributes(CdmOperationBase):
 
                     # Create the attribute context parameters and just store it in the builder for now
                     # We will create the attribute contexts at the end
-                    attr_ctx_tree_builder._create_and_store_attribute_context_parameters(apply_to_name, current_PAS, res_attr_new, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                    attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                        apply_to_name, current_PAS, res_attr_new,
+                        CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                        current_PAS._current_resolved_attribute.att_ctx,  # lineage is the original attribute
+                        None)  # don't know who will point here yet
 
                     # Create a projection attribute state for the renamed attribute by creating a copy of the current state
                     # Copy() sets the current state as the previous state for the new one
@@ -143,7 +147,7 @@ class CdmOperationRenameAttributes(CdmOperationBase):
                 proj_output_set._add(current_PAS)
 
         # Create all the attribute contexts and construct the tree
-        attr_ctx_tree_builder._construct_attribute_context_tree(proj_ctx, True)
+        attr_ctx_tree_builder._construct_attribute_context_tree(proj_ctx)
 
         return proj_output_set
 

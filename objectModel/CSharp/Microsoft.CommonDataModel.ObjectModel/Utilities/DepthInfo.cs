@@ -6,11 +6,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
     internal class DepthInfo
     {
         /// <summary>
-        /// The default depth that we travel before forcing a foreign key attribute
-        /// </summary>
-        internal static int DefaultMaxDepth = 2;
-
-        /// <summary>
         /// The max depth set if the user specified to not use max depth
         /// </summary>
         internal static int MaxDepthLimit = 32;
@@ -31,5 +26,37 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// Indicates if the maxDepth value has been hit when resolving
         /// </summary>
         internal bool MaxDepthExceeded { get; set; }
+
+
+        internal DepthInfo()
+        {
+            this.Reset();
+        }
+
+        /// <summary>
+        /// Resets the instance to its initial values.
+        /// </summary>
+        internal void Reset()
+        {
+            this.MaxDepth = null;
+            this.CurrentDepth = 0;
+            this.MaxDepthExceeded = false;
+        }
+
+        /// <summary>
+        /// Creates a copy of this depth info instance.
+        /// </summary>
+        /// <returns></returns>
+        internal DepthInfo Copy()
+        {
+            DepthInfo copy = new DepthInfo
+            {
+                CurrentDepth = this.CurrentDepth,
+                MaxDepth = this.MaxDepth,
+                MaxDepthExceeded = this.MaxDepthExceeded
+            };
+
+            return copy;
+        }
     }
 }

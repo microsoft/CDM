@@ -424,7 +424,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.ResolvedModel
                     doAdd(appCtx);
 
                     // combine resolution guidence for this set with anything new from the new attribute
-                    appCtx.ResGuideNew = (appCtx.ResGuide as CdmAttributeResolutionGuidance).combineResolutionGuidance(appCtx.ResGuideNew as CdmAttributeResolutionGuidance);
+                    appCtx.ResGuideNew = (appCtx.ResGuide as CdmAttributeResolutionGuidance).CombineResolutionGuidance(appCtx.ResGuideNew as CdmAttributeResolutionGuidance);
                     appCtx.ResAttNew.Arc = new AttributeResolutionContext(arc.ResOpt, appCtx.ResGuideNew as CdmAttributeResolutionGuidance, appCtx.ResAttNew.ResolvedTraits);
 
                     if (applyModifiers)

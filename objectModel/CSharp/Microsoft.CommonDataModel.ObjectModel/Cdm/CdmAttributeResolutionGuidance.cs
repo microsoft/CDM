@@ -296,8 +296,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 {
                     if (this.entityByReference.alwaysIncludeForeignKey == null)
                         this.entityByReference.alwaysIncludeForeignKey = false;
-                    if (this.entityByReference.referenceOnlyAfterDepth == null)
-                        this.entityByReference.referenceOnlyAfterDepth = 2;
                     if (this.entityByReference.foreignKeyAttribute == null)
                     {
                         // make up a fk
@@ -379,7 +377,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             }
         }
 
-        internal CdmAttributeResolutionGuidance combineResolutionGuidance(CdmAttributeResolutionGuidance addIn)
+        internal CdmAttributeResolutionGuidance CombineResolutionGuidance(CdmAttributeResolutionGuidance addIn)
         {
             CdmAttributeResolutionGuidance startWith = this;
             if (addIn == null)

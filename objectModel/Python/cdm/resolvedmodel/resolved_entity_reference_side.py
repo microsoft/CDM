@@ -19,9 +19,9 @@ class ResolvedEntityReferenceSide:
         self._rasb = rasb if rasb else ResolvedAttributeSetBuilder()  # type: ResolvedAttributeSetBuilder
 
     def get_first_attribute(self) -> Optional['ResolvedAttribute']:
-        return self._rasb.ras._set[0] if self._rasb and self._rasb.ras and self._rasb.ras._set else None
+        return self._rasb._resolved_attribute_set._set[0] if self._rasb and self._rasb._resolved_attribute_set and self._rasb._resolved_attribute_set._set else None
 
     def spew(self, res_opt: 'ResolveOptions', to: 'SpewCatcher', indent: str, name_sort: bool) -> None:
         to.spew_line(indent + ' ent=' + self.entity.entity_name)
-        if self._rasb and self._rasb.ras:
-            self._rasb.ras.spew(res_opt, to, indent + '  atts:', name_sort)
+        if self._rasb and self._rasb._resolved_attribute_set:
+            self._rasb._resolved_attribute_set.spew(res_opt, to, indent + '  atts:', name_sort)

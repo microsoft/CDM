@@ -7,9 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
-    using System;
 
     /// <summary>
     /// Operation AddTypeAttribute persistence
@@ -23,24 +21,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            CdmOperationAddTypeAttribute addTypeAttributeOp = ctx.Corpus.MakeObject<CdmOperationAddTypeAttribute>(CdmObjectType.OperationAddTypeAttributeDef);
-
-            if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(CdmOperationType.AddTypeAttribute)))
-            {
-                Logger.Error(nameof(OperationAddTypeAttributePersistence), ctx, $"$type {(string)obj["$type"]} is invalid for this operation.");
-            }
-            else
-            {
-                addTypeAttributeOp.Type = CdmOperationType.AddTypeAttribute;
-            }
-            if (obj["explanation"] != null)
-            {
-                addTypeAttributeOp.Explanation = (string)obj["explanation"];
-            }
-            if (obj["typeAttribute"] != null)
-            {
-                addTypeAttributeOp.TypeAttribute = Utils.CreateAttribute(ctx, obj["typeAttribute"]) as CdmTypeAttributeDefinition;
-            }
+            CdmOperationAddTypeAttribute addTypeAttributeOp = OperationBasePersistence.FromData<CdmOperationAddTypeAttribute>(ctx, CdmObjectType.OperationAddTypeAttributeDef, obj);
+            addTypeAttributeOp.TypeAttribute = Utils.CreateAttribute(ctx, obj["typeAttribute"]) as CdmTypeAttributeDefinition;
 
             return addTypeAttributeOp;
         }
@@ -52,12 +34,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            return new OperationAddTypeAttribute
-            {
-                Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.AddTypeAttribute),
-                Explanation = instance.Explanation,
-                TypeAttribute = Utils.JsonForm(instance.TypeAttribute, resOpt, options)
-            };
+            OperationAddTypeAttribute obj = OperationBasePersistence.ToData<OperationAddTypeAttribute>(instance, resOpt, options);
+            obj.TypeAttribute = Utils.JsonForm(instance.TypeAttribute, resOpt, options);
+
+            return obj;
         }
     }
 }

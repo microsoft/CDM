@@ -5,7 +5,7 @@ import json
 import random
 import urllib
 
-from typing import Dict, TYPE_CHECKING
+from typing import Dict, TYPE_CHECKING, Optional
 
 from cdm.utilities.network.cdm_http_request import CdmHttpRequest
 
@@ -60,7 +60,7 @@ class NetworkAdapter:
         self.number_of_retries = self.DEFAULT_NUMBER_OF_RETRIES  # type: int
         self.wait_time_callback = self._default_get_wait_time
 
-    def _set_up_cdm_request(self, path: str, headers: Dict, method: str) -> 'CdmHttpRequest':
+    def _set_up_cdm_request(self, path: str, headers: Optional[Dict], method: str) -> 'CdmHttpRequest':
         request = CdmHttpRequest(path)
 
         request.headers = headers or {}
@@ -78,11 +78,11 @@ class NetworkAdapter:
             raise Exception('The result of a request is undefined.')
 
         if result.is_successful is False:
-            raise urllib.error.HTTPError(url=request.requested_url, code=result.status_code, msg='Failed to read', hdrs=result.response_headers, fp=None)
+            raise urllib.error.HTTPError(url=request._strip_sas_sig(), code=result.status_code, msg='Failed to read', hdrs=result.response_headers, fp=None)
 
         return result.content
 
-    def _default_get_wait_time(self, response: 'CdmHttpResponse', has_failed: bool, retry_number: int) -> int:
+    def _default_get_wait_time(self, response: 'CdmHttpResponse', has_failed: bool, retry_number: int) -> Optional[int]:
         """
         Callback function for a CDM Http client, it does exponential backoff.
         :param response: The response received by system's Http client.

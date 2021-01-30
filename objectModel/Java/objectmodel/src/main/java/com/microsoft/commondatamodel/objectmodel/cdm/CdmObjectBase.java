@@ -33,8 +33,6 @@ public abstract class CdmObjectBase implements CdmObject {
   private boolean resolvingTraits = false;
   private String declaredPath;
   private Map<String, ResolvedTraitSetBuilder> traitCache;
-  protected boolean resolvingAttributes = false;
-  protected boolean circularReference;
 
   public CdmObjectBase() {
   }
@@ -413,17 +411,27 @@ public abstract class CdmObjectBase implements CdmObject {
       resOpt = new ResolveOptions(this, this.getCtx().getCorpus().getDefaultResolutionDirectives());
     }
 
+    boolean inCircularReference = false;
+    boolean wasInCircularReference = resOpt.inCircularReference;
+    if (this.objectType == CdmObjectType.EntityDef) {
+      CdmEntityDefinition entity = (CdmEntityDefinition) this;
+        inCircularReference = resOpt.currentlyResolvingEntities.contains(entity);
+        resOpt.currentlyResolvingEntities.add(entity);
+        resOpt.inCircularReference = inCircularReference;
+
+        // uncomment this line as a test to turn off allowing cycles
+        //if (inCircularReference) {
+        //    return new ResolvedAttributeSet();
+        //}
+    }
+
     final String kind = "rasb";
     final ResolveContext ctx = (ResolveContext) this.getCtx();
     ResolvedAttributeSetBuilder rasbResult = null;
-    // keep track of the context node that the results of this call would like to use as the parent
-    CdmAttributeContext parentCtxForResult = null;
     ResolvedAttributeSetBuilder rasbCache = this.fetchObjectFromCache(resOpt, acpInContext);
     CdmAttributeContext underCtx = null;
-    if (acpInContext != null)
-    {
-      parentCtxForResult = acpInContext.getUnder();
-    }
+
+    int currentDepth = resOpt.depthInfo.getCurrentDepth();
 
     // store the previous document set, we will need to add it with
     // children found from the constructResolvedTraits call
@@ -434,21 +442,12 @@ public abstract class CdmObjectBase implements CdmObject {
     resOpt.setSymbolRefSet(new SymbolSet());
 
     // if using the cache passes the maxDepth, we cannot use it
-    if (rasbCache != null && resOpt.depthInfo != null && resOpt.depthInfo.getMaxDepth() != null
+    if (rasbCache != null && resOpt.depthInfo.getMaxDepth() != null
         && resOpt.depthInfo.getCurrentDepth() + rasbCache.getResolvedAttributeSet().getDepthTraveled() > resOpt.depthInfo.getMaxDepth()) {
       rasbCache = null;
     }
 
     if (rasbCache == null) {
-      if (this.resolvingAttributes) {
-        // re-entered this attribute through some kind of self or looping reference.
-        this.getCtx().getCorpus().isCurrentlyResolving = wasPreviouslyResolving;
-        //return new ResolvedAttributeSet();  // uncomment this line as a test to turn off allowing cycles
-        resOpt.inCircularReference = true;
-        this.circularReference = true;
-      }
-      this.resolvingAttributes = true;
-
       // a new context node is needed for these attributes,
       // this tree will go into the cache, so we hang it off a placeholder parent
       // when it is used from the cache (or now), then this placeholder parent is ignored and the things under it are
@@ -456,8 +455,6 @@ public abstract class CdmObjectBase implements CdmObject {
       underCtx = CdmAttributeContext.getUnderContextForCacheContext(resOpt, this.getCtx(), acpInContext);
 
       rasbCache = this.constructResolvedAttributes(resOpt, underCtx);
-
-      this.resolvingAttributes = false;
 
       if (rasbCache != null) {
         // register set of possible docs
@@ -480,9 +477,6 @@ public abstract class CdmObjectBase implements CdmObject {
                   ? rasbCache.getResolvedAttributeSet().getAttributeContext().getUnderContextFromCacheContext(resOpt, acpInContext)
                   : null;
         }
-      }
-      if (this.circularReference) {
-        resOpt.inCircularReference = false;
       }
     }
     else {
@@ -513,15 +507,21 @@ public abstract class CdmObjectBase implements CdmObject {
       }
     }
 
-    DepthInfo currDepthInfo = resOpt.depthInfo;
-    if (this instanceof CdmEntityAttributeDefinition && currDepthInfo != null) {
+    if (this instanceof CdmEntityAttributeDefinition) {
       // if we hit the maxDepth, we are now going back up
-      currDepthInfo.setCurrentDepth(currDepthInfo.getCurrentDepth() - 1);
+      resOpt.depthInfo.setCurrentDepth(currentDepth);
       // now at the top of the chain where max depth does not influence the cache
-      if (currDepthInfo.getCurrentDepth() <= 0) {
-        resOpt.depthInfo = null;
+      if (resOpt.depthInfo.getCurrentDepth() == 0) {
+        resOpt.depthInfo.setMaxDepthExceeded(false);;
       }
     }
+
+    if (!inCircularReference && this.objectType == CdmObjectType.EntityDef) {
+      // should be removed from the root level only
+      // if it is in a circular reference keep it there
+      resOpt.currentlyResolvingEntities.remove(this);
+    }
+    resOpt.inCircularReference = wasInCircularReference;
 
     // merge child document set with current
     currDocRefSet.merge(resOpt.getSymbolRefSet());

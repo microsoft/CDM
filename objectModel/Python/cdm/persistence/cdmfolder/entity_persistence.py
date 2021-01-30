@@ -55,11 +55,11 @@ class EntityPersistence:
         data.ExtendsEntityResolutionGuidance = AttributeResolutionGuidancePersistence.to_data(
             instance.extends_entity_resolution_guidance, res_opt, options) if instance.extends_entity_resolution_guidance else None
         data.exhibitsTraits = copy_data_utils._array_copy_data(res_opt, exhibits_traits, options)
-        data.sourceName = instance._fetch_property('sourceName')
-        data.displayName = instance._fetch_property('displayName')
-        data.description = instance._fetch_property('description')
-        data.version = instance._fetch_property('version')
-        data.cdmSchemas = instance._fetch_property('cdmSchemas')
+        data.sourceName = instance._get_property('sourceName')
+        data.displayName = instance._get_property('displayName')
+        data.description = instance._get_property('description')
+        data.version = instance._get_property('version')
+        data.cdmSchemas = instance._get_property('cdmSchemas')
         data.attributeContext = AttributeContextPersistence.to_data(instance.attribute_context, res_opt, options) if instance.attribute_context else None
 
         # After the properties so they show up first in doc

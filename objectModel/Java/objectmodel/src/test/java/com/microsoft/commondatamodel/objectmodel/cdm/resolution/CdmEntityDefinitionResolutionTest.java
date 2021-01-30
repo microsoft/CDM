@@ -3,18 +3,6 @@
 
 package com.microsoft.commondatamodel.objectmodel.cdm.resolution;
 
-import com.google.common.base.Strings;
-import com.microsoft.commondatamodel.objectmodel.TestHelper;
-import com.microsoft.commondatamodel.objectmodel.cdm.*;
-import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
-import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntity;
-import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
-import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterException;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,9 +13,34 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import com.google.common.base.Strings;
+import com.microsoft.commondatamodel.objectmodel.TestHelper;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeContext;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeGroupReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeItem;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmAttributeReference;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmCorpusDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmDocumentDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmEntityDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmLocalEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmManifestDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmObject;
+import com.microsoft.commondatamodel.objectmodel.cdm.CdmReferencedEntityDeclarationDefinition;
+import com.microsoft.commondatamodel.objectmodel.cdm.StringSpewCatcher;
+import com.microsoft.commondatamodel.objectmodel.enums.ImportsLoadStrategy;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedAttributeSet;
+import com.microsoft.commondatamodel.objectmodel.resolvedmodel.ResolvedEntity;
+import com.microsoft.commondatamodel.objectmodel.storage.LocalAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapter;
+import com.microsoft.commondatamodel.objectmodel.storage.StorageAdapterException;
+import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
+import com.microsoft.commondatamodel.objectmodel.utilities.InterceptLog;
+import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
+
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LogEvent;
-import org.mockito.ArgumentCaptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.Assert;
@@ -124,6 +137,24 @@ public class CdmEntityDefinitionResolutionTest {
         }
       }
     });
+  }
+
+  /**
+   * Tests if the owner of the entity is not changed when calling createdResolvedEntityAsync
+   */
+  @Test
+  public void testOwnerNotChanged() throws InterruptedException
+  {
+    CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testOwnerNotChanged", null);
+
+    CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/Entity.cdm.json/Entity").join();
+    CdmDocumentDefinition document = corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/Entity.cdm.json").join();
+
+    Assert.assertEquals(document, entity.getOwner());
+
+    entity.createResolvedEntityAsync("res-Entity").join();
+
+    Assert.assertEquals(document, entity.getOwner());
   }
 
   /**

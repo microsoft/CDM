@@ -179,5 +179,27 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             await corpus.FetchObjectAsync<CdmDocumentDefinition>("local:/doc.cdm.json", null, resOpt);
             Assert.AreEqual(1, errorCount);
         }
+
+        /// <summary>
+        /// Tests if a symbol imported with a moniker can be found as the last resource.
+        /// When resolving entityReference from wrtConstEntity, constEntity should be found and resolved.
+        /// </summary>
+        [TestMethod]
+        public async Task TestResolveConstSymbolReference()
+        {
+            var corpus = TestHelper.GetLocalCorpus(testsSubpath, "TestResolveConstSymbolReference");
+            corpus.SetEventCallback(new EventCallback
+            {
+                Invoke = (CdmStatusLevel statusLevel, string message) =>
+                {
+                    Assert.Fail(message);
+                }
+            }, CdmStatusLevel.Warning);
+
+            var wrtEntity = await corpus.FetchObjectAsync<CdmEntityDefinition>("local:/wrtConstEntity.cdm.json/wrtConstEntity");
+            var resOpt = new ResolveOptions(wrtEntity, new AttributeResolutionDirectiveSet());
+            await wrtEntity.CreateResolvedEntityAsync("NewEntity", resOpt);
+        }
+
     }
 }

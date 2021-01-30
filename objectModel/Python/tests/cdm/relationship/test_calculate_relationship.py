@@ -96,7 +96,11 @@ class CalculateRelationshipTest(unittest.TestCase):
         await manifest.populate_manifest_relationships_async()
         actual_relationships_string = self._list_relationships(corpus, entity, actual_output_folder, entity_name)
 
-        with open(os.path.join(expected_output_folder, 'REL_{}.txt'.format(entity_name))) as expected_file:
+        relationships_filename = 'REL_{}.txt'.format(entity_name)
+        with open(os.path.join(actual_output_folder, relationships_filename), 'w') as actual_file:
+            actual_file.write(actual_relationships_string)
+
+        with open(os.path.join(expected_output_folder, relationships_filename)) as expected_file:
             expected_relationships_string = expected_file.read()
         self.assertEqual(expected_relationships_string, actual_relationships_string)
 
@@ -111,7 +115,10 @@ class CalculateRelationshipTest(unittest.TestCase):
         else:
             saved_manifest = await corpus.fetch_object_async('output:/{}'.format(manifest_file_name))
             actual_saved_manifest_rel = self._get_relationship_strings(saved_manifest.relationships)
-            with open(os.path.join(expected_output_folder, 'MANIFEST_REL_{}.txt'.format(entity_name))) as expected_file:
+            manifest_relationships_filename = 'MANIFEST_REL_{}.txt'.format(entity_name)
+            with open(os.path.join(actual_output_folder, manifest_relationships_filename), 'w') as actual_file:
+                actual_file.write(actual_saved_manifest_rel)
+            with open(os.path.join(expected_output_folder, manifest_relationships_filename)) as expected_file:
                 expected_saved_manifest_rel = expected_file.read()
             self.assertEqual(expected_saved_manifest_rel, actual_saved_manifest_rel)
 

@@ -137,4 +137,22 @@ public class CorpusTest {
         corpus.<CdmDocumentDefinition>fetchObjectAsync("local:/doc.cdm.json", null, resOpt).join();
         Assert.assertEquals(1, errorCount.get());
     }
+
+    /**
+    * Tests if a symbol imported with a moniker can be found as the last resource.
+    * When resolving symbolEntity with respect to wrtEntity, the symbol fromEntity should be found correctly.
+    */
+    @Test
+    public void testResolveConstSymbolReference() throws InterruptedException, ExecutionException {
+        final CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, "testResolveConstSymbolReference", null);
+
+        corpus.setEventCallback((CdmStatusLevel level, String message) -> {
+            Assert.fail(message);
+        }, CdmStatusLevel.Warning);
+
+        final CdmEntityDefinition wrtEntity = corpus.<CdmEntityDefinition>fetchObjectAsync("local:/wrtConstEntity.cdm.json/wrtConstEntity").get();
+        final ResolveOptions resOpt = new ResolveOptions(wrtEntity, new AttributeResolutionDirectiveSet());
+        wrtEntity.createResolvedEntityAsync("NewEntity", resOpt);
+    }
+
 }

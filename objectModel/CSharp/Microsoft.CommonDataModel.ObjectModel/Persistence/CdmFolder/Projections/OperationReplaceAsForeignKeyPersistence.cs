@@ -7,9 +7,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
-    using System;
 
     /// <summary>
     /// Operation ReplaceAsForeignKey persistence
@@ -23,25 +21,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            CdmOperationReplaceAsForeignKey replaceAsForeignKeyOp = ctx.Corpus.MakeObject<CdmOperationReplaceAsForeignKey>(CdmObjectType.OperationReplaceAsForeignKeyDef);
-
-            if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(CdmOperationType.ReplaceAsForeignKey)))
-            {
-                Logger.Error(nameof(OperationReplaceAsForeignKeyPersistence), ctx, $"$type {(string)obj["$type"]} is invalid for this operation.");
-            }
-            else
-            {
-                replaceAsForeignKeyOp.Type = CdmOperationType.ReplaceAsForeignKey;
-            }
-            if (obj["explanation"] != null)
-            {
-                replaceAsForeignKeyOp.Explanation = (string)obj["explanation"];
-            }
+            CdmOperationReplaceAsForeignKey replaceAsForeignKeyOp = OperationBasePersistence.FromData<CdmOperationReplaceAsForeignKey>(ctx, CdmObjectType.OperationReplaceAsForeignKeyDef, obj);
             replaceAsForeignKeyOp.Reference = obj["reference"]?.ToString();
-            if (obj["replaceWith"] != null)
-            {
-                replaceAsForeignKeyOp.ReplaceWith = Utils.CreateAttribute(ctx, obj["replaceWith"]) as CdmTypeAttributeDefinition;
-            }
+            replaceAsForeignKeyOp.ReplaceWith = Utils.CreateAttribute(ctx, obj["replaceWith"]) as CdmTypeAttributeDefinition;
 
             return replaceAsForeignKeyOp;
         }
@@ -53,13 +35,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            return new OperationReplaceAsForeignKey
-            {
-                Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.ReplaceAsForeignKey),
-                Explanation = instance.Explanation,
-                Reference = instance.Reference,
-                ReplaceWith = Utils.JsonForm(instance.ReplaceWith, resOpt, options)
-            };
+            OperationReplaceAsForeignKey obj = OperationBasePersistence.ToData<OperationReplaceAsForeignKey>(instance, resOpt, options);
+            obj.Reference = instance.Reference;
+            obj.ReplaceWith = Utils.JsonForm(instance.ReplaceWith, resOpt, options);
+
+            return obj;
         }
     }
 }

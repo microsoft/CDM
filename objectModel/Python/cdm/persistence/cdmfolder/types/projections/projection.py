@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
-from typing import List
+from typing import List, Optional
 
 from cdm.utilities import JObject
 
@@ -18,4 +18,5 @@ class Projection(JObject):
         self.explanation = None  # type: str
         self.condition = None  # type: str
         self.operations = None  # type: List[OperationBase]
+        self.runSequentially = None  # type: Optional[bool]
         self.source = None  # type: Union[str, EntityReference, Projection]

@@ -16,6 +16,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public ImportsLoadStrategy ImportsLoadStrategy { get; set; } = ImportsLoadStrategy.LazyLoad; // defines at which point the Object Model will try to load the imported documents.
         public int? ResolvedAttributeLimit { get; set; } = 4000; // the limit for the number of resolved attributes allowed per entity. if the number is exceeded, the resolution will fail 
         public int MaxOrdinalForArrayExpansion { get; set; } = 20; // the maximum value for the end ordinal in an ArrayExpansion operation
+        public int MaxDepth { get; set; } = 2; // the maximum depth that entity attributes will be resolved before giving up
         internal bool SaveResolutionsOnCopy { get; set; } // when references get copied, use previous resolution results if available (for use with copy method)
         internal SymbolSet SymbolRefSet { get; set; } // set of set of symbol that the current chain of resolution depends upon. used with importPriority to find what docs and versions of symbols to use
         internal CdmDocumentDefinition LocalizeReferencesFor { get; set; } // forces symbolic references to be re-written to be the precisely located reference based on the wrtDoc
@@ -26,6 +27,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         internal DepthInfo DepthInfo { get; set; }
         // Indicates whether we are resolving inside of a circular reference, resolution is different in that case
         internal bool InCircularReference { get; set; }
+
+        internal ISet<CdmEntityDefinition> CurrentlyResolvingEntities { get; set; }
 
         /// <summary>
         /// A set containng the symbols and their definitions. This is currently only used by the versioning tool.
@@ -94,13 +97,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         public ResolveOptions()
         {
             SymbolRefSet = new SymbolSet();
-            this.DepthInfo = new DepthInfo
-            {
-                MaxDepth = null,
-                CurrentDepth = 0,
-                MaxDepthExceeded = false
-            };
+            this.DepthInfo = new DepthInfo();
             this.InCircularReference = false;
+            this.CurrentlyResolvingEntities = new HashSet<CdmEntityDefinition>();
         }
 
         /// <summary>
@@ -108,26 +107,22 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities
         /// </summary>
         internal ResolveOptions Copy()
         {
-            ResolveOptions resOptCopy = new ResolveOptions();
-            resOptCopy.WrtDoc = this.WrtDoc;
-            if (this.DepthInfo != null)
+            ResolveOptions resOptCopy = new ResolveOptions
             {
-                resOptCopy.DepthInfo = new DepthInfo
-                {
-                    MaxDepth = this.DepthInfo.MaxDepth,
-                    CurrentDepth = this.DepthInfo.CurrentDepth,
-                    MaxDepthExceeded = this.DepthInfo.MaxDepthExceeded
-                };
-            }
+                WrtDoc = this.WrtDoc,
+                DepthInfo = this.DepthInfo.Copy(),
+                LocalizeReferencesFor = this.LocalizeReferencesFor,
+                IndexingDoc = this.IndexingDoc,
+                ShallowValidation = this.ShallowValidation,
+                ResolvedAttributeLimit = this.ResolvedAttributeLimit,
+                MapOldCtxToNewCtx = this.MapOldCtxToNewCtx, // ok to share this map
+                ImportsLoadStrategy = this.ImportsLoadStrategy,
+                SaveResolutionsOnCopy = this.SaveResolutionsOnCopy,
+                CurrentlyResolvingEntities = new HashSet<CdmEntityDefinition>(this.CurrentlyResolvingEntities)
+            };
+
             if (this.Directives != null)
                 resOptCopy.Directives = this.Directives.Copy();
-            resOptCopy.LocalizeReferencesFor = this.LocalizeReferencesFor;
-            resOptCopy.IndexingDoc = this.IndexingDoc;
-            resOptCopy.ShallowValidation = this.ShallowValidation;
-            resOptCopy.ResolvedAttributeLimit = this.ResolvedAttributeLimit;
-            resOptCopy.MapOldCtxToNewCtx = this.MapOldCtxToNewCtx; // ok to share this map
-            resOptCopy.ImportsLoadStrategy = this.ImportsLoadStrategy;
-            resOptCopy.SaveResolutionsOnCopy = this.SaveResolutionsOnCopy;
 
             return resOptCopy;
         }

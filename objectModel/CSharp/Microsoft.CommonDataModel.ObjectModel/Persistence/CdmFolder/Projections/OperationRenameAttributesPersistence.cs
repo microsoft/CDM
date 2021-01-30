@@ -9,7 +9,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
     using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
-    using System;
     using System.Collections.Generic;
 
     /// <summary>
@@ -24,21 +23,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            CdmOperationRenameAttributes renameAttributesOp = ctx.Corpus.MakeObject<CdmOperationRenameAttributes>(CdmObjectType.OperationRenameAttributesDef);
-
-
-            if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(CdmOperationType.RenameAttributes)))
-            {
-                Logger.Error(nameof(OperationRenameAttributesPersistence), ctx, $"$type {obj["$type"].ToString()} is invalid for this operation.");
-            }
-            else
-            {
-                renameAttributesOp.Type = CdmOperationType.RenameAttributes;
-            }
-            if (obj["explanation"] != null)
-            {
-                renameAttributesOp.Explanation = (string)obj["explanation"];
-            }
+            CdmOperationRenameAttributes renameAttributesOp = OperationBasePersistence.FromData<CdmOperationRenameAttributes>(ctx, CdmObjectType.OperationRenameAttributesDef, obj);
             renameAttributesOp.RenameFormat = obj["renameFormat"]?.ToString();
 
             if (obj["applyTo"] is JValue)
@@ -68,13 +53,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            return new OperationRenameAttributes
-            {
-                Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.RenameAttributes),
-                Explanation = instance.Explanation,
-                RenameFormat = instance.RenameFormat,
-                ApplyTo = instance.ApplyTo
-            };
+            OperationRenameAttributes obj = OperationBasePersistence.ToData<OperationRenameAttributes>(instance, resOpt, options);
+            obj.RenameFormat = instance.RenameFormat;
+            obj.ApplyTo = instance.ApplyTo;
+
+            return obj;
         }
     }
 }

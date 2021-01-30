@@ -18,5 +18,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public List<OperationBase> Operations { get; set; }
 
         public dynamic Source { get; set; }
+
+        public bool? RunSequentially { get; set; }
     }
 }

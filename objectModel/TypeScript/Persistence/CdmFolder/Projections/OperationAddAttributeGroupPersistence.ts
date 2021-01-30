@@ -1,18 +1,14 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import {
+import { 
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationAddAttributeGroup,
-    cdmOperationType,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
-    resolveOptions,
-    StringUtils
-} from '../../../internal';
+    resolveOptions } from '../../../internal';
 import { OperationAddAttributeGroup } from '../types';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation AddAttributeGroup persistence
@@ -22,16 +18,9 @@ export class OperationAddAttributeGroupPersistence {
         if (!object) {
             return undefined;
         }
-        const addAttributeGroupOp: CdmOperationAddAttributeGroup = ctx.corpus.MakeObject<CdmOperationAddAttributeGroup>(cdmObjectType.operationAddAttributeGroupDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.addAttributeGroup))) {
-            Logger.error(OperationAddAttributeGroupPersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            addAttributeGroupOp.type = cdmOperationType.addAttributeGroup;
-        }
-
+        const addAttributeGroupOp: CdmOperationAddAttributeGroup = OperationBasePersistence.fromData(ctx, cdmObjectType.operationAddAttributeGroupDef, object);
         addAttributeGroupOp.attributeGroupName = object.attributeGroupName;
-        addAttributeGroupOp.explanation = object.explanation;
 
         return addAttributeGroupOp;
     }
@@ -41,10 +30,9 @@ export class OperationAddAttributeGroupPersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.addAttributeGroup),
-            attributeGroupName: instance.attributeGroupName,
-            explanation: instance.explanation
-        };
+        const data: OperationAddAttributeGroup = OperationBasePersistence.toData(instance, resOpt, options);
+        data.attributeGroupName = instance.attributeGroupName;
+
+        return data;
     }
 }

@@ -51,6 +51,8 @@ class ProjectionPersistence:
         if data.condition:
             projection.condition = data.condition
 
+        projection.run_sequentially = data.runSequentially
+
         if data.operations is not None:
             operation_jsons = data.operations
             for operation_json in operation_jsons:
@@ -151,5 +153,6 @@ class ProjectionPersistence:
         obj.source = source
         obj.operations = operations
         obj.condition = instance.condition
+        obj.runSequentially = instance.run_sequentially
 
         return obj

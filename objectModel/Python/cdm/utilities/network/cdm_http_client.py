@@ -87,7 +87,7 @@ class CdmHttpClient:
             try:
                 start_time = datetime.now()
                 if ctx is not None:
-                    logger.info(self.__class__.__name__, ctx, 'Sending request: {}, request type: {}, retry number: {}.'.format(cdm_request.request_id, request.method, retry_number), self._send_async_helper)
+                    logger.info(self.__class__.__name__, ctx, 'Sending request: {}, request type: {}, request url: {}, retry number: {}.'.format(cdm_request.request_id, request.method, cdm_request._strip_sas_sig(), retry_number), self._send_async_helper)
                 # Send the request and convert timeout to seconds from milliseconds.
                 with urllib.request.urlopen(request, timeout=cdm_request.timeout / 1000) as response:  # type: http.client.HTTPResponse
                     if response is not None:

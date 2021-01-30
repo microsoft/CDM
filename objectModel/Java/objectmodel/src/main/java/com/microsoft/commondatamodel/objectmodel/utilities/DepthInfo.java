@@ -5,11 +5,6 @@ package com.microsoft.commondatamodel.objectmodel.utilities;
 
 public class DepthInfo {
     /**
-     * The default depth that we travel before forcing a foreign key attribute
-     */
-    public static int defaultMaxDepth = 2;
-
-    /**
      * The max depth set if the user specified to not use max depth
      */
     public static int maxDepthLimit = 32;
@@ -51,5 +46,32 @@ public class DepthInfo {
 
     public void setMaxDepthExceeded(boolean maxDepthExceeded) {
         this.maxDepthExceeded = maxDepthExceeded;
+    }
+
+    public DepthInfo() {
+        this.reset();
+    }
+
+    /**
+     * Resets the instance to its initial values.
+     * @deprecated
+     */
+    public void reset() {
+        this.currentDepth = 0;
+        this.maxDepth = null;
+        this.maxDepthExceeded = false;
+    }
+
+    /**
+     * Creates a copy of this depth info instance.
+     * @deprecated
+     */
+    public DepthInfo copy() {
+        final DepthInfo copy = new DepthInfo();
+        copy.currentDepth = this.currentDepth;
+        copy.maxDepth = this.maxDepth;
+        copy.maxDepthExceeded = this.maxDepthExceeded;
+
+        return copy;
     }
 }

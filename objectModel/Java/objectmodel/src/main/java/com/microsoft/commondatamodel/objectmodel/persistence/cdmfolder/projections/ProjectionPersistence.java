@@ -42,6 +42,10 @@ public class ProjectionPersistence {
             projection.setCondition(obj.get("condition").asText());
         }
 
+        if (obj.get("runSequentially") != null) {
+            projection.setRunSequentially(obj.get("runSequentially").asBoolean());
+        }
+
         if (obj.get("operations") != null) {
             List<JsonNode> operationJsons = JMapper.MAP.convertValue(obj.get("operations"), new TypeReference<List<JsonNode>>() {
             });
@@ -176,6 +180,7 @@ public class ProjectionPersistence {
         obj.setSource(source);
         obj.setOperations(operations);
         obj.setCondition(instance.getCondition());
+        obj.setRunSequentially(instance.getRunSequentially());
 
         return obj;
     }

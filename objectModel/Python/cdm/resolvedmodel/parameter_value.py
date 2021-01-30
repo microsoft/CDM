@@ -8,7 +8,7 @@ from cdm.enums import CdmObjectType
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmArgumentValue, CdmConstantEntityDefinition, CdmCorpusContext, CdmParameterDefinition, CdmObject, SpewCatcher
-    from cdm.resolvedmodel import ParameterCollection
+    from cdm.resolvedmodel import ParameterCollection, ResolvedAttributeSet
     from cdm.utilities import ResolveOptions
 
 
@@ -51,7 +51,9 @@ class ParameterValue():
             if new_ent is None:
                 return ov
 
-            if old_ent is None or old_ent.entity_shape.fetch_object_definition(res_opt) != new_ent.entity_shape.fetch_object_definition(res_opt):
+            # BUG
+            ent_def_shape = old_ent.entity_shape.fetch_object_definition(res_opt)
+            if (old_ent is None or (ent_def_shape != new_ent.entity_shape.fetch_object_definition(res_opt))):
                 return nv
 
             old_cv = old_ent.constant_values
@@ -66,7 +68,36 @@ class ParameterValue():
 
             # Make a set of rows in the old one and add the new ones. This will union the two find rows in the new
             # one that are not in the old one. Slow, but these are small usually.
-            unioned_rows = OrderedDict(('::'.join(row), row) for row in old_cv + new_cv)
+            unioned_rows = OrderedDict()
+
+            # see if any of the entity atts are the primary key, meaning, the only thing that causes us to merge dups unique.
+            # i know this makes you think about a snake eating its own tail, but fetch the resolved attributes of the constant shape
+            pk_att = -1
+            if ent_def_shape:
+                from cdm.utilities import ResolveOptions
+                res_opt_shape = ResolveOptions(ent_def_shape.in_document)
+                res_atts_shape = ent_def_shape._fetch_resolved_attributes(res_opt_shape)  # type: ResolvedAttributeSet
+                if res_atts_shape:
+                    tmp_item = next(filter(lambda ra: (ra.resolved_traits.find(res_opt_shape, 'is.identifiedBy') is not None), res_atts_shape._set), None)
+                    pk_att = res_atts_shape._set.index(tmp_item) if tmp_item else -1
+
+            for i in range(len(old_cv)):
+                row = old_cv[i]
+                # the entity might have a PK, if so, only look at that values as the key
+                if pk_att != -1:
+                    key = row[pk_att]
+                else:
+                    key = '::'.join(row)
+                unioned_rows[key] = row
+
+            for i in range(len(new_cv)):
+                row = new_cv[i]
+                # the entity might have a PK, if so, only look at that values as the key
+                if pk_att != -1:
+                    key = row[pk_att]
+                else:
+                    key = '::'.join(row)
+                unioned_rows[key] = row
 
             if len(unioned_rows) == len(old_cv):
                 return ov
@@ -79,7 +110,6 @@ class ParameterValue():
 
     def fetch_value_string(self, res_opt: 'ResolveOptions') -> str:
         from cdm.objectmodel import CdmObject
-
         if self.value is None:
             return ''
 
@@ -97,7 +127,7 @@ class ParameterValue():
                 rows = []
                 shape_atts = ent_shape._fetch_resolved_attributes(res_opt)
 
-                if shape_atts is not None:
+                if shape_atts is not None and shape_atts._set is not None:
                     for row_data in ent_values:
                         if not row_data:
                             continue

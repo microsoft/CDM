@@ -18,6 +18,7 @@ import {
     copyOptions,
     DepthInfo,
     isEntityAttributeDefinition,
+    isEntityDefinition,
     resolveContext,
     ResolvedAttributeSet,
     ResolvedAttributeSetBuilder,
@@ -56,8 +57,6 @@ export abstract class CdmObjectBase implements CdmObject {
      */
     public declaredPath: string;
     public owner: CdmObject;
-    public resolvingAttributes: boolean = false;
-    protected circularReference: boolean;
     private resolvingTraits: boolean = false;
     constructor(ctx: CdmCorpusContext) {
         this.ID = CdmCorpusDefinition.nextID();
@@ -279,10 +278,25 @@ export abstract class CdmObjectBase implements CdmObject {
                 resOpt = new resolveOptions(this, this.ctx.corpus.defaultResolutionDirectives);
             }
 
+            let inCircularReference: boolean = false;
+            const wasInCircularReference: boolean = resOpt.inCircularReference;
+            if (isEntityDefinition(this)) {
+                inCircularReference = resOpt.currentlyResolvingEntities.has(this);
+                resOpt.currentlyResolvingEntities.add(this);
+                resOpt.inCircularReference = inCircularReference;
+
+                // uncomment this line as a test to turn off allowing cycles
+                //if (inCircularReference) {
+                //    return new ResolvedAttributeSet();
+                //}
+            }
+
             const kind: string = 'rasb';
             const ctx: resolveContext = this.ctx as resolveContext; // what it actually is
             let rasbCache: ResolvedAttributeSetBuilder = this.fetchObjectFromCache(resOpt, acpInContext);
             let underCtx: CdmAttributeContext;
+
+            const currentDepth: number = resOpt.depthInfo.currentDepth;
 
             // store the previous symbol set, we will need to add it with
             // children found from the constructResolvedTraits call
@@ -295,19 +309,11 @@ export abstract class CdmObjectBase implements CdmObject {
             resOpt.fromMoniker = undefined;
 
             // if using the cache passes the maxDepth, we cannot use it
-            if (rasbCache && resOpt.depthInfo && resOpt.depthInfo.currentDepth + rasbCache.ras.depthTraveled > resOpt.depthInfo.maxDepth) {
+            if (rasbCache && resOpt.depthInfo.currentDepth + rasbCache.ras.depthTraveled > resOpt.depthInfo.maxDepth) {
                 rasbCache = undefined;
             }
 
             if (!rasbCache) {
-                if (this.resolvingAttributes) {
-                    // re-entered this attribute through some kind of self or looping reference.
-                    this.ctx.corpus.isCurrentlyResolving = wasPreviouslyResolving;
-                    resOpt.inCircularReference = true;
-                    this.circularReference = true;
-                }
-                this.resolvingAttributes = true;
-
                 // if a new context node is needed for these attributes, make it now
                 if (acpInContext) {
                     underCtx = CdmAttributeContext.createChildUnder(resOpt, acpInContext);
@@ -316,9 +322,6 @@ export abstract class CdmObjectBase implements CdmObject {
                 rasbCache = this.constructResolvedAttributes(resOpt, underCtx);
 
                 if (rasbCache !== undefined) {
-
-                    this.resolvingAttributes = false;
-
                     // register set of possible docs
                     const odef: CdmObject = this.fetchObjectDefinition(resOpt);
                     if (odef !== undefined) {
@@ -355,10 +358,6 @@ export abstract class CdmObjectBase implements CdmObject {
                         }
                     }
                 }
-
-                if (this.circularReference) {
-                    resOpt.inCircularReference = false;
-                }
             } else {
                 // cache found. if we are building a context, then fix what we got instead of making a new one
                 if (acpInContext) {
@@ -369,15 +368,21 @@ export abstract class CdmObjectBase implements CdmObject {
                 }
             }
 
-            const currDepthInfo: DepthInfo = resOpt.depthInfo;
-            if (isEntityAttributeDefinition(this) && currDepthInfo) {
+            if (isEntityAttributeDefinition(this)) {
                 // if we hit the maxDepth, we are now going back up
-                currDepthInfo.currentDepth--;
+                resOpt.depthInfo.currentDepth = currentDepth;
                 // now at the top of the chain where max depth does not influence the cache
-                if (currDepthInfo.currentDepth <= 0) {
-                    resOpt.depthInfo = undefined;
+                if (resOpt.depthInfo.currentDepth === 0) {
+                    resOpt.depthInfo.maxDepthExceeded = false;
                 }
             }
+
+            if (!inCircularReference && isEntityDefinition(this)) {
+                // should be removed from the root level only
+                // if it is in a circular reference keep it there
+                resOpt.currentlyResolvingEntities.delete(this);
+            }
+            resOpt.inCircularReference = wasInCircularReference;
 
             // merge child reference symbols set with current
             currSymRefSet.merge(resOpt.symbolRefSet);

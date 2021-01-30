@@ -317,7 +317,7 @@ public class CdmCorpusDefinition {
     tagSuffix.append(String.format("-%s-%s", kind, thisId));
     tagSuffix.append(String
         .format("-(%s)", resOpt.getDirectives() != null ? resOpt.getDirectives().getTag() : ""));
-    if (resOpt.depthInfo != null && resOpt.depthInfo.getMaxDepthExceeded()) {
+    if (resOpt.depthInfo.getMaxDepthExceeded()) {
       DepthInfo currDepthInfo = resOpt.depthInfo;
       tagSuffix.append(String.format("-%s", currDepthInfo.getMaxDepth() - currDepthInfo.getCurrentDepth()));
     }
@@ -841,8 +841,8 @@ public class CdmCorpusDefinition {
           break;
         }
         case EntityRef: {
-          if (found.getObjectType() != CdmObjectType.EntityDef && found.getObjectType() != CdmObjectType.ProjectionDef) {
-            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Expected type entity or type projection: '{0}'", symbolDef));
+          if (found.getObjectType() != CdmObjectType.EntityDef && found.getObjectType() != CdmObjectType.ProjectionDef && found.getObjectType() != CdmObjectType.ConstantEntityDef) {
+            Logger.error(CdmCorpusDefinition.class.getSimpleName(), ctx, Logger.format("Expected type entity or type projection or type constant entity: '{0}'", symbolDef));
             found = null;
           }
           break;
@@ -1478,7 +1478,7 @@ public class CdmCorpusDefinition {
       final boolean isResolvedEntity,
       CdmAttributeContext generatedAttSetContext,
       boolean wasProjectionPolymorphic) {
-    return findOutgoingRelationships(resOpt, resEntity, attCtx, isResolvedEntity, generatedAttSetContext, wasProjectionPolymorphic, false);
+    return findOutgoingRelationships(resOpt, resEntity, attCtx, isResolvedEntity, generatedAttSetContext, wasProjectionPolymorphic, null);
   }
 
   private ArrayList<CdmE2ERelationship> findOutgoingRelationships(
@@ -1488,18 +1488,6 @@ public class CdmCorpusDefinition {
       final boolean isResolvedEntity,
       CdmAttributeContext generatedAttSetContext,
       boolean wasProjectionPolymorphic,
-      final boolean wasEntityRef) {
-    return findOutgoingRelationships(resOpt, resEntity, attCtx, isResolvedEntity, generatedAttSetContext, wasProjectionPolymorphic, wasEntityRef, null);
-  }
-
-  private ArrayList<CdmE2ERelationship> findOutgoingRelationships(
-      final ResolveOptions resOpt,
-      final CdmEntityDefinition resEntity,
-      final CdmAttributeContext attCtx,
-      final boolean isResolvedEntity,
-      CdmAttributeContext generatedAttSetContext,
-      boolean wasProjectionPolymorphic,
-      final boolean wasEntityRef,
       List<CdmAttributeReference> fromAtts) {
     ArrayList<CdmE2ERelationship> outRels = new ArrayList<>();
 
@@ -1526,9 +1514,20 @@ public class CdmCorpusDefinition {
               // Projections
 
               isEntityRef = false;
-              isPolymorphicSource = (toEntity != null && toEntity.getOwner() != null && toEntity.getOwner().getObjectType() == CdmObjectType.EntityAttributeDef &&
-                  ((CdmEntityAttributeDefinition) toEntity.getOwner()).getIsPolymorphicSource() != null &&
-                  ((CdmEntityAttributeDefinition) toEntity.getOwner()).getIsPolymorphicSource() == true);
+
+              final CdmObject owner = toEntity.getOwner() != null ? toEntity.getOwner().getOwner() : null;
+
+              if (owner != null) {
+                isPolymorphicSource = (owner.getObjectType() == CdmObjectType.EntityAttributeDef &&
+                  ((CdmEntityAttributeDefinition) owner).getIsPolymorphicSource() != null &&
+                  ((CdmEntityAttributeDefinition) owner).getIsPolymorphicSource());
+              } else {
+                Logger.error(
+                  CdmCorpusDefinition.class.getSimpleName(),
+                  ctx,
+                  Logger.format("Found object without owner when calculating relationships.")
+                );
+              }
 
               // From the top of the projection (or the top most which contains a generatedSet / operations)
               // get the attribute names for the foreign key
@@ -1565,7 +1564,7 @@ public class CdmCorpusDefinition {
           // repeat the process on the child node
           boolean skipAdd = wasProjectionPolymorphic && isEntityRef;
 
-          List<CdmE2ERelationship> subOutRels = this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet, wasProjectionPolymorphic, isEntityRef, fromAtts);
+          List<CdmE2ERelationship> subOutRels = this.findOutgoingRelationships(resOpt, resEntity, child, isResolvedEntity, newGenSet, wasProjectionPolymorphic, fromAtts);
           outRels.addAll(subOutRels);
 
           // if it was a projection-based polymorphic source up through this branch of the tree and currently it has reached the end of the projection tree to come to a non-projection source,
@@ -1872,11 +1871,7 @@ public class CdmCorpusDefinition {
       final ResolveOptions finalResolveOptions = new ResolveOptions();
       finalResolveOptions.setWrtDoc(null);
       finalResolveOptions.setDirectives(directives);
-      final DepthInfo depthInfo = new DepthInfo();
-      depthInfo.setMaxDepth(null);
-      depthInfo.setCurrentDepth(0);
-      depthInfo.setMaxDepthExceeded(false);
-      finalResolveOptions.depthInfo = depthInfo;
+      finalResolveOptions.depthInfo.reset();
 
       for (final CdmDocumentDefinition doc : this.documentLibrary.listAllDocuments()) {
         doc.indexIfNeededAsync(resOpt, false).join();

@@ -153,6 +153,9 @@ class CdmManifestDefinition(CdmDocumentDefinition, CdmObjectDefinition, CdmFileS
 
             # using the references present in the resolved entities, get an entity
             # create an imports doc with all the necessary resolved entity references and then resolve it
+            # sometimes they might send the docname, that makes sense a bit, don't include the suffix in the name
+            if new_manifest_name.lower().endswith('.manifest.cdm.json'):
+                new_manifest_name = new_manifest_name[0: (len(new_manifest_name) - len('.manifest.cdm.json'))]
             resolved_manifest = CdmManifestDefinition(self.ctx, new_manifest_name)
 
             # bring over any imports in this document or other bobbles

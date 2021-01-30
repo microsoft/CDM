@@ -105,3 +105,19 @@ class ProjectionMiscellaneousTest(unittest.TestCase):
         attribute.cardinality.maximum = '*'
 
         self.assertTrue(attribute.is_nullable)
+
+    @async_test
+    async def test_circular_entity_attributes(self):
+        """Tests if it resolves correct when there are two entity attributes in circular denpendency using projection"""
+        
+        test_name = 'test_circular_entity_attributes'
+        entity_name = 'A'
+
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, test_name)  # type: CdmCorpusDefinition
+
+        entity = await corpus.fetch_object_async('{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
+
+        res_entity = await entity.create_resolved_entity_async('resolved-{}'.format(entity_name))  # type: CdmEntityDefinition
+
+        self.assertIsNotNone(res_entity)
+        self.assertEqual(2, len(res_entity.attributes))

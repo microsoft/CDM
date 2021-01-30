@@ -5,14 +5,11 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationExcludeAttributes,
-    cdmOperationType,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
-    resolveOptions,
-    StringUtils
+    resolveOptions
 } from '../../../internal';
 import { OperationExcludeAttributes } from '../types';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation ExcludeAttributes persistence
@@ -22,18 +19,8 @@ export class OperationExcludeAttributesPersistence {
         if (!object) {
             return undefined;
         }
-        const excludeAttributesOp: CdmOperationExcludeAttributes = ctx.corpus.MakeObject<CdmOperationExcludeAttributes>(cdmObjectType.operationExcludeAttributesDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.excludeAttributes))) {
-            Logger.error(OperationExcludeAttributesPersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            excludeAttributesOp.type = cdmOperationType.excludeAttributes;
-        }
-
-        if (object.explanation) {
-            excludeAttributesOp.explanation = object.explanation;
-        }
-
+        const excludeAttributesOp: CdmOperationExcludeAttributes = OperationBasePersistence.fromData(ctx, cdmObjectType.operationExcludeAttributesDef, object);
         excludeAttributesOp.excludeAttributes = object.excludeAttributes;
 
         return excludeAttributesOp;
@@ -44,10 +31,9 @@ export class OperationExcludeAttributesPersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.excludeAttributes),
-            explanation: instance.explanation,
-            excludeAttributes: instance.excludeAttributes
-        };
+        const data: OperationExcludeAttributes = OperationBasePersistence.toData(instance, resOpt, options);
+        data.excludeAttributes = instance.excludeAttributes;
+
+        return data;
     }
 }

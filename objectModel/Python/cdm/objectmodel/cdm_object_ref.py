@@ -12,9 +12,9 @@ from .cdm_object import CdmObject
 from .cdm_trait_collection import CdmTraitCollection
 
 if TYPE_CHECKING:
-    from cdm.objectmodel import CdmCorpusContext, CdmDocumentDefinition, CdmEntityDefinition, CdmObjectDefinition, CdmTraitReference
+    from cdm.objectmodel import CdmCorpusContext, CdmObjectDefinition
     from cdm.resolvedmodel import ResolvedTraitSet
-    from cdm.utilities import FriendlyFormatNode, ResolveOptions
+    from cdm.utilities import ResolveOptions
 
 
 RES_ATT_TOKEN = '/(resolvedAttributes)/'
@@ -35,14 +35,24 @@ class CdmObjectReference(CdmObject):
 
         self.simple_named_reference = simple_named_reference
 
-        # Internal
-        self._declared_path = None
+        # --- internal ---
         self._applied_traits = CdmTraitCollection(ctx, self)
+        self._declared_path = None
         self._TAG = CdmObjectReference.__name__
 
     @property
     def applied_traits(self) -> 'CdmTraitCollection':
         return self._applied_traits
+
+    @property
+    def explicit_reference(self) -> Optional['CdmObjectDefinition']:
+        return self._explicit_reference
+
+    @explicit_reference.setter
+    def explicit_reference(self, explicit_reference: Optional['CdmObjectDefinition']):
+        if explicit_reference:
+            explicit_reference.owner = self
+        self._explicit_reference = explicit_reference
 
     @staticmethod
     def _offset_attribute_promise(ref: Optional[str] = None) -> int:
@@ -71,7 +81,7 @@ class CdmObjectReference(CdmObject):
         from cdm.objectmodel import CdmEntityDefinition
 
         rasb = ResolvedAttributeSetBuilder()
-        rasb.ras.attribute_context = under
+        rasb._resolved_attribute_set.attribute_context = under
         definition = self.fetch_object_definition(res_opt)
         if definition:
             acp_ref = None
@@ -80,7 +90,7 @@ class CdmObjectReference(CdmObject):
                 acp_ref = AttributeContextParameters(under=under, type=CdmAttributeContextType.PASS_THROUGH)
             res_atts = definition._fetch_resolved_attributes(res_opt, acp_ref)
             if res_atts and res_atts._set:
-                res_atts = res_atts.copy()
+                # res_atts = res_atts.copy()  should not need this copy now that we copy from the cache. lets try!
                 rasb.merge_attributes(res_atts)
                 rasb.remove_requested_atts()
         else:
@@ -150,6 +160,34 @@ class CdmObjectReference(CdmObject):
                                                 6] if self._declared_path is not None and self._declared_path.endswith('/(ref)') else self._declared_path
         return self._copy_ref_object(res_opt, new_declared_path, True)
 
+    def _create_portable_reference(self, res_opt: 'ResolveOptions') -> Optional['CdmObjectReference']:
+        """
+        Creates a 'portable' reference object to this object. portable means there is no symbolic name set
+        until this reference is placed into some final document.
+        """
+        from .cdm_corpus_def import CdmCorpusDefinition
+        cdm_object_ref = self.ctx.corpus.make_object(
+            CdmCorpusDefinition._map_reference_type(self.object_type), 'portable', True)  # type: CdmObjectReference
+        cdm_object_def = self.fetch_object_definition(res_opt)
+        if not cdm_object_def or not self.in_document:
+            return None  # not allowed
+
+        cdm_object_ref.explicit_reference = cdm_object_def.copy()
+        cdm_object_ref.in_document = self.in_document  # if the object has no document, take from the reference
+        cdm_object_ref.owner = self.owner
+
+        return cdm_object_ref
+
+    def _localize_portable_reference(self, res_opt: 'ResolveOptions', import_path: str) -> None:
+        """
+        Creates a 'portable' reference object to this object. portable means there is no symbolic name set
+        until this reference is placed into some final document.
+        """
+        new_declared_path = cast(CdmObject, self.explicit_reference)._declared_path
+        new_declared_path = new_declared_path[0: (len(new_declared_path) - 6)] \
+            if new_declared_path and new_declared_path.endswith('/(ref)') else new_declared_path
+        self.named_reference = '{}{}'.format(import_path, new_declared_path)
+
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmObjectReference'] = None) -> 'CdmObjectReference':
         if not res_opt:
             res_opt = ResolveOptions(self, self.ctx.corpus.default_resolution_directives)
@@ -157,8 +195,8 @@ class CdmObjectReference(CdmObject):
         copy = self._copy_ref_object(res_opt, self.named_reference if self.named_reference else self.explicit_reference, self.simple_named_reference, host)
 
         if res_opt._save_resolutions_on_copy:
-            copy.explicit_reference = self.explicit_reference
-
+            explicit_reference = self.explicit_reference.copy() if self.explicit_reference else None
+            copy.explicit_reference = explicit_reference
 
         copy.applied_traits.clear()
         if self.applied_traits:
@@ -212,7 +250,7 @@ class CdmObjectReference(CdmObject):
         if self.named_reference and self.applied_traits is None:
             ctx = self.ctx
             obj_def = self.fetch_object_definition(res_opt)
-            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path if obj_def else None)
+            cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path if obj_def else None)
             rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
             # store the previous reference symbol set, we will need to add it with
@@ -230,7 +268,7 @@ class CdmObjectReference(CdmObject):
                     ctx.corpus._register_definition_reference_symbols(obj_def, kind, res_opt._symbol_ref_set)
 
                     # get the new cache tag now that we have the list of docs
-                    cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path)
+                    cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', True, obj_def.at_corpus_path)
                     if cache_tag:
                         ctx._cache[cache_tag] = rts_result
             else:
@@ -293,15 +331,13 @@ class CdmObjectReference(CdmObject):
         if pre_children and pre_children(self, ref_path):
             return False
 
-        if self.explicit_reference and not self.named_reference:
-            self.explicit_reference.owner = self.owner
-            if self.explicit_reference.visit(path, pre_children, post_children):
-                return True
+        if self.explicit_reference and not self.named_reference and self.explicit_reference.visit(path, pre_children, post_children):
+            return True
 
         if self._visit_ref(path, pre_children, post_children):
             return True
 
-        if self.applied_traits and self._applied_traits._visit_array('{}/applied_traits/'.format(ref_path), pre_children, post_children):
+        if self.applied_traits and self._applied_traits._visit_array('{}/appliedTraits/'.format(ref_path), pre_children, post_children):
             return True
 
         if post_children and post_children(self, ref_path):

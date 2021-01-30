@@ -105,7 +105,7 @@ class CdmTraitReference(CdmObjectReference):
         if trait._this_is_known_to_have_parameters is not None:
             cache_by_path = not trait._this_is_known_to_have_parameters
 
-        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_path, trait.at_corpus_path)
+        cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', cache_by_path, trait.at_corpus_path)
         rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
@@ -154,7 +154,7 @@ class CdmTraitReference(CdmObjectReference):
             ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
 
             # get the new cache tag now that we have the list of docs
-            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, '', cache_by_path, trait.at_corpus_path)
+            cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, '', cache_by_path, trait.at_corpus_path)
             if cache_tag:
                 ctx._cache[cache_tag] = rts_result
         else:
@@ -173,7 +173,20 @@ class CdmTraitReference(CdmObjectReference):
         final_args = {}  # type: Dict[str, Any]
         # get resolved traits does all the work, just clean up the answers
         rts = self._fetch_resolved_traits(res_opt)  # type: ResolvedTraitSet
-        if rts is None:
+        if rts is None or len(rts) != 1:
+            # well didn't get the traits. maybe imports are missing or maybe things are just not defined yet.
+            # this function will try to fake up some answers then from the arguments that are set on this reference only
+            if self.arguments:
+                un_named_count = 0
+                for arg in self.arguments:
+                    # if no arg name given, use the position in the list.
+                    arg_name = arg.name
+                    if not arg_name or arg_name.isspace():
+                        arg_name = str(un_named_count)
+                    final_args[arg_name] = arg.value
+                    un_named_count += 1
+                return final_args
+
             return None
 
         # there is only one resolved trait

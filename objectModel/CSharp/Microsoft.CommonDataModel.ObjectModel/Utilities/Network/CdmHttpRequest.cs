@@ -77,5 +77,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
                 this.Method = method;
             }
         }
+
+        /// <summary>
+        /// Strips sas token parameter 'sig'.
+        /// Returns the requested url with the value of 'sig' replaced with 'REMOVED'.
+        /// </summary>
+        internal string StripSasSig()
+        {
+            int sigStartIndex = RequestedUrl.IndexOf("sig=");
+            if (sigStartIndex == -1) {
+                return RequestedUrl;
+            }
+
+            int sigEndIndex = RequestedUrl.IndexOf("&", sigStartIndex + 1);
+            sigEndIndex = sigEndIndex == -1 ? RequestedUrl.Length : sigEndIndex;
+            return RequestedUrl.Substring(0, sigStartIndex + 4) + "REMOVED" + RequestedUrl.Substring(sigEndIndex);
+        }
     }
 }

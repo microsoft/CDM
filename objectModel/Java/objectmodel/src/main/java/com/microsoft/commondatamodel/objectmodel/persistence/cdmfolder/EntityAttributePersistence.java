@@ -73,11 +73,8 @@ public class EntityAttributePersistence {
     boolean isProjection = obj.get("entity") != null && !(obj.get("entity").isValueNode()) && obj.get("entity").get("source") != null;
 
     if (isProjection) {
-      CdmProjection projection = ProjectionPersistence.fromData(ctx, obj.get("entity"));
-      projection.setOwner(entityAttribute);
-
       CdmEntityReference inlineEntityRef = ctx.getCorpus().makeObject(CdmObjectType.EntityRef, null);
-      inlineEntityRef.setExplicitReference(projection);
+      inlineEntityRef.setExplicitReference(ProjectionPersistence.fromData(ctx, obj.get("entity")));
       entityAttribute.setEntity(inlineEntityRef);
     } else {
       entityAttribute.setEntity(EntityReferencePersistence.fromData(ctx, obj.get("entity")));

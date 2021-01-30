@@ -113,6 +113,17 @@ public class AdlsAdapter extends NetworkAdapter {
   }
 
   /**
+   * The ADLS constructor without auth info - the auth configuration is set after the construction.
+   * @param hostname Host name
+   * @param root Root location
+   */
+  public AdlsAdapter(final String hostname, final String root) {
+    this();
+    this.updateRoot(root);
+    this.updateHostname(hostname);
+  }
+
+  /**
    * The default constructor, a user has to apply JSON config after creating it this way.
    */
   public AdlsAdapter() {
@@ -137,7 +148,7 @@ public class AdlsAdapter extends NetworkAdapter {
         final CdmHttpResponse res = this.executeRequest(cdmHttpRequest).get();
         return (res != null) ? res.getContent() : null;
       } catch (final Exception e) {
-        throw new StorageAdapterException("Could not read ADLS content at path: " + corpusPath, e);
+        throw new StorageAdapterException("Could not read ADLS content at path: " + corpusPath + ". Reason: " + e.getMessage(), e);
       }
     });
   }
@@ -426,14 +437,16 @@ public class AdlsAdapter extends NetworkAdapter {
    * @param content     The string content.
    * @param contentType The content type.
    * @return The constructed CDM HTTP request.
-   * @throws InterruptedException
-   * @throws ExecutionException
    */
   private CdmHttpRequest buildRequest(final String url, final String method, final String content, final String contentType) {
     final CdmHttpRequest request;
     try {
-      Map<String, String> authenticationHeader = adlsAdapterAuthenticator.buildAuthenticationHeader(url, method, content, contentType);
-      request = this.setUpCdmRequest(url, authenticationHeader, method);
+      if (adlsAdapterAuthenticator.getSasToken() == null) {
+        Map<String, String> authenticationHeader = adlsAdapterAuthenticator.buildAuthenticationHeader(url, method, content, contentType);
+        request = this.setUpCdmRequest(url, authenticationHeader, method);
+      } else {
+        request = this.setUpCdmRequest(adlsAdapterAuthenticator.buildSasAuthenticatedUrl(url), method);
+      }
     } catch (NoSuchAlgorithmException | InvalidKeyException | URISyntaxException | UnsupportedEncodingException e) {
       throw new StorageAdapterException("Failed to build request", e);
     }
@@ -451,8 +464,6 @@ public class AdlsAdapter extends NetworkAdapter {
    * @param method      The type of an HTTP request.
    * @param content     The string content.
    * @return The constructed CDM HTTP request.
-   * @throws InterruptedException
-   * @throws ExecutionException
    */
   private CdmHttpRequest buildRequest(final String url, final String method, final String content) {
     return this.buildRequest(url, method, content, null);
@@ -464,8 +475,6 @@ public class AdlsAdapter extends NetworkAdapter {
    * @param url         The URL of a resource.
    * @param method      The type of an HTTP request.
    * @return The constructed CDM HTTP request.
-   * @throws InterruptedException
-   * @throws ExecutionException
    */
   private CdmHttpRequest buildRequest(final String url, final String method) {
     return this.buildRequest(url, method, null);
@@ -537,6 +546,8 @@ public class AdlsAdapter extends NetworkAdapter {
       // Then it is shared key auth.
       this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator();
       this.adlsAdapterAuthenticator.setSharedKey(configsJson.get("sharedKey").asText());
+    } else if (configsJson.has("sasToken")) {
+      this.adlsAdapterAuthenticator.setSasToken(configsJson.get("sasToken").asText());
     } else if (configsJson.has("tenant") && configsJson.has("clientId")) {
       // Check first for clientId/secret auth.
       this.adlsAdapterAuthenticator = new AdlsAdapterAuthenticator();
@@ -606,6 +617,14 @@ public class AdlsAdapter extends NetworkAdapter {
 
   public void setSharedKey(String sharedKey) {
     this.adlsAdapterAuthenticator.setSharedKey(sharedKey);
+  }
+
+  public String getSasToken() {
+    return this.adlsAdapterAuthenticator.getSasToken();
+  }
+
+  public void setSasToken(String sasToken) {
+    this.adlsAdapterAuthenticator.setSasToken(sasToken);
   }
 
   public TokenProvider getTokenProvider() {
