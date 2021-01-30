@@ -10,8 +10,6 @@ import filecmp
 from cdm.enums import CdmStatusLevel
 from cdm.objectmodel import CdmCorpusDefinition
 from cdm.storage import LocalAdapter, RemoteAdapter
-from cdm.utilities import AttributeResolutionDirectiveSet, ResolveOptions
-
 
 def async_test(f):
     def wrapper(*args, **kwargs):
@@ -230,7 +228,7 @@ class TestHelper:
 
             for key in expected_dict.keys():
                 if not key in actual_dict:
-                    return 'Dictionaries do not match. Found key in exoected but not in actual: {}.'.format(key)
+                    return 'Dictionaries do not match. Found key in expected but not in actual: {}.'.format(key)
 
                 found_property = TestHelper.compare_same_object_without_none_values(expected_dict[key], actual_dict[key])
 

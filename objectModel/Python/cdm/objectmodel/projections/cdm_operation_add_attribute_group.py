@@ -93,18 +93,22 @@ class CdmOperationAddAttributeGroup(CdmOperationBase):
         # Iterate through all the projection attribute states generated from the source's resolved attributes
         # Each projection attribute state contains a resolved attribute that it is corresponding to
         for current_PAS in proj_ctx._current_attribute_state_set._states:
-            # Create an attribute set build that owns one resolved attribute
-            attribute_rasb = ResolvedAttributeSetBuilder()
-            attribute_rasb.own_one(current_PAS._current_resolved_attribute)
+            # Create a copy of the resolved attribute
+            resolved_attribute = current_PAS._current_resolved_attribute.copy()  # type: ResolvedAttribute
 
-            # Merge the attribute set containing one attribute with the one holding all the attributes
-            rasb.merge_attributes(attribute_rasb.ras)
+            # Add the attribute to the resolved attribute set
+            rasb._resolved_attribute_set.merge(resolved_attribute)
 
             # Add each attribute's attribute context to the resolved attribute set attribute context
-            attr_ctx_attr_group.contents.append(current_PAS._current_resolved_attribute.att_ctx)
+            attr_param = AttributeContextParameters()
+            attr_param._under = attr_ctx_attr_group
+            attr_param._type = CdmAttributeContextType.ATTRIBUTE_DEFINITION
+            attr_param._name = resolved_attribute.resolved_name
+            resolved_attribute.att_ctx = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_param)
+            resolved_attribute.att_ctx._add_lineage(current_PAS._current_resolved_attribute.att_ctx)
 
         # Create a new resolved attribute that will hold the attribute set containing all the attributes
-        res_attr_new = ResolvedAttribute(proj_ctx._projection_directive._res_opt, rasb.ras, self.attribute_group_name, attr_ctx_attr_group)
+        res_attr_new = ResolvedAttribute(proj_ctx._projection_directive._res_opt, rasb._resolved_attribute_set, self.attribute_group_name, attr_ctx_attr_group)
 
         # Create a new projection attribute state pointing to the resolved attribute set that represents the attribute group
         new_PAS = ProjectionAttributeState(self.ctx)

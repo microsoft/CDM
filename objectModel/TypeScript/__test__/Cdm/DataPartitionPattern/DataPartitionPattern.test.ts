@@ -199,59 +199,68 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
         expect(patternsWithGlobAndRegex)
             .toBe(1);
 
+        let index: number = 0;
         // make sure '.' in glob is not converted to '.' in regex
-        const dotIsEscaped: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[0] as CdmLocalEntityDeclarationDefinition;
+        const dotIsEscaped: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(dotIsEscaped.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('test.ile.csv');
         expect(dotIsEscaped.dataPartitions.length)
             .toBe(0);
+        index++;
 
-        // star pattern should not match anything
-        const onlyStar: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[1] as CdmLocalEntityDeclarationDefinition;
+        // star pattern should match anything in the root folder
+        const onlyStar: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(onlyStar.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('*');
         expect(onlyStar.dataPartitions.length)
-            .toBe(0);
+            .toBe(1);
+        expect(onlyStar.dataPartitions.allItems[0].location)
+            .toBe('/partitions/testfile.csv');
+        index++;
 
         // star can match nothing
-        const starNoMatch: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[2] as CdmLocalEntityDeclarationDefinition;
+        const starNoMatch: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(starNoMatch.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/testfile*.csv');
         expect(starNoMatch.dataPartitions.length)
             .toBe(1);
         expect(starNoMatch.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
+        index++;
 
         // star at root level
         // this should match any files at root level, none in subfolders
-        const starAtRoot: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[3] as CdmLocalEntityDeclarationDefinition;
+        const starAtRoot: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(starAtRoot.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/*.csv');
         expect(starAtRoot.dataPartitions.length)
             .toBe(1);
         expect(starAtRoot.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
+        index++;
 
         // star at deeper level
-        const starAtDeeperLevel: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[4] as CdmLocalEntityDeclarationDefinition;
+        const starAtDeeperLevel: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(starAtDeeperLevel.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/*/*.csv');
         expect(starAtDeeperLevel.dataPartitions.length)
             .toBe(1);
         expect(starAtDeeperLevel.dataPartitions.allItems[0].location)
             .toBe('/partitions/subFolder/testSubFile.csv');
+        index++;
 
         // pattern that ends with star
-        const endsWithStar: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[5] as CdmLocalEntityDeclarationDefinition;
+        const endsWithStar: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(endsWithStar.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/testfile*');
         expect(endsWithStar.dataPartitions.length)
             .toBe(1);
         expect(endsWithStar.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
+        index++;
 
         // globstar (**) on its own matches
-        const globStar: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[6] as CdmLocalEntityDeclarationDefinition;
+        const globStar: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(globStar.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('**');
         expect(globStar.dataPartitions.length)
@@ -264,19 +273,21 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             x.location === '/partitions/subFolder/testSubFile.csv'
         ).length)
             .toBe(1);
+        index++;
 
         // globstar at the beginning of the pattern
         const beginsWithGlobstar: CdmLocalEntityDeclarationDefinition =
-            manifest.entities.allItems[7] as CdmLocalEntityDeclarationDefinition;
+            manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(beginsWithGlobstar.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/**.csv');
         expect(beginsWithGlobstar.dataPartitions.length)
             .toBe(1);
         expect(beginsWithGlobstar.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
+        index++;
 
         // globstar at the end of the pattern
-        const endsWithGlobstar: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[8] as CdmLocalEntityDeclarationDefinition;
+        const endsWithGlobstar: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(endsWithGlobstar.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/**');
         expect(endsWithGlobstar.dataPartitions.length)
@@ -289,9 +300,10 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             x.location === '/partitions/subFolder/testSubFile.csv'
         ).length)
             .toBe(1);
+        index++;
 
         // globstar matches zero or more folders
-        const zeroOrMoreFolders: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[9] as CdmLocalEntityDeclarationDefinition;
+        const zeroOrMoreFolders: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(zeroOrMoreFolders.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/**/*.csv');
         expect(zeroOrMoreFolders.dataPartitions.length)
@@ -304,10 +316,11 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             x.location === '/partitions/subFolder/testSubFile.csv'
         ).length)
             .toBe(1);
+        index++;
 
         // globstar matches zero or more folders without starting slash
         const zeroOrMoreNoStartingSlash: CdmLocalEntityDeclarationDefinition =
-            manifest.entities.allItems[10] as CdmLocalEntityDeclarationDefinition;
+            manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(zeroOrMoreNoStartingSlash.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/**/*.csv');
         expect(zeroOrMoreNoStartingSlash.dataPartitions.length)
@@ -320,49 +333,54 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             x.location === '/partitions/subFolder/testSubFile.csv'
         ).length)
             .toBe(1);
+        index++;
 
         // question mark in the middle of a pattern
-        const questionMark: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[11] as CdmLocalEntityDeclarationDefinition;
+        const questionMark: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(questionMark.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/test?ile.csv');
         expect(questionMark.dataPartitions.length)
             .toBe(1);
         expect(questionMark.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
+        index++;
 
         // question mark at the beginning of a pattern
         const beginsWithQuestionMark: CdmLocalEntityDeclarationDefinition =
-            manifest.entities.allItems[12] as CdmLocalEntityDeclarationDefinition;
+            manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(beginsWithQuestionMark.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/?estfile.csv');
         expect(beginsWithQuestionMark.dataPartitions.length)
             .toBe(1);
         expect(beginsWithQuestionMark.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
+        index++;
 
         // question mark at the end of a pattern
         const endsWithQuestionMark: CdmLocalEntityDeclarationDefinition =
-            manifest.entities.allItems[13] as CdmLocalEntityDeclarationDefinition;
+            manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(endsWithQuestionMark.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/testfile.cs?');
         expect(endsWithQuestionMark.dataPartitions.length)
             .toBe(1);
         expect(endsWithQuestionMark.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
+        index++;
 
         // backslash in glob can match slash
         const backslashInPattern: CdmLocalEntityDeclarationDefinition =
-            manifest.entities.allItems[14] as CdmLocalEntityDeclarationDefinition;
+            manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(backslashInPattern.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('\\testfile.csv');
         expect(backslashInPattern.dataPartitions.length)
             .toBe(1);
         expect(backslashInPattern.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
+        index++;
 
         // pattern object includes glob pattern and regular expression
         const globAndRegex: CdmLocalEntityDeclarationDefinition =
-            manifest.entities.allItems[15] as CdmLocalEntityDeclarationDefinition;
+            manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
         expect(globAndRegex.dataPartitionPatterns.allItems[0].globPattern)
             .toBe('/testfile.csv');
         expect(globAndRegex.dataPartitionPatterns.allItems[0].regularExpression)
@@ -371,6 +389,84 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
             .toBe(1);
         // matching this file means the glob pattern was (correctly) used
         expect(globAndRegex.dataPartitions.allItems[0].location)
+            .toBe('/partitions/testfile.csv');
+
+        done();
+    });
+
+    /**
+     * Testing data partition patterns that use glob patterns with variations in path style
+     */
+    it('TestGlobPathVariation', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestGlobPathVariation');
+
+        const manifest: CdmManifestDefinition = await corpus.fetchObjectAsync<CdmManifestDefinition>('pattern.manifest.cdm.json');
+        await manifest.fileStatusCheckAsync();
+
+        let index: number = 0;
+        const noSlash: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
+        expect(noSlash.dataPartitionPatterns.allItems[0].rootLocation)
+            .toBe('/partitions');
+        expect(noSlash.dataPartitionPatterns.allItems[0].globPattern)
+            .toBe('*.csv');
+        expect(noSlash.dataPartitions.length)
+            .toBe(1);
+        expect(noSlash.dataPartitions.allItems[0].location)
+            .toBe('/partitions/testfile.csv');
+        index++;
+
+        const rootLocationSlash: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
+        expect(rootLocationSlash.dataPartitionPatterns.allItems[0].rootLocation)
+            .toBe('/partitions/');
+        expect(rootLocationSlash.dataPartitionPatterns.allItems[0].globPattern)
+            .toBe('*.csv');
+        expect(rootLocationSlash.dataPartitions.length)
+            .toBe(1);
+        expect(rootLocationSlash.dataPartitions.allItems[0].location)
+            .toBe('/partitions/testfile.csv');
+        index++;
+
+        const globPatternSlash: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
+        expect(globPatternSlash.dataPartitionPatterns.allItems[0].rootLocation)
+            .toBe('/partitions');
+        expect(globPatternSlash.dataPartitionPatterns.allItems[0].globPattern)
+            .toBe('/*.csv');
+        expect(globPatternSlash.dataPartitions.length)
+            .toBe(1);
+        expect(globPatternSlash.dataPartitions.allItems[0].location)
+            .toBe('/partitions/testfile.csv');
+        index++;
+
+        const bothSlash: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
+        expect(bothSlash.dataPartitionPatterns.allItems[0].rootLocation)
+            .toBe('/partitions/');
+        expect(bothSlash.dataPartitionPatterns.allItems[0].globPattern)
+            .toBe('/*.csv');
+        expect(bothSlash.dataPartitions.length)
+            .toBe(1);
+        expect(bothSlash.dataPartitions.allItems[0].location)
+            .toBe('/partitions/testfile.csv');
+        index++;
+
+        const noSlashOrStarAtStart: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
+        expect(noSlashOrStarAtStart.dataPartitionPatterns.allItems[0].rootLocation)
+            .toBe('/partitions/');
+        expect(noSlashOrStarAtStart.dataPartitionPatterns.allItems[0].globPattern)
+            .toBe('t*.csv');
+        expect(noSlashOrStarAtStart.dataPartitions.length)
+            .toBe(1);
+        expect(noSlashOrStarAtStart.dataPartitions.allItems[0].location)
+            .toBe('/partitions/testfile.csv');
+        index++;
+
+        const noSlashOrStarAndRootLocation: CdmLocalEntityDeclarationDefinition = manifest.entities.allItems[index] as CdmLocalEntityDeclarationDefinition;
+        expect(noSlashOrStarAndRootLocation.dataPartitionPatterns.allItems[0].rootLocation)
+            .toBe('/partitions');
+        expect(noSlashOrStarAndRootLocation.dataPartitionPatterns.allItems[0].globPattern)
+            .toBe('t*.csv');
+        expect(noSlashOrStarAndRootLocation.dataPartitions.length)
+            .toBe(1);
+        expect(noSlashOrStarAndRootLocation.dataPartitions.allItems[0].location)
             .toBe('/partitions/testfile.csv');
 
         done();
@@ -412,5 +508,5 @@ describe('Cdm/DataPartitionPattern/DataPartitionPattern', () => {
 
         // This should not throw exception
         await manifest.fileStatusCheckAsync();
-    });    
+    });
 });

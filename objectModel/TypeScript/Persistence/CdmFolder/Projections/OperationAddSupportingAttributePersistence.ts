@@ -5,17 +5,14 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationAddSupportingAttribute,
-    cdmOperationType,
     CdmTypeAttributeDefinition,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
-    resolveOptions,
-    StringUtils
+    resolveOptions
 } from '../../../internal';
 import { TypeAttributePersistence } from '../TypeAttributePersistence';
 import { OperationAddSupportingAttribute } from '../types';
 import * as utils from '../utils';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation AddSupportingAttribute persistence
@@ -25,21 +22,9 @@ export class OperationAddSupportingAttributePersistence {
         if (!object) {
             return undefined;
         }
-        const addSupportingAttributeOp: CdmOperationAddSupportingAttribute = ctx.corpus.MakeObject<CdmOperationAddSupportingAttribute>(cdmObjectType.operationAddSupportingAttributeDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.addSupportingAttribute))) {
-            Logger.error(OperationAddSupportingAttributePersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            addSupportingAttributeOp.type = cdmOperationType.addSupportingAttribute;
-        }
-
-        if (object.explanation) {
-            addSupportingAttributeOp.explanation = object.explanation;
-        }
-
-        if (object.supportingAttribute) {
-            addSupportingAttributeOp.supportingAttribute = utils.createAttribute(ctx, object.supportingAttribute) as CdmTypeAttributeDefinition;
-        }
+        const addSupportingAttributeOp: CdmOperationAddSupportingAttribute = OperationBasePersistence.fromData(ctx, cdmObjectType.operationAddSupportingAttributeDef, object);
+        addSupportingAttributeOp.supportingAttribute = utils.createAttribute(ctx, object.supportingAttribute) as CdmTypeAttributeDefinition;
 
         return addSupportingAttributeOp;
     }
@@ -49,10 +34,9 @@ export class OperationAddSupportingAttributePersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.addSupportingAttribute),
-            explanation: instance.explanation,
-            supportingAttribute: TypeAttributePersistence.toData(instance.supportingAttribute, resOpt, options)
-        };
+        const data: OperationAddSupportingAttribute = OperationBasePersistence.toData(instance, resOpt, options);
+        data.supportingAttribute = TypeAttributePersistence.toData(instance.supportingAttribute, resOpt, options)
+
+        return data;
     }
 }

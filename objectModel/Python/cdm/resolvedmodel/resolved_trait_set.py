@@ -133,9 +133,14 @@ class ResolvedTraitSet:
             av = res_trait.parameter_values.values
             new_val = arg.value
             # Get the value index from the parameter collection given the parameter that this argument is setting.
-            idx = res_trait.parameter_values.index_of(arg._resolved_parameter)
-            av[idx] = ParameterValue.fetch_replacement_value(self.res_opt, av[idx], new_val, True)
-            res_trait.parameter_values.was_set[idx] = True
+            param_def = arg._get_parameter_def()
+            if param_def is not None:
+                i_param = res_trait.parameter_values.index_of(param_def)
+                av[i_param] = ParameterValue.fetch_replacement_value(self.res_opt, av[i_param], new_val, True)
+                res_trait.parameter_values.was_set[i_param] = True
+            else:
+                # debug
+                param_def = arg._get_parameter_def()
 
     def set_trait_parameter_value(self, res_opt: 'ResolveOptions', to_trait: 'CdmTraitDefinition',  # pylint: disable=unused-argument
                                   param_name: str, value: 'CdmArgumentValue') -> 'ResolvedTraitSet':

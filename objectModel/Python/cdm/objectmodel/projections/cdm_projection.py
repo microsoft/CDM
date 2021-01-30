@@ -33,6 +33,8 @@ class CdmProjection(CdmObjectDefinition):
         # Property of a projection that holds a collection of operations
         self.operations = CdmOperationCollection(ctx, self)  # type: CdmOperationCollection
 
+        self.run_sequentially = None  # type: Optional[bool]
+
         # --- internal ---
 
         # Condition expression tree that is built out of a condition expression string
@@ -44,8 +46,25 @@ class CdmProjection(CdmObjectDefinition):
         self._TAG = CdmProjection.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmProjection'] = None) -> 'CdmProjection':
-        logger.error(self._TAG, self.ctx, 'Projection operation not implemented yet.', 'copy')
-        return CdmProjection(self.ctx)
+        copy = None
+
+        if not host:
+            copy = CdmProjection(self.ctx)
+        else:
+            copy = host
+            copy.ctx = self.ctx
+            copy.operations.clear()
+        
+        copy.condition = self.condition
+        copy.source = self.source.copy() if self.source else None
+
+        for operation in self.operations:
+            copy.operations.append(operation.copy())
+
+        # Don't do anything else after this, as it may cause InDocument to become dirty
+        copy.in_document = self.in_document
+
+        return copy
 
     def get_name(self) -> str:
         return 'projection'
@@ -135,143 +154,152 @@ class CdmProjection(CdmObjectDefinition):
         - Create and initialize Projection Context
         - Process operations
         """
+        if not attr_ctx:
+            return None
+
+        if self.run_sequentially is not None:
+            logger.error(self._TAG, self.ctx, 'RunSequentially is not supported by this Object Model version.')
+
         proj_context = None
 
-        condition =  self.condition if self.condition  else "(true)"
+        condition = self.condition if self.condition  else "(true)"
 
         # create an expression tree based on the condition
         tree = ExpressionTree()
         self._condition_expression_tree_root = tree._construct_expression_tree(condition)
 
-        if attr_ctx:
-            # Add projection to context tree
-            acp_proj = AttributeContextParameters()
-            acp_proj._under = attr_ctx
-            acp_proj._type = CdmAttributeContextType.PROJECTION
-            acp_proj._name = self.fetch_object_definition_name()
-            acp_proj._regarding = proj_directive._owner_ref
-            acp_proj._include_traits = False
+        # Add projection to context tree
+        acp_proj = AttributeContextParameters()
+        acp_proj._under = attr_ctx
+        acp_proj._type = CdmAttributeContextType.PROJECTION
+        acp_proj._name = self.fetch_object_definition_name()
+        acp_proj._regarding = proj_directive._owner_ref
+        acp_proj._include_traits = False
 
-            ac_proj = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_proj)
+        ac_proj = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_proj)
 
-            acp_source = AttributeContextParameters()
-            acp_source._under = ac_proj
-            acp_source._type = CdmAttributeContextType.SOURCE
-            acp_source._name = 'source'
-            acp_source._regarding = None
-            acp_source._include_traits = False
+        acp_source = AttributeContextParameters()
+        acp_source._under = ac_proj
+        acp_source._type = CdmAttributeContextType.SOURCE
+        acp_source._name = 'source'
+        acp_source._regarding = None
+        acp_source._include_traits = False
 
-            ac_source = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_source)
+        ac_source = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_source)
 
-            # Initialize the projection context
-            ctx = proj_directive._owner.ctx if proj_directive._owner else None
+        # Initialize the projection context
+        ctx = proj_directive._owner.ctx if proj_directive._owner else None
 
-            if self.source:
-                source = self.source.fetch_object_definition(proj_directive._res_opt)
-                if source.object_type == CdmObjectType.PROJECTION_DEF:
-                    # A Projection
+        if self.source:
+            source = self.source.fetch_object_definition(proj_directive._res_opt)
+            if source.object_type == CdmObjectType.PROJECTION_DEF:
+                # A Projection
 
-                    proj_context = self.source.explicit_reference._construct_projection_context(proj_directive, ac_source, ras)
-                else:
-                    # An Entity Reference
-
-                    acp_source_projection = AttributeContextParameters()
-                    acp_source_projection._under = ac_source
-                    acp_source_projection._type = CdmAttributeContextType.ENTITY
-                    acp_source_projection._name = self.source.named_reference if self.source.named_reference else self.source.explicit_reference.get_name()
-                    acp_source_projection._regarding = self.source
-                    acp_source_projection._include_traits = False
-
-                    ras = self.source._fetch_resolved_attributes(proj_directive._res_opt, acp_source_projection)
-
-                    # If polymorphic keep original source as previous state
-                    poly_source_set = None
-                    if proj_directive._is_source_polymorphic:
-                        poly_source_set = ProjectionResolutionCommonUtil._get_polymorphic_source_set(proj_directive, ctx, self.source, acp_source_projection)
-
-                    # Now initialize projection attribute state
-                    pas_set = ProjectionResolutionCommonUtil._initialize_projection_attribute_state_set(
-                        proj_directive,
-                        ctx,
-                        ras,
-                        proj_directive._is_source_polymorphic,
-                        poly_source_set
-                    )
-
-                    proj_context = ProjectionContext(proj_directive, ras.attribute_context)
-                    proj_context._current_attribute_state_set = pas_set
+                proj_context = source._construct_projection_context(proj_directive, ac_source, ras)
             else:
-                # A type attribute
+                # An Entity Reference
 
-                # Initialize projection attribute state
+                acp_source_projection = AttributeContextParameters()
+                acp_source_projection._under = ac_source
+                acp_source_projection._type = CdmAttributeContextType.ENTITY
+                acp_source_projection._name = self.source.named_reference if self.source.named_reference else self.source.explicit_reference.get_name()
+                acp_source_projection._regarding = self.source
+                acp_source_projection._include_traits = False
+
+                ras = self.source._fetch_resolved_attributes(proj_directive._res_opt, acp_source_projection)  # type: ResolvedAttributeSet
+                # clean up the context tree, it was left in a bad state on purpose in this call
+                ras.attribute_context._finalize_attribute_context(proj_directive._res_opt, ac_source.at_corpus_path, self.in_document, self.in_document, None, False)
+
+
+                # if polymorphic keep original source as previous state
+                poly_source_set = None
+                if proj_directive._is_source_polymorphic:
+                    poly_source_set = ProjectionResolutionCommonUtil._get_polymorphic_source_set(proj_directive, ctx, self.source, ras, acp_source_projection)
+
+                # Now initialize projection attribute state
                 pas_set = ProjectionResolutionCommonUtil._initialize_projection_attribute_state_set(
                     proj_directive,
                     ctx,
                     ras,
-                    is_source_polymorphic=False,
-                    polymorphic_set=None
+                    proj_directive._is_source_polymorphic,
+                    poly_source_set
                 )
 
                 proj_context = ProjectionContext(proj_directive, ras.attribute_context)
                 proj_context._current_attribute_state_set = pas_set
+        else:
+            # A type attribute
 
-            is_condition_valid = False
-            if self._condition_expression_tree_root:
-                input = InputValues()
-                input.no_max_depth = proj_directive._has_no_maximum_depth
-                input.is_array = proj_directive._is_array
-                input.reference_only = proj_directive._is_reference_only
-                input.normalized = proj_directive._is_normalized
-                input.structured = proj_directive._is_structured
-                input.is_virtual = proj_directive._is_virtual
+            # Initialize projection attribute state
+            pas_set = ProjectionResolutionCommonUtil._initialize_projection_attribute_state_set(
+                proj_directive,
+                ctx,
+                ras,
+                is_source_polymorphic=False,
+                polymorphic_set=None
+            )
 
-                current_depth = proj_directive._current_depth
-                current_depth += 1
-                input.next_depth = current_depth
-                proj_directive._current_depth = current_depth
+            proj_context = ProjectionContext(proj_directive, ras.attribute_context)
+            proj_context._current_attribute_state_set = pas_set
 
-                input.max_depth = proj_directive._maximum_depth
-                input.min_cardinality = proj_directive._cardinality._minimum_number if proj_directive._cardinality else None
-                input.max_cardinality = proj_directive._cardinality._maximum_number if proj_directive._cardinality else None
+        is_condition_valid = False
+        if self._condition_expression_tree_root:
+            input = InputValues()
+            input.no_max_depth = proj_directive._has_no_maximum_depth
+            input.is_array = proj_directive._is_array
+            input.reference_only = proj_directive._is_reference_only
+            input.normalized = proj_directive._is_normalized
+            input.structured = proj_directive._is_structured
+            input.is_virtual = proj_directive._is_virtual
+            input.next_depth = proj_directive._res_opt._depth_info.current_depth
+            input.max_depth = proj_directive._maximum_depth
+            input.min_cardinality = proj_directive._cardinality._minimum_number if proj_directive._cardinality else None
+            input.max_cardinality = proj_directive._cardinality._maximum_number if proj_directive._cardinality else None
 
-                is_condition_valid = ExpressionTree._evaluate_expression_tree(self._condition_expression_tree_root, input)
+            is_condition_valid = ExpressionTree._evaluate_expression_tree(self._condition_expression_tree_root, input)
 
-            if is_condition_valid and self.operations and len(self.operations) > 0:
-                # Just in case operations were added programmatically, reindex operations
-                for i in range(len(self.operations)):
-                    self.operations[i]._index = i + 1
+        if is_condition_valid and self.operations and len(self.operations) > 0:
+            # Just in case operations were added programmatically, reindex operations
+            for i in range(len(self.operations)):
+                self.operations[i]._index = i + 1
 
-                # Operation
+            # Operation
 
-                acp_gen_attr_set = AttributeContextParameters()
-                acp_gen_attr_set._under = attr_ctx
-                acp_gen_attr_set._type = CdmAttributeContextType.GENERATED_SET
-                acp_gen_attr_set._name = '_generatedAttributeSet'
+            acp_gen_attr_set = AttributeContextParameters()
+            acp_gen_attr_set._under = attr_ctx
+            acp_gen_attr_set._type = CdmAttributeContextType.GENERATED_SET
+            acp_gen_attr_set._name = '_generatedAttributeSet'
 
-                ac_gen_attr_set = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_gen_attr_set)
+            ac_gen_attr_set = CdmAttributeContext._create_child_under(proj_directive._res_opt, acp_gen_attr_set)
 
-                # Start with an empty list for each projection
-                pas_operations = ProjectionAttributeStateSet(proj_context._current_attribute_state_set._ctx)
-                for operation in self.operations:
-                    # Evaluate projections and apply to empty state
-                    new_pas_operations = operation._append_projection_attribute_state(proj_context, pas_operations, ac_gen_attr_set)
+            # Start with an empty list for each projection
+            pas_operations = ProjectionAttributeStateSet(proj_context._current_attribute_state_set._ctx)
+            for operation in self.operations:
+                if operation.condition is not None:
+                    logger.error(self._TAG, self.ctx, 'Condition on the operation level is not supported by this Object Model version.')
+                
+                if operation.source_input is not None:
+                    logger.error(self._TAG, self.ctx, 'SourceInput on the operation level is not supported by this Object Model version.')
 
-                    # If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
-                    if new_pas_operations is not None:
-                        pas_operations = new_pas_operations
+                # Evaluate projections and apply to empty state
+                new_pas_operations = operation._append_projection_attribute_state(proj_context, pas_operations, ac_gen_attr_set)
 
-                # Finally update the current state to the projection context
-                proj_context._current_attribute_state_set = pas_operations
+                # If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state.
+                if new_pas_operations is not None:
+                    pas_operations = new_pas_operations
+
+            # Finally update the current state to the projection context
+            proj_context._current_attribute_state_set = pas_operations
 
         return proj_context
 
-    def _extract_resolved_attributes(self, proj_ctx: 'ProjectionContext') -> 'ResolvedAttributeSet':
+    def _extract_resolved_attributes(self, proj_ctx: 'ProjectionContext', att_ctx_under: CdmAttributeContext) -> 'ResolvedAttributeSet':
         """Create resolved attribute set based on the CurrentResolvedAttribute array"""
         resolved_attribute_set = ResolvedAttributeSet()
-        resolved_attribute_set.attribute_context = proj_ctx._current_attribute_context
+        resolved_attribute_set.attribute_context = att_ctx_under
 
         for pas in proj_ctx._current_attribute_state_set._states:
-            resolved_attribute_set.merge(pas._current_resolved_attribute, pas._current_resolved_attribute.att_ctx)
+            resolved_attribute_set.merge(pas._current_resolved_attribute)
 
         return resolved_attribute_set
 

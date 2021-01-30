@@ -271,7 +271,7 @@ class ProjectionAddSupportingAttributeTest(unittest.TestCase):
             await ProjectionTestUtils.load_entity_for_resolution_option_and_save(self, corpus, test_name, self.tests_subpath, entity_name, res_opt)
 
         entity = await corpus.fetch_object_async('local:/{0}.cdm.json/{0}'.format(entity_name))  # type: CdmEntityDefinition
-        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['structured'])  # type: CdmEntityDefinition
+        resolved_entity = await ProjectionTestUtils.get_resolved_entity(corpus, entity, ['referenceOnly'])  # type: CdmEntityDefinition
 
         # Original set of attributes: ["PersonInfo"]
         self.assertEqual(2, len(resolved_entity.attributes))

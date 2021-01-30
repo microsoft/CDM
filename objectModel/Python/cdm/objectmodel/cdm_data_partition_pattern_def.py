@@ -90,7 +90,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
             logger.error(self._TAG, self.ctx, 'Adapter not found for the document {}'.format(self.in_document.name), self.file_status_check_async.__name__)
 
         # make sure the root is a good full corpus path.
-        root_cleaned = (self.root_location or '')
+        root_cleaned = (self.root_location[:-1] if self.root_location and self.root_location.endswith('/') else self.root_location) or ''
         root_corpus = self.ctx.corpus.storage.create_absolute_corpus_path(root_cleaned, self.in_document)
 
         try:
@@ -164,7 +164,11 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
     def glob_pattern_to_regex(self, pattern: str) -> str:
         new_pattern = []
 
-        i = 0
+        # all patterns should start with a slash
+        new_pattern.append("[/\\\\]")
+
+        # if pattern starts with slash, skip the first character. We already added it above
+        i = 1 if pattern[0] == '/' or pattern[0] == '\\' else 0
         while i < len(pattern):
             curr_char = pattern[i]
 
@@ -173,7 +177,7 @@ class CdmDataPartitionPatternDefinition(CdmObjectDefinition, CdmFileStatus):
                 new_pattern.append('\\.')
             elif curr_char == '\\':
                 # convert backslash into slash
-                new_pattern.append('/')
+                new_pattern.append('[/\\\\]')
             elif curr_char == '?':
                 # question mark in glob matches any single character
                 new_pattern.append('.')

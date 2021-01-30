@@ -2,7 +2,7 @@
 # Licensed under the MIT License. See License.txt in the project root for license information.
 
 import asyncio
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 from datetime import datetime
 from typing import cast, Callable, Dict, List, Optional, Set, TypeVar, Union, TYPE_CHECKING, Tuple
 import warnings
@@ -90,6 +90,7 @@ class CdmCorpusDefinition:
         self._persistence = PersistenceLayer(self)
         self._res_ent_map = defaultdict(str)  # type: Dict[str, str]
         self._root_manifest = None  # type: Optional[CdmManifestDefinition]
+        self._known_artifact_attributes = None  # type: Optional[Dict[str, CdmTypeAttributeDefinition]]
         self._TAG = CdmCorpusDefinition.__name__
 
     @property
@@ -279,7 +280,7 @@ class CdmCorpusDefinition:
 
     def _find_outgoing_relationships(self, res_opt: 'ResolveOptions', res_entity: 'CdmEntityDefinition', att_ctx: 'CdmAttributeContext',
                                      is_resolved_entity: Optional['bool'] = False, generated_att_set_context: Optional['CdmAttributeContext'] = None,
-                                     was_projection_polymorphic: Optional[bool] = False, was_entity_ref: Optional[bool] = False,
+                                     was_projection_polymorphic: Optional[bool] = False,
                                      from_atts: List['CdmAttributeReference'] = None) -> List['CdmE2ERelationship']:
         out_rels = []  # type: List[CdmE2ERelationship]
 
@@ -308,8 +309,14 @@ class CdmCorpusDefinition:
                         # Projections
 
                         is_entity_ref = False
-                        is_polymorphic_source = (to_entity.owner.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF if to_entity and to_entity.owner else False and
-                                                 to_entity.owner.is_polymorphic_source == True)
+
+                        owner = to_entity.owner.owner if to_entity.owner else None
+
+                        if owner:
+                            is_polymorphic_source = (owner.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF and
+                                                    owner.is_polymorphic_source == True)
+                        else:
+                            logger.error(self._TAG, self.ctx, 'Found object without owner when calculating relationships.')
 
                         # From the top of the projection (or the top most which contains a generatedSet / operations)
                         # get the attribute names for the foreign key
@@ -350,7 +357,6 @@ class CdmCorpusDefinition:
                     is_resolved_entity,
                     new_gen_set,
                     was_projection_polymorphic,
-                    is_entity_ref,
                     from_atts
                 )
                 out_rels.extend(sub_out_rels)
@@ -448,7 +454,7 @@ class CdmCorpusDefinition:
                     fk_arg_values = self._get_to_attributes(att_from_fk, resolved_res_opt)
 
                     for const_ent in fk_arg_values:
-                        absolute_path = self.storage.create_absolute_corpus_path(const_ent[0], to_entity)
+                        absolute_path = self.storage.create_absolute_corpus_path(const_ent[0], att_from_fk)
                         to_att_list.append((absolute_path, const_ent[1]))
 
                 for attribute_tuple in to_att_list:
@@ -484,7 +490,7 @@ class CdmCorpusDefinition:
 
         return out_rels
 
-    def _fetch_definition_cache_tag(self, res_opt: 'ResolveOptions', definition: 'CdmObject', kind: str, extra_tags: str = '',
+    def _create_definition_cache_tag(self, res_opt: 'ResolveOptions', definition: 'CdmObject', kind: str, extra_tags: str = '',
                                     not_known_to_have_parameters: bool = False, path_to_def: str = None) -> str:
         # construct a tag that is unique for a given object in a given context
         # context is:
@@ -511,10 +517,10 @@ class CdmCorpusDefinition:
 
         tag_suffix = '-{}-{}'.format(kind, this_id)
         tag_suffix += '-({})'.format(res_opt.directives.get_tag() if res_opt.directives else '')
-        if res_opt.depth_info and res_opt.depth_info.max_depth_exceeded:
-            curr_depth_info = res_opt.depth_info
+        if res_opt._depth_info.max_depth_exceeded:
+            curr_depth_info = res_opt._depth_info
             tag_suffix += '-{}'.format(curr_depth_info.max_depth - curr_depth_info.current_depth)
-        if res_opt.in_circular_reference:
+        if res_opt._in_circular_reference:
             tag_suffix += '-pk'
         if extra_tags:
             tag_suffix += '-{}'.format(extra_tags)
@@ -620,6 +626,9 @@ class CdmCorpusDefinition:
                                           CdmObjectType.OPERATION_INCLUDE_ATTRIBUTES_DEF, CdmObjectType.OPERATION_ADD_ATTRIBUTE_GROUP_DEF])
 
         def callback(obj: 'CdmObject', path: str) -> bool:
+            # I can't think of a better time than now to make sure any recently changed or added things have an in doc
+            obj.in_document = current_doc
+
             if path.find('(unspecified)') > 0:
                 return True
 
@@ -688,7 +697,6 @@ class CdmCorpusDefinition:
                             return self._docs_for_symbol(res_opt, temp_moniker_doc, temp_moniker_doc, result.new_symbol)
                         else:
                             return curr_docs_result
-                    res_opt._from_moniker = prefix
                     result.doc_best = temp_moniker_doc
                 else:
                     # moniker not recognized in either doc, fail with grace
@@ -834,7 +842,7 @@ class CdmCorpusDefinition:
 
     def _register_definition_reference_symbols(self, definition: 'CdmObject', kind: str, symbol_ref_set: 'SymbolSet') -> None:
         key = CdmCorpusDefinition._fetch_cache_key_from_object(definition, kind)
-        existing_symbols = self._definition_reference_symbols.get(key)
+        existing_symbols = self._definition_reference_symbols.get(key, None)
         if existing_symbols is None:
             # nothing set, just use it
             self._definition_reference_symbols[key] = symbol_ref_set
@@ -899,7 +907,7 @@ class CdmCorpusDefinition:
         else:
             directives = self.default_resolution_directives
         res_opt = ResolveOptions(wrt_doc=None, directives=directives)
-        res_opt.depth_info = DepthInfo(max_depth=None, current_depth=0, max_depth_exceeded=False)
+        res_opt._depth_info._reset()
 
         for doc in self._document_library._list_all_documents():
             await doc[1]._index_if_needed(res_opt)
@@ -1149,9 +1157,9 @@ class CdmCorpusDefinition:
 
         if found and expected_type != CdmObjectType.ERROR:
             if expected_type in SYMBOL_TYPE_CHECK and SYMBOL_TYPE_CHECK[expected_type] != found.object_type:
-                # special case for EntityRef, which can be both an EntityDef or Projection
-                # SYMBOL_TYPE_CHECK only checks for EntityDef, so we have to also check for Projection here
-                if expected_type == CdmObjectType.ENTITY_REF and found.object_type == CdmObjectType.PROJECTION_DEF:
+                # special case for EntityRef, which can be an EntityDef or Projection or ConstantEntityDef
+                # SYMBOL_TYPE_CHECK only checks for EntityDef, so we have to also check for Projection and ConstantEntityDef here
+                if expected_type == CdmObjectType.ENTITY_REF and (found.object_type == CdmObjectType.PROJECTION_DEF or found.object_type == CdmObjectType.CONSTANT_ENTITY_DEF):
                     return found
                 type_name = ''.join([name.title() for name in expected_type.name.split('_')])
                 logger.error(self._TAG, self.ctx, 'expected type {}'.format(type_name), symbol_def)
@@ -1338,7 +1346,7 @@ class CdmCorpusDefinition:
 
         for doc_defined in docs:
             # is this one of the imported docs?
-            import_info = import_priority.get(doc_defined)
+            import_info = import_priority.get(doc_defined, None)
             if import_info is not None and (index_best is None or import_info.priority < index_best):
                 index_best = import_info.priority
                 doc_best = doc_defined
@@ -1461,3 +1469,53 @@ class CdmCorpusDefinition:
                             tuple_list.append((constant_values[0], constant_values[1], constant_values[2] if len(constant_values) > 2 else ''))
             return tuple_list
         return None
+
+    async def _prepare_artifact_attributes_async(self) -> bool:
+        """
+        Fetches from primitives or creates the default attributes that get added by resolution
+        """
+        if not self._known_artifact_attributes:
+            self._known_artifact_attributes = OrderedDict()
+            # see if we can get the value from primitives doc
+            # this might fail, and we do not want the user to know about it.
+            old_status = self.ctx.status_event  # todo, we should make an easy way for our code to do this and set it back
+            old_level = self.ctx.report_at_level
+
+            def callback(level: CdmStatusLevel, message: str):
+                return
+            self.set_event_callback(callback, CdmStatusLevel.ERROR)
+
+            try:
+                ent_art = await self.fetch_object_async('cdm:/primitives.cdm.json/defaultArtifacts')  # type: CdmEntityDefinition
+            finally:
+                self.set_event_callback(old_status, old_level)
+
+            if not ent_art:
+                # fallback to the old ways, just make some
+                art_att = self.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, 'count')  # type: CdmTypeAttributeDefinition
+                art_att.data_type = self.make_object(CdmObjectType.DATA_TYPE_REF, 'integer', True)
+                self._known_artifact_attributes['count'] = art_att
+                art_att = self.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, 'id')
+                art_att.data_type = self.make_object(CdmObjectType.DATA_TYPE_REF, 'entityId', True)
+                self._known_artifact_attributes['id'] = art_att
+                art_att = self.make_object(CdmObjectType.TYPE_ATTRIBUTE_DEF, 'type')
+                art_att.data_type = self.make_object(CdmObjectType.DATA_TYPE_REF, 'entityName', True)
+                self._known_artifact_attributes['type'] = art_att
+            else:
+                # point to the ones from the file
+                from .cdm_attribute_def import CdmAttribute
+                from .cdm_type_attribute_def import CdmTypeAttributeDefinition
+                for att in ent_art.attributes:
+                    self._known_artifact_attributes[cast(CdmAttribute, att.name)] = cast(CdmTypeAttributeDefinition, att)
+
+        return True
+
+    def _fetch_artifact_attribute(self, name: str) -> 'CdmTypeAttributeDefinition':
+        """
+        Returns the (previously prepared) artifact attribute of the known name
+        """
+        if not self._known_artifact_attributes:
+            return None  # this is a usage mistake. never call this before success from the _prepare_artifact_attributes_async
+
+        return cast('CdmTypeAttributeDefinition', self._known_artifact_attributes[name].copy())
+

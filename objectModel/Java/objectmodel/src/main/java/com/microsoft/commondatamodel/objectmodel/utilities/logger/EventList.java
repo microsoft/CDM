@@ -15,9 +15,11 @@ import java.util.Map;
  * to determine what step to take to address the issue. To simply list all events and their elements,
  * a simple for-each like this will work:
  *
+ * <pre>{@code
  *         corpus.getCtx().getEvents().forEach(logEntry -> {
  *             logEntry.forEach((key, value) -> System.out.println(key + "=" + value));
  *          });
+ * }</pre>
  *
  * Note: this class is NOT a replacement for standard logging mechanism employed by the SDK. It serves
  * specifically to offer immediate post-call context specific diagnostic information for the application

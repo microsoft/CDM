@@ -79,6 +79,7 @@ import { PersistenceLayer } from '../Persistence';
 import {
     isAttributeGroupDefinition,
     isCdmTraitDefinition,
+    isConstantEntityDefinition,
     isDataTypeDefinition,
     isEntityDefinition,
     isOperationAddAttributeGroup,
@@ -527,7 +528,7 @@ export class CdmCorpusDefinition {
 
             let tagSuffix: string = `-${kind}-${thisId}`;
             tagSuffix += `-(${resOpt.directives ? resOpt.directives.getTag() : ''})`;
-            if (resOpt.depthInfo && resOpt.depthInfo.maxDepthExceeded) {
+            if (resOpt.depthInfo.maxDepthExceeded) {
                 const currDepthInfo: DepthInfo = resOpt.depthInfo;
                 tagSuffix += `-${currDepthInfo.maxDepth - currDepthInfo.currentDepth}`;
             }
@@ -1933,11 +1934,7 @@ export class CdmCorpusDefinition {
                         directives = this.defaultResolutionDirectives;
                     }
                     resOpt = new resolveOptions(undefined, directives);
-                    resOpt.depthInfo = {
-                        currentDepth: 0,
-                        maxDepthExceeded: false,
-                        maxDepth: undefined
-                    };
+                    resOpt.depthInfo.reset();
 
                     for (const doc of this.documentLibrary.listAllDocuments()) {
                         await doc.indexIfNeeded(resOpt);
@@ -2356,8 +2353,8 @@ export class CdmCorpusDefinition {
                 }
                 break;
             case cdmObjectType.entityRef:
-                if (!isEntityDefinition(found) && !isProjection(found)) {
-                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type entity or type projection', symbolDef);
+                if (!isEntityDefinition(found) && !isProjection(found) && !isConstantEntityDefinition(found)) {
+                    Logger.error(CdmCorpusDefinition.name, ctx, 'expected type entity or type projection or type constant entity', symbolDef);
 
                     return undefined;
                 }

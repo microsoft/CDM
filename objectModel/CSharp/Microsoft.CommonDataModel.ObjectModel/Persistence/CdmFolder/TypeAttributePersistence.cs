@@ -100,6 +100,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
         public static TypeAttribute ToData(CdmTypeAttributeDefinition instance, ResolveOptions resOpt, CopyOptions options)
         {
+            if (instance == null)
+            {
+                return null;
+            }
+
             TypeAttribute obj = new TypeAttribute
             {
                 Explanation = instance.Explanation,
@@ -111,6 +116,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 AttributeContext = Utils.JsonForm(instance.AttributeContext, resOpt, options),
                 ResolutionGuidance = Utils.JsonForm(instance.ResolutionGuidance, resOpt, options)
             };
+
+            obj.Projection = ProjectionPersistence.ToData(instance.Projection, resOpt, options);
 
             var isReadOnly = instance.GetProperty("isReadOnly");
             obj.IsReadOnly = isReadOnly ? isReadOnly : null;

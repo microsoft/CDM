@@ -4,18 +4,14 @@
 from typing import TYPE_CHECKING
 
 from cdm.enums import CdmObjectType
-from cdm.enums.cdm_operation_type import OperationTypeConvertor, CdmOperationType
-
 from cdm.persistence.cdmfolder import utils
 from cdm.persistence.cdmfolder.types import OperationReplaceAsForeignKey
-from cdm.utilities.logging import logger
-from cdm.utilities.string_utils import StringUtils
+
+from .operation_base_persistence import OperationBasePersistence
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmCorpusContext, CdmOperationReplaceAsForeignKey
     from cdm.utilities import ResolveOptions, CopyOptions
-
-_TAG = 'OperationReplaceAsForeignKeyPersistence'
 
 
 class OperationReplaceAsForeignKeyPersistence:
@@ -26,20 +22,10 @@ class OperationReplaceAsForeignKeyPersistence:
         if not data:
             return None
 
-        replace_as_foreign_key_op = ctx.corpus.make_object(CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF)
-
-        if data.type and not StringUtils.equals_with_ignore_case(data.type, OperationTypeConvertor._operation_type_to_string(CdmOperationType.REPLACE_AS_FOREIGN_KEY)):
-            logger.error(_TAG, ctx, '$type {} is invalid for this operation.'.format(data.type))
-        else:
-            replace_as_foreign_key_op.type = CdmOperationType.REPLACE_AS_FOREIGN_KEY
-
-        if data.explanation:
-            replace_as_foreign_key_op.explanation = data.explanation
-
+        replace_as_foreign_key_op = OperationBasePersistence.from_data(ctx,
+            CdmObjectType.OPERATION_REPLACE_AS_FOREIGN_KEY_DEF, data)  # type: CdmOperationReplaceAsForeignKey
         replace_as_foreign_key_op.reference = data.reference
-
-        if data.replaceWith:
-            replace_as_foreign_key_op.replace_with = utils.create_attribute(ctx, data.replaceWith)
+        replace_as_foreign_key_op.replace_with = utils.create_attribute(ctx, data.replaceWith)
 
         return replace_as_foreign_key_op
 
@@ -50,9 +36,7 @@ class OperationReplaceAsForeignKeyPersistence:
         if not instance:
             return None
 
-        obj = OperationReplaceAsForeignKey()
-        obj.type = OperationTypeConvertor._operation_type_to_string(CdmOperationType.REPLACE_AS_FOREIGN_KEY)
-        obj.explanation = instance.explanation
+        obj = OperationBasePersistence.to_data(instance, res_opt, options)  # type: OperationReplaceAsForeignKey
         obj.reference = instance.reference
         obj.replaceWith = TypeAttributePersistence.to_data(instance.replace_with, res_opt, options)
 

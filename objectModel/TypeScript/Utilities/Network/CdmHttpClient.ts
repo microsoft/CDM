@@ -1,9 +1,9 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See License.txt in the project root for license information.
 
-import { CdmCorpusContext } from 'Cdm/CdmCorpusContext';
 import * as http from 'http';
 import * as https from '../../Storage/request';
+import { CdmCorpusContext } from '../../Cdm/CdmCorpusContext';
 import { StorageAdapterConfigCallback } from '../../Storage/StorageAdapterConfigCallback';
 import { Logger } from '../Logging/Logger';
 import { CdmHttpRequest } from './CdmHttpRequest';
@@ -104,7 +104,7 @@ export class CdmHttpClient {
             let fullUrl: string;
 
             if (this.apiEndpoint !== undefined) {
-                fullUrl = CdmHttpClient.Combine(this.apiEndpoint, cdmRequest.requestedUrl);
+                fullUrl = CdmHttpClient.Combine(this.apiEndpoint, cdmRequest.stripSasSig());
             } else {
                 fullUrl = cdmRequest.requestedUrl;
             }
@@ -135,7 +135,7 @@ export class CdmHttpClient {
                         Logger.info(
                             CdmHttpClient.name,
                             ctx,
-                            `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, retry number: ${retryNumber}.`,
+                            `Sending request ${cdmRequest.requestId}, request type: ${cdmRequest.method}, request url: ${cdmRequest.stripSasSig()}, retry number: ${retryNumber}.`,
                             'SendAsyncHelper'
                         );
                     }

@@ -53,14 +53,19 @@ class ResolveOptions:
         # The maximum value for the end ordinal in an ArrayExpansion operation
         self.max_ordinal_for_array_expansion = 20  # type: int
 
+        # The maximum depth that entity attributes will be resolved before giving up
+        self.max_depth = 2
+
         # Set of symbol that the current chain of resolution depends upon. Used with import_priority to find what docs and versions of symbols to use.
         self._symbol_ref_set = SymbolSet()  # type: SymbolSet
 
         # Contains information about the depth that we are resolving at
-        self.depth_info = DepthInfo(max_depth=None, current_depth=0, max_depth_exceeded=False)  # type: Optional[DepthInfo]
+        self._depth_info = DepthInfo()  # type: Optional[DepthInfo]
 
         # Indicates whether we are resolving inside of a circular reference, resolution is different in that case
-        self.in_circular_reference = False  # type: bool
+        self._in_circular_reference = False  # type: bool
+
+        self._currently_resolving_entities = set()  # type: Set[CdmEntityDefinition]
 
         # When references get copied, use previous resolution results if available (for use with copy method).
         self._save_resolutions_on_copy = None  # type: Optional[bool]
@@ -72,6 +77,8 @@ class ResolveOptions:
         self._indexing_doc = None  # type: Optional[CdmDocumentDefinition]
 
         self._from_moniker = None  # type: Optional[str]
+
+        self._map_old_ctx_to_new_ctx = None  # type: Dict['CdmAttributeContext', 'CdmAttributeContext']
 
     @property
     def strict_validation(self) -> Optional[bool]:
@@ -104,14 +111,16 @@ class ResolveOptions:
     def copy(self) -> 'ResolveOptions':
         res_opt_copy = ResolveOptions()
         res_opt_copy.wrt_doc = self.wrt_doc
-        if self.depth_info:
-            res_opt_copy.depth_info = DepthInfo(max_depth=self.depth_info.max_depth, current_depth=self.depth_info.current_depth,
-                                                max_depth_exceeded=self.depth_info.max_depth_exceeded)
-        res_opt_copy.in_circular_reference = self.in_circular_reference
+        res_opt_copy._depth_info = self._depth_info._copy()
+        res_opt_copy._in_circular_reference = self._in_circular_reference
         res_opt_copy._localize_references_for = self._localize_references_for
         res_opt_copy._indexing_doc = self._indexing_doc
         res_opt_copy.shallow_validation = self.shallow_validation
         res_opt_copy._resolved_attribute_limit = self._resolved_attribute_limit
+        res_opt_copy._map_old_ctx_to_new_ctx = self._map_old_ctx_to_new_ctx  # ok to share self map
+        res_opt_copy.imports_load_strategy = self.imports_load_strategy
+        res_opt_copy._save_resolutions_on_copy = self._save_resolutions_on_copy
+        res_opt_copy._currently_resolving_entities = set(self._currently_resolving_entities)
 
         if self.directives:
             res_opt_copy.directives = self.directives.copy()

@@ -137,7 +137,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Utilities.Network
 
                     if (ctx != null)
                     {
-                        Logger.Info(nameof(CdmHttpClient), ctx, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, retry number: {retryNumber}.", nameof(SendAsyncHelper));
+                        Logger.Info(nameof(CdmHttpClient), ctx, $"Sending request {cdmRequest.RequestId}, request type: {requestMessage.Method}, request url: {cdmRequest.StripSasSig()}, retry number: {retryNumber}.", nameof(SendAsyncHelper));
                     }
 
                     // The check is added to fix a known issue in .net http client when reading HEAD request > 2GB.

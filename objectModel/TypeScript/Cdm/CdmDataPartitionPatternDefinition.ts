@@ -210,7 +210,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
         }
 
         // make sure the root is a good full corpus path
-        let rootCleaned: string = this.rootLocation;
+        let rootCleaned: string = this.rootLocation && this.rootLocation.endsWith('/') ? this.rootLocation.substring(0, this.rootLocation.length - 1) : this.rootLocation;
         if (rootCleaned === undefined) {
             rootCleaned = '';
         }
@@ -319,7 +319,11 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
     private globPatternToRegex(pattern: string): string {
         const newPattern: string[] = [];
 
-        for (let i: number = 0; i < pattern.length; i++) {
+        // all patterns should start with a slash
+        newPattern.push("[/\\\\]");
+
+        // if pattern starts with slash, skip the first character. We already added it above
+        for (let i: number = (pattern[0] === '/' || pattern[0] === '\\' ? 1 : 0); i < pattern.length; i++) {
             const currChar: string = pattern[i];
 
             switch (currChar) {
@@ -329,7 +333,7 @@ export class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
                     break;
                 case '\\':
                     // convert backslash into slash
-                    newPattern.push('/');
+                    newPattern.push('[/\\\\]');
                     break;
                 case '?':
                     // question mark in glob matches any single character

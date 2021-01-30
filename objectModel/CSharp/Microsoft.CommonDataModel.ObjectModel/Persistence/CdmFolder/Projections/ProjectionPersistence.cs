@@ -33,6 +33,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
             }
 
             projection.Condition = obj["condition"]?.ToString();
+            projection.RunSequentially = (bool?)obj["runSequentially"];
 
             if (obj["operations"] != null)
             {
@@ -178,6 +179,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 Source = source,
                 Operations = operations,
                 Condition = instance.Condition,
+                RunSequentially = instance.RunSequentially
             };
         }
     }

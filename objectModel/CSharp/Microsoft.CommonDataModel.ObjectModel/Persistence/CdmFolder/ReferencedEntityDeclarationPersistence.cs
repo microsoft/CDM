@@ -20,7 +20,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 CdmObjectType.ReferencedEntityDeclarationDef,
                 (string)obj["entityName"]);
 
-            var entityPath = (string)(obj["entityPath"] != null ? obj["entityPath"] :  obj["entityDeclaration"]);
+            var entityPath = (string)(obj["entityPath"] != null ? obj["entityPath"] : obj["entityDeclaration"]);
 
             if (entityPath == null)
             {
@@ -38,12 +38,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (obj["lastFileStatusCheckTime"] != null)
             {
-                newRef.LastFileStatusCheckTime = DateTimeOffset.Parse(obj.Value<string>("lastFileStatusCheckTime"));
+                newRef.LastFileStatusCheckTime = DateTimeOffset.Parse(obj["lastFileStatusCheckTime"].ToString());
             }
 
             if (obj["lastFileModifiedTime"] != null)
             {
-                newRef.LastFileModifiedTime = DateTimeOffset.Parse(obj.Value<string>("lastFileModifiedTime"));
+                newRef.LastFileModifiedTime = DateTimeOffset.Parse(obj["lastFileModifiedTime"].ToString());
             }
 
             if (obj["explanation"] != null)

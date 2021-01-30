@@ -4,6 +4,7 @@
 from typing import Any, cast, Optional, Union, TYPE_CHECKING
 
 from cdm.resolvedmodel.resolved_trait_set import ResolvedTraitSet
+from cdm.resolvedmodel.resolved_attribute_set import ResolvedAttributeSet
 
 if TYPE_CHECKING:
     from cdm.objectmodel import CdmAttribute, CdmAttributeContext, CdmObject, SpewCatcher
@@ -27,6 +28,13 @@ class ResolvedAttribute():
         self.target = target  # type: ResolutionTarget
         self._resolved_name = default_name  # type: str
         self._ttpm = None  # type: Optional[TraitToPropertyMap]
+        # if the target is a resolved attribute set, then we are wrapping it. update the lineage of this new ra to point at all members of the set
+        if isinstance(target, ResolvedAttributeSet) and att_ctx is not None:
+            ras_sub = target  # type: ResolvedAttributeSet
+            if ras_sub._set is not None and len(ras_sub._set) > 0:
+                for ra_sub in ras_sub._set:
+                    if ra_sub.att_ctx is not None:
+                        att_ctx._add_lineage(ra_sub.att_ctx)
 
     @property
     def resolved_name(self) -> str:
@@ -123,11 +131,14 @@ class ResolvedAttribute():
         from cdm.resolvedmodel import ResolvedAttributeSet
 
         # Use the options from the traits.
-        copy = ResolvedAttribute(self.resolved_traits.res_opt, self.target, self._resolved_name, self.att_ctx)
+        copy = ResolvedAttribute(self.resolved_traits.res_opt, self.target, self._resolved_name, None)
+        copy.previous_resolved_name = self.previous_resolved_name
+        copy.resolved_name = self.resolved_name
         copy._resolved_attribute_count = self._resolved_attribute_count
         copy.resolved_traits = self.resolved_traits.shallow_copy()
         copy.insert_order = self.insert_order
         copy.arc = self.arc
+        copy.att_ctx = self.att_ctx  # set here instead of constructor to avoid setting lineage for this copy
 
         if isinstance(copy.target, ResolvedAttributeSet):
             # deep copy when set contains sets. this copies the resolved att set and the context, etc.
@@ -144,13 +155,11 @@ class ResolvedAttribute():
 
     def complete_context(self, res_opt: 'ResolveOptions') -> None:
         from cdm.objectmodel import CdmAttribute
-        
-        if self.att_ctx is None or self.att_ctx.name is not None:
-            return
 
-        self.att_ctx.name = self._resolved_name
+        if self.att_ctx:
+            if self.att_ctx.name is None:
+                self.att_ctx.name = self._resolved_name
+                self.att_ctx.at_corpus_path = str(self.att_ctx.parent.fetch_object_definition(res_opt).at_corpus_path) + '/' + self._resolved_name
 
-        if isinstance(self.target, CdmAttribute):
-            self.att_ctx.definition = self.target.create_simple_reference(res_opt)
-
-        self.att_ctx.at_corpus_path = str(self.att_ctx.parent.fetch_object_definition(res_opt).at_corpus_path) + '/' + self._resolved_name
+            if self.att_ctx.definition is None and isinstance(self.target, CdmAttribute):
+                self.att_ctx.definition = self.target.create_simple_reference(res_opt)

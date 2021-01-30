@@ -372,13 +372,17 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
   @Deprecated
   public CdmObjectReference createPortableReference(ResolveOptions resOpt) {
     CdmObjectReferenceBase cdmObjectRef = ((CdmObjectReferenceBase) this.getCtx().getCorpus().makeObject(CdmCorpusDefinition.mapReferenceType(this.getObjectType()), "portable", true));
-    cdmObjectRef.setExplicitReference(this.fetchObjectDefinition(resOpt));
-    if (cdmObjectRef.getExplicitReference() == null || (cdmObjectRef.getInDocument() == null && this.getInDocument() == null)) {
+    CdmObjectDefinitionBase cdmObjectDef = this.fetchObjectDefinition(resOpt);
+    
+    if (cdmObjectDef == null || this.getInDocument() == null) {
       return null; // not allowed
     }
-    if (cdmObjectRef.getInDocument() == null) {
-      cdmObjectRef.setInDocument(this.getInDocument()); // if the object has no document, take from the reference
-    }
+
+    cdmObjectRef.setExplicitReference((CdmObjectDefinition) cdmObjectDef.copy());
+    
+    cdmObjectRef.setInDocument(this.getInDocument()); // if the object has no document, take from the reference
+    cdmObjectRef.setOwner(this.getOwner());
+
     return cdmObjectRef;
   }
 
@@ -407,6 +411,9 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
 
   @Override
   public void setExplicitReference(final CdmObjectDefinition explicitReference) {
+    if (explicitReference != null) {
+      explicitReference.setOwner(this);
+    }
     this.explicitReference = explicitReference;
   }
 
@@ -515,11 +522,8 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
     if (preChildren != null && preChildren.invoke(this, refPath)) {
       return false;
     }
-    if (this.getExplicitReference() != null && Strings.isNullOrEmpty(this.getNamedReference())) {
-      this.getExplicitReference().setOwner(this.getOwner()); // obj is not in collection, so set owner here.
-      if (this.getExplicitReference().visit(path, preChildren, postChildren)) {
-        return true;
-      }
+    if (this.getExplicitReference() != null && Strings.isNullOrEmpty(this.getNamedReference()) && this.getExplicitReference().visit(path, preChildren, postChildren)) {
+      return true;
     }
     if (this.visitRef(path, preChildren, postChildren)) {
       return true;
@@ -557,7 +561,8 @@ public abstract class CdmObjectReferenceBase extends CdmObjectBase implements Cd
       copy = this.copyRefObject(resOpt, this.getExplicitReference(), this.isSimpleNamedReference());
     }
     if (resOpt.isSaveResolutionsOnCopy()) {
-      copy.setExplicitReference(this.getExplicitReference());
+      final CdmObjectDefinition explicitReference = this.getExplicitReference() != null ? (CdmObjectDefinition) this.getExplicitReference().copy() : null;
+      copy.setExplicitReference(explicitReference);
     }
 
     copy.getAppliedTraits().clear();

@@ -272,7 +272,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
       }
 
       // make sure the root is a good full corpus path
-      String rootCleaned = getRootLocation();
+      String rootCleaned = getRootLocation() != null && getRootLocation().endsWith("/") ? getRootLocation().substring(0, getRootLocation().length() - 1): getRootLocation();
 
       if (rootCleaned == null) {
         rootCleaned = "";
@@ -397,8 +397,11 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
    */
   private String globPatternToRegex(String pattern) {
     ArrayList<String> newPattern = new ArrayList<String>();
+    // all patterns should start with a slash
+    newPattern.add("[/\\\\]");
 
-    for (int i = 0; i < pattern.length(); i++) {
+    // if pattern starts with slash, skip the first character. We already added it above
+    for (int i = (pattern.charAt(0) == '/' || pattern.charAt(0) == '\\' ? 1 : 0); i < pattern.length(); i++) {
       final char currChar = pattern.charAt(i);
 
       switch (currChar) {
@@ -408,7 +411,7 @@ public class CdmDataPartitionPatternDefinition extends CdmObjectDefinitionBase i
           break;
         case '\\':
           // convert backslash into slash
-          newPattern.add("/");
+          newPattern.add("[/\\\\]");
           break;
         case '?':
           // question mark in glob matches any single character

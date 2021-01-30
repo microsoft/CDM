@@ -36,8 +36,10 @@ public class CdmOperationAddAttributeGroup extends CdmOperationBase {
 
     @Override
     public CdmObject copy(ResolveOptions resOpt, CdmObject host) {
-        Logger.error(TAG, this.getCtx(), "Projection operation not implemented yet.", "copy");
-        return new CdmOperationAddAttributeGroup(this.getCtx());
+        final CdmOperationAddAttributeGroup copy = new CdmOperationAddAttributeGroup(this.getCtx());
+        copy.setAttributeGroupName(this.getAttributeGroupName());
+
+        return copy;
     }
 
     /**

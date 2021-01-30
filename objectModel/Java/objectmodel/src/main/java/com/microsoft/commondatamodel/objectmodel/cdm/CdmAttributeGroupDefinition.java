@@ -261,7 +261,7 @@ public class CdmAttributeGroupDefinition extends CdmObjectDefinitionBase impleme
 
     if (this.getMembers() != null) {
       for (int i = 0; i < this.getMembers().getCount(); i++) {
-        final CdmObject att = this.members.getAllItems().get(i);
+        final CdmObject att = this.members.get(i);
         AttributeContextParameters acpAtt = null;
         if (under != null) {
           acpAtt = new AttributeContextParameters();

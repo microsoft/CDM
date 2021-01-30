@@ -130,7 +130,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
         if self._base_is_known_to_have_parameters:
             cache_tag_extra = str(self.extends_trait.id)
 
-        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
+        cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
         rts_result = ctx._cache.get(cache_tag) if cache_tag else None
 
         # store the previous reference symbol set, we will need to add it with
@@ -176,7 +176,7 @@ class CdmTraitDefinition(CdmObjectDefinition):
             # register set of possible symbols
             ctx.corpus._register_definition_reference_symbols(self.fetch_object_definition(res_opt), kind, res_opt._symbol_ref_set)
             # get the new cache tag now that we have the list of docs
-            cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
+            cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, cache_tag_extra)
             if cache_tag:
                 ctx._cache[cache_tag] = rts_result
         else:
@@ -214,8 +214,10 @@ class CdmTraitDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.extends_trait and self.extends_trait.visit('{}/extendsTrait/'.format(path), pre_children, post_children):
-            return True
+        if self.extends_trait:
+            self.extends_trait.owner = self
+            if self.extends_trait.visit('{}/extendsTrait/'.format(path), pre_children, post_children):
+                return True
 
         if self.parameters and self.parameters._visit_array('{}/hasParameters/'.format(path), pre_children, post_children):
             return True

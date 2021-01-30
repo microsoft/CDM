@@ -6,5 +6,7 @@
  */
 export abstract class OperationBase {
     public $type: string;
-    public explanation: string;
+    public explanation?: string;
+    public condition?: string;
+    public sourceInput?: boolean;
 }

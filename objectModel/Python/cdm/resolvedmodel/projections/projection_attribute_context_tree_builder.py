@@ -57,8 +57,17 @@ class ProjectionAttributeContextTreeBuilder:
         # Mapping between an 'action' attribute context parameter to the resolved attribute resulting out of the action
         self._action_attr_ctx_param_to_res_attr = OrderedDict()  # type: Dict[AttributeContextParameters, ResolvedAttribute]
 
+        # Mapping between an "action" attribute context parameter to the context to consider 'where from' lineage
+        self._action_attr_ctx_param_to_lineage_out = OrderedDict()  # type: Dict[AttributeContextParameters, CdmAttributeContext]
 
-    def _create_and_store_attribute_context_parameters(self, search_for: str, found: 'ProjectionAttributeState', res_attr_from_action: 'ResolvedAttribute', attr_ctx_type: 'CdmAttributeContextType') -> None:
+        # Mapping between an "action" attribute context parameter to the context that wants to point here for lineage
+        self._action_attr_ctx_param_to_lineage_in = OrderedDict()  # type: Dict[AttributeContextParameters, CdmAttributeContext]
+
+    def _create_and_store_attribute_context_parameters(self, search_for: str, found: 'ProjectionAttributeState',
+                                                       res_attr_from_action: 'ResolvedAttribute',
+                                                       attr_ctx_type: 'CdmAttributeContextType',
+                                                       lineage_out: 'CdmAttributeContext',
+                                                       lineage_in: 'CdmAttributeContext') -> None:
         """
         Creates the attribute context parameters for the search_for, found, and action nodes and then stores them in different maps.
         The maps are used when constructing the actual attribute context tree.
@@ -67,7 +76,6 @@ class ProjectionAttributeContextTreeBuilder:
         :param res_attr_from_action: The resolved attribute that resulted from the action
         :param attr_ctx_type: The attribute context type to give the 'action' attribute context parameter
         """
-
         # search_for is null when we have to construct attribute contexts for the excluded attributes in Include or the included attributes in Exclude,
         # as these attributes weren't searched for with a search_for name.
         # If search_for is null, just set it to have the same name as found so that it'll collapse in the final tree.
@@ -115,11 +123,21 @@ class ProjectionAttributeContextTreeBuilder:
         # This is so that we can point the action attribute context to the correct resolved attribute once the attribute context is created.
         self._action_attr_ctx_param_to_res_attr[action_attr_ctx_param] = res_attr_from_action
 
-    def _construct_attribute_context_tree(self, proj_ctx: 'ProjectionContext', set_attr_ctx: Optional[bool] = False) -> None:
+        # Store the current resAtt as the lineage of the new one
+        # of note, if no lineage is stored AND the resolved Att associated above holds an existing context? we will
+        # Flip the lineage when we make a new context and point 'back' to this new node. this means this new node should
+        # point 'back' to the context of the source attribute
+        if lineage_out is not None:
+            self._action_attr_ctx_param_to_lineage_out[action_attr_ctx_param] = lineage_out
+
+        if lineage_in is not None:
+            self._action_attr_ctx_param_to_lineage_in[action_attr_ctx_param] = lineage_in
+
+
+    def _construct_attribute_context_tree(self, proj_ctx: 'ProjectionContext') -> None:
         """
         Takes all the stored attribute context parameters, creates attribute contexts from them, and then constructs the tree.
         :param proj_ctx: The projection context
-        :param set_attr_ctx: Whether to set the created attribute context on the associated resolved attribute
         """
 
         # Iterate over all the search_for attribute context parameters
@@ -151,10 +169,22 @@ class ProjectionAttributeContextTreeBuilder:
                 action_attr_ctx = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, action_attr_ctx_param)
 
                 # Fetch the resolved attribute that should now point at this action attribute context
-                res_attr_from_action = self._action_attr_ctx_param_to_res_attr[action_attr_ctx_param]
+                res_attr_from_action = self._action_attr_ctx_param_to_res_attr.get(action_attr_ctx_param, None)
 
-                # TODO (jibyun): For now, only set the created attribute context on the resolved attribute when specified to,
-                # as pointing the resolved attribute at this attribute context won't work currently for certain operations (Include/Exclude).
-                # This will be changed to always run once we work on the attribute context fix.
-                if set_attr_ctx:
-                    res_attr_from_action.att_ctx = action_attr_ctx
+                # make sure the lineage of the attribute stays linked up
+                # there can be either (or both) a lineageOut and a lineageIn.
+                # out lineage is where this attribute came from
+                # in lineage should be pointing back at this context as a source
+                lineage_out = self._action_attr_ctx_param_to_lineage_out.get(action_attr_ctx_param, None)  # type: CdmAttributeContext
+                if lineage_out:
+                    if action_attr_ctx:
+                        action_attr_ctx._add_lineage(lineage_out)
+                    res_attr_from_action.att_ctx = action_attr_ctx  # probably the right context for this resAtt, unless ...
+
+                lineage_in = self._action_attr_ctx_param_to_lineage_in.get(action_attr_ctx_param, None)  # type: CdmAttributeContext
+                if lineage_in:
+                    if action_attr_ctx:
+                        lineage_in._add_lineage(action_attr_ctx)
+                    res_attr_from_action.att_ctx = lineage_in  # if there is a lineageIn. it points to us as lineage, so it is best
+
+

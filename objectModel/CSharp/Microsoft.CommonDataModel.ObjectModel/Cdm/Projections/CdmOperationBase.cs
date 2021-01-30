@@ -23,6 +23,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         public CdmOperationType Type { get; internal set; }
 
+        /// <summary>
+        /// Property of an operation that holds the condition expression string
+        /// </summary>
+        public string Condition { get; set; }
+
+        /// <summary>
+        /// Property of an operation that defines if the operation receives the input from previous operation or from source entity
+        /// </summary>
+        public bool? SourceInput { get; set; }
+
         public CdmOperationBase(CdmCorpusContext ctx) : base(ctx)
         {
         }
@@ -82,10 +92,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             string overrideDefaultName = null,
             List<string> addedSimpleRefTraits = null)
         {
+            targetAttr = targetAttr.Copy() as CdmAttribute;
+
             ResolvedAttribute newResAttr = new ResolvedAttribute(
                 projCtx.ProjectionDirective.ResOpt,
                 targetAttr,
                 !string.IsNullOrWhiteSpace(overrideDefaultName) ? overrideDefaultName : targetAttr.GetName(), attrCtxUnder);
+
+            targetAttr.InDocument = projCtx.ProjectionDirective.Owner.InDocument;
 
             if (addedSimpleRefTraits != null)
             {

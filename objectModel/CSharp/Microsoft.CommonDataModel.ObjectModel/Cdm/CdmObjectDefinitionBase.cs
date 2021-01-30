@@ -126,10 +126,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
         {
             CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true) as CdmObjectReferenceBase;
-            cdmObjectRef.ExplicitReference = this;
+            cdmObjectRef.ExplicitReference = this.Copy() as CdmObjectDefinition;
             cdmObjectRef.InDocument = this.InDocument; // where it started life
+            cdmObjectRef.Owner = this.Owner;
+
             return cdmObjectRef;
         }
-
     }
 }

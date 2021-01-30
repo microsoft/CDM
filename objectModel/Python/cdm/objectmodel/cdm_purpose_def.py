@@ -79,8 +79,10 @@ class CdmPurposeDefinition(CdmObjectDefinition):
         if pre_children and pre_children(self, path):
             return False
 
-        if self.extends_purpose and self.extends_purpose.visit('{}/extendsPurpose/'.format(path), pre_children, post_children):
-            return True
+        if self.extends_purpose:
+            self.extends_purpose.owner = self
+            if self.extends_purpose.visit('{}/extendsPurpose/'.format(path), pre_children, post_children):
+                return True
 
         if self._visit_def(path, pre_children, post_children):
             return True

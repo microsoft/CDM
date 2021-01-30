@@ -11,10 +11,12 @@ import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -146,10 +148,17 @@ public class CalculateRelationshipTest {
         corpus.calculateEntityGraphAsync(manifest).join();
         manifest.populateManifestRelationshipsAsync().join();
         String actualRelationshipsString = listRelationships(corpus, entity, actualOutputFolder, entityName);
+        String relationshipsFilename = "REL_" + entityName + ".txt";
+
+        try (final BufferedWriter actualFileWriter = Files.newBufferedWriter(new File(
+            actualOutputFolder, relationshipsFilename).toPath(), StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
+            actualFileWriter.write(actualRelationshipsString);
+            actualFileWriter.flush();
+        }
 
         try {
             final String expectedRelationshipsString = new String(Files.readAllBytes(
-                new File(expectedOutputFolder, "REL_" + entityName + ".txt").toPath()),
+                new File(expectedOutputFolder, relationshipsFilename).toPath()),
                 StandardCharsets.UTF_8);
             Assert.assertEquals(actualRelationshipsString, expectedRelationshipsString);
         } catch (Exception e) {
@@ -167,8 +176,16 @@ public class CalculateRelationshipTest {
         } else {
             CdmManifestDefinition savedManifest = (CdmManifestDefinition) corpus.fetchObjectAsync("output:/" + manifestFileName).join();
             String actualSavedManifestRel = getRelationshipStrings(savedManifest.getRelationships());
+            String manifestRelationshipsFilename = "MANIFEST_REL_" + entityName + ".txt";
+
+            try (final BufferedWriter actualFileWriter = Files.newBufferedWriter(new File(
+                actualOutputFolder, manifestRelationshipsFilename).toPath(), StandardCharsets.UTF_8, StandardOpenOption.CREATE);) {
+                actualFileWriter.write(actualRelationshipsString);
+                actualFileWriter.flush();
+            }
+
             String expectedSavedManifestRel = new String(Files.readAllBytes(
-                new File(expectedOutputFolder, "MANIFEST_REL_" + entityName + ".txt").toPath()),
+                new File(expectedOutputFolder, manifestRelationshipsFilename).toPath()),
                 StandardCharsets.UTF_8);
             Assert.assertEquals(actualSavedManifestRel, expectedSavedManifestRel);
         }

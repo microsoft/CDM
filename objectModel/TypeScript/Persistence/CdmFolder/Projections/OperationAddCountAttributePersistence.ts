@@ -5,17 +5,14 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationAddCountAttribute,
-    cdmOperationType,
     CdmTypeAttributeDefinition,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
-    resolveOptions,
-    StringUtils
+    resolveOptions
 } from '../../../internal';
 import { TypeAttributePersistence } from '../TypeAttributePersistence';
 import { OperationAddCountAttribute } from '../types';
 import * as utils from '../utils';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation AddCountAttribute persistence
@@ -25,21 +22,9 @@ export class OperationAddCountAttributePersistence {
         if (!object) {
             return undefined;
         }
-        const addCountAttributeOp: CdmOperationAddCountAttribute = ctx.corpus.MakeObject<CdmOperationAddCountAttribute>(cdmObjectType.operationAddCountAttributeDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.addCountAttribute))) {
-            Logger.error(OperationAddCountAttributePersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            addCountAttributeOp.type = cdmOperationType.addCountAttribute;
-        }
-
-        if (object.explanation) {
-            addCountAttributeOp.explanation = object.explanation;
-        }
-
-        if (object.countAttribute) {
-            addCountAttributeOp.countAttribute = utils.createAttribute(ctx, object.countAttribute) as CdmTypeAttributeDefinition;
-        }
+        const addCountAttributeOp: CdmOperationAddCountAttribute = OperationBasePersistence.fromData(ctx, cdmObjectType.operationAddCountAttributeDef, object);
+        addCountAttributeOp.countAttribute = utils.createAttribute(ctx, object.countAttribute) as CdmTypeAttributeDefinition;
 
         return addCountAttributeOp;
     }
@@ -49,10 +34,9 @@ export class OperationAddCountAttributePersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.addCountAttribute),
-            explanation: instance.explanation,
-            countAttribute: TypeAttributePersistence.toData(instance.countAttribute, resOpt, options)
-        };
+        const data: OperationAddCountAttribute = OperationBasePersistence.toData(instance, resOpt, options);
+        data.countAttribute = TypeAttributePersistence.toData(instance.countAttribute, resOpt, options);
+
+        return data;
     }
 }

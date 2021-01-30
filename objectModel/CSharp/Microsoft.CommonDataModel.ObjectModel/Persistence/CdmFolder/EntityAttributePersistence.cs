@@ -60,11 +60,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 obj["entity"]["source"] != null;
             if (isProjection)
             {
-                CdmProjection projection = ProjectionPersistence.FromData(ctx, obj["entity"]);
-                projection.Owner = entityAttribute;
-
                 CdmEntityReference inlineEntityRef = ctx.Corpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, null);
-                inlineEntityRef.ExplicitReference = projection;
+                inlineEntityRef.ExplicitReference = ProjectionPersistence.FromData(ctx, obj["entity"]);
                 entityAttribute.Entity = inlineEntityRef;
             }
             else

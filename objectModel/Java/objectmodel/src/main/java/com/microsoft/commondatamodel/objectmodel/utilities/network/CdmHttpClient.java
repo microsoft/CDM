@@ -161,7 +161,7 @@ public class CdmHttpClient {
                 final Instant startTime = java.time.Instant.now();
                 if (ctx != null)
                 {
-                    Logger.info(CdmHttpClient.class.getSimpleName(), ctx, Logger.format("Sending request {0}, request type: {1}, retry number: {2}.", cdmHttpRequest.getRequestId(), httpRequest.getMethod(), retryNumber), "SendAsyncHelper");
+                    Logger.info(CdmHttpClient.class.getSimpleName(), ctx, Logger.format("Sending request {0}, request type: {1}, request url: {2}, retry number: {3}.", cdmHttpRequest.getRequestId(), httpRequest.getMethod(), cdmHttpRequest.stripSasSig(), retryNumber), "SendAsyncHelper");
                 }
 
                 final HttpResponse response = client.execute(httpRequest);

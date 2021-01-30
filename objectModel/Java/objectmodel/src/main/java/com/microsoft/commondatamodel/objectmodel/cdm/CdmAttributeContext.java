@@ -138,6 +138,7 @@ public class CdmAttributeContext extends CdmObjectDefinitionBase {
     }
     if (this.getDefinition() != null) {
       copy.setDefinition((CdmObjectReference) this.getDefinition().copy(resOpt));
+      copy.getDefinition().setOwner(this.getDefinition().getOwner());
     }
     // make space for content, but no copy, done by caller
     copy.setContents(new CdmCollection<>(this.getCtx(), copy, CdmObjectType.AttributeRef));

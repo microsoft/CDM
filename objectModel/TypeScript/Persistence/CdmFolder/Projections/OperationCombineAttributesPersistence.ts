@@ -5,17 +5,14 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationCombineAttributes,
-    cdmOperationType,
     CdmTypeAttributeDefinition,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
     resolveOptions,
-    StringUtils
 } from '../../../internal';
 import { TypeAttributePersistence } from '../TypeAttributePersistence';
 import { OperationCombineAttributes } from '../types';
 import * as utils from '../utils';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation CombineAttributes persistence
@@ -25,18 +22,8 @@ export class OperationCombineAttributesPersistence {
         if (!object) {
             return undefined;
         }
-        const combineAttributesOp: CdmOperationCombineAttributes = ctx.corpus.MakeObject<CdmOperationCombineAttributes>(cdmObjectType.operationCombineAttributesDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.combineAttributes))) {
-            Logger.error(OperationCombineAttributesPersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            combineAttributesOp.type = cdmOperationType.combineAttributes;
-        }
-
-        if (object.explanation) {
-            combineAttributesOp.explanation = object.explanation;
-        }
-
+        const combineAttributesOp: CdmOperationCombineAttributes = OperationBasePersistence.fromData(ctx, cdmObjectType.operationCombineAttributesDef, object);
         combineAttributesOp.select = object.select;
         combineAttributesOp.mergeInto = utils.createAttribute(ctx, object.mergeInto) as CdmTypeAttributeDefinition;
 
@@ -48,11 +35,10 @@ export class OperationCombineAttributesPersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.combineAttributes),
-            explanation: instance.explanation,
-            select: instance.select,
-            mergeInto: TypeAttributePersistence.toData(instance.mergeInto, resOpt, options)
-        };
+        const data: OperationCombineAttributes = OperationBasePersistence.toData(instance, resOpt, options);
+        data.select = instance.select;
+        data.mergeInto = TypeAttributePersistence.toData(instance.mergeInto, resOpt, options);
+
+        return data;
     }
 }

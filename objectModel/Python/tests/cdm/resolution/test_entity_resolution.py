@@ -29,6 +29,21 @@ class EntityResolution(unittest.TestCase):
     tests_subpath = os.path.join('Cdm', 'Resolution', 'EntityResolution')
 
     @async_test
+    async def test_owner_not_changed(self):
+        """Tests if the owner of the entity is not changed when calling created_resolved_entity_async"""
+
+        corpus = TestHelper.get_local_corpus(self.tests_subpath, 'TestOwnerNotChanged')
+
+        entity = await corpus.fetch_object_async('local:/Entity.cdm.json/Entity')
+        document = await corpus.fetch_object_async('local:/Entity.cdm.json')
+
+        self.assertEqual(document, entity.owner)
+
+        await entity.create_resolved_entity_async('res-Entity')
+
+        self.assertEqual(document, entity.owner)
+
+    @async_test
     async def test_resolve_test_corpus(self):
         self.assertTrue(os.path.exists(TestHelper.get_schema_docs_root()))
 
@@ -205,6 +220,9 @@ class EntityResolution(unittest.TestCase):
         self.assertTrue(TestHelper.is_file_content_equality(result, original))
 
     async def list_all_resolved(self, corpus, directives, manifest, spew):
+        # make sure the corpus has a set of default artifact attributes
+        await corpus._prepare_artifact_attributes_async()
+
         async def seek_entities(f: 'CdmManifestDefinition'):
             if f.entities is not None:
                 spew.spew_line(f.folder_path)

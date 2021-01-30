@@ -69,7 +69,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('value', resolved_entity.attributes[2].name)
         self.assertEqual('date', resolved_entity.attributes[3].name)
         self.assertEqual('testType', resolved_entity.attributes[4].name)
-        self.assertIsNotNone(resolved_entity.attributes[4].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[4].applied_traits[4].named_reference)
 
     @async_test
     async def test_entity_proj_using_object_model(self):
@@ -109,7 +109,8 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('value', resolved_entity.attributes[2].name)
         self.assertEqual('date', resolved_entity.attributes[3].name)
         self.assertEqual('testType', resolved_entity.attributes[4].name)
-        self.assertIsNotNone(resolved_entity.attributes[4].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[4].applied_traits[4].named_reference)
+
 
     @async_test
     async def test_conditional_proj_using_object_model(self):
@@ -195,7 +196,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('socialId', resolved_entity.attributes[5].name)
         self.assertEqual('account', resolved_entity.attributes[6].name)
         self.assertEqual('someType', resolved_entity.attributes[7].name)
-        self.assertIsNotNone(resolved_entity.attributes[7].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[7].applied_traits[4].named_reference)
 
     @async_test
     async def test_selected_type_attr(self):
@@ -221,7 +222,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('socialId', resolved_entity.attributes[5].name)
         self.assertEqual('account', resolved_entity.attributes[6].name)
         self.assertEqual('someType', resolved_entity.attributes[7].name)
-        self.assertIsNotNone(resolved_entity.attributes[7].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[7].applied_traits[4].named_reference)
 
     @async_test
     async def test_extends_entity_proj(self):
@@ -247,7 +248,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('socialId', resolved_entity.attributes[5].name)
         self.assertEqual('account', resolved_entity.attributes[6].name)
         self.assertEqual('someType', resolved_entity.attributes[7].name)
-        self.assertIsNotNone(resolved_entity.attributes[7].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[7].applied_traits[4].named_reference)
 
     @async_test
     async def test_extends_entity(self):
@@ -273,7 +274,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('socialId', resolved_entity.attributes[5].name)
         self.assertEqual('account', resolved_entity.attributes[6].name)
         self.assertEqual('someType', resolved_entity.attributes[7].name)
-        self.assertIsNotNone(resolved_entity.attributes[7].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[7].applied_traits[4].named_reference)
 
     @async_test
     async def test_add_type_with_combine_proj(self):
@@ -297,7 +298,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('account', resolved_entity.attributes[3].name)
         self.assertEqual('contactId', resolved_entity.attributes[4].name)
         self.assertEqual('contactType', resolved_entity.attributes[5].name)
-        self.assertIsNotNone(resolved_entity.attributes[5].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[5].applied_traits[4].named_reference)
 
     @async_test
     async def test_combine_ops_proj(self):
@@ -323,7 +324,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('socialId', resolved_entity.attributes[5].name)
         self.assertEqual('account', resolved_entity.attributes[6].name)
         self.assertEqual('someType', resolved_entity.attributes[7].name)
-        self.assertIsNotNone(resolved_entity.attributes[7].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[7].applied_traits[4].named_reference)
         self.assertEqual('homeAddress', resolved_entity.attributes[8].name)
 
     @async_test
@@ -346,7 +347,7 @@ class ProjectionAddTypeTest(unittest.TestCase):
         self.assertEqual('new_isPrimary', resolved_entity.attributes[0].name)
         self.assertEqual('new_contactId', resolved_entity.attributes[1].name)
         self.assertEqual('contactType', resolved_entity.attributes[2].name)
-        self.assertIsNotNone(resolved_entity.attributes[2].applied_traits.item('is.linkedEntity.name'))
+        self.assertEqual('is.linkedEntity.name', resolved_entity.attributes[2].applied_traits[4].named_reference)
 
     @async_test
     async def test_conditional_proj(self):

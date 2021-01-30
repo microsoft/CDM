@@ -44,8 +44,7 @@ import {
     CdmReferencedEntityDeclarationDefinition,
     CdmTraitDefinition,
     CdmTraitReference,
-    CdmTypeAttributeDefinition,
-    StorageAdapter
+    CdmTypeAttributeDefinition
 } from '../internal';
 
 export function isImport(obj: CdmObject): obj is CdmImport {

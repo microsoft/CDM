@@ -72,9 +72,10 @@ class CdmOperationIncludeAttributes(CdmOperationBase):
         attr_ctx_op_include_attrs_param = AttributeContextParameters()  # type: AttributeContextParameters
         attr_ctx_op_include_attrs_param._under = attr_ctx
         attr_ctx_op_include_attrs_param._type = CdmAttributeContextType.OPERATION_INCLUDE_ATTRIBUTES
-        attr_ctx_op_include_attrs_param._name = 'operation/indexIndex{}/operationIncludeAttributes'.format(self._index)
+        attr_ctx_op_include_attrs_param._name = 'operation/index{}/operationIncludeAttributes'.format(self._index)
 
-        attr_ctx_op_include_attrs = CdmAttributeContext._create_child_under(proj_ctx._projection_directive._res_opt, attr_ctx_op_include_attrs_param)  # type: CdmAttributeContext
+        attr_ctx_op_include_attrs = CdmAttributeContext._create_child_under(
+            proj_ctx._projection_directive._res_opt, attr_ctx_op_include_attrs_param)  # type: CdmAttributeContext
 
         # Get the top-level attribute names for each of the included attributes
         # Since the include operation allows providing either current state resolved attribute names
@@ -94,7 +95,11 @@ class CdmOperationIncludeAttributes(CdmOperationBase):
 
                 # Create the attribute context parameters and just store it in the builder for now
                 # We will create the attribute contexts at the end
-                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(include_attribute_name, current_PAS, current_PAS._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                    include_attribute_name, current_PAS, current_PAS._current_resolved_attribute,
+                    CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                    current_PAS._current_resolved_attribute.att_ctx,  # lineage is the included attribute
+                    None)  # don't know who will point here yet
 
                 # Create a projection attribute state for the included attribute by creating a copy of the current state
                 # Copy() sets the current state as the previous state for the new one
@@ -105,7 +110,11 @@ class CdmOperationIncludeAttributes(CdmOperationBase):
             else:
                 # Create the attribute context parameters and just store it in the builder for now
                 # We will create the attribute contexts at the end
-                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(None, current_PAS, current_PAS._current_resolved_attribute, CdmAttributeContextType.ATTRIBUTE_DEFINITION)
+                attr_ctx_tree_builder._create_and_store_attribute_context_parameters(
+                    None, current_PAS, current_PAS._current_resolved_attribute,
+                    CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                    current_PAS._current_resolved_attribute.att_ctx,  # lineage is the excluded attribute
+                    None)  # don't know who will point here, probably nobody, I mean, we got excluded
 
         # Create all the attribute contexts and construct the tree
         attr_ctx_tree_builder._construct_attribute_context_tree(proj_ctx)

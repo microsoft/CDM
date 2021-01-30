@@ -5,17 +5,14 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationReplaceAsForeignKey,
-    cdmOperationType,
     CdmTypeAttributeDefinition,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
-    resolveOptions,
-    StringUtils
+    resolveOptions
 } from '../../../internal';
 import { TypeAttributePersistence } from '../TypeAttributePersistence';
 import { OperationReplaceAsForeignKey } from '../types';
 import * as utils from '../utils';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation ReplaceAsForeignKey persistence
@@ -25,23 +22,10 @@ export class OperationReplaceAsForeignKeyPersistence {
         if (!object) {
             return undefined;
         }
-        const replaceAsForeignKeyOp: CdmOperationReplaceAsForeignKey = ctx.corpus.MakeObject<CdmOperationReplaceAsForeignKey>(cdmObjectType.operationReplaceAsForeignKeyDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.replaceAsForeignKey))) {
-            Logger.error(OperationReplaceAsForeignKeyPersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            replaceAsForeignKeyOp.type = cdmOperationType.replaceAsForeignKey;
-        }
-
-        if (object.explanation) {
-            replaceAsForeignKeyOp.explanation = object.explanation;
-        }
-
+        const replaceAsForeignKeyOp: CdmOperationReplaceAsForeignKey = OperationBasePersistence.fromData(ctx, cdmObjectType.operationReplaceAsForeignKeyDef, object);
         replaceAsForeignKeyOp.reference = object.reference;
-
-        if (object.replaceWith) {
-            replaceAsForeignKeyOp.replaceWith = utils.createAttribute(ctx, object.replaceWith) as CdmTypeAttributeDefinition;
-        }
+        replaceAsForeignKeyOp.replaceWith = utils.createAttribute(ctx, object.replaceWith) as CdmTypeAttributeDefinition;
 
         return replaceAsForeignKeyOp;
     }
@@ -51,11 +35,10 @@ export class OperationReplaceAsForeignKeyPersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.replaceAsForeignKey),
-            explanation: instance.explanation,
-            reference: instance.reference,
-            replaceWith: TypeAttributePersistence.toData(instance.replaceWith, resOpt, options)
-        };
+        const data: OperationReplaceAsForeignKey = OperationBasePersistence.toData(instance, resOpt, options);
+        data.reference = instance.reference;
+        data.replaceWith = TypeAttributePersistence.toData(instance.replaceWith, resOpt, options);
+
+        return data;
     }
 }

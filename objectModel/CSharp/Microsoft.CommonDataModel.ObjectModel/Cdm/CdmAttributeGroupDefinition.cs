@@ -119,7 +119,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 for (int i = 0; i < this.Members.Count; i++)
                 {
-                    rers.Add(this.Members.AllItems[i].FetchResolvedEntityReferences(resOpt));
+                    rers.Add(this.Members[i].FetchResolvedEntityReferences(resOpt));
                 }
             }
             return rers;
@@ -183,7 +183,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             {
                 for (int i = 0; i < this.Members.Count; i++)
                 {
-                    dynamic att = this.Members.AllItems[i];
+                    CdmObjectBase att = this.Members[i] as CdmObjectBase;
                     AttributeContextParameters acpAtt = null;
                     if (under != null)
                     {
@@ -196,6 +196,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             IncludeTraits = false
                         };
                     }
+
                     ResolvedAttributeSet rasFromAtt = att.FetchResolvedAttributes(resOpt, acpAtt);
                     // before we just merge, need to handle the case of 'attribute restatement' AKA an entity with an attribute having the same name as an attribute
                     // from a base entity. thing might come out with different names, if they do, then any attributes owned by a similar named attribute before

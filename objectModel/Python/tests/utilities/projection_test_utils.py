@@ -31,7 +31,8 @@ class ProjectionTestUtils:
         ro = ResolveOptions(input_entity.in_document, directives=AttributeResolutionDirectiveSet(ro_hash_set))
 
         resolved_folder = corpus.storage.fetch_root_folder('output')
-        resolved_entity = await input_entity.create_resolved_entity_async(resolved_entity_name, ro, resolved_folder)
+        resolved_entity = await input_entity.create_resolved_entity_async(resolved_entity_name, ro, resolved_folder)  # type: CdmEntityDefinition
+        await resolved_entity.in_document.save_as_async('{}.cdm.json'.format(resolved_entity_name), save_referenced=False)
 
         return resolved_entity
 

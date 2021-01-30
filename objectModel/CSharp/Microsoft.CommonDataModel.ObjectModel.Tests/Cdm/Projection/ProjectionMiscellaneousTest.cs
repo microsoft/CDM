@@ -9,6 +9,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System.Collections.Generic;
     using System.IO;
+    using System.Threading.Tasks;
 
     /// <summary>
     /// Various projections scenarios, partner scenarios, bug fixes
@@ -38,7 +39,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
         /// Reference Link: https://commondatamodel.visualstudio.com/CDM/_workitems/edit/24
         /// </summary>
         [TestMethod]
-        public void TestInvalidOperationType()
+        public async Task TestInvalidOperationType()
         {
             string testName = "TestInvalidOperationType";
 
@@ -54,12 +55,12 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
                 }
             }, CdmStatusLevel.Warning);
 
-            CdmManifestDefinition manifest = corpus.FetchObjectAsync<CdmManifestDefinition>($"default.manifest.cdm.json").GetAwaiter().GetResult();
+            CdmManifestDefinition manifest = await corpus.FetchObjectAsync<CdmManifestDefinition>($"default.manifest.cdm.json");
 
             // Raise error: $"ProjectionPersistence | Invalid operation type 'replaceAsForeignKey11111'. | FromData",
             // when attempting to load a projection with an invalid operation
             string entityName = "SalesNestedFK";
-            CdmEntityDefinition entity = corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest).GetAwaiter().GetResult();
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"local:/{entityName}.cdm.json/{entityName}", manifest);
             Assert.IsNotNull(entity);
         }
 
@@ -122,6 +123,25 @@ namespace Microsoft.CommonDataModel.ObjectModel.Tests.Cdm
             };
 
             Assert.IsTrue(attribute.IsNullable == true);
+        }
+
+        /// <summary>
+        /// Tests if it resolves correct when there are two entity attributes in circular denpendency using projection
+        /// </summary>
+        [TestMethod]
+        public async Task TestCircularEntityAttributes()
+        {
+            string testName = "TestCircularEntityAttributes";
+            string entityName = "A";
+
+            CdmCorpusDefinition corpus = TestHelper.GetLocalCorpus(testsSubpath, testName);
+
+            CdmEntityDefinition entity = await corpus.FetchObjectAsync<CdmEntityDefinition>($"{entityName}.cdm.json/{entityName}");
+
+            CdmEntityDefinition resEntity = await entity.CreateResolvedEntityAsync($"resolved-{entityName}");
+
+            Assert.IsNotNull(resEntity);
+            Assert.AreEqual(2, resEntity.Attributes.Count);
         }
 
         /// <summary>

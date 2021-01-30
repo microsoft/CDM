@@ -38,17 +38,17 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
 
             if (!string.IsNullOrWhiteSpace(obj.Value<string>("lastChildFileModifiedTime")))
             {
-                localDec.LastChildFileModifiedTime = DateTimeOffset.Parse(obj.Value<string>("lastChildFileModifiedTime"));
+                localDec.LastChildFileModifiedTime = DateTimeOffset.Parse(obj["lastChildFileModifiedTime"].ToString());
             }
 
             if (!string.IsNullOrWhiteSpace(obj.Value<string>("lastFileModifiedTime")))
             {
-                localDec.LastFileModifiedTime = DateTimeOffset.Parse(obj.Value<string>("lastFileModifiedTime"));
+                localDec.LastFileModifiedTime = DateTimeOffset.Parse(obj["lastFileModifiedTime"].ToString());
             }
 
             if (!string.IsNullOrWhiteSpace(obj.Value<string>("lastFileStatusCheckTime")))
             {
-                localDec.LastFileStatusCheckTime = DateTimeOffset.Parse(obj.Value<string>("lastFileStatusCheckTime"));
+                localDec.LastFileStatusCheckTime = DateTimeOffset.Parse(obj["lastFileStatusCheckTime"].ToString());
             }
 
             if (obj["explanation"] != null)

@@ -34,8 +34,11 @@ class CdmOperationReplaceAsForeignKey(CdmOperationBase):
         self._TAG = CdmOperationReplaceAsForeignKey.__name__
 
     def copy(self, res_opt: Optional['ResolveOptions'] = None, host: Optional['CdmOperationReplaceAsForeignKey'] = None) -> 'CdmOperationReplaceAsForeignKey':
-        logger.error(self._TAG, self.ctx, 'Projection operation not implemented yet.', 'copy')
-        return CdmOperationReplaceAsForeignKey(self.ctx)
+        copy = CdmOperationReplaceAsForeignKey(self.ctx)
+        copy.reference = self.reference
+        copy.replace_with = self.replace_with.copy()
+
+        return copy
 
     def get_name(self) -> str:
         return 'operationReplaceAsForeignKey'

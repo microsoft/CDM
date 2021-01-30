@@ -440,11 +440,6 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                         };
                     }
 
-                    // skip entity attributes when we are in a circular reference loop
-                    if (resOpt.inCircularReference && isEntityAttributeDefinition(att)) {
-                        continue;
-                    }
-
                     const attRas: ResolvedAttributeSet = att.fetchResolvedAttributes(resOpt, acpAtt);
 
                     // we can now set depth now that children nodes have been resolved
@@ -670,6 +665,9 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                     regarding: ctx.corpus.MakeObject(cdmObjectType.entityRef, this.getName(), true)
                 };
 
+                // reset previous depth information in case there are left overs
+                resOpt.depthInfo.reset();
+
                 // use this whenever we need to keep references pointing at things that were already found.
                 // used when 'fixing' references by localizing to a new document
                 const resOptCopy: resolveOptions = resOpt.copy();
@@ -680,8 +678,6 @@ export class CdmEntityDefinition extends CdmObjectDefinitionBase {
                 const ras: ResolvedAttributeSet = this.fetchResolvedAttributes(resOptCopy, acpEnt);
 
                 if (ras === undefined) {
-                    this.resolvingAttributes = false;
-
                     return undefined;
                 }
 

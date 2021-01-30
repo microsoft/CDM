@@ -148,4 +148,21 @@ describe('Cdm/CdmCorpusDefinition', () => {
 
         done();
     });
+
+    /**
+     * Tests if a symbol imported with a moniker can be found as the last resource.
+     * When resolving entityReference from wrtConstEntity, constEntity should be found and resolved.
+     */
+    it('TestResolveConstSymbolReference', async (done) => {
+        const corpus: CdmCorpusDefinition = testHelper.getLocalCorpus(testsSubpath, 'TestResolveConstSymbolReference');
+        corpus.setEventCallback((level, msg) => {
+            done.fail(new Error(msg));
+        }, cdmStatusLevel.warning);
+
+        const wrtEntity = await corpus.fetchObjectAsync<CdmEntityDefinition>('local:/wrtConstEntity.cdm.json/wrtConstEntity');
+        const resOpt = new resolveOptions(wrtEntity, new AttributeResolutionDirectiveSet());
+        await wrtEntity.createResolvedEntityAsync('NewEntity', resOpt);
+        done();
+    });
+
 });

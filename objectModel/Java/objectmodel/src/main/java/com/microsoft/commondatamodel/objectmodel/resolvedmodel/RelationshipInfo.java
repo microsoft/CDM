@@ -8,7 +8,7 @@ public class RelationshipInfo {
   private boolean isByRef;
   private boolean isArray;
   private boolean selectsOne;
-  private Integer nextDepth;
+  private int nextDepth;
   private Integer maxDepth;
   private boolean maxDepthExceeded;
 
@@ -52,11 +52,11 @@ public class RelationshipInfo {
     this.isByRef = isByRef;
   }
 
-  public Integer getNextDepth() {
+  public int getNextDepth() {
     return nextDepth;
   }
 
-  public void setNextDepth(final Integer nextDepth) {
+  public void setNextDepth(final int nextDepth) {
     this.nextDepth = nextDepth;
   }
 

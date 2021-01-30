@@ -7,7 +7,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
     using Microsoft.CommonDataModel.ObjectModel.Enums;
     using Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types;
     using Microsoft.CommonDataModel.ObjectModel.Utilities;
-    using Microsoft.CommonDataModel.ObjectModel.Utilities.Logging;
     using Newtonsoft.Json.Linq;
 
     /// <summary>
@@ -22,19 +21,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            CdmOperationAddAttributeGroup addAttributeGroupOp = ctx.Corpus.MakeObject<CdmOperationAddAttributeGroup>(CdmObjectType.OperationAddAttributeGroupDef);
-
-            if (obj["$type"] != null && !StringUtils.EqualsWithIgnoreCase(obj["$type"].ToString(), OperationTypeConvertor.OperationTypeToString(CdmOperationType.AddAttributeGroup)))
-            {
-                Logger.Error(nameof(OperationAddAttributeGroupPersistence), ctx, $"$type {(string)obj["$type"]} is invalid for this operation.");
-            }
-            else
-            {
-                addAttributeGroupOp.Type = CdmOperationType.AddAttributeGroup;
-            }
-
+            CdmOperationAddAttributeGroup addAttributeGroupOp = OperationBasePersistence.FromData<CdmOperationAddAttributeGroup>(ctx, CdmObjectType.OperationAddAttributeGroupDef, obj);
             addAttributeGroupOp.AttributeGroupName = obj["attributeGroupName"]?.ToString();
-            addAttributeGroupOp.Explanation = obj["explanation"]?.ToString();
 
             return addAttributeGroupOp;
         }
@@ -46,12 +34,10 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder
                 return null;
             }
 
-            return new OperationAddAttributeGroup
-            {
-                Type = OperationTypeConvertor.OperationTypeToString(CdmOperationType.AddAttributeGroup),
-                AttributeGroupName = instance.AttributeGroupName,
-                Explanation = instance.Explanation
-            };
+            OperationAddAttributeGroup obj = OperationBasePersistence.ToData<OperationAddAttributeGroup>(instance, resOpt, options);
+            obj.AttributeGroupName = instance.AttributeGroupName;
+
+            return obj;
         }
     }
 }

@@ -4,13 +4,12 @@
 from typing import Optional, Dict, List
 
 from cdm.enums import CdmObjectType
-from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmEntityReference
+from cdm.objectmodel import CdmCorpusContext, CdmCorpusDefinition, CdmEntityReference, CdmEntityDefinition
 from cdm.resolvedmodel import ResolvedAttributeSet
 from cdm.resolvedmodel.projections.projection_attribute_state import ProjectionAttributeState
 from cdm.resolvedmodel.projections.projection_attribute_state_set import ProjectionAttributeStateSet
 from cdm.resolvedmodel.projections.projection_context import ProjectionContext
 from cdm.resolvedmodel.projections.projection_directive import ProjectionDirective
-from cdm.resolvedmodel.projections.search_result import SearchResult
 from cdm.resolvedmodel.projections.search_structure import SearchStructure
 from cdm.utilities import AttributeContextParameters
 
@@ -49,6 +48,7 @@ class ProjectionResolutionCommonUtil:
         proj_dir: 'ProjectionDirective',
         ctx: 'CdmCorpusContext',
         source: 'CdmEntityReference',
+        ras_source: 'ResolvedAttributeSet',
         attr_ctx_param: 'AttributeContextParameters'
     ) -> Dict[str, 'ProjectionAttributeState']:
         """If a source is tagged as polymorphic source, get the list of original source"""
@@ -56,11 +56,16 @@ class ProjectionResolutionCommonUtil:
 
         # TODO (sukanyas): when projection based polymorphic source is made available - the following line will have to be changed
         # for now assuming non-projections based polymorphic source
-        source_def = source.fetch_object_definition(proj_dir._res_opt)
+        source_def = source.fetch_object_definition(proj_dir._res_opt)  # type: CdmEntityDefinition
         for attr in source_def.attributes:
             if attr.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
                 ra_set = attr._fetch_resolved_attributes(proj_dir._res_opt, None)
                 for res_attr in ra_set._set:
+                    # we got a null ctx because null was passed in to fetch, but the nodes are in the parent's tree
+                    # so steal them based on name
+                    res_att_src = ras_source.get(res_attr.resolved_name)
+                    if res_att_src:
+                        res_attr.att_ctx = res_att_src.att_ctx
                     proj_attr_state = ProjectionAttributeState(ctx)
                     proj_attr_state._current_resolved_attribute = res_attr
                     proj_attr_state._previous_state_list = None

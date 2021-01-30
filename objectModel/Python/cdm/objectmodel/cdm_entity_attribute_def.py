@@ -48,6 +48,16 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         self._trait_to_property_map._update_property_value('displayName', val)
 
     @property
+    def entity(self) -> Optional['CdmEntityReference']:
+        return self._entity
+
+    @entity.setter
+    def entity(self, entity: Optional['CdmEntityReference']) -> None:
+        if entity:
+            entity.owner = self
+        self._entity = entity
+
+    @property
     def object_type(self) -> 'CdmObjectType':
         return CdmObjectType.ENTITY_ATTRIBUTE_DEF
 
@@ -70,7 +80,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         else:
             res_guide_with_default = CdmAttributeResolutionGuidanceDefinition(self.ctx)
 
-        res_guide_with_default._update_attribute_defaults(self.name)
+        res_guide_with_default._update_attribute_defaults(self.name, self)
 
         return AttributeResolutionContext(res_opt, res_guide_with_default, rts_this_att)
 
@@ -81,9 +91,16 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         # check cache at the correct depth for entity attributes
         rel_info = self._get_relationship_info(res_opt, self._fetch_att_res_context(res_opt))
         if rel_info.max_depth_exceeded:
-            res_opt.depth_info = DepthInfo(current_depth=rel_info.next_depth, max_depth=rel_info.max_depth, max_depth_exceeded=rel_info.max_depth_exceeded)
+            res_opt._depth_info.current_depth = rel_info.next_depth
+            res_opt._depth_info.max_depth = rel_info.max_depth
+            res_opt._depth_info.max_depth_exceeded = rel_info.max_depth_exceeded
 
-        cache_tag = ctx.corpus._fetch_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
+        cache_tag = ctx.corpus._create_definition_cache_tag(res_opt, self, kind, 'ctx' if acp_in_context else '')
+
+        if rel_info.max_depth_exceeded:
+            # temporaty fix to avoid the depth from being increased while calculating the cache tag
+            res_opt._depth_info.current_depth -= 1
+
         return ctx._cache.get(cache_tag) if cache_tag else None
 
     def _construct_resolved_attributes(self, res_opt: 'ResolveOptions', under: Optional['CdmAttributeContext'] = None) -> 'ResolvedAttributeSetBuilder':
@@ -97,157 +114,165 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         under_att = under
         acp_ent = None
 
-        ctx_ent_obj_def = ctx_ent.fetch_object_definition(res_opt)
-        if ctx_ent_obj_def and ctx_ent_obj_def.object_type == CdmObjectType.PROJECTION_DEF:
-            # A Projection
-
-            proj_directive = ProjectionDirective(res_opt, self, ctx_ent)
-            proj_def = ctx_ent_obj_def
-            proj_ctx = proj_def._construct_projection_context(proj_directive, under)
-
-            ras = proj_def._extract_resolved_attributes(proj_ctx)
-            rasb.ras = ras
-        elif not res_opt.in_circular_reference:
-            # An Entity Reference
-
-            if under_att:
-                # make a context for this attribute that holds the attributes that come up from the entity
-                acp_ent = AttributeContextParameters(
-                    under=under_att,
-                    type=CdmAttributeContextType.ENTITY,
-                    name=ctx_ent.fetch_object_definition_name(),
-                    regarding=ctx_ent,
-                    include_traits=True)
-
+        if not res_opt._in_circular_reference:
             arc = self._fetch_att_res_context(res_opt)
 
             # complete cheating but is faster.
             # this purpose will remove all of the attributes that get collected here, so dumb and slow to go get them
             rel_info = self._get_relationship_info(arc.res_opt, arc)
-            if rel_info.next_depth:
-                res_opt.depth_info = DepthInfo(current_depth=rel_info.next_depth, max_depth_exceeded=rel_info.max_depth_exceeded, max_depth=rel_info.max_depth)
+            res_opt._depth_info.current_depth = rel_info.next_depth
+            res_opt._depth_info.max_depth_exceeded = rel_info.max_depth_exceeded
+            res_opt._depth_info.max_depth = rel_info.max_depth
 
-            if rel_info.is_by_ref:
-                # make the entity context that a real recursion would have give us
-                if under:
-                    under = rasb.ras.create_attribute_context(res_opt, acp_ent)
+            ctx_ent_obj_def = ctx_ent.fetch_object_definition(res_opt)
 
-                # if selecting from one of many attributes, then make a context for each one
-                if under and rel_info.selects_one:
-                    # the right way to do this is to get a resolved entity from the embedded entity and then
-                    # look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
-                    # that seems like a disaster waiting to happen given endless looping, etc.
-                    # for now, just insist that only the top level entity attributes declared in the ref entity will work
-                    ent_pick_from = self.entity.fetch_object_definition(res_opt)
-                    atts_pick = ent_pick_from.attributes
-                    if ent_pick_from and atts_pick:
-                        for attribute in atts_pick:
-                            if attribute.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
-                                # a table within a table. as expected with a selects_one attribute
-                                # since this is by ref, we won't get the atts from the table, but we do need the traits that hold the key
-                                # these are the same contexts that would get created if we recursed
-                                # first this attribute
-                                acp_ent_att = AttributeContextParameters(
-                                    under=under,
-                                    type=CdmAttributeContextType.ATTRIBUTE_DEFINITION,
-                                    name=attribute.fetch_object_definition_name(),
-                                    regarding=attribute,
-                                    include_traits=True)
-                                pick_under = rasb.ras.create_attribute_context(res_opt, acp_ent_att)
-                                # and the entity under that attribute
-                                pick_ent = attribute.entity
-                                pick_ent_type = CdmAttributeContextType.PROJECTION if pick_ent.fetch_object_definition(
-                                    res_opt).object_type == CdmObjectType.PROJECTION_DEF else CdmAttributeContextType.ENTITY
-                                acp_ent_att_ent = AttributeContextParameters(
-                                    under=pick_under,
-                                    type=pick_ent_type,
-                                    name=pick_ent.fetch_object_definition_name(),
-                                    regarding=pick_ent,
-                                    include_traits=True)
-                                rasb.ras.create_attribute_context(res_opt, acp_ent_att_ent)
+            if ctx_ent_obj_def and ctx_ent_obj_def.object_type == CdmObjectType.PROJECTION_DEF:
+                # A Projection
 
-                # if we got here because of the max depth, need to impose the directives to make the trait work as expected
-                if rel_info.max_depth_exceeded:
-                    if not arc.res_opt.directives:
-                        arc.res_opt.directives = AttributeResolutionDirectiveSet()
-                    arc.res_opt.directives.add('referenceOnly')
+                # if the max depth is exceeded it should not try to execute the projection
+                if not res_opt._depth_info.max_depth_exceeded:
+                    proj_directive = ProjectionDirective(res_opt, self, ctx_ent)
+                    proj_def = ctx_ent_obj_def
+                    proj_ctx = proj_def._construct_projection_context(proj_directive, under)
+
+                    ras = proj_def._extract_resolved_attributes(proj_ctx, under_att)
+                    rasb._resolved_attribute_set = ras
             else:
-                res_link = res_opt.copy()
-                res_link._symbol_ref_set = res_opt._symbol_ref_set
-                rasb.merge_attributes(self.entity._fetch_resolved_attributes(res_link, acp_ent))
+                # An Entity Reference
 
-                # need to pass up maxDepthExceeded if it was hit
-                if res_link.depth_info and res_link.depth_info.max_depth_exceeded:
-                    res_opt.depth_info = DepthInfo(current_depth=res_link.depth_info.current_depth,
-                                                   max_depth_exceeded=res_link.depth_info.max_depth_exceeded, max_depth=res_link.depth_info.max_depth)
+                if under_att:
+                    # make a context for this attribute that holds the attributes that come up from the entity
+                    acp_ent = AttributeContextParameters(
+                        under=under_att,
+                        type=CdmAttributeContextType.ENTITY,
+                        name=ctx_ent.fetch_object_definition_name(),
+                        regarding=ctx_ent,
+                        include_traits=True)
 
-            # from the traits of purpose and applied here, see if new attributes get generated
-            rasb.ras.attribute_context = under_att
-            rasb.apply_traits(arc)
-            rasb.generate_applier_attributes(arc, True)  # True = apply the prepared traits to new atts
-            # this may have added symbols to the dependencies, so merge them
-            res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
+                if rel_info.is_by_ref:
+                    # make the entity context that a real recursion would have give us
+                    if under:
+                        under = rasb._resolved_attribute_set.create_attribute_context(res_opt, acp_ent)
 
-            # use the traits for linked entity identifiers to record the actual foreign key links
-            if rasb.ras and rasb.ras._set and rel_info.is_by_ref:
-                for att in rasb.ras._set:
-                    reqd_trait = att.resolved_traits.find(res_opt, 'is.linkedEntity.identifier')
-                    if not reqd_trait:
-                        continue
-
-                    if not reqd_trait.parameter_values:
-                        logger.warning(self._TAG, self.ctx, 'is.linkedEntity.identifier does not support arguments')
-                        continue
-
-                    ent_references = []
-                    att_references = []
-
-                    def add_entity_reference(entity_ref: 'CdmEntityReference', namespace: str):
-                        ent_def = entity_ref.fetch_object_definition(res_opt)
-                        required_trait = entity_ref._fetch_resolved_traits(res_opt).find(res_opt, 'is.identifiedBy')
-                        if required_trait and ent_def:
-                            att_ref = required_trait.parameter_values.fetch_parameter_value('attribute').value
-                            att_name = att_ref.named_reference.split('/')[-1]
-                            # path should be absolute and without a namespace
-                            relative_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)
-                            if relative_ent_path.startswith(namespace+':'):
-                                relative_ent_path = relative_ent_path[len(namespace) + 1:]
-                            ent_references.append(relative_ent_path)
-                            att_references.append(att_name)
-
-                    if rel_info.selects_one:
+                    # if selecting from one of many attributes, then make a context for each one
+                    if under and rel_info.selects_one:
+                        # the right way to do this is to get a resolved entity from the embedded entity and then
+                        # look through the attribute context hierarchy for non-nested entityReferenceAsAttribute nodes
+                        # that seems like a disaster waiting to happen given endless looping, etc.
+                        # for now, just insist that only the top level entity attributes declared in the ref entity will work
                         ent_pick_from = self.entity.fetch_object_definition(res_opt)
-                        atts_pick = ent_pick_from.attributes if ent_pick_from else None
-                        if atts_pick:
+                        atts_pick = ent_pick_from.attributes
+                        if ent_pick_from and atts_pick:
                             for attribute in atts_pick:
                                 if attribute.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
-                                    add_entity_reference(attribute.entity, self.in_document.namespace)
-                    else:
-                        add_entity_reference(self.entity, self.in_document.namespace)
+                                    # a table within a table. as expected with a selects_one attribute
+                                    # since this is by ref, we won't get the atts from the table, but we do need the traits that hold the key
+                                    # these are the same contexts that would get created if we recursed
+                                    # first this attribute
+                                    acp_ent_att = AttributeContextParameters(
+                                        under=under,
+                                        type=CdmAttributeContextType.ATTRIBUTE_DEFINITION,
+                                        name=attribute.fetch_object_definition_name(),
+                                        regarding=attribute,
+                                        include_traits=True)
+                                    pick_under = rasb._resolved_attribute_set.create_attribute_context(res_opt, acp_ent_att)
+                                    # and the entity under that attribute
+                                    pick_ent = attribute.entity
+                                    pick_ent_type = CdmAttributeContextType.PROJECTION if pick_ent.fetch_object_definition(
+                                        res_opt).object_type == CdmObjectType.PROJECTION_DEF else CdmAttributeContextType.ENTITY
+                                    acp_ent_att_ent = AttributeContextParameters(
+                                        under=pick_under,
+                                        type=pick_ent_type,
+                                        name=pick_ent.fetch_object_definition_name(),
+                                        regarding=pick_ent,
+                                        include_traits=True)
+                                    rasb._resolved_attribute_set.create_attribute_context(res_opt, acp_ent_att_ent)
 
-                    c_ent = self.ctx.corpus.make_object(CdmObjectType.CONSTANT_ENTITY_DEF)
-                    c_ent.entity_shape = self.ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, 'entityGroupSet', True)
-                    c_ent.constant_values = [[entity_ref, att_references[idx]] for idx, entity_ref in enumerate(ent_references)]
-                    param = self.ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, c_ent, False)
-                    reqd_trait.parameter_values.update_parameter_value(res_opt, 'entityReferences', param)
+                    # if we got here because of the max depth, need to impose the directives to make the trait work as expected
+                    if rel_info.max_depth_exceeded:
+                        if not arc.res_opt.directives:
+                            arc.res_opt.directives = AttributeResolutionDirectiveSet()
+                        arc.res_opt.directives.add('referenceOnly')
+                else:
+                    res_link = res_opt.copy()
+                    res_link._symbol_ref_set = res_opt._symbol_ref_set
+                    rasb.merge_attributes(self.entity._fetch_resolved_attributes(res_link, acp_ent))
 
-            # a 'structured' directive wants to keep all entity attributes together in a group
-            if arc and arc.res_opt.directives and arc.res_opt.directives.has('structured'):
-                ra_sub = ResolvedAttribute(arc.traits_to_apply.res_opt, rasb.ras, self.name, rasb.ras.attribute_context)
-                if rel_info.is_array:
-                    # put a resolved trait on this att group, yuck,
-                    #  hope I never need to do this again and then need to make a function for this
-                    tr = self.ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.linkedEntity.array', True)
-                    t = tr.fetch_object_definition(res_opt)
-                    rt = ResolvedTrait(t, None, [], [])
-                    ra_sub.resolved_traits = ra_sub.resolved_traits.merge(rt, True)
-                depth = rasb.ras._depth_traveled
-                rasb = ResolvedAttributeSetBuilder()
-                rasb.ras.attribute_context = ra_sub.att_ctx  # this got set to null with the new builder
-                rasb.own_one(ra_sub)
-                rasb.ras._depth_traveled = depth
+                    # need to pass up max_depth_exceeded if it was hit
+                    if res_link._depth_info.max_depth_exceeded:
+                        res_opt._depth_info = res_link._depth_info._copy()
 
-        rasb.ras._depth_traveled += 1
+                # from the traits of purpose and applied here, see if new attributes get generated
+                rasb._resolved_attribute_set.attribute_context = under_att
+                rasb.apply_traits(arc)
+                rasb.generate_applier_attributes(arc, True)  # True = apply the prepared traits to new atts
+                # this may have added symbols to the dependencies, so merge them
+                res_opt._symbol_ref_set._merge(arc.res_opt._symbol_ref_set)
+
+                # use the traits for linked entity identifiers to record the actual foreign key links
+                if rasb._resolved_attribute_set and rasb._resolved_attribute_set._set and rel_info.is_by_ref:
+                    for att in rasb._resolved_attribute_set._set:
+                        reqd_trait = att.resolved_traits.find(res_opt, 'is.linkedEntity.identifier')
+                        if not reqd_trait:
+                            continue
+
+                        if not reqd_trait.parameter_values:
+                            logger.warning(self._TAG, self.ctx, 'is.linkedEntity.identifier does not support arguments')
+                            continue
+
+                        ent_references = []
+                        att_references = []
+
+                        def add_entity_reference(entity_ref: 'CdmEntityReference', namespace: str):
+                            ent_def = entity_ref.fetch_object_definition(res_opt)
+                            required_trait = entity_ref._fetch_resolved_traits(res_opt).find(res_opt, 'is.identifiedBy')
+                            if required_trait and ent_def:
+                                att_ref = required_trait.parameter_values.fetch_parameter_value('attribute').value
+                                att_name = att_ref.named_reference.split('/')[-1]
+                                # path should be absolute and without a namespace
+                                relative_ent_path = self.ctx.corpus.storage.create_absolute_corpus_path(ent_def.at_corpus_path, ent_def.in_document)
+                                if relative_ent_path.startswith(namespace+':'):
+                                    relative_ent_path = relative_ent_path[len(namespace) + 1:]
+                                ent_references.append(relative_ent_path)
+                                att_references.append(att_name)
+
+                        if rel_info.selects_one:
+                            ent_pick_from = self.entity.fetch_object_definition(res_opt)
+                            atts_pick = ent_pick_from.attributes if ent_pick_from else None
+                            if atts_pick:
+                                for attribute in atts_pick:
+                                    if attribute.object_type == CdmObjectType.ENTITY_ATTRIBUTE_DEF:
+                                        add_entity_reference(attribute.entity, self.in_document.namespace)
+                        else:
+                            add_entity_reference(self.entity, self.in_document.namespace)
+
+                        c_ent = self.ctx.corpus.make_object(CdmObjectType.CONSTANT_ENTITY_DEF)
+                        c_ent.entity_shape = self.ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, 'entityGroupSet', True)
+                        c_ent.constant_values = [[entity_ref, att_references[idx]] for idx, entity_ref in enumerate(ent_references)]
+                        param = self.ctx.corpus.make_ref(CdmObjectType.ENTITY_REF, c_ent, False)
+                        reqd_trait.parameter_values.update_parameter_value(res_opt, 'entityReferences', param)
+
+                # a 'structured' directive wants to keep all entity attributes together in a group
+                if arc and arc.res_opt.directives and arc.res_opt.directives.has('structured'):
+                    # make one resolved attribute with a name from this entityAttribute that contains the set
+                    # of atts we just put together.
+                    ra_sub = ResolvedAttribute(arc.traits_to_apply.res_opt, rasb._resolved_attribute_set, self.name, under_att)
+                    if rel_info.is_array:
+                        # put a resolved trait on this att group
+                        # hope I never need to do this again and then need to make a function for this
+                        tr = self.ctx.corpus.make_object(CdmObjectType.TRAIT_REF, 'is.linkedEntity.array', True)
+                        t = tr.fetch_object_definition(res_opt)
+                        rt = ResolvedTrait(t, None, [], [])
+                        ra_sub.resolved_traits = ra_sub.resolved_traits.merge(rt, True)
+                    depth = rasb._resolved_attribute_set._depth_traveled
+                    rasb = ResolvedAttributeSetBuilder()
+                    rasb._resolved_attribute_set.attribute_context = ra_sub.att_ctx  # this got set to null with the new builder
+                    rasb.own_one(ra_sub)
+                    rasb._resolved_attribute_set._depth_traveled = depth
+
+        # how ever they got here, mark every attribute from this entity attribute as now being 'owned' by this entityAtt
+        rasb._resolved_attribute_set._set_attribute_ownership(self.name)
+        rasb._resolved_attribute_set._depth_traveled += 1
 
         return rasb
 
@@ -284,7 +309,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
         is_array = False
         selects_one = False
         max_depth = None
-        next_depth = None
+        next_depth = res_opt._depth_info.current_depth
         max_depth_exceeded = False
 
         if arc and arc.res_guide:
@@ -298,20 +323,15 @@ class CdmEntityAttributeDefinition(CdmAttribute):
                 selects_one = arc.res_opt.directives.has('selectOne')
                 is_array = arc.res_opt.directives.has('isArray')
 
-            # figure out the depth for the next level
-            old_depth = res_opt.depth_info.current_depth if res_opt.depth_info else None
-            next_depth = old_depth
             # if this is a 'selectone', then skip counting this entity in the depth, else count it
             if not selects_one:
                 # if already a ref, who cares?
                 if not is_by_ref:
-                    if next_depth is None:
-                        next_depth = 1
-                    else:
-                        next_depth += 1
+                    
+                    next_depth += 1
 
                     # max comes from settings but may not be set
-                    max_depth = DepthInfo.DEFAULT_MAX_DEPTH
+                    max_depth = res_opt.max_depth
                     if has_ref and arc.res_guide.entity_by_reference.reference_only_after_depth:
                         max_depth = arc.res_guide.entity_by_reference.reference_only_after_depth
                     if no_max_depth:
@@ -440,9 +460,7 @@ class CdmEntityAttributeDefinition(CdmAttribute):
 
         if pre_children and pre_children(self, path):
             return False
-        
-        if self.entity:
-            self.entity.owner = self
+
         if self.entity.visit('{}/entity/'.format(path), pre_children, post_children):
             return True
 

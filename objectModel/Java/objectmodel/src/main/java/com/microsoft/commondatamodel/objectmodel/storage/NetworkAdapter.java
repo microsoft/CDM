@@ -83,6 +83,17 @@ public abstract class NetworkAdapter extends StorageAdapterBase {
    * Sets up the CDM request that can be used by CDM Http Client.
    *
    * @param path    The partial or full path to a network location.
+   * @param method  The method.
+   * @return A CdmHttpRequest object, representing the CDM Http request.
+   */
+  CdmHttpRequest setUpCdmRequest(final String path, final String method) {
+    return setUpCdmRequest(path, null, method);
+  }
+
+  /**
+   * Sets up the CDM request that can be used by CDM Http Client.
+   *
+   * @param path    The partial or full path to a network location.
    * @param headers The headers.
    * @param method  The method.
    * @return A CdmHttpRequest object, representing the CDM Http request.
@@ -115,7 +126,7 @@ public abstract class NetworkAdapter extends StorageAdapterBase {
                       .stream()
                       .map(entry -> entry + entry.getKey() + ":" + entry.getValue())
                       .collect(Collectors.joining(",")),
-                  request.getRequestedUrl()
+                  request.stripSasSig()
               )
           );
         }

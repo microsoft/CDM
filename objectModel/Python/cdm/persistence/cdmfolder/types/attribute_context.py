@@ -17,3 +17,4 @@ class AttributeContext(JObject):
         self.definition = None  # type: str
         self.appliedTraits = None  # type: Optional[List[str, TraitReference]]
         self.contents = None  # type: Optional[List[str, AttributeContext]]
+        self.lineage = None  # type: Optional[List[AttributeContext]]

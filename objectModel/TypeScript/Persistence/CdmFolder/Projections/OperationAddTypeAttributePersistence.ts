@@ -5,17 +5,14 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationAddTypeAttribute,
-    cdmOperationType,
     CdmTypeAttributeDefinition,
     copyOptions,
-    Logger,
-    OperationTypeConvertor,
-    resolveOptions,
-    StringUtils
+    resolveOptions
 } from '../../../internal';
 import { TypeAttributePersistence } from '../TypeAttributePersistence';
 import { OperationAddTypeAttribute } from '../types';
 import * as utils from '../utils';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation AddTypeAttribute persistence
@@ -25,21 +22,9 @@ export class OperationAddTypeAttributePersistence {
         if (!object) {
             return undefined;
         }
-        const addTypeAttributeOp: CdmOperationAddTypeAttribute = ctx.corpus.MakeObject<CdmOperationAddTypeAttribute>(cdmObjectType.operationAddTypeAttributeDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.addTypeAttribute))) {
-            Logger.error(OperationAddTypeAttributePersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            addTypeAttributeOp.type = cdmOperationType.addTypeAttribute;
-        }
-
-        if (object.explanation) {
-            addTypeAttributeOp.explanation = object.explanation;
-        }
-
-        if (object.typeAttribute) {
-            addTypeAttributeOp.typeAttribute = utils.createAttribute(ctx, object.typeAttribute) as CdmTypeAttributeDefinition;
-        }
+        const addTypeAttributeOp: CdmOperationAddTypeAttribute = OperationBasePersistence.fromData(ctx, cdmObjectType.operationAddTypeAttributeDef, object);
+        addTypeAttributeOp.typeAttribute = utils.createAttribute(ctx, object.typeAttribute) as CdmTypeAttributeDefinition;
 
         return addTypeAttributeOp;
     }
@@ -49,10 +34,9 @@ export class OperationAddTypeAttributePersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.addTypeAttribute),
-            explanation: instance.explanation,
-            typeAttribute: TypeAttributePersistence.toData(instance.typeAttribute, resOpt, options)
-        };
+        const data: OperationAddTypeAttribute = OperationBasePersistence.toData(instance, resOpt, options);
+        data.typeAttribute = TypeAttributePersistence.toData(instance.typeAttribute, resOpt, options)
+
+        return data;
     }
 }

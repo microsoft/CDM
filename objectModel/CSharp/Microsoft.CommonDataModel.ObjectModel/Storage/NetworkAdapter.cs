@@ -87,10 +87,21 @@ namespace Microsoft.CommonDataModel.ObjectModel.Storage
             if (!response.IsSuccessful)
             {
                 throw new HttpRequestException(
-                    $"HTTP {response.StatusCode} - {response.Reason}. Response headers: {string.Join(", ", response.ResponseHeaders.Select(m => m.Key + ":" + m.Value).ToArray())}. URL: {httpRequest.RequestedUrl}");
+                    $"HTTP {response.StatusCode} - {response.Reason}. Response headers: {string.Join(", ", response.ResponseHeaders.Select(m => m.Key + ":" + m.Value).ToArray())}. URL: {httpRequest.StripSasSig()}");
             }
 
             return response;
+        }
+
+        /// <summary>
+        /// Sets up the CDM request that can be used by CDM Http Client.
+        /// </summary>
+        /// <param name="path">Partial or full path to a network location.</param>
+        /// <param name="method">The method.</param>
+        /// <returns>The <see cref="CdmHttpRequest"/>, representing CDM Http request.</returns>
+        protected CdmHttpRequest SetUpCdmRequest(string path, HttpMethod method)
+        {
+            return SetUpCdmRequest(path, null, method);
         }
 
         /// <summary>

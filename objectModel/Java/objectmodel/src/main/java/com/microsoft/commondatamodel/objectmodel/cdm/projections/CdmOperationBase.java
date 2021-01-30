@@ -19,6 +19,8 @@ import java.util.List;
 public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     private int index;
     private CdmOperationType type;
+    private String condition;
+    private Boolean sourceInput;
 
     public CdmOperationBase(final CdmCorpusContext ctx) {
         super(ctx);
@@ -60,6 +62,30 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
     @Deprecated
     public void setType(final CdmOperationType type) {
         this.type = type;
+    }
+
+    /**
+     * Property of an operation that holds the condition expression string
+     * @return String
+     */
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    /**
+     * Property of an operation that defines if the operation receives the input from previous operation or from source entity
+     * @return Boolean
+     */
+    public Boolean getSourceInput() {
+        return sourceInput;
+    }
+
+    public void setSourceInput(Boolean sourceInput) {
+        this.sourceInput = sourceInput;
     }
 
     @Override
@@ -163,10 +189,14 @@ public abstract class CdmOperationBase extends CdmObjectDefinitionBase {
      */
     @Deprecated
     public static ResolvedAttribute createNewResolvedAttribute(ProjectionContext projCtx, CdmAttributeContext attrCtxUnder, CdmAttribute targetAttr, String overrideDefaultName, List<String> addedSimpleRefTraits) {
+        targetAttr = (CdmAttribute) targetAttr.copy();
+
         ResolvedAttribute newResAttr = new ResolvedAttribute(
                 projCtx.getProjectionDirective().getResOpt(),
                 targetAttr,
                 !StringUtils.isNullOrTrimEmpty(overrideDefaultName) ? overrideDefaultName : targetAttr.getName(), attrCtxUnder);
+
+        targetAttr.setInDocument(projCtx.getProjectionDirective().getOwner().getInDocument());
 
         if (addedSimpleRefTraits != null) {
             for (String trait : addedSimpleRefTraits) {

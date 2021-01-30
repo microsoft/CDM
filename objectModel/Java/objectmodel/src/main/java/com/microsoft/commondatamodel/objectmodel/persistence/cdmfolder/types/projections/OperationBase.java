@@ -13,7 +13,9 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public class OperationBase {
     @JsonProperty("$type")
     private String type;
+    private String condition;
     private String explanation;
+    private Boolean sourceInput;
 
     public String getType() {
         return type;
@@ -35,5 +37,21 @@ public class OperationBase {
 
     public void setExplanation(final String explanation) {
         this.explanation = explanation;
+    }
+
+    public String getCondition() {
+        return condition;
+    }
+
+    public void setCondition(String condition) {
+        this.condition = condition;
+    }
+
+    public Boolean getSourceInput() {
+        return sourceInput;
+    }
+
+    public void setSourceInput(Boolean sourceInput) {
+        this.sourceInput = sourceInput;
     }
 }

@@ -5,14 +5,12 @@ import {
     CdmCorpusContext,
     cdmObjectType,
     CdmOperationRenameAttributes,
-    cdmOperationType,
     copyOptions,
     Logger,
-    OperationTypeConvertor,
     resolveOptions,
-    StringUtils
 } from '../../../internal';
 import { OperationRenameAttributes } from '../types';
+import { OperationBasePersistence } from './OperationBasePersistence';
 
 /**
  * Operation RenameAttributes persistence
@@ -22,18 +20,8 @@ export class OperationRenameAttributesPersistence {
         if (!object) {
             return undefined;
         }
-        const renameAttributesOp: CdmOperationRenameAttributes = ctx.corpus.MakeObject<CdmOperationRenameAttributes>(cdmObjectType.operationRenameAttributesDef);
 
-        if (object.$type && !StringUtils.equalsWithIgnoreCase(object.$type, OperationTypeConvertor.operationTypeToString(cdmOperationType.renameAttributes))) {
-            Logger.error(OperationRenameAttributesPersistence.name, ctx, `$type ${object.$type} is invalid for this operation.`);
-        } else {
-            renameAttributesOp.type = cdmOperationType.renameAttributes;
-        }
-
-        if (object.explanation) {
-            renameAttributesOp.explanation = object.explanation;
-        }
-
+        const renameAttributesOp: CdmOperationRenameAttributes = OperationBasePersistence.fromData(ctx, cdmObjectType.operationRenameAttributesDef, object);
         renameAttributesOp.renameFormat = object.renameFormat;
 
         if (typeof(object.applyTo) === 'string') {
@@ -52,11 +40,10 @@ export class OperationRenameAttributesPersistence {
             return undefined;
         }
 
-        return {
-            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.renameAttributes),
-            explanation: instance.explanation,
-            renameFormat: instance.renameFormat,
-            applyTo: instance.applyTo
-        };
+        const data: OperationRenameAttributes = OperationBasePersistence.toData(instance, resOpt, options);
+        data.renameFormat = instance.renameFormat;
+        data.applyTo = instance.applyTo;
+
+        return data;
     }
 }

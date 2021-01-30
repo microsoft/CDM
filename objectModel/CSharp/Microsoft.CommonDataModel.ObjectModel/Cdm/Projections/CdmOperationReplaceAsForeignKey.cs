@@ -30,8 +30,13 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <inheritdoc />
         public override CdmObject Copy(ResolveOptions resOpt = null, CdmObject host = null)
         {
-            Logger.Error(TAG, this.Ctx, "Projection operation not implemented yet.", nameof(Copy));
-            return new CdmOperationReplaceAsForeignKey(this.Ctx);
+            CdmOperationReplaceAsForeignKey copy = new CdmOperationReplaceAsForeignKey(this.Ctx)
+            {
+                Reference = this.Reference,
+                ReplaceWith = this.ReplaceWith?.Copy() as CdmTypeAttributeDefinition
+            };
+
+            return copy;
         }
 
         /// <inheritdoc />

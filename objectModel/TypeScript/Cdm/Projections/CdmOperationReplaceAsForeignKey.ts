@@ -42,8 +42,11 @@ export class CdmOperationReplaceAsForeignKey extends CdmOperationBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.', this.copy.name);
-        return new CdmOperationReplaceAsForeignKey(this.ctx);
+        const copy: CdmOperationReplaceAsForeignKey = new CdmOperationReplaceAsForeignKey(this.ctx);
+        copy.reference = this.reference;
+        copy.replaceWith = this.replaceWith.copy() as CdmTypeAttributeDefinition;
+
+        return copy;
     }
 
     /**

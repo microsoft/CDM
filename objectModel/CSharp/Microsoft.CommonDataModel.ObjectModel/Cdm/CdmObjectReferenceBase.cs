@@ -18,7 +18,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         public string NamedReference { get; set; }
 
         /// <inheritdoc />
-        public CdmObjectDefinition ExplicitReference { get; set; }
+        public CdmObjectDefinition ExplicitReference 
+        { 
+            get => this.explicitRererence; 
+            set
+            {
+                if (value != null)
+                    value.Owner = this;
+                this.explicitRererence = value;
+            }
+        }
 
         /// <inheritdoc />
         public bool SimpleNamedReference { get; set; }
@@ -27,6 +36,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
         /// <inheritdoc />
         public CdmTraitCollection AppliedTraits { get; }
+
+        private CdmObjectDefinition explicitRererence;
 
         public CdmObjectReferenceBase(CdmCorpusContext ctx, dynamic referenceTo, bool simpleReference)
             : base(ctx)
@@ -153,13 +164,14 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal override CdmObjectReference CreatePortableReference(ResolveOptions resOpt)
         {
             CdmObjectReferenceBase cdmObjectRef = this.Ctx.Corpus.MakeObject<CdmObjectReferenceBase>(CdmCorpusDefinition.MapReferenceType(this.ObjectType), "portable", true) as CdmObjectReferenceBase;
-            cdmObjectRef.ExplicitReference = this.FetchObjectDefinition<CdmObjectDefinition>(resOpt);
-            if (cdmObjectRef.ExplicitReference == null || (cdmObjectRef.InDocument == null && this.InDocument == null))
+            CdmObjectDefinitionBase cdmObjectDef = this.FetchObjectDefinition<CdmObjectDefinitionBase>(resOpt);
+            if (cdmObjectDef == null || this.InDocument == null)
                 return null; // not allowed
-            if (cdmObjectRef.InDocument == null)
-            {
-                cdmObjectRef.InDocument = this.InDocument; // if the object has no document, take from the reference
-            }
+
+            cdmObjectRef.ExplicitReference = cdmObjectDef.Copy() as CdmObjectDefinition;
+            cdmObjectRef.InDocument = this.InDocument;
+            cdmObjectRef.Owner = this.Owner;
+
             return cdmObjectRef;
         }
 
@@ -192,7 +204,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (resOpt.SaveResolutionsOnCopy)
             {
-                copy.ExplicitReference = this.ExplicitReference;
+                copy.ExplicitReference = this.ExplicitReference?.Copy(resOpt) as CdmObjectDefinition;
             }
 
             copy.AppliedTraits.Clear();
@@ -326,12 +338,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren != null && preChildren.Invoke(this, refPath))
                 return false;
-            if (this.ExplicitReference != null && string.IsNullOrEmpty(this.NamedReference))
-            {
-                this.ExplicitReference.Owner = this.Owner; // obj is not in collection, so set owner here.
-                if (this.ExplicitReference.Visit(path, preChildren, postChildren))
-                    return true;
-            }
+            if (this.ExplicitReference != null && string.IsNullOrEmpty(this.NamedReference) && this.ExplicitReference.Visit(path, preChildren, postChildren))
+                return true;
             if (this.VisitRef(path, preChildren, postChildren))
                 return true;
 

@@ -110,6 +110,10 @@ public class TypeAttributePersistence {
   }
 
   public static TypeAttribute toData(final CdmTypeAttributeDefinition instance, final ResolveOptions resOpt, final CopyOptions options) {
+    if (instance == null) {
+      return null;
+    }
+
     final TypeAttribute obj = new TypeAttribute();
     obj.setExplanation(instance.getExplanation());
     obj.setDescription((String) instance.fetchProperty(CdmPropertyName.DESCRIPTION));
@@ -123,6 +127,8 @@ public class TypeAttributePersistence {
             .collect(Collectors.toList()),
         resOpt,
         options));
+
+    obj.setProjection(Utils.jsonForm(instance.getProjection(), resOpt, options));
 
     final JsonNode attributeContext = Utils.jsonForm(instance.getAttributeContext(), resOpt, options);
     obj.setAttributeContext(attributeContext != null ? attributeContext : null);
@@ -144,7 +150,7 @@ public class TypeAttributePersistence {
         && (Boolean) instance.fetchProperty(CdmPropertyName.IS_PRIMARY_KEY)) {
       obj.setIsPrimaryKey((Boolean) instance.fetchProperty(CdmPropertyName.IS_PRIMARY_KEY));
     }
-
+    
     final Integer sourceOrdering = instance.fetchProperty(CdmPropertyName.SOURCE_ORDERING) == null
         ? null
         : Integer.parseInt((String) instance.fetchProperty(CdmPropertyName.SOURCE_ORDERING));
@@ -168,6 +174,7 @@ public class TypeAttributePersistence {
     } else if (defaultValue instanceof JsonNode) {
       obj.setDefaultValue((JsonNode) defaultValue);
     }
+
 
     return obj;
   }

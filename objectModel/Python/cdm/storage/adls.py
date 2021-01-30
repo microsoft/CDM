@@ -50,6 +50,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._resource = "https://storage.azure.com"  # type: Optional[str]
         self._type = 'adls'
         self._root = None
+        self._sas_token = None
         self._unescaped_root_sub_path = None # type: Optional[str]
         self._escaped_root_sub_path = None # type: Optional[str]
         self._file_modified_time_cache = {}  # type: Dict[str, datetime]
@@ -62,6 +63,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             self.client_id = kwargs.get('client_id', None)  # type: Optional[str]
             self.secret = kwargs.get('secret', None)  # type: Optional[str]
             self.shared_key = kwargs.get('shared_key', None)  # type: Optional[str]
+            self.sas_token = kwargs.get('sas_token', None)  # type: Optional[str]
             self.token_provider = kwargs.get('token_provider', None) # type: Optional[TokenProvider]
 
             # --- internal ---
@@ -88,6 +90,22 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     @property
     def tenant(self) -> str:
         return self._tenant
+
+    @property
+    def sas_token(self) -> str:
+        return self._sas_token
+
+    @sas_token.setter
+    def sas_token(self, value: str):
+        """
+         The SAS token. If supplied string begins with '?' symbol, the symbol gets stripped away.
+        :param value: SAS token
+        """
+        if value:
+            # Remove the leading question mark, so we can append this token to URLs that already have it
+            self._sas_token = value[1:] if value.startswith('?') else value
+        else:
+            self._sas_token = None
 
     def can_read(self) -> bool:
         return True
@@ -249,9 +267,13 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
             if configs_json.get('secret'):
                 self.secret = configs_json['secret']
 
-        # Check then for shared key auth.
+        # Check for shared key auth
         if configs_json.get('sharedKey'):
             self.shared_key = configs_json['sharedKey']
+
+        # Check for SAS token auth
+        if configs_json.get('sasToken'):
+            self.sas_token = configs_json['sasToken']
 
         if configs_json.get('locationHint'):
             self.location_hint = configs_json['locationHint']
@@ -329,9 +351,19 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
 
         return headers
 
+    def _apply_sas_token(self, url: str) -> str:
+        """
+        Appends SAS token to the given URL.
+        :param url: URL to be appended with the SAS token
+        :return: URL with the SAS token appended
+        """
+        return '{}{}{}'.format(url, '?' if '?' not in url else '&', self.sas_token)
+
     def _build_request(self, url: str, method: str = 'GET', content: Optional[str] = None, content_type: Optional[str] = None):
         if self.shared_key is not None:
             request = self._set_up_cdm_request(url, self._apply_shared_key(self.shared_key, url, method, content, content_type), method)
+        elif self.sas_token is not None:
+            request = self._set_up_cdm_request(self._apply_sas_token(url), None, method)
         elif self.tenant is not None and self.client_id is not None and self.secret is not None:
             token = self._generate_bearer_token()
             headers = {'Authorization': token['tokenType'] + ' ' + token['accessToken']}
@@ -351,7 +383,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     def _escape_path(self, unescaped_path: str):
         return urllib.parse.quote(unescaped_path).replace('%2F', '/')
 
-    def _extract_root_blob_container_and_sub_path(self, root: str) -> None:
+    def _extract_root_blob_container_and_sub_path(self, root: str) -> str:
         # No root value was set
         if not root:
             self._root_blob_contrainer = ''
@@ -374,7 +406,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
         self._update_root_sub_path('/'.join(prep_root_array[1:])) 
         return '/{}/{}'.format(self._root_blob_contrainer, self._unescaped_root_sub_path)
 
-    def _format_corpus_path(self, corpus_path: str) -> str:
+    def _format_corpus_path(self, corpus_path: str) -> Optional[str]:
         path_tuple = StorageUtils.split_namespace_path(corpus_path)
         if not path_tuple:
             return None
@@ -399,7 +431,7 @@ class ADLSAdapter(NetworkAdapter, StorageAdapterBase):
     def _get_escaped_root(self):
         return '/' + self._root_blob_contrainer + '/' + self._escaped_root_sub_path if self._escaped_root_sub_path else '/' + self._root_blob_contrainer
 
-    def _try_from_base64_string(self, content: str) -> bool:
+    def _try_from_base64_string(self, content: str) -> Optional[bytes]:
         try:
             return base64.b64decode(content)
         except Exception:

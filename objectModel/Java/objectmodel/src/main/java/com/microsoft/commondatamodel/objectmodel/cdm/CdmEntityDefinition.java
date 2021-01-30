@@ -67,9 +67,7 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
     super(ctx);
     this.setObjectType(CdmObjectType.EntityDef);
     this.setEntityName(entityName);
-    if (extendsEntity != null) {
-      this.setExtendsEntity(extendsEntity);
-    }
+    this.setExtendsEntity(extendsEntity);
 
     this.attributes = new CdmCollection(this.getCtx(), this, CdmObjectType.TypeAttributeDef);
     this.t2pm = new TraitToPropertyMap(this);
@@ -88,6 +86,9 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
   }
 
   public void setExtendsEntity(final CdmEntityReference extendsEntity) {
+    if (extendsEntity != null) {
+      extendsEntity.setOwner(this);
+    }
     this.extendsEntity = extendsEntity;
   }
 
@@ -323,11 +324,6 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
           acpAtt.setIncludeTraits(false);
         }
 
-        // skip entity attributes when we are in a circular reference loop
-        if (resOpt.inCircularReference == true && att instanceof CdmEntityAttributeDefinition) {
-          continue;
-        }
-
         ResolvedAttributeSet rasFromAtt = att.fetchResolvedAttributes(resOpt, acpAtt);
         
         // we can now set depth now that children nodes have been resolved
@@ -463,12 +459,20 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         final CdmEntityReference entRefThis = ctx.getCorpus().makeObject(CdmObjectType.EntityRef, this.getName(), true);
         entRefThis.setOwner(this);
         entRefThis.setInDocument(this.getInDocument()); // need to set owner and inDocument to this starting entity so the ref will be portable to the new document
+        CdmObject prevOwner = this.getOwner();
         entRefThis.setExplicitReference(this);
+        // we don't want to change the owner of this entity to the entity reference
+        // re-assign whatever was there before
+        this.setOwner(prevOwner);
+
         final AttributeContextParameters acpEnt = new AttributeContextParameters();
         acpEnt.setUnder(attCtxAC);
         acpEnt.setType(CdmAttributeContextType.Entity);
         acpEnt.setName(entName);
         acpEnt.setRegarding(entRefThis);
+
+        // reset previous depth information in case there are left overs
+        finalResOpt.depthInfo.reset();
 
         final ResolveOptions resOptCopy = CdmAttributeContext.prepareOptionsForResolveAttributes(finalResOpt);
         // resolve attributes with this context. the end result is that each resolved attribute
@@ -476,7 +480,6 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
         final ResolvedAttributeSet ras = this.fetchResolvedAttributes(resOptCopy, acpEnt);
 
         if (ras == null) {
-          this.resolvingAttributes = false;
           return null;
         }
 
@@ -1036,7 +1039,6 @@ public class CdmEntityDefinition extends CdmObjectDefinitionBase implements CdmR
       return false;
     }
     if (this.getExtendsEntity() != null) {
-      this.getExtendsEntity().setOwner(this);
       if (this.getExtendsEntity().visit(path + "/extendsEntity/", preChildren, postChildren)) {
         return true;
       }

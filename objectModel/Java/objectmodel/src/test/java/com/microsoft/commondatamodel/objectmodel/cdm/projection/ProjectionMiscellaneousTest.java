@@ -8,8 +8,6 @@ import com.microsoft.commondatamodel.objectmodel.cdm.*;
 import com.microsoft.commondatamodel.objectmodel.cdm.projections.CardinalitySettings;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmObjectType;
 import com.microsoft.commondatamodel.objectmodel.enums.CdmStatusLevel;
-import com.microsoft.commondatamodel.objectmodel.utilities.AttributeResolutionDirectiveSet;
-import com.microsoft.commondatamodel.objectmodel.utilities.ResolveOptions;
 import com.microsoft.commondatamodel.objectmodel.utilities.StringUtils;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -21,8 +19,6 @@ import java.util.*;
  * Various projections scenarios, partner scenarios, bug fixes
  */
 public class ProjectionMiscellaneousTest {
-    private final String foundationJsonPath = "cdm:/foundations.cdm.json";
-
     private static List<HashSet<String>> resOptsCombinations = new ArrayList<>(
         Arrays.asList(
             new HashSet<>(Arrays.asList()),
@@ -124,5 +120,27 @@ public class ProjectionMiscellaneousTest {
         attribute.getCardinality().setMaximum("*");
 
         Assert.assertTrue(attribute.fetchIsNullable() == true);
+    }
+
+    /**
+     * Tests if it resolves correct when there are two entity attributes in circular
+     * denpendency using projection
+     * 
+     * @throws InterruptedException
+     */
+    @Test
+    public void testCircularEntityAttributes() throws InterruptedException
+    {
+        String testName = "testCircularEntityAttributes";
+        String entityName = "A";
+
+        CdmCorpusDefinition corpus = TestHelper.getLocalCorpus(TESTS_SUBPATH, testName, null);
+
+        CdmEntityDefinition entity = corpus.<CdmEntityDefinition>fetchObjectAsync(entityName + ".cdm.json/" + entityName).join();
+
+        CdmEntityDefinition resEntity = entity.createResolvedEntityAsync("resolved-" + entityName).join();
+
+        Assert.assertNotNull(resEntity);
+        Assert.assertEquals(resEntity.getAttributes().getCount(), 2);
     }
 }

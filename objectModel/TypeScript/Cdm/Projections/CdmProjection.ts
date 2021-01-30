@@ -11,6 +11,7 @@ import {
     CdmObjectDefinition,
     CdmObjectDefinitionBase,
     cdmObjectType,
+    CdmOperationBase,
     CdmOperationCollection,
     Errors,
     Logger,
@@ -50,11 +51,11 @@ export class CdmProjection extends CdmObjectDefinitionBase {
      */
     public operations: CdmOperationCollection;
 
+    private _source: CdmEntityReference;
+
     /**
      * Property of a projection that holds the source of the operation
      */
-    private _source: CdmEntityReference;
-
     public get source(): CdmEntityReference {
         return this._source;
     }
@@ -65,6 +66,11 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         }
         this._source = source;
     }
+
+    /**
+     * If true, runs the operations sequentially so each operation receives the result of the previous one
+     */
+    public runSequentially?: boolean;
 
     /**
      * Projection constructor
@@ -79,8 +85,24 @@ export class CdmProjection extends CdmObjectDefinitionBase {
      * @inheritdoc
      */
     public copy(resOpt?: resolveOptions, host?: CdmObject): CdmObject {
-        Logger.error(this.TAG, this.ctx, 'Projection operation not implemented yet.');
-        return new CdmProjection(this.ctx);
+        let copy: CdmProjection;
+
+        if (host == null) {
+            copy = new CdmProjection(this.ctx);
+        } else {
+            copy = host as CdmProjection;
+            copy.ctx = this.ctx;
+            copy.operations.clear();
+        }
+
+        copy.condition = this.condition;
+        copy.source = this.source ? this.source.copy() as CdmEntityReference : null;
+
+        for (const operation of this.operations) {
+            copy.operations.push(operation.copy() as CdmOperationBase);
+        }
+
+        return copy;
     }
 
     /**
@@ -211,6 +233,17 @@ export class CdmProjection extends CdmObjectDefinitionBase {
      * @internal
      */
     public constructProjectionContext(projDirective: ProjectionDirective, attrCtx: CdmAttributeContext, ras: ResolvedAttributeSet = undefined): ProjectionContext {
+        if (!attrCtx) {
+            return undefined;
+        }
+        
+        if (this.runSequentially !== undefined) {
+            Logger.error(
+                this.TAG, this.ctx,
+                'RunSequentially is not supported by this Object Model version.'
+            );
+        }
+        
         let projContext: ProjectionContext;
         const condition: string = this.condition ? this.condition : '(true)';
 
@@ -218,122 +251,134 @@ export class CdmProjection extends CdmObjectDefinitionBase {
         const tree: ExpressionTree = new ExpressionTree();
         this.conditionExpressionTreeRoot = tree.constructExpressionTree(condition);
 
-        if (attrCtx) {
-            // Add projection to context tree
-            const acpProj: AttributeContextParameters = {
-                under: attrCtx,
-                type: cdmAttributeContextType.projection,
-                name: this.fetchObjectDefinitionName(),
-                regarding: projDirective.ownerRef,
-                includeTraits: false
-            };
-            const acProj: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpProj);
+        // Add projection to context tree
+        const acpProj: AttributeContextParameters = {
+            under: attrCtx,
+            type: cdmAttributeContextType.projection,
+            name: this.fetchObjectDefinitionName(),
+            regarding: projDirective.ownerRef,
+            includeTraits: false
+        };
+        const acProj: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpProj);
 
-            const acpSource: AttributeContextParameters = {
-                under: acProj,
-                type: cdmAttributeContextType.source,
-                name: 'source',
-                regarding: undefined,
-                includeTraits: false
-            };
-            const acSource: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpSource);
+        const acpSource: AttributeContextParameters = {
+            under: acProj,
+            type: cdmAttributeContextType.source,
+            name: 'source',
+            regarding: undefined,
+            includeTraits: false
+        };
+        const acSource: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpSource);
 
-            // Initialize the projection context
-            const ctx: CdmCorpusContext = (projDirective.owner?.ctx);
+        // Initialize the projection context
+        const ctx: CdmCorpusContext = (projDirective.owner?.ctx);
 
-            if (this.source) {
-                const source: CdmObjectDefinition = this.source.fetchObjectDefinition<CdmObjectDefinition>(projDirective.resOpt);
-                if (source.objectType === cdmObjectType.projectionDef) {
-                    // A Projection
+        if (this.source) {
+            const source: CdmObjectDefinition = this.source.fetchObjectDefinition<CdmObjectDefinition>(projDirective.resOpt);
+            if (source.objectType === cdmObjectType.projectionDef) {
+                // A Projection
 
-                    projContext = (this.source.explicitReference as CdmProjection).constructProjectionContext(projDirective, acSource, ras);
-                } else {
-                    // An Entity Reference
-
-                    const acpSourceProjection: AttributeContextParameters = {
-                        under: acSource,
-                        type: cdmAttributeContextType.entity,
-                        name: this.source.namedReference ?? this.source.explicitReference.getName(),
-                        regarding: this.source,
-                        includeTraits: false
-                    };
-                    
-                    ras = this.source.fetchResolvedAttributes(projDirective.resOpt, acpSourceProjection);
-
-                    // If polymorphic keep original source as previous state
-                    let polySourceSet: Map<string, ProjectionAttributeState[]> = null;
-                    if (projDirective.isSourcePolymorphic) {
-                        polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, acpSourceProjection);
-                    }
-
-                    // Now initialize projection attribute state
-                    const pasSet: ProjectionAttributeStateSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, projDirective.isSourcePolymorphic, polySourceSet);
-
-                    projContext = new ProjectionContext(projDirective, ras.attributeContext);
-                    projContext.currentAttributeStateSet = pasSet;
-                }
+                projContext = (this.source.explicitReference as CdmProjection).constructProjectionContext(projDirective, acSource, ras);
             } else {
-                // A type attribute
+                // An Entity Reference
 
-                // Initialize projection attribute state
-                const pasSet: ProjectionAttributeStateSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras);
+                const acpSourceProjection: AttributeContextParameters = {
+                    under: acSource,
+                    type: cdmAttributeContextType.entity,
+                    name: this.source.namedReference ?? this.source.explicitReference.getName(),
+                    regarding: this.source,
+                    includeTraits: false
+                };
+                
+                ras = this.source.fetchResolvedAttributes(projDirective.resOpt, acpSourceProjection);
+
+                // If polymorphic keep original source as previous state
+                let polySourceSet: Map<string, ProjectionAttributeState[]> = null;
+                if (projDirective.isSourcePolymorphic) {
+                    polySourceSet = ProjectionResolutionCommonUtil.getPolymorphicSourceSet(projDirective, ctx, this.source, acpSourceProjection);
+                }
+
+                // Now initialize projection attribute state
+                const pasSet: ProjectionAttributeStateSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras, projDirective.isSourcePolymorphic, polySourceSet);
 
                 projContext = new ProjectionContext(projDirective, ras.attributeContext);
                 projContext.currentAttributeStateSet = pasSet;
             }
+        } else {
+            // A type attribute
 
-            let isConditionValid: boolean = false;
-            if (this.conditionExpressionTreeRoot) {
-                const input: InputValues = new InputValues();
-                input.noMaxDepth = projDirective.hasNoMaximumDepth;
-                input.isArray = projDirective.isArray;
+            // Initialize projection attribute state
+            const pasSet: ProjectionAttributeStateSet = ProjectionResolutionCommonUtil.initializeProjectionAttributeStateSet(projDirective, ctx, ras);
 
-                input.referenceOnly = projDirective.isReferenceOnly;
-                input.normalized = projDirective.isNormalized;
-                input.structured = projDirective.isStructured;
-                input.isVirtual = projDirective.isVirtual;
+            projContext = new ProjectionContext(projDirective, ras.attributeContext);
+            projContext.currentAttributeStateSet = pasSet;
+        }
 
-                input.nextDepth = ++projDirective.currentDepth;
-                input.maxDepth = projDirective.maximumDepth;
+        let isConditionValid: boolean = false;
+        if (this.conditionExpressionTreeRoot) {
+            const input: InputValues = new InputValues();
+            input.noMaxDepth = projDirective.hasNoMaximumDepth;
+            input.isArray = projDirective.isArray;
 
-                input.minCardinality = projDirective.cardinality?._minimumNumber;
-                input.maxCardinality = projDirective.cardinality?._maximumNumber;
+            input.referenceOnly = projDirective.isReferenceOnly;
+            input.normalized = projDirective.isNormalized;
+            input.structured = projDirective.isStructured;
+            input.isVirtual = projDirective.isVirtual;
 
-                isConditionValid = ExpressionTree.evaluateExpressionTree(this.conditionExpressionTreeRoot, input);
+            input.nextDepth = projDirective.resOpt.depthInfo.currentDepth;
+            input.maxDepth = projDirective.maximumDepth;
+
+            input.minCardinality = projDirective.cardinality?._minimumNumber;
+            input.maxCardinality = projDirective.cardinality?._maximumNumber;
+
+            isConditionValid = ExpressionTree.evaluateExpressionTree(this.conditionExpressionTreeRoot, input);
+        }
+
+        if (isConditionValid && this.operations && this.operations.length > 0) {
+            // Just in case new operations were added programmatically, reindex operations
+            for (let i: number = 0; i < this.operations.length; i++) {
+                this.operations.allItems[i].index = i + 1;
             }
 
-            if (isConditionValid && this.operations && this.operations.length > 0) {
-                // Just in case new operations were added programmatically, reindex operations
-                for (let i: number = 0; i < this.operations.length; i++) {
-                    this.operations.allItems[i].index = i + 1;
+            // Operation
+
+            const acpGenAttrSet: AttributeContextParameters = {
+                under: attrCtx,
+                type: cdmAttributeContextType.generatedSet,
+                name: '_generatedAttributeSet'
+            };
+            const acGenAttrSet: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpGenAttrSet);
+
+            // Start with an empty list for each projection
+            let pasOperations: ProjectionAttributeStateSet = new ProjectionAttributeStateSet(projContext.currentAttributeStateSet.ctx);
+            for (const operation of this.operations) {
+                if (operation.condition !== undefined) {
+                    Logger.error(
+                        this.TAG, this.ctx,
+                        'Condition on the operation level is not supported by this Object Model version.'
+                    );
                 }
 
-                // Operation
-
-                const acpGenAttrSet: AttributeContextParameters = {
-                    under: attrCtx,
-                    type: cdmAttributeContextType.generatedSet,
-                    name: '_generatedAttributeSet'
-                };
-                const acGenAttrSet: CdmAttributeContext = CdmAttributeContext.createChildUnder(projDirective.resOpt, acpGenAttrSet);
-
-                // Start with an empty list for each projection
-                let pasOperations: ProjectionAttributeStateSet = new ProjectionAttributeStateSet(projContext.currentAttributeStateSet.ctx);
-                for (const operation of this.operations) {
-                    // Evaluate projections and apply to empty state
-                    const newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
-
-                    // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
-                    if (newPasOperations !== undefined) {
-                        pasOperations = newPasOperations;
-                    }
+                if (operation.sourceInput !== undefined) {
+                    Logger.error(
+                        this.TAG, this.ctx,
+                        'SourceInput on the operation level is not supported by this Object Model version.'
+                    );
                 }
 
-                // Finally update the current state to the projection context
-                projContext.currentAttributeStateSet = pasOperations;
-            } else {
-                // Pass Through - no operations to process
+                // Evaluate projections and apply to empty state
+                const newPasOperations = operation.appendProjectionAttributeState(projContext, pasOperations, acGenAttrSet);
+
+                // If the operations fails or it is not implemented the projection cannot be evaluated so keep previous valid state
+                if (newPasOperations !== undefined) {
+                    pasOperations = newPasOperations;
+                }
             }
+
+            // Finally update the current state to the projection context
+            projContext.currentAttributeStateSet = pasOperations;
+        } else {
+            // Pass Through - no operations to process
         }
 
         return projContext;

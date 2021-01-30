@@ -14,10 +14,14 @@ class ParameterCollection:
         self.ordinals = {} if prior is None or prior.ordinals is None else prior.ordinals.copy()  # type: Dict[CdmParameterDefinition, int]
 
     def add(self, element: 'CdmParameterDefinition') -> None:
-        if element.name:
-            if element.name in self.lookup:
-                raise ValueError('Duplicate parameter name {}'.format(element.name))
-            self.lookup[element.name] = element
+        name = element.name
+        if name:
+            if name in self.lookup:
+                # why not just replace the old one?
+                self.lookup[name] = element
+                self.sequence[self.sequence.index(next(filter(lambda x: x.name == name, self.sequence), None))] = element
+                self.ordinals[element] = len(self.sequence)
+            self.lookup[name] = element
 
         self.ordinals[element] = len(self.sequence)
         self.sequence.append(element)

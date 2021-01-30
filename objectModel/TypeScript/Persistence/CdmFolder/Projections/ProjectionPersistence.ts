@@ -64,13 +64,9 @@ export class ProjectionPersistence {
 
         const source: CdmEntityReference = EntityReferencePersistence.fromData(ctx, object.source);
 
-        if ('explanation' in object && object.explanation) {
-            projection.explanation = object.explanation;
-        }
-
-        if ('condition' in object) {
-            projection.condition = object.condition;
-        }
+        projection.explanation = object.explanation;
+        projection.condition = object.condition;
+        projection.runSequentially = object.runSequentially;
 
         if ('operations' in object && object.operations) {
             const operationJsons: OperationBase[] = object.operations;
@@ -191,8 +187,7 @@ export class ProjectionPersistence {
                         break;
                     default:
                         const baseOp: OperationBase = {
-                            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.error),
-                            explanation: undefined
+                            $type: OperationTypeConvertor.operationTypeToString(cdmOperationType.error)
                         };
                         operations.push(baseOp);
                 }
@@ -203,7 +198,8 @@ export class ProjectionPersistence {
             explanation: instance.explanation,
             source: source,
             operations: operations,
-            condition: instance.condition
+            condition: instance.condition,
+            runSequentially: instance.runSequentially
         };
     }
 }

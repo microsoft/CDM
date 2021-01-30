@@ -101,6 +101,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
             if (this.Definition != null)
             {
                 copy.Definition = (CdmObjectReference)this.Definition.Copy(resOpt);
+                copy.Definition.Owner = this.Definition.Owner;
             }
             // make space for content, but no copy, done by caller
             copy.Contents = new CdmCollection<CdmObject>(this.Ctx, copy, CdmObjectType.AttributeRef);

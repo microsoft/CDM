@@ -128,103 +128,169 @@ class _data_partition_patternTest(unittest.TestCase):
         # one pattern object contains both glob and regex
         self.assertEqual(patterns_with_glob_and_regex, 1)
 
+        index = 0
         # make sure '.' in glob is not converted to '.' in regex
-        dot_is_escaped = manifest.entities[0]  # type: CdmLocalEntityDeclarationDefinition
+        dot_is_escaped = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(dot_is_escaped.data_partition_patterns[0].glob_pattern, 'test.ile.csv')
         self.assertEqual(len(dot_is_escaped.data_partitions), 0)
+        index += 1
 
-        # star pattern should not match anything
-        only_star = manifest.entities[1]  # type: CdmLocalEntityDeclarationDefinition
+        # star pattern should match anything in the root folder
+        only_star = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(only_star.data_partition_patterns[0].glob_pattern, '*')
-        self.assertEqual(len(only_star.data_partitions), 0)
+        self.assertEqual(len(only_star.data_partitions), 1)
+        self.assertEqual(only_star.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # star can match nothing
-        star_no_match = manifest.entities[2]  # type: CdmLocalEntityDeclarationDefinition
+        star_no_match = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(star_no_match.data_partition_patterns[0].glob_pattern, '/testfile*.csv')
         self.assertEqual(len(star_no_match.data_partitions), 1)
         self.assertEqual(star_no_match.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # star at root level
         # this should match any files at root level, none in subfolders
-        star_at_root = manifest.entities[3]  # type: CdmLocalEntityDeclarationDefinition
+        star_at_root = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(star_at_root.data_partition_patterns[0].glob_pattern, '/*.csv')
         self.assertEqual(len(star_at_root.data_partitions), 1)
         self.assertEqual(star_at_root.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # star at deeper level
-        star_at_deeper_level = manifest.entities[4]  # type: CdmLocalEntityDeclarationDefinition
+        star_at_deeper_level = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(star_at_deeper_level.data_partition_patterns[0].glob_pattern, '/*/*.csv')
         self.assertEqual(len(star_at_deeper_level.data_partitions), 1)
         self.assertEqual(star_at_deeper_level.data_partitions[0].location, '/partitions/subFolder/testSubFile.csv')
+        index += 1
 
         # pattern that ends with star
-        ends_with_star = manifest.entities[5]  # type: CdmLocalEntityDeclarationDefinition
+        ends_with_star = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(ends_with_star.data_partition_patterns[0].glob_pattern, '/testfile*')
         self.assertEqual(len(ends_with_star.data_partitions), 1)
         self.assertEqual(ends_with_star.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # globstar (**) on its own matches
-        glob_star = manifest.entities[6]  # type: CdmLocalEntityDeclarationDefinition
+        glob_star = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(glob_star.data_partition_patterns[0].glob_pattern, '**')
         self.assertEqual(len(glob_star.data_partitions), 2)
         self.assertEqual(len(list(filter(lambda x: x.location == '/partitions/testfile.csv', glob_star.data_partitions))), 1)
         self.assertEqual(len(list(filter(lambda x: x.location == '/partitions/subFolder/testSubFile.csv', glob_star.data_partitions))), 1)
+        index += 1
 
         # globstar at the beginning of the pattern
-        begins_with_globstar = manifest.entities[7]  # type: CdmLocalEntity_declaration_definition
+        begins_with_globstar = manifest.entities[index]  # type: CdmLocalEntity_declaration_definition
         self.assertEqual(begins_with_globstar.data_partition_patterns[0].glob_pattern, '/**.csv')
         self.assertEqual(len(begins_with_globstar.data_partitions), 1)
         self.assertEqual(begins_with_globstar.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # globstar at the end of the pattern
-        ends_with_globstar = manifest.entities[8]  # type: CdmLocalEntityDeclarationDefinition
+        ends_with_globstar = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(ends_with_globstar.data_partition_patterns[0].glob_pattern, '/**')
         self.assertEqual(len(ends_with_globstar.data_partitions), 2)
         self.assertEqual(len(list(filter(lambda x: x.location == '/partitions/testfile.csv', ends_with_globstar.data_partitions))), 1)
         self.assertEqual(len(list(filter(lambda x: x.location == '/partitions/subFolder/testSubFile.csv', ends_with_globstar.data_partitions))), 1)
+        index += 1
 
         # globstar matches zero or more folders
-        zero_or_more_folders = manifest.entities[9]  # type: CdmLocalEntityDeclarationDefinition
+        zero_or_more_folders = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(zero_or_more_folders.data_partition_patterns[0].glob_pattern, '/**/*.csv')
         self.assertEqual(len(zero_or_more_folders.data_partitions), 2)
         self.assertEqual(len(list(filter(lambda x: x.location == '/partitions/testfile.csv', zero_or_more_folders.data_partitions))), 1)
         self.assertEqual(len(list(filter(lambda x: x.location == '/partitions/subFolder/testSubFile.csv', zero_or_more_folders.data_partitions))), 1)
+        index += 1
 
         # globstar matches zero or more folders without starting slash
-        zero_or_more_no_starting_slash = manifest.entities[10]  # type: CdmLocalEntity_declaration_definition
+        zero_or_more_no_starting_slash = manifest.entities[index]  # type: CdmLocalEntity_declaration_definition
         self.assertEqual(zero_or_more_no_starting_slash.data_partition_patterns[0].glob_pattern, '/**/*.csv')
         self.assertEqual(len(zero_or_more_no_starting_slash.data_partitions), 2)
         self.assertEqual(len(list(filter(lambda x: x.location == '/partitions/testfile.csv', zero_or_more_no_starting_slash.data_partitions))), 1)
         self.assertEqual(len(list(filter(lambda x: x.location == '/partitions/subFolder/testSubFile.csv', zero_or_more_no_starting_slash.data_partitions))), 1)
+        index += 1
 
         # question mark in the middle of a pattern
-        question_mark = manifest.entities[11]  # type: CdmLocalEntityDeclarationDefinition
+        question_mark = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(question_mark.data_partition_patterns[0].glob_pattern, '/test?ile.csv')
         self.assertEqual(len(question_mark.data_partitions), 1)
         self.assertEqual(question_mark.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # question mark at the beginning of a pattern
-        begins_with_question_mark = manifest.entities[12]  # type: CdmLocalEntityDeclarationDefinition
+        begins_with_question_mark = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(begins_with_question_mark.data_partition_patterns[0].glob_pattern, '/?estfile.csv')
         self.assertEqual(len(begins_with_question_mark.data_partitions), 1)
         self.assertEqual(begins_with_question_mark.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # question mark at the end of a pattern
-        ends_with_question_mark = manifest.entities[13]  # type: CdmLocalEntityDeclarationDefinition
+        ends_with_question_mark = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(ends_with_question_mark.data_partition_patterns[0].glob_pattern, '/testfile.cs?')
         self.assertEqual(len(ends_with_question_mark.data_partitions), 1)
         self.assertEqual(ends_with_question_mark.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # backslash in glob can match slash
-        backslash_in_pattern = manifest.entities[14]  # type: CdmLocalEntityDeclarationDefinition
+        backslash_in_pattern = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(backslash_in_pattern.data_partition_patterns[0].glob_pattern, '\\testfile.csv')
         self.assertEqual(len(backslash_in_pattern.data_partitions), 1)
         self.assertEqual(backslash_in_pattern.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
 
         # pattern object includes glob pattern and regular expression
-        glob_and_regex = manifest.entities[15]  # type: CdmLocalEntityDeclarationDefinition
+        glob_and_regex = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
         self.assertEqual(glob_and_regex.data_partition_patterns[0].glob_pattern, '/testfile.csv')
         self.assertEqual(glob_and_regex.data_partition_patterns[0].regular_expression, '/subFolder/testSubFile.csv')
         self.assertEqual(len(glob_and_regex.data_partitions), 1)
         # matching this file means the glob pattern was (correctly) used
         self.assertEqual(glob_and_regex.data_partitions[0].location, '/partitions/testfile.csv')
+
+    @async_test
+    async def test_glob_path_variation(self):
+        corpus = TestHelper.get_local_corpus(self.test_subpath, 'TestGlobPathVariation')
+
+        manifest = await corpus.fetch_object_async('pattern.manifest.cdm.json')  # type: CdmManifestDefinition
+        await manifest.file_status_check_async()
+
+        index = 0
+        no_slash = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(no_slash.data_partition_patterns[0].root_location, '/partitions')
+        self.assertEqual(no_slash.data_partition_patterns[0].glob_pattern, '*.csv')
+        self.assertEqual(len(no_slash.data_partitions), 1)
+        self.assertEqual(no_slash.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
+
+        root_location_slash = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(root_location_slash.data_partition_patterns[0].root_location, '/partitions/')
+        self.assertEqual(root_location_slash.data_partition_patterns[0].glob_pattern, '*.csv')
+        self.assertEqual(len(root_location_slash.data_partitions), 1)
+        self.assertEqual(root_location_slash.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
+
+        glob_pattern_slash = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(glob_pattern_slash.data_partition_patterns[0].root_location, '/partitions')
+        self.assertEqual(glob_pattern_slash.data_partition_patterns[0].glob_pattern, '/*.csv')
+        self.assertEqual(len(glob_pattern_slash.data_partitions), 1)
+        self.assertEqual(glob_pattern_slash.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
+
+        both_slash = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(both_slash.data_partition_patterns[0].root_location, '/partitions/')
+        self.assertEqual(both_slash.data_partition_patterns[0].glob_pattern, '/*.csv')
+        self.assertEqual(len(both_slash.data_partitions), 1)
+        self.assertEqual(both_slash.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
+
+        no_slash_or_star_at_start = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(no_slash_or_star_at_start.data_partition_patterns[0].root_location, '/partitions/')
+        self.assertEqual(no_slash_or_star_at_start.data_partition_patterns[0].glob_pattern, 't*.csv')
+        self.assertEqual(len(no_slash_or_star_at_start.data_partitions), 1)
+        self.assertEqual(no_slash_or_star_at_start.data_partitions[0].location, '/partitions/testfile.csv')
+        index += 1
+
+        no_slash_or_star_and_root_location = manifest.entities[index]  # type: CdmLocalEntityDeclarationDefinition
+        self.assertEqual(no_slash_or_star_and_root_location.data_partition_patterns[0].root_location, '/partitions')
+        self.assertEqual(no_slash_or_star_and_root_location.data_partition_patterns[0].glob_pattern, 't*.csv')
+        self.assertEqual(len(no_slash_or_star_and_root_location.data_partitions), 1)
+        self.assertEqual(no_slash_or_star_and_root_location.data_partitions[0].location, '/partitions/testfile.csv')

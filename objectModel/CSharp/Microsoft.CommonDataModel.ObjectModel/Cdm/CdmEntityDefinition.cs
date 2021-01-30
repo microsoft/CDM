@@ -21,7 +21,16 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         /// <summary>
         /// Gets or sets the entity extended by this entity.
         /// </summary>
-        public CdmEntityReference ExtendsEntity { get; set; }
+        public CdmEntityReference ExtendsEntity
+        {
+            get => this.extendsEntity;
+            set
+            {
+                if (value != null)
+                    value.Owner = this;
+                this.extendsEntity = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the resolution guidance for attributes taken from the entity extended by this entity.
@@ -36,8 +45,8 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
         internal ResolveContext CtxDefault { get; set; }
 
         private ResolvedAttributeSetBuilder Rasb;
-
         private bool resolvingEntityReferences = false;
+        private CdmEntityReference extendsEntity;
 
         /// <summary>
         /// Gets the entity attributes.
@@ -342,7 +351,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
             if (preChildren?.Invoke(this, path) == true)
                 return false;
-            if (this.ExtendsEntity != null) this.ExtendsEntity.Owner = this;
             if (this.ExtendsEntity?.Visit(path + "/extendsEntity/", preChildren, postChildren) == true)
                 return true;
             if (this.ExtendsEntityResolutionGuidance != null) this.ExtendsEntityResolutionGuidance.Owner = this;
@@ -502,7 +510,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 int l = this.Attributes.Count;
                 for (int i = 0; i < l; i++)
                 {
-                    dynamic att = this.Attributes.AllItems[i];
+                    CdmObjectBase att = this.Attributes[i] as CdmObjectBase;
                     CdmAttributeContext attUnder = under;
                     AttributeContextParameters acpAtt = null;
                     if (under != null)
@@ -516,10 +524,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                             IncludeTraits = false
                         };
                     }
-
-                    // skip entity attributes when we are in a circular reference loop
-                    if (resOpt.InCircularReference && att is CdmEntityAttributeDefinition)
-                        continue;
 
                     ResolvedAttributeSet rasFromAtt = att.FetchResolvedAttributes(resOpt, acpAtt);
 
@@ -626,7 +630,11 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                 CdmEntityReference entRefThis = ctx.Corpus.MakeObject<CdmEntityReference>(CdmObjectType.EntityRef, this.GetName(), true);
                 entRefThis.Owner = this;
                 entRefThis.InDocument = this.InDocument; // need to set owner and inDocument to this starting entity so the ref will be portable to the new document
+                CdmObject prevOwner = this.Owner;
                 entRefThis.ExplicitReference = this;
+                // we don't want to change the owner of this entity to the entity reference
+                // re-assign whatever was there before
+                this.Owner = prevOwner;
                 AttributeContextParameters acpEnt = new AttributeContextParameters
                 {
                     under = attCtxAC,
@@ -634,6 +642,9 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
                     Name = entName,
                     Regarding = entRefThis
                 };
+
+                // reset previous depth information in case there are left overs
+                resOpt.DepthInfo.Reset();
 
                 ResolveOptions resOptCopy = CdmAttributeContext.PrepareOptionsForResolveAttributes(resOpt);
 
@@ -643,7 +654,6 @@ namespace Microsoft.CommonDataModel.ObjectModel.Cdm
 
                 if (ras == null)
                 {
-                    this.resolvingAttributes = false;
                     return null;
                 }
 

@@ -107,9 +107,6 @@ public class CdmAttributeResolutionGuidance extends CdmObjectSimple {
         if (this.entityByReference.doesAlwaysIncludeForeignKey() == null) {
           this.entityByReference.setAlwaysIncludeForeignKey(false);
         }
-        if (this.entityByReference.getReferenceOnlyAfterDepth() == null) {
-          this.entityByReference.setReferenceOnlyAfterDepth(2);
-        }
         if (this.entityByReference.getForeignKeyAttribute() == null) {
           // make up a fk
           this.entityByReference.setForeignKeyAttribute(this.getCtx().getCorpus().fetchArtifactAttribute("id"));

@@ -21,7 +21,7 @@ namespace Microsoft.CommonDataModel.ObjectModel.Persistence.CdmFolder.Types
         public int? SourceOrdering { get; set; }
         public string DisplayName { get; set; }
         public string Description { get; set; }
-
+        public Projection Projection { get; set; }
         public string MaximumValue { get; set; }
         public string MinimumValue { get; set; }
         public int? MaximumLength { get; set; }
